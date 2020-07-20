@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <string>
+#include "MessageType.h"
+#include "Symbol.h"
+
 namespace collaborative_text_editor {
     class Message {
         int source_site_id_;
