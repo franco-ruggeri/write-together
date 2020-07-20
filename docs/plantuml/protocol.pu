@@ -1,0 +1,30 @@
+@startuml
+hide empty description
+
+state "LOGGED IN" as li
+state "DOCUMENT\nREQUESTED" as dr
+state "NEW DOCUMENT\nREQUESTED" as ndr
+state "DOCUMENT\nOPENED" as do
+state fork <<fork>>
+state join <<join>>
+
+[*] --> li : login / sign up
+li -> [*] : logout
+
+li --> fork
+fork --> dr : open
+fork --> ndr : create
+dr --> join
+ndr --> join
+join --> do : ok
+do --> li : close
+
+do --> do : insert / erase / seek
+
+note as n
+   An online user can modifiy their profile 
+   ('profile' messages) and open/create
+   other documents (more than one) in 
+   whatever state.
+end note
+@enduml
