@@ -6,7 +6,7 @@
 
 namespace collaborative_text_editor {
     Message::Message(int source_site_id, MessageType type, const Symbol& symbol) :
-        source_site_id_(source_site_id), type_(type), symbol(symbol) {}
+        source_site_id_(source_site_id), type_(type), symbol_(symbol) {}
 
     int Message::source() const {
         return source_site_id_;
