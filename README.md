@@ -8,7 +8,7 @@ The project is inspired by [Conclave](https://conclave-team.github.io/conclave-s
 2. cd build
 3. cmake ..
 4. cmake --build .
-5. cmake --test . (optional for testing)
+5. ctest . (optional for testing)
 6. cmake --install .
 7. cd ../bin
 8. run executable
