@@ -3,13 +3,14 @@ Project for the course System Programming (Programmazione di Sistema) at Politec
 
 The project is inspired by [Conclave](https://conclave-team.github.io/conclave-site/).
 
-## How to run
+## How to build and run (UNIX commands)
 1. mkdir -p build
 2. cd build
 3. cmake ..
 4. cmake --build .
-5. cmake --install .
-6. cd ../bin
-7. run executable
+5. cmake --test . (optional for testing)
+6. cmake --install .
+7. cd ../bin
+8. run executable
    * server: ./server port
    * client: ./client ip_address port
