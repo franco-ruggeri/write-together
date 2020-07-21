@@ -21,10 +21,10 @@ namespace collaborative_text_editor {
     }
 
     QJsonObject CursorMessage::json() const {
-        QJsonObject json_ = Message::json();
-        json_.insert("document", document_);
-        json_.insert("username", username_);
-        json_.insert("symbol", symbol_.json());
-        return json_;
+        QJsonObject json_object = Message::json();
+        json_object["document"] = document_;
+        json_object["username"] = username_;
+        json_object["symbol"] = symbol_.json();
+        return json_object;
     }
 }

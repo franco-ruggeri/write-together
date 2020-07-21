@@ -17,9 +17,9 @@ namespace collaborative_text_editor {
     }
 
     QJsonObject LoginMessage::json() const {
-        QJsonObject json_ = Message::json();
-        json_.insert("username", username_);
-        json_.insert("password", password_);
-        return json_;
+        QJsonObject json_object = Message::json();
+        json_object["username"] = username_;
+        json_object["password"] = password_;
+        return json_object;
     }
 }

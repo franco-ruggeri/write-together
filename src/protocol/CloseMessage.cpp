@@ -17,9 +17,9 @@ namespace collaborative_text_editor {
     }
 
     QJsonObject CloseMessage::json() const {
-        QJsonObject json_ = Message::json();
-        json_.insert("document", document_);
-        json_.insert("username", username_);
-        return json_;
+        QJsonObject json_object = Message::json();
+        json_object["document"] = document_;
+        json_object["username"] = username_;
+        return json_object;
     }
 }

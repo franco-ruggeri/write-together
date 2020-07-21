@@ -12,8 +12,8 @@ namespace collaborative_text_editor {
     }
 
     QJsonObject ErrorMessage::json() const {
-        QJsonObject json_ = Message::json();
-        json_.insert("reason", reason_);
-        return json_;
+        QJsonObject json_object = Message::json();
+        json_object["reason"] = reason_;
+        return json_object;
     }
 }

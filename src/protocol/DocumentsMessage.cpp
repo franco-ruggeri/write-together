@@ -14,14 +14,11 @@ namespace collaborative_text_editor {
     }
 
     QJsonObject DocumentsMessage::json() const {
-        QJsonObject json_ = Message::json();
-
-        // documents array
-        QJsonArray json_documents;
+        QJsonObject json_object = Message::json();
+        QJsonArray json_array;
         for (const auto& d : documents_)
-            json_documents.push_back(d);
-        json_.insert("position", json_documents);
-
-        return json_;
+            json_array.push_back(d);
+        json_object["documents"] = json_array;
+        return json_object;
     }
 }
