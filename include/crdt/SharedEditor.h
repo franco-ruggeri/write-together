@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <string>
-#include "Message.h"
+#include "protocol/Message.h"
 #include "Symbol.h"
 #include "LSEQ.h"
 

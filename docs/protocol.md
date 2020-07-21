@@ -16,7 +16,7 @@ Here are the fields and the explanation of each message type appearing in the st
 - *insert \<document_name> \<symbol>* : insert symbol in a document
 - *erase \<document_name> \<symbol>* : erase symbol from a document
 - *cursor \<document_name> \<username> \<symbol>* : move cursor of a client in a document
-- *close \<document_name>* : close a document for a client 
+- *close \<document_name> \<username>* : close a document for a client 
 
 *insert*, *erase*, *cursor* and *close* travel both:
 - From client to server: client notifies a local action
