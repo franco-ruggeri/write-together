@@ -1,30 +1,45 @@
 @startuml
 hide empty description
 
-state "LOGGED IN" as li
+state "NOT AUTHENTICATED" as na
+state "LOGIN\nREQUESTED" as lr
+state "NEW ACCOUNT\nREQUESTED" as nar
+state "AUTHENTICATED" as a
 state "DOCUMENT\nREQUESTED" as dr
 state "NEW DOCUMENT\nREQUESTED" as ndr
 state "DOCUMENT\nOPENED" as do
-state fork <<fork>>
-state join <<join>>
+state fork_authentication <<fork>>
+state join_authentication <<join>>
+state fork_document <<fork>>
+state join_document <<join>>
 
-[*] --> li : login / sign up
-li -> [*] : logout
+[*] --> na
 
-li --> fork
-fork --> dr : open
-fork --> ndr : create
-dr --> join
-ndr --> join
-join --> do : ok
-do --> li : close
+na --> fork_authentication
+fork_authentication --> lr : login
+fork_authentication --> nar : sign up
+lr --> join_authentication
+nar --> join_authentication
+join_authentication --> a : ok
+join_authentication --> na : error
+
+a --> na : logout
+
+a --> fork_document
+fork_document --> dr : open
+fork_document --> ndr : create
+dr --> join_document
+ndr --> join_document
+join_document --> do : ok
+join_document --> a : error
+do --> a : close
 
 do --> do : insert / erase / seek
 
 note as n
-   An online user can modifiy their profile 
-   ('profile' messages) and open/create
-   other documents (more than one) in 
-   whatever state.
+   Additionally, an online user can:
+   - Modifiy their profile ('profile' messages) in whatever state.
+   - Close the application in whatever state.
+   - Open or create other documents when authenticated.
 end note
 @enduml
