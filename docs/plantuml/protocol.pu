@@ -20,7 +20,7 @@ fork_authentication --> lr : login
 fork_authentication --> nar : sign up
 lr --> join_authentication
 nar --> join_authentication
-join_authentication --> a : ok
+join_authentication --> a : documents
 join_authentication --> na : error
 
 a --> na : logout
@@ -30,16 +30,14 @@ fork_document --> dr : open
 fork_document --> ndr : create
 dr --> join_document
 ndr --> join_document
-join_document --> do : ok
+join_document --> do : text\n+ sequence of\ncursor
 join_document --> a : error
 do --> a : close
 
-do --> do : insert / erase / seek
-
+do --> do : insert / erase / cursor
 note as n
-   Additionally, an online user can:
-   - Modifiy their profile ('profile' messages) in whatever state.
-   - Close the application in whatever state.
-   - Open or create other documents when authenticated.
+   Additionally, an authenticated user can, in whatever state:
+   - Modifiy their profile ('profile' messages).
+   - Open or create other documents.
 end note
 @enduml
