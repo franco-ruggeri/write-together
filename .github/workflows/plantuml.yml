@@ -1,5 +1,6 @@
 name: Generate PlantUML
-on: push
+on:
+  workflow_dispatch:
 jobs:
   generate_plantuml:
     name: Generate
