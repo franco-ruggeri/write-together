@@ -4,17 +4,18 @@
 
 #pragma once
 
-#include <string>
+#include <QJsonObject>
+#include <QString>
 #include "Message.h"
 
 namespace collaborative_text_editor {
     class TextMessage : public Message {
         QString document_, text_;
 
+        QJsonObject json() const override;
     public:
         TextMessage(QString document, QString text);
         QString document() const;
         QString text() const;
-        QJsonObject json() const override;
     };
 }

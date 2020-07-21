@@ -5,6 +5,7 @@
 #pragma once
 
 #include <QString>
+#include <QJsonObject>
 #include "Message.h"
 #include "Symbol.h"
 
@@ -13,10 +14,10 @@ namespace collaborative_text_editor {
         QString document_;
         Symbol symbol_;
 
+        QJsonObject json() const override;
     public:
         EraseMessage(QString document, Symbol symbol);
         QString document() const;
         Symbol symbol() const;
-        QJsonObject json() const override;
     };
 }

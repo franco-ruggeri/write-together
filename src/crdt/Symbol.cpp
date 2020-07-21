@@ -39,15 +39,15 @@ namespace collaborative_text_editor {
         QJsonObject json_;
 
         // basic types
-        json_.insert("value", QString(value_));
-        json_.insert("site_id", site_id_);
-        json_.insert("site_counter", site_counter_);
+        json_["value"] = QString(value_);
+        json_["site_id"] = site_id_;
+        json_["site_counter"] = site_counter_;
 
         // position array
         QJsonArray json_position;
         for (const auto& p : position_)
             json_position.push_back(p);
-        json_.insert("position", json_position);
+        json_["position"] = json_position;
 
         return json_;
     }
