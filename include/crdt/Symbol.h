@@ -6,23 +6,26 @@
 
 #pragma once
 
-#include <vector>
+#include <QChar>
+#include <QJsonObject>
 
 namespace collaborative_text_editor {
     class Symbol {
-        char value_;
+        QChar value_;
         int site_id_, site_counter_;
         std::vector<int> position_;
 
     public:
-        Symbol(char value, int site_id, int site_counter, const std::vector<int>& position);
+        Symbol(QChar value, int site_id, int site_counter, const std::vector<int>& position);
 
         bool operator<(const Symbol& other);
         bool operator==(const Symbol& other);
 
-        char value() const;
+        QChar value() const;
         int site_id() const;
         int site_counter() const;
         std::vector<int> position() const;
+
+        QJsonObject json() const;
     };
 }

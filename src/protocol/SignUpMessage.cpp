@@ -5,14 +5,21 @@
 #include "SignUpMessage.h"
 
 namespace collaborative_text_editor {
-    SignUpMessage::SignUpMessage(std::string username, std::string password) :
+    SignUpMessage::SignUpMessage(QString username, QString password) :
         Message(MessageType::sign_up), username_(username), password_(password) {}
 
-    std::string SignUpMessage::username() const {
+    QString SignUpMessage::username() const {
         return username_;
     }
 
-    std::string SignUpMessage::password() const {
+    QString SignUpMessage::password() const {
         return password_;
+    }
+
+    QJsonObject SignUpMessage::json() const {
+        QJsonObject json_ = Message::json();
+        json_.insert("username", username_);
+        json_.insert("password", password_);
+        return json_;
     }
 }

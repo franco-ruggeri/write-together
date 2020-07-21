@@ -5,14 +5,21 @@
 #include "TextMessage.h"
 
 namespace collaborative_text_editor {
-    TextMessage::TextMessage(std::string document, std::string text) :
+    TextMessage::TextMessage(QString document, QString text) :
         Message(MessageType::text), document_(document), text_(text) {}
 
-    std::string TextMessage::document() const {
+    QString TextMessage::document() const {
         return document_;
     }
 
-    std::string TextMessage::text() const {
+    QString TextMessage::text() const {
         return text_;
+    }
+
+    QJsonObject TextMessage::json() const {
+        QJsonObject json_ = Message::json();
+        json_.insert("document", document_);
+        json_.insert("text", text_);
+        return json_;
     }
 }

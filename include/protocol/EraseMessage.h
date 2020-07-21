@@ -4,17 +4,19 @@
 
 #pragma once
 
-#include <string>
+#include <QString>
 #include "Message.h"
 #include "Symbol.h"
 
 namespace collaborative_text_editor {
     class EraseMessage : public Message {
-        std::string document_;
+        QString document_;
         Symbol symbol_;
+
     public:
-        EraseMessage(std::string document, Symbol symbol);
-        std::string document() const;
+        EraseMessage(QString document, Symbol symbol);
+        QString document() const;
         Symbol symbol() const;
+        QJsonObject json() const override;
     };
 }

@@ -10,4 +10,8 @@ namespace collaborative_text_editor {
     MessageType Message::type() const {
         return type_;
     }
+
+    QJsonObject Message::json() const {
+        return {{"type", static_cast<int>(type_)}};
+    }
 }

@@ -4,17 +4,19 @@
 
 #pragma once
 
-#include <string>
+#include <QString>
 #include "Message.h"
 #include "Symbol.h"
 
 namespace collaborative_text_editor {
     class InsertMessage : public Message {
-        std::string document_;
+        QString document_;
         Symbol symbol_;
+
     public:
-        InsertMessage(std::string document, Symbol symbol);
-        std::string document() const;
+        InsertMessage(QString document, Symbol symbol);
+        QString document() const;
         Symbol symbol() const;
+        QJsonObject json() const override;
     };
 }

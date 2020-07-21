@@ -5,14 +5,21 @@
 #include "CloseMessage.h"
 
 namespace collaborative_text_editor {
-    CloseMessage::CloseMessage(std::string document, std::string username) :
+    CloseMessage::CloseMessage(QString document, QString username) :
         Message(MessageType::close), document_(document), username_(username) {}
 
-    std::string CloseMessage::document() const {
+    QString CloseMessage::document() const {
         return document_;
     }
 
-    std::string CloseMessage::username() const {
+    QString CloseMessage::username() const {
         return username_;
+    }
+
+    QJsonObject CloseMessage::json() const {
+        QJsonObject json_ = Message::json();
+        json_.insert("document", document_);
+        json_.insert("username", username_);
+        return json_;
     }
 }

@@ -9,10 +9,12 @@
 
 namespace collaborative_text_editor {
     class TextMessage : public Message {
-        std::string document_, text_;
+        QString document_, text_;
+
     public:
-        TextMessage(std::string document, std::string text);
-        std::string document() const;
-        std::string text() const;
+        TextMessage(QString document, QString text);
+        QString document() const;
+        QString text() const;
+        QJsonObject json() const override;
     };
 }

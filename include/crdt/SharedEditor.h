@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-#include "protocol/Message.h"
+#include <QString>
+#include <QChar>
+#include "Message.h"
 #include "Symbol.h"
 #include "LSEQ.h"
 
@@ -21,10 +21,10 @@ namespace collaborative_text_editor {
 
     public:
         SharedEditor(int site_id);
-        Symbol local_insert(int index, char value);
+        Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
-        std::string to_string();
+        QString to_string();
     };
 }
