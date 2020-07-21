@@ -5,13 +5,12 @@
  */
 
 #include <iostream>
-#include "crdt/SharedEditor.h"
-#include <cstring>
+#include "SharedEditor.h"
 
 using namespace collaborative_text_editor;
 
 int main(int argc, char **argv) {
-    if (argc < 3 || strlen(argv[2])>1) {
+    if (argc < 3 || argv[2][1] != 0) {
         std::cerr << "usage: " << argv[0] << " text insert_value index" << std::endl;
         std::exit(EXIT_FAILURE);
     }
@@ -26,8 +25,8 @@ int main(int argc, char **argv) {
         editor2.remote_insert(s);
     }
 
-    std::cout << editor1.to_string() << std::endl;
-    std::cout << editor2.to_string() << std::endl;
+    std::cout << editor1.to_string().toStdString() << std::endl;
+    std::cout << editor2.to_string().toStdString() << std::endl;
 
     // insert and delete (must commute)
     int index = std::stoi(argv[2]);
@@ -36,6 +35,8 @@ int main(int argc, char **argv) {
     editor2.remote_insert(symbol1);
     editor1.remote_erase(symbol2);
 
-    std::cout << editor1.to_string() << std::endl;
-    std::cout << editor2.to_string() << std::endl;
+    std::cout << editor1.to_string().toStdString() << std::endl;
+    std::cout << editor2.to_string().toStdString() << std::endl;
+
+    return 0;
 }

@@ -9,7 +9,6 @@
 
 namespace collaborative_text_editor {
     class LogoutMessage : public Message {
-        QJsonObject json() const override;
     public:
         LogoutMessage();
     };

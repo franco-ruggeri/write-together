@@ -5,7 +5,7 @@
  */
 
 #include <iostream>
-#include "crdt/SharedEditor.h"
+#include "SharedEditor.h"
 
 using namespace collaborative_text_editor;
 
@@ -25,8 +25,8 @@ int main(int argc, char **argv) {
         editor2.remote_insert(s);
     }
 
-    std::cout << editor1.to_string() << std::endl;
-    std::cout << editor2.to_string() << std::endl;
+    std::cout << editor1.to_string().toStdString() << std::endl;
+    std::cout << editor2.to_string().toStdString() << std::endl;
 
     // insert and delete (must commute)
     int index = std::stoi(argv[2]);
@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
     editor2.remote_erase(symbol1);
     editor1.remote_erase(symbol2);
 
-    std::cout << editor1.to_string() << std::endl;
-    std::cout << editor2.to_string() << std::endl;
+    std::cout << editor1.to_string().toStdString() << std::endl;
+    std::cout << editor2.to_string().toStdString() << std::endl;
+
+    return 0;
 }
