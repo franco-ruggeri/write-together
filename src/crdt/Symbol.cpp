@@ -3,9 +3,10 @@
  */
 
 #include "Symbol.h"
+#include <QJsonArray>
 
 namespace collaborative_text_editor {
-    Symbol::Symbol(char value, int site_id, int site_counter, const std::vector<int>& position) :
+    Symbol::Symbol(QChar value, int site_id, int site_counter, const std::vector<int>& position) :
         value_(value), site_id_(site_id), site_counter_(site_counter), position_(position) {}
 
     bool Symbol::operator<(const Symbol& other) {
@@ -18,7 +19,7 @@ namespace collaborative_text_editor {
                this->position_ == other.position_;
     }
 
-    char Symbol::value() const {
+    QChar Symbol::value() const {
         return value_;
     }
 
@@ -32,5 +33,22 @@ namespace collaborative_text_editor {
 
     std::vector<int> Symbol::position() const {
         return position_;
+    }
+
+    QJsonObject Symbol::json() const {
+        QJsonObject json_;
+
+        // basic types
+        json_.insert("value", QString(value_));
+        json_.insert("site_id", site_id_);
+        json_.insert("site_counter", site_counter_);
+
+        // position array
+        QJsonArray json_position;
+        for (const auto& p : position_)
+            json_position.push_back(p);
+        json_.insert("position", json_position);
+
+        return json_;
     }
 }

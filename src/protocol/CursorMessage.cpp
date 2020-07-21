@@ -5,18 +5,26 @@
 #include "CursorMessage.h"
 
 namespace collaborative_text_editor {
-    CursorMessage::CursorMessage(std::string document, std::string username, Symbol symbol) :
+    CursorMessage::CursorMessage(QString document, QString username, Symbol symbol) :
         Message(MessageType::cursor), document_(document), username_(username), symbol_(symbol) {}
 
-    std::string CursorMessage::document() const {
+    QString CursorMessage::document() const {
         return document_;
     }
 
-    std::string CursorMessage::username() const {
+    QString CursorMessage::username() const {
         return username_;
     }
 
     Symbol CursorMessage::symbol() const {
         return symbol_;
+    }
+
+    QJsonObject CursorMessage::json() const {
+        QJsonObject json_ = Message::json();
+        json_.insert("document", document_);
+        json_.insert("username", username_);
+        json_.insert("symbol", symbol_.json());
+        return json_;
     }
 }

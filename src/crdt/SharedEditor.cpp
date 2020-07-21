@@ -3,13 +3,12 @@
  */
 
 #include "SharedEditor.h"
-#include "MessageType.h"
 #include <sstream>
 
 namespace collaborative_text_editor {
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id) {}
 
-    Symbol SharedEditor::local_insert(int index, char value) {
+    Symbol SharedEditor::local_insert(int index, QChar value) {
         // allocate position
         std::vector<int> prev_pos = index == 0 ? pos_allocator_.get_begin() : text_.at(index-1).position();
         std::vector<int> next_pos = index == text_.size() ? pos_allocator_.get_end() : text_.at(index).position();
@@ -37,10 +36,10 @@ namespace collaborative_text_editor {
         if (it != text_.end() && *it == symbol) text_.erase(it);
     }
 
-    std::string SharedEditor::to_string() {
-        std::ostringstream oss;
+    QString SharedEditor::to_string() {
+        QString result;
         for (const auto& s : text_)
-            oss << s.value();
-        return oss.str();
+            result.append(s.value());
+        return result;
     }
 }

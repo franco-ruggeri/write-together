@@ -9,9 +9,11 @@
 
 namespace collaborative_text_editor {
     class OpenMessage : public Message {
-        std::string document_;
+        QString document_;
+
     public:
-        OpenMessage(std::string document);
-        std::string document() const;
+        OpenMessage(QString document);
+        QString document() const;
+        QJsonObject json() const override;
     };
 }

@@ -9,10 +9,12 @@
 
 namespace collaborative_text_editor {
     class SignUpMessage : public Message {
-        std::string username_, password_;
+        QString username_, password_;
+
     public:
-        SignUpMessage(std::string username, std::string password);
-        std::string username() const;
-        std::string password() const;
+        SignUpMessage(QString username, QString password);
+        QString username() const;
+        QString password() const;
+        QJsonObject json() const override;
     };
 }
