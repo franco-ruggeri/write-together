@@ -5,7 +5,7 @@
 #include "ErrorMessage.h"
 
 namespace collaborative_text_editor {
-    ErrorMessage::ErrorMessage(QString reason) : Message(MessageType::error), reason_(reason) {}
+    ErrorMessage::ErrorMessage(const QString& reason) : Message(MessageType::error), reason_(reason) {}
 
     QString ErrorMessage::reason() const {
         return reason_;

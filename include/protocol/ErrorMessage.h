@@ -14,7 +14,7 @@ namespace collaborative_text_editor {
 
         QJsonObject json() const override;
     public:
-        ErrorMessage(QString reason);
+        ErrorMessage(const QString& reason);
         QString reason() const;
     };
 }

@@ -16,7 +16,7 @@ namespace collaborative_text_editor {
 
         QJsonObject json() const override;
     public:
-        EraseMessage(QString document, Symbol symbol);
+        EraseMessage(const QString& document, const Symbol& symbol);
         QString document() const;
         Symbol symbol() const;
     };

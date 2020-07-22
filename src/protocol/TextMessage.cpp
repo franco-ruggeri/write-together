@@ -5,7 +5,7 @@
 #include "TextMessage.h"
 
 namespace collaborative_text_editor {
-    TextMessage::TextMessage(QString document, QString text) :
+    TextMessage::TextMessage(const QString& document, const QString& text) :
         Message(MessageType::text), document_(document), text_(text) {}
 
     QString TextMessage::document() const {

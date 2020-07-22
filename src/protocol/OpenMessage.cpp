@@ -5,7 +5,7 @@
 #include "OpenMessage.h"
 
 namespace collaborative_text_editor {
-    OpenMessage::OpenMessage(QString document) : Message(MessageType::open), document_(document) {}
+    OpenMessage::OpenMessage(const QString& document) : Message(MessageType::open), document_(document) {}
 
     QString OpenMessage::document() const {
         return document_;

@@ -5,7 +5,7 @@
 #include "CreateMessage.h"
 
 namespace collaborative_text_editor {
-    CreateMessage::CreateMessage(QString document) : Message(MessageType::create), document_(document) {}
+    CreateMessage::CreateMessage(const QString& document) : Message(MessageType::create), document_(document) {}
 
     QString CreateMessage::document() const {
         return document_;

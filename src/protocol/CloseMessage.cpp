@@ -5,7 +5,7 @@
 #include "CloseMessage.h"
 
 namespace collaborative_text_editor {
-    CloseMessage::CloseMessage(QString document, QString username) :
+    CloseMessage::CloseMessage(const QString& document, const QString& username) :
         Message(MessageType::close), document_(document), username_(username) {}
 
     QString CloseMessage::document() const {

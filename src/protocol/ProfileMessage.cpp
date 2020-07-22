@@ -7,7 +7,7 @@
 #include <QIODevice>
 
 namespace collaborative_text_editor {
-    ProfileMessage::ProfileMessage(QString username, QString password, QImage icon) :
+    ProfileMessage::ProfileMessage(const QString& username, const QString& password, const QImage& icon) :
         Message(MessageType::profile), username_(username), password_(password), icon_(icon) {}
 
     QString ProfileMessage::username() const {

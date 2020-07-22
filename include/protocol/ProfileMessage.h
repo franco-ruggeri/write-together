@@ -16,7 +16,7 @@ namespace collaborative_text_editor {
 
         QJsonObject json() const override;
     public:
-        ProfileMessage(QString username, QString password, QImage icon);
+        ProfileMessage(const QString& username, const QString& password, const QImage& icon);
         QString username() const;
         QString password() const;
         QImage icon() const;

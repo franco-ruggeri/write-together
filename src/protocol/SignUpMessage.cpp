@@ -5,7 +5,7 @@
 #include "SignUpMessage.h"
 
 namespace collaborative_text_editor {
-    SignUpMessage::SignUpMessage(QString username, QString password) :
+    SignUpMessage::SignUpMessage(const QString& username, const QString& password) :
         Message(MessageType::sign_up), username_(username), password_(password) {}
 
     QString SignUpMessage::username() const {

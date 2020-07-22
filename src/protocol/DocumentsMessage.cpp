@@ -6,7 +6,7 @@
 #include <QJsonArray>
 
 namespace collaborative_text_editor {
-    DocumentsMessage::DocumentsMessage(std::vector<QString> documents) :
+    DocumentsMessage::DocumentsMessage(const std::vector<QString>& documents) :
         Message(MessageType::documents), documents_(documents) {}
 
     std::vector<QString> DocumentsMessage::documents() const {

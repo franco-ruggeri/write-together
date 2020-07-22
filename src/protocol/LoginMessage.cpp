@@ -5,8 +5,8 @@
 #include "LoginMessage.h"
 
 namespace collaborative_text_editor {
-    LoginMessage::LoginMessage(QString username, QString password)
-        : Message(MessageType::login), username_(username), password_(password) {}
+    LoginMessage::LoginMessage(const QString& username, const QString& password) :
+        Message(MessageType::login), username_(username), password_(password) {}
 
     QString LoginMessage::username() const {
         return username_;

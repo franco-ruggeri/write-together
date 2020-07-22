@@ -5,7 +5,7 @@
 #include "EraseMessage.h"
 
 namespace collaborative_text_editor {
-    EraseMessage::EraseMessage(QString document, Symbol symbol) :
+    EraseMessage::EraseMessage(const QString& document, const Symbol& symbol) :
         Message(MessageType::erase), document_(document), symbol_(symbol) {}
 
     QString EraseMessage::document() const {

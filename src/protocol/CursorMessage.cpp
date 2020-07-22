@@ -5,7 +5,7 @@
 #include "CursorMessage.h"
 
 namespace collaborative_text_editor {
-    CursorMessage::CursorMessage(QString document, QString username, Symbol symbol) :
+    CursorMessage::CursorMessage(const QString& document, const QString& username, const Symbol& symbol) :
         Message(MessageType::cursor), document_(document), username_(username), symbol_(symbol) {}
 
     QString CursorMessage::document() const {

@@ -5,7 +5,7 @@
 #include "InsertMessage.h"
 
 namespace collaborative_text_editor {
-    InsertMessage::InsertMessage(QString document, Symbol symbol) :
+    InsertMessage::InsertMessage(const QString& document, const Symbol& symbol) :
         Message(MessageType::insert), document_(document), symbol_(symbol) {}
 
     QString InsertMessage::document() const {

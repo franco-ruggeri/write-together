@@ -16,7 +16,7 @@ namespace collaborative_text_editor {
 
         QJsonObject json() const override;
     public:
-        CursorMessage(QString document, QString username, Symbol symbol);
+        CursorMessage(const QString& document, const QString& username, const Symbol& symbol);
         QString document() const;
         QString username() const;
         Symbol symbol() const;

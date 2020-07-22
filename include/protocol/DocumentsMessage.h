@@ -15,7 +15,7 @@ namespace collaborative_text_editor {
 
         QJsonObject json() const override;
     public:
-        DocumentsMessage(std::vector<QString> documents);
+        DocumentsMessage(const std::vector<QString>& documents);
         std::vector<QString> documents() const;
     };
 }
