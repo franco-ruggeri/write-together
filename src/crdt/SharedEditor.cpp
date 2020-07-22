@@ -3,7 +3,6 @@
  */
 
 #include "SharedEditor.h"
-#include <sstream>
 
 namespace collaborative_text_editor {
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id) {}
