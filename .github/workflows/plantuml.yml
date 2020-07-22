@@ -1,4 +1,4 @@
-name: Generate PlantUML
+name: PlantUML
 on:
   workflow_dispatch:
 jobs:
