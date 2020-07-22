@@ -37,7 +37,6 @@ ndr --> join_document
 join_document --> do : text\n+ sequence of\ncursor
 join_document --> a : error
 do --> a : close
-
 do --> do : insert / erase / cursor
 
 note top of pur : Can be done even while one or\nmore documents are opened
