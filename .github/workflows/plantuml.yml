@@ -1,13 +1,18 @@
 name: PlantUML
+
 on:
-  workflow_dispatch:
+  push:
+    branches: master
+    paths: 'docs/**'
+
 jobs:
   generate_plantuml:
-    name: Generate
+    name: Generate plantUML
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - id: plantuml
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Generate
       uses: grassedge/generate-plantuml-action@v1.1
       with:
         path: docs/plantuml
