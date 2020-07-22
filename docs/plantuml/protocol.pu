@@ -8,6 +8,7 @@ state "AUTHENTICATED" as a
 state "DOCUMENT\nREQUESTED" as dr
 state "NEW DOCUMENT\nREQUESTED" as ndr
 state "DOCUMENT\nOPENED" as do
+state "PROFILE UPDATE\nREQUESTED" as pur
 state fork_authentication <<fork>>
 state join_authentication <<join>>
 state fork_document <<fork>>
@@ -25,6 +26,9 @@ join_authentication --> na : error
 
 a --> na : logout
 
+a -> pur : profile
+pur --> a : profile_ok / error
+
 a --> fork_document
 fork_document --> dr : open
 fork_document --> ndr : create
@@ -35,9 +39,7 @@ join_document --> a : error
 do --> a : close
 
 do --> do : insert / erase / cursor
-note as n
-   Additionally, an authenticated user can, in whatever state:
-   - Modifiy their profile ('profile' messages).
-   - Open or create other documents.
-end note
+
+note top of pur : Can be done even while one or\nmore documents are opened
+note top of fork_document : More than one document can be\nopened with the same mechanism
 @enduml
