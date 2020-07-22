@@ -7,10 +7,10 @@ set_tests_properties(serialization_error PROPERTIES PASS_REGULAR_EXPRESSION
         "^{\"reason\":\"test error\",\"type\":0}\n$"
         )
 
-add_executable(test_serialization_signup test_serialization_signup.cpp)
-target_link_libraries(test_serialization_signup protocol)
-add_test(NAME serialization_signup COMMAND test_serialization_signup "test username" "test password")
-set_tests_properties(serialization_signup PROPERTIES PASS_REGULAR_EXPRESSION
+add_executable(test_serialization_sign_up test_serialization_sign_up.cpp)
+target_link_libraries(test_serialization_sign_up protocol)
+add_test(NAME serialization_sign_up COMMAND test_serialization_sign_up "test username" "test password")
+set_tests_properties(serialization_sign_up PROPERTIES PASS_REGULAR_EXPRESSION
         "^{\"password\":\"test password\",\"type\":1,\"username\":\"test username\"}\n$"
         )
 
@@ -82,4 +82,18 @@ target_link_libraries(test_serialization_close protocol)
 add_test(NAME serialization_close COMMAND test_serialization_close "test document" "test username")
 set_tests_properties(serialization_close PROPERTIES PASS_REGULAR_EXPRESSION
         "^{\"document\":\"test document\",\"type\":11,\"username\":\"test username\"}\n$"
+        )
+
+add_executable(test_serialization_profile test_serialization_profile.cpp)
+target_link_libraries(test_serialization_profile protocol)
+add_test(NAME serialization_profile COMMAND test_serialization_profile "test username" "test password" 1 1 0 0 255)
+set_tests_properties(serialization_profile PROPERTIES PASS_REGULAR_EXPRESSION
+        "^{\"icon\":\"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAADElEQVQImWNgYPgPAAEDAQBdlO9aAAAAAElFTkSuQmCC\",\"password\":\"test password\",\"type\":12,\"username\":\"test username\"}\n$"
+        )
+
+add_executable(test_serialization_profile_ok test_serialization_profile_ok.cpp)
+target_link_libraries(test_serialization_profile_ok protocol)
+add_test(NAME serialization_profile_ok COMMAND test_serialization_profile_ok)
+set_tests_properties(serialization_profile_ok PROPERTIES PASS_REGULAR_EXPRESSION
+        "^{\"type\":13}\n$"
         )

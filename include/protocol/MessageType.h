@@ -19,6 +19,8 @@ namespace collaborative_text_editor {
         insert=8,
         erase=9,
         cursor=10,
-        close=11
+        close=11,
+        profile=12,
+        profile_ok=13
     };
 }

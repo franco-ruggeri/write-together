@@ -17,10 +17,16 @@ Here are the fields and the explanation of each message type appearing in the st
 - *erase \<document_name> \<symbol>* : erase symbol from a document
 - *cursor \<document_name> \<username> \<symbol>* : move cursor of a client in a document
 - *close \<document_name> \<username>* : close a document for a client 
+- *profile \<username> \<password> \<icon>* : client requests to update profile
+- *profile_ok* : server confirms profile update
 
 *insert*, *erase*, *cursor* and *close* travel both:
 - From client to server: client notifies a local action
 - From server to client: server dispatches actions
+
+Fields in *profile* messages have a special meaning:
+- Empty *\<username>* or *|<password>* indicates to keep the current values.
+- Empty *\<icon>* indicates to delete the icon.
 
 Finally:
 - When a document is opened by a client, the server sends *text* and a sequence of *cursor*, one for each user currently editing that document.
