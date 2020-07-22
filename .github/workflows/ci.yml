@@ -8,20 +8,15 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - run: |
-        cmake .
-        cmake --build .
-  test:
-    name: Test
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        cmake .
-        cmake --build .
-        ctest .
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+      - name: Build
+        run: |
+          cmake .
+          cmake --build .
+          ctest .
