@@ -20,20 +20,23 @@
 #include <vector>
 
 namespace collaborative_text_editor {
-    class LSEQ {
+    class Lseq {
         enum class Strategy : bool {
             boundary_plus=true, boundary_minus=false
         };
 
         std::vector<Strategy> strategies_;      // strategy at each depth
+        const unsigned int boundary_;
 
-        static const int begin;                 // first possible child of a node, reserved
-        static const int end;                   // last possible child of a node, reserved
-        static const unsigned int boundary;
+        static const int begin_;                // first possible child of a node, reserved
+        static const int end_;                  // last possible child of a node, reserved
+        static const unsigned int default_boundary;
 
     public:
-        static std::vector<int> get_begin();
-        static std::vector<int> get_end();
-        std::vector<int> get_between(std::vector<int> prev, std::vector<int> next);
+        Lseq();
+        Lseq(unsigned int boundary);
+        static std::vector<int> begin();        // get dummy begin (to use as prev when there is no prev)
+        static std::vector<int> end();          // get dummy end (to use as next when there is no next)
+        std::vector<int> between(std::vector<int> prev, std::vector<int> next);
     };
 }
