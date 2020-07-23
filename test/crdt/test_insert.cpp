@@ -17,7 +17,7 @@ void print_position(const std::vector<int>& position) {
 }
 
 int main() {
-    LSEQ pos_allocator(1);
+    Lseq pos_allocator(1);
     SharedEditor editor(1, pos_allocator);
 
     std::string text("test");

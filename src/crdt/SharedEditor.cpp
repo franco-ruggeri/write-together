@@ -7,7 +7,7 @@
 namespace collaborative_text_editor {
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
 
-    SharedEditor::SharedEditor(int site_id, const LSEQ& pos_allocator) :
+    SharedEditor::SharedEditor(int site_id, const Lseq& pos_allocator) :
         site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {

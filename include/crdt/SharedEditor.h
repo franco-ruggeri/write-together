@@ -11,17 +11,17 @@
 #include <QChar>
 #include "Message.h"
 #include "Symbol.h"
-#include "LSEQ.h"
+#include "Lseq.h"
 
 namespace collaborative_text_editor {
     class SharedEditor {
         int site_id_, site_counter_;
         std::vector<Symbol> text_;
-        LSEQ pos_allocator_;
+        Lseq pos_allocator_;
 
     public:
         SharedEditor(int site_id);
-        SharedEditor(int site_id, const LSEQ& pos_allocator);
+        SharedEditor(int site_id, const Lseq& pos_allocator);
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
         void remote_insert(const Symbol& symbol);
