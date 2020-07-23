@@ -2,30 +2,36 @@
  * Author: Franco Ruggeri
  */
 
-#include <crdt/LSEQ.h>
+#include <crdt/Lseq.h>
 #include <limits>
 #include <stdexcept>
 
 namespace collaborative_text_editor {
-    const int LSEQ::begin = std::numeric_limits<int>::min() / 4 + 1;  // divided by 4 to avoid overflows in get_between()
-    const int LSEQ::end = std::numeric_limits<int>::max() / 4;
-    const unsigned int LSEQ::boundary = 10;
+    // max range divided by 4 to avoid overflows in between()
+    const int Lseq::begin_ = std::numeric_limits<int>::min() / 4 + 1;   // +1 to have begin_ = -end_ (easier to debug)
+    const int Lseq::end_ = std::numeric_limits<int>::max() / 4;
 
-    std::vector<int> LSEQ::get_begin() {
-        return std::vector<int>{begin};
+    const unsigned int Lseq::default_boundary = 10;
+
+    Lseq::Lseq() : boundary_(default_boundary) {}
+
+    Lseq::Lseq(unsigned int boundary) : boundary_(boundary) {}
+
+    std::vector<int> Lseq::begin() {
+        return std::vector<int>{begin_};
     }
 
-    std::vector<int> LSEQ::get_end() {
-        return std::vector<int>{end};
+    std::vector<int> Lseq::end() {
+        return std::vector<int>{end_};
     }
 
-    std::vector<int> LSEQ::get_between(std::vector<int> prev, std::vector<int> next) {
-        // fill with begin (e.g. begin=0 => 1 == 1.0 == 1.00)
-        auto max_depth = std::max(prev.size(), next.size()) + 1;    // +1 to have for sure the last level with available pos
+    std::vector<int> Lseq::between(std::vector<int> prev, std::vector<int> next) {
+        // fill with begin_ (e.g. begin_=0 => 1 == 1.0 == 1.00)
         auto prev_depth = prev.size();
         auto next_depth = next.size();
-        std::fill_n(std::back_inserter(prev), max_depth-prev_depth, begin);
-        std::fill_n(std::back_inserter(next), max_depth-prev_depth, begin);
+        auto max_depth = std::max(prev_depth, next_depth) + 1;    // +1 to have for sure the last level with available pos
+        std::fill_n(std::back_inserter(prev), max_depth-prev_depth, begin_);
+        std::fill_n(std::back_inserter(next), max_depth-next_depth, begin_);
 
         // find interval for allocation
         int depth=-1, interval=0;
@@ -40,13 +46,13 @@ namespace collaborative_text_editor {
                     consecutive = true;
             } else {
                 // consecutive nodes at a previous level => the interval is made of two parts
-                // example: prev=1.5, next=2.2, begin=0, end=9 => interval = 9-5-1 + 2-0-1 = 4 (i.e. positions 1.6, 1.7, 1.8, 2.1)
+                // example: prev=1.5, next=2.2, begin_=0, end_=9 => interval = 9-5-1 + 2-0-1 = 4 (i.e. positions 1.6, 1.7, 1.8, 2.1)
                 interval = 0;
-                if (next[depth] != begin) interval += next[depth] - begin - 1;
-                if (prev[depth] != end) interval += end - prev[depth] - 1;
+                if (next[depth] != begin_) interval += next[depth] - begin_ - 1;
+                if (prev[depth] != end_) interval += end_ - prev[depth] - 1;
             }
         }
-        interval = std::min<int>(boundary, interval);
+        interval = std::min<int>(boundary_, interval);
 
         // set strategy
         Strategy strategy;
@@ -65,10 +71,10 @@ namespace collaborative_text_editor {
             case Strategy::boundary_plus:
                 // if we enter in this if, it means that at a previous level we had consecutive nodes
                 // it may be that the step requires to jump to a child node of next, instead of prev
-                // example: prev=1.5, next=2.5, begin=0, end=9, step=5 => leaf = 5-(9-5-1) = 2 (i.e. position 2.2)
-                if (prev[depth] + step >= end) {
+                // example: prev=1.5, next=2.5, begin_=0, end=9, step=5 => leaf = 5-(9-5-1) = 2 (i.e. position 2.2)
+                if (prev[depth] + step >= end_) {
                     std::copy(next.begin(), next.begin()+depth, std::back_inserter(between));
-                    between.push_back(begin + step - (end-prev[depth]-1));
+                    between.push_back(begin_ + step - (next[depth] == end_ ? 0 : end_-prev[depth]-1));
                 } else {
                     std::copy(prev.begin(), prev.begin()+depth, std::back_inserter(between));
                     between.push_back(prev[depth] + step);
@@ -76,9 +82,9 @@ namespace collaborative_text_editor {
                 break;
             case Strategy::boundary_minus:
                 // same as above, but reversed
-                if (next[depth] - step <= begin) {
+                if (next[depth] - step <= begin_) {
                     std::copy(prev.begin(), prev.begin()+depth, std::back_inserter(between));
-                    between.push_back(end - step + (next[depth]-begin-1));
+                    between.push_back(end_ - step + (next[depth] == begin_ ? 0 : next[depth]-begin_-1));
                 } else {
                     std::copy(next.begin(), next.begin()+depth, std::back_inserter(between));
                     between.push_back(next[depth] - step);
