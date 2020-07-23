@@ -2,9 +2,12 @@
  * Author: Franco Ruggeri
  */
 
-#include "SharedEditor.h"
+#include <crdt/SharedEditor.h>
 
 namespace collaborative_text_editor {
+    const int SharedEditor::invalid_site_id = -1;
+    const int SharedEditor::invalid_site_counter = -1;
+
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {

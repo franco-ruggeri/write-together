@@ -3,7 +3,7 @@
  */
 
 #include <iostream>
-#include "SharedEditor.h"
+#include <crdt/SharedEditor.h>
 
 using namespace collaborative_text_editor;
 

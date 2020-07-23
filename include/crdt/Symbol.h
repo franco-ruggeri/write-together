@@ -17,10 +17,11 @@ namespace collaborative_text_editor {
         std::vector<int> position_;
 
     public:
+        Symbol();
         Symbol(QChar value, int site_id, int site_counter, const std::vector<int>& position);
 
-        bool operator<(const Symbol& other);
-        bool operator==(const Symbol& other);
+        bool operator<(const Symbol& other) const;
+        bool operator==(const Symbol& other) const;
 
         QChar value() const;
         int site_id() const;
@@ -28,5 +29,6 @@ namespace collaborative_text_editor {
         std::vector<int> position() const;
 
         QJsonObject json() const;
+        void from_json(const QJsonObject& json_object);
     };
 }

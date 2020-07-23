@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include "LSEQ.h"
+#include <crdt/LSEQ.h>
 #include <limits>
 #include <stdexcept>
 
