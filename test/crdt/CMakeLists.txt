@@ -12,3 +12,4 @@ set_tests_properties(idempotency PROPERTIES PASS_REGULAR_EXPRESSION "^HAT\nHAT\n
 
 add_executable(test_insert test_insert.cpp)
 target_link_libraries(test_insert crdt)
+add_test(NAME insert COMMAND test_insert)

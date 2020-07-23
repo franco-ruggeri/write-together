@@ -5,13 +5,16 @@
 #include "SharedEditor.h"
 
 namespace collaborative_text_editor {
-    SharedEditor::SharedEditor(int site_id) : site_id_(site_id) {}
+    SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
+
+    SharedEditor::SharedEditor(int site_id, const LSEQ& pos_allocator) :
+        site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
         // allocate position
-        std::vector<int> prev_pos = index == 0 ? pos_allocator_.get_begin() : text_.at(index-1).position();
-        std::vector<int> next_pos = index == text_.size() ? pos_allocator_.get_end() : text_.at(index).position();
-        std::vector<int> between_pos = pos_allocator_.get_between(prev_pos, next_pos);
+        std::vector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
+        std::vector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
+        std::vector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
 
         // insert locally
         Symbol symbol(value, site_id_, site_counter_++, between_pos);
