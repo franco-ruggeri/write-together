@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include "Lseq.h"
+#include <crdt/Lseq.h>
 #include <limits>
 #include <stdexcept>
 

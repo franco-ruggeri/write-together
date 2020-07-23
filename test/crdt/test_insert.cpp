@@ -5,7 +5,8 @@
  */
 
 #include <iostream>
-#include <SharedEditor.h>
+#include <crdt/SharedEditor.h>
+#include <crdt/Lseq.h>
 
 using namespace collaborative_text_editor;
 

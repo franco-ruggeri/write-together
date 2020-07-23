@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(collaborative_text_editor)
 
-include_directories(include/protocol include/crdt)
+include_directories(include)
 
 add_subdirectory(src)
 

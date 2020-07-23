@@ -23,4 +23,4 @@ add_library(protocol
         ProfileOkMessage.cpp
         )
 
-target_link_libraries(protocol Qt5::Core Qt5::Gui)
+target_link_libraries(protocol crdt Qt5::Core Qt5::Gui)

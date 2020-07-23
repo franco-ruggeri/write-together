@@ -4,8 +4,9 @@
  * Author: Franco Ruggeri
  */
 
+#include <crdt/SharedEditor.h>
+#include <QString>
 #include <iostream>
-#include "SharedEditor.h"
 
 using namespace collaborative_text_editor;
 
@@ -19,14 +20,14 @@ int main(int argc, char **argv) {
     SharedEditor editor2(2);
 
     // initial text
-    std::string initial_text(argv[1]);
-    for (int i=0; i<initial_text.size(); i++) {
-        Symbol s = editor1.local_insert(i, initial_text[i]);
+    QString text(argv[1]);
+    for (int i=0; i<text.size(); i++) {
+        Symbol s = editor1.local_insert(i, text[i]);
         editor2.remote_insert(s);
     }
 
-    std::cout << editor1.to_string().toStdString() << std::endl;
-    std::cout << editor2.to_string().toStdString() << std::endl;
+    assert(editor1.to_string() == text);
+    assert(editor2.to_string() == text);
 
     // insert and delete (must commute)
     int index = std::stoi(argv[2]);
@@ -35,8 +36,9 @@ int main(int argc, char **argv) {
     editor2.remote_erase(symbol1);
     editor1.remote_erase(symbol2);
 
-    std::cout << editor1.to_string().toStdString() << std::endl;
-    std::cout << editor2.to_string().toStdString() << std::endl;
+    text.remove(index, 1);
+    assert(editor1.to_string() == text);
+    assert(editor2.to_string() == text);
 
     return 0;
 }

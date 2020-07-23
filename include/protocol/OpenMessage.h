@@ -6,15 +6,19 @@
 
 #include <QJsonObject>
 #include <QString>
-#include "Message.h"
+#include <protocol/Message.h>
 
 namespace collaborative_text_editor {
     class OpenMessage : public Message {
         QString document_;
 
+        OpenMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
+        friend Message;
+
     public:
-        OpenMessage(QString document);
+        OpenMessage(const QString& document);
+        bool operator==(const Message& other) const override;
         QString document() const;
     };
 }

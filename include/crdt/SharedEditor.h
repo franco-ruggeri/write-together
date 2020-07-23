@@ -9,9 +9,9 @@
 
 #include <QString>
 #include <QChar>
-#include "Message.h"
-#include "Symbol.h"
-#include "Lseq.h"
+#include <protocol/Message.h>
+#include <crdt/Symbol.h>
+#include <crdt/Lseq.h>
 
 namespace collaborative_text_editor {
     class SharedEditor {
@@ -27,5 +27,8 @@ namespace collaborative_text_editor {
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
         QString to_string();
+
+        static const int invalid_site_id;
+        static const int invalid_site_counter;
     };
 }
