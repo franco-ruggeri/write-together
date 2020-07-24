@@ -22,6 +22,7 @@ namespace collaborative_text_editor {
     public:
         SharedEditor(int site_id);
         SharedEditor(int site_id, const Lseq& pos_allocator);
+        SharedEditor(int site_id, const QString& file_content_);
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
         void remote_insert(const Symbol& symbol);
