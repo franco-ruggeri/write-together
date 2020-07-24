@@ -9,6 +9,14 @@ namespace collaborative_text_editor {
     const int SharedEditor::invalid_site_counter = -1;
 
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
+    
+     SharedEditor::SharedEditor(int site_id,const QString& file_content_) : site_id_(site_id), site_counter_(0) {
+        int i = 0;
+        for( auto character : file_content_) {
+            local_insert(i, character);
+            i++;
+        }
+    }
 
     SharedEditor::SharedEditor(int site_id, const Lseq& pos_allocator) :
         site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
