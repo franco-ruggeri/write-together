@@ -3,16 +3,20 @@
  */
 
 #include <QMessageBox>
+#include <QPixmap>
 #include "client/loginTextEditor.h"
 #include "ui_loginTextEditor.h"
 #include "client/utility.h"
 #include "client/fileInfo.h"
+
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
     ui->setupUi(this);
     this->setCurrentIndex(3); // open widget 3 (connect page)
     this->show();
     client = std::make_shared<myClient>();
+
+
 }
 
 //loginTextEditor::~loginTextEditor(){
@@ -37,12 +41,14 @@ void loginTextEditor::on_login_signup_pushButton_clicked() {
 }
 
 void loginTextEditor::on_login_signin_pushButton_clicked() {
-    QString email = ui->login_email_lineEdit->text();
+    QString username = ui->login_email_lineEdit->text();
     QString password = ui->login_password_lineEdit->text();
     /*** to do login function **/
-    std::tuple valid = client->login(email,password);
-    if(std::get<0>(valid))
+    std::tuple valid = client->login(username,password);
+    if(std::get<0>(valid)) {
+        client->user = new User(username,QPixmap(1,1).toImage());
         init_user_page(std::get<1>(valid));
+    }
     else
         QMessageBox::warning(this, "WARNING",
                              std::get<1>(valid)[0]);
@@ -75,8 +81,10 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
     }
 
     std::tuple valid = client->signup(username, email,password);
-    if(std::get<0>(valid))
+    if(std::get<0>(valid)) {
+        client->user = new User(username,QPixmap(1,1).toImage());
         init_user_page(std::get<1>(valid));
+    }
     else
         QMessageBox::warning(this, "WARNING",
                              std::get<1>(valid)[0]);
@@ -120,6 +128,7 @@ void loginTextEditor::open_editor(QString filename){
     if(std::get<0>(result)){
         auto file = fileInfo("name",std::get<1>(result));
         editor = new texteditor(nullptr,client,file);
+        connect(editor, &texteditor::show_user_page, this, &loginTextEditor::show);
         editor->show();
         //    connect(text_editor, &text_editor::showUserPage, this, &loginTextEditor::show);
     }

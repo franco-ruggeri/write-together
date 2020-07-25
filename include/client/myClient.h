@@ -11,6 +11,9 @@
 #include "client/utility.h"
 #include "protocol/Message.h"
 #include "crdt/Symbol.h"
+#include "protocol/User.h"
+#include "fileInfo.h"
+
 #define PORT 1111
 
 using namespace collaborative_text_editor;
@@ -18,6 +21,8 @@ class myClient : public QObject {
 
 public:
     QTcpSocket *socket;
+
+    User *user;
 
     myClient(QObject *parent = nullptr);
 
@@ -44,7 +49,7 @@ public:
     std::tuple<bool,QString> open_file(QString filename);
 
 
-
+    void file_close(fileInfo file);
 };
 
 

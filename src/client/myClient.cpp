@@ -10,6 +10,8 @@
 #include <protocol/OpenMessage.h>
 #include <protocol/TextMessage.h>
 #include <protocol/ProfileMessage.h>
+#include <client/fileInfo.h>
+#include <protocol/CloseMessage.h>
 #include "protocol/SignUpMessage.h"
 #include "protocol/LogoutMessage.h"
 #include "protocol/InsertMessage.h"
@@ -18,6 +20,7 @@
 #include "protocol/LoginMessage.h"
 #include "protocol/ErrorMessage.h"
 #include "protocol/DocumentsMessage.h"
+#include "protocol/User.h"
 
 using namespace collaborative_text_editor;
 myClient::myClient(QObject *parent) : QObject(parent) {
@@ -121,5 +124,11 @@ bool myClient::change_password(QString new_password) {
     if(response -> type() == MessageType::error)
         return false;
     return response->type() == MessageType::profile_ok;
+
+}
+
+void myClient::file_close(fileInfo file){
+    std::shared_ptr<Message> close_message = std::make_shared<CloseMessage>(file.getFilename(), user->username());
+    std::shared_ptr<Message> response = send_message(close_message);
 
 }

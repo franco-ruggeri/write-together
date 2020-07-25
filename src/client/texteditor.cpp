@@ -37,6 +37,7 @@
 #include <iostream>
 #include <utility>
 #include <protocol/InsertMessage.h>
+#include <client/loginTextEditor.h>
 
 const QString rsrcPath = ":/images";
 
@@ -146,7 +147,10 @@ void texteditor::file_to_pdf() {
 }
 
 void texteditor::file_close() {
-
+    this->client->file_close(this->file);
+    disconnect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+    this->deleteLater();
+    emit show_user_page();
 }
 
 void texteditor::file_share(){

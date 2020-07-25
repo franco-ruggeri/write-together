@@ -14,7 +14,6 @@ newFileDialog::newFileDialog(QWidget *parent,std::shared_ptr<myClient> client, t
 
 
 void newFileDialog::on_newfile_create_pushButton_clicked() {
-    qDebug("pressed");
     QString filename = ui->newfile_filename_lineEdit->text();
     ui->newfile_filename_lineEdit->clear();
     fileInfo file(filename,"");

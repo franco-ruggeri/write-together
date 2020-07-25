@@ -20,6 +20,9 @@ public:
     texteditor(QStackedWidget *parent, std::shared_ptr<myClient> ,fileInfo file);
     bool change_from_server;
     void setupFileActions();
+
+signals:
+    void show_user_page();
 private slots:
 
     void file_to_pdf();
@@ -29,7 +32,6 @@ private slots:
     void setupEditActions();
     void readyRead();
     void contentsChange(int position, int charsRemoved, int charsAdded);
-
 
 private:
     QTextEdit *editor;

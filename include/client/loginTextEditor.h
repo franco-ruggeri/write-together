@@ -20,14 +20,13 @@ class loginTextEditor: public QStackedWidget {
     Q_OBJECT
 public:
     explicit loginTextEditor(QWidget *parent = nullptr);
-//    ~loginTextEditor();
 
 private:
     std::shared_ptr<myClient> client;
     Ui::loginTextEditor *ui;
     std::shared_ptr< newFileDialog> file_dialog;
     std::shared_ptr<changePasswordDialog> changepass_dialog;
-    texteditor *editor;
+    texteditor * editor;
     void init_user_page(std::vector<QString>);
 
 

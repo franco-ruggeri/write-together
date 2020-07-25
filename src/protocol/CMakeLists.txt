@@ -21,6 +21,7 @@ add_library(protocol
         CloseMessage.cpp
         ProfileMessage.cpp
         ProfileOkMessage.cpp
+        User.cpp
         )
 
 target_link_libraries(protocol crdt Qt5::Core Qt5::Gui)
