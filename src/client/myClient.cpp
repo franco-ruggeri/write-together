@@ -4,9 +4,12 @@
 
 
 #include "client/myClient.h"
+
+#include <QPixmap>
 #include <QJsonDocument>
 #include <protocol/OpenMessage.h>
 #include <protocol/TextMessage.h>
+#include <protocol/ProfileMessage.h>
 #include "protocol/SignUpMessage.h"
 #include "protocol/LogoutMessage.h"
 #include "protocol/InsertMessage.h"
@@ -15,6 +18,7 @@
 #include "protocol/LoginMessage.h"
 #include "protocol/ErrorMessage.h"
 #include "protocol/DocumentsMessage.h"
+
 using namespace collaborative_text_editor;
 myClient::myClient(QObject *parent) : QObject(parent) {
     socket = new QTcpSocket(this);
@@ -109,4 +113,13 @@ std::tuple<bool,QString> myClient::open_file(QString filename){
         return std::make_tuple(false,text);
     }
     return std::make_tuple(false,text);
+}
+
+bool myClient::change_password(QString new_password) {
+    std::shared_ptr<Message> profile_message = std::make_shared<ProfileMessage>(new_password,"",QPixmap(1,1).toImage());
+    std::shared_ptr<Message> response = send_message(profile_message);
+    if(response -> type() == MessageType::error)
+        return false;
+    return response->type() == MessageType::profile_ok;
+
 }

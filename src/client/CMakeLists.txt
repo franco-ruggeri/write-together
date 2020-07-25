@@ -27,10 +27,12 @@ add_executable(collaborative_text_editor
         loginTextEditor.cpp
         utility.cpp
         newFileDialog.cpp
+        changePasswordDialog.cpp
         texteditor.cpp
         resource.qrc
         ../../include/client/loginTextEditor.h
         ../../include/client/newFileDialog.h
+        ../../include/client/changePasswordDialog.h
         ../../include/client/utility.h
         ../../include/client/texteditor.h
         myClient.cpp
@@ -55,6 +57,7 @@ add_executable(collaborative_text_editor
         ../crdt/Symbol.cpp
         ../crdt/LSEQ.cpp
         fileInfo.cpp
+
         )
 
 target_link_libraries(collaborative_text_editor Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Concurrent Qt5::PrintSupport)

@@ -15,9 +15,9 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     client = std::make_shared<myClient>();
 }
 
-loginTextEditor::~loginTextEditor(){
-    delete file_dialog;
-}
+//loginTextEditor::~loginTextEditor(){
+//    delete file_dialog;
+//}
 
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
@@ -98,7 +98,7 @@ void loginTextEditor::init_user_page(std::vector<QString> files) {
 
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
     if(file_dialog == nullptr)
-        file_dialog = new newFileDialog(this,client,editor);
+        file_dialog = std::make_shared<newFileDialog>(this,client,editor);
     file_dialog->setModal(true);
     file_dialog->show();
 }
@@ -137,4 +137,12 @@ void loginTextEditor::cleanAll(){
     ui->login_password_lineEdit->clear();
     ui->login_email_lineEdit->clear();
     ui->user_file_listWidget->clear();
+}
+
+void loginTextEditor::on_user_change_password_pushButton_clicked() {
+
+    if(changepass_dialog == nullptr)
+        changepass_dialog = std::make_shared<changePasswordDialog>(this,this->client);
+    changepass_dialog->setModal(true);
+    changepass_dialog->show();
 }
