@@ -5,6 +5,7 @@
 #include <crdt/Lseq.h>
 #include <limits>
 #include <stdexcept>
+#include <algorithm>
 
 namespace collaborative_text_editor {
     // max range divided by 4 to avoid overflows in between()

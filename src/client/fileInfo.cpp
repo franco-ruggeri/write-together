@@ -1,8 +1,8 @@
-//
-// Created by Nino on 24/07/2020.
-//
+/*
+ * Author: Antonino Musmeci
+ */
 
-#include "fileInfo.h"
+#include "client/fileInfo.h"
 
 fileInfo::fileInfo(QString filename, QString file_content): filename(filename),
 file_content(file_content){

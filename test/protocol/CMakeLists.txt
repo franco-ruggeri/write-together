@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
 
 add_executable(test_serialization_error test_serialization_error.cpp)
 target_link_libraries(test_serialization_error protocol)

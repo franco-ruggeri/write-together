@@ -1,5 +1,10 @@
-#ifndef TEXTEDITORPROJECTS_LOGINTEXTEDITOR_H
-#define TEXTEDITORPROJECTS_LOGINTEXTEDITOR_H
+/*
+ * Author: Antonino Musmeci
+ */
+
+
+
+#pragma once
 #include <QStackedWidget>
 #include <QListWidgetItem>
 #include "newFileDialog.h"
@@ -40,4 +45,3 @@ private slots:
 
 
 
-#endif //TEXTEDITORPROJECTS_LOGINTEXTEDITOR_H

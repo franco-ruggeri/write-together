@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
 
 add_executable(test_commutativity test_commutativity.cpp)
 target_link_libraries(test_commutativity crdt)

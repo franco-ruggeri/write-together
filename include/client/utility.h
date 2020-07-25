@@ -1,6 +1,8 @@
+/*
+ * Author: Antonino Musmeci
+ */
 
-#ifndef TEXTEDITORPROJECTS_UTILITY_H
-#define TEXTEDITORPROJECTS_UTILITY_H
+#pragma once
 #include <QStringList>
 #include <QJsonObject>
 //using namespace  collaborative_text_editor;
@@ -16,4 +18,4 @@ public:
 };
 
 
-#endif //TEXTEDITORPROJECTS_UTILITY_H
+

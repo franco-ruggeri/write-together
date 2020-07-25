@@ -1,9 +1,9 @@
-//
-// Created by Nino on 21/07/2020.
-//
+/*
+ * Author: Antonino Musmeci
+ */
 
-#ifndef TEXTEDITORPROJECTS_MYCLIENT_H
-#define TEXTEDITORPROJECTS_MYCLIENT_H
+
+#pragma once
 
 #include <QJsonObject>
 #include <QTcpSocket>
@@ -24,7 +24,7 @@ public:
 
     std::shared_ptr<Message> send_message(const std::shared_ptr<Message>& request);
 
-    bool signup(QString &username, QString &email, QString &password);
+    std::tuple<bool,std::vector<QString>> signup(QString& username, QString& email, QString& password);
 
     void logout();
 
@@ -42,4 +42,3 @@ public:
 };
 
 
-#endif //TEXTEDITORPROJECTS_MYCLIENT_H

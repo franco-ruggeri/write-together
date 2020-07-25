@@ -20,10 +20,10 @@ find_package(Qt5PrintSupport REQUIRED)
 
 
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES client.cpp)
 
 add_executable(collaborative_text_editor
-        main.cpp
+        client.cpp
         loginTextEditor.cpp
         utility.cpp
         newFileDialog.cpp
@@ -35,6 +35,7 @@ add_executable(collaborative_text_editor
         ../../include/client/texteditor.h
         myClient.cpp
         ../../include/client/myClient.h
+        ../../include/client/fileInfo.h
         ../protocol/Message.cpp
         ../protocol/LoginMessage.cpp
         ../protocol/SignUpMessage.cpp

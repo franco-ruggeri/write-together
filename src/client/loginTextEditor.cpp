@@ -1,9 +1,12 @@
+/*
+ * Author: Antonino Musmeci
+ */
 
 #include <QMessageBox>
 #include "client/loginTextEditor.h"
 #include "ui_loginTextEditor.h"
 #include "client/utility.h"
-#include "fileInfo.h"
+#include "client/fileInfo.h"
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
     ui->setupUi(this);
@@ -68,14 +71,17 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
     QString password = ui->signup_password_lineEdit->text();
     if (!utility::check_password_validity(password)) {
         QMessageBox::warning(this, "WARNING",
-                "your password must be at least 8 characters long including at least one number and both lower and upper characters");
+                             "your password must be at least 8 characters long including at least one number and both lower and upper characters");
         return;
     }
-    /** to do signup function**/
-    bool resp = client->signup(username, email, password);
-    if (resp) {
-//        init_user_page();
-    }
+
+    std::tuple valid = client->signup(username, email,password);
+    if(std::get<0>(valid))
+        init_user_page(std::get<1>(valid));
+    else
+        QMessageBox::warning(this, "WARNING",
+                             std::get<1>(valid)[0]);
+
 }
 
 

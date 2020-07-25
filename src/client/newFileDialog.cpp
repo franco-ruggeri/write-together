@@ -1,3 +1,6 @@
+/*
+ * Author: Antonino Musmeci
+ */
 
 #include <QStackedWidget>
 #include "client/newFileDialog.h"

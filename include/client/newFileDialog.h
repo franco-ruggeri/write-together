@@ -1,5 +1,9 @@
-#ifndef TEXTEDITORPROJECTS_NEWFILEDIALOG_H
-#define TEXTEDITORPROJECTS_NEWFILEDIALOG_H
+/*
+ * Author: Antonino Musmeci
+ */
+
+
+#pragma once
 #include <qdialog.h>
 #include "texteditor.h"
 
@@ -26,4 +30,3 @@ private slots:
 };
 
 
-#endif //TEXTEDITORPROJECTS_NEWFILEDIALOG_H

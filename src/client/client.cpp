@@ -1,12 +1,13 @@
 /*
- * Author: Franco Ruggeri
+ * Author: Antonino Musmeci
  */
 
-#include <iostream>
-#include <crdt/SharedEditor.h>
 
-using namespace collaborative_text_editor;
+#include "client/loginTextEditor.h"
+#include <QApplication>
 
-int main() {
-    std::cout << "client - hello world!" << std::endl;
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
+    loginTextEditor l;
+    return a.exec();
 }

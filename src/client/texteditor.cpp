@@ -1,6 +1,7 @@
-//
-// Created by Nino on 19/07/2020.
-//
+/*
+ * Author: Antonino Musmeci
+ */
+
 
 #include <QAction>
 #include <QApplication>

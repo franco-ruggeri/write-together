@@ -1,6 +1,7 @@
-//
-// Created by Nino on 21/07/2020.
-//
+/*
+ * Author: Antonino Musmeci
+ */
+
 
 #include "client/myClient.h"
 #include <QJsonDocument>
@@ -61,10 +62,20 @@ void myClient::logout() {
 //    QString response = send_message(logout_message);
 }
 
-bool myClient::signup(QString& username, QString& email, QString& password) {
+std::tuple<bool,std::vector<QString>> myClient::signup(QString& username, QString& email, QString& password) {
+
+    std::vector<QString> result;
     std::shared_ptr<Message> signup_message = std::make_shared<SignUpMessage>(username,password);
-//    QString response = send_message(signup_message);
-    return true;
+    std::shared_ptr<Message> response = send_message(signup_message );
+    if(response ->type() == MessageType::documents){
+        result = std::static_pointer_cast<DocumentsMessage>(response)->documents();
+        return std::make_tuple(true,result);
+    }
+    if(response ->type() == MessageType::error){
+        result = {std::static_pointer_cast<ErrorMessage>(response)->reason()};
+        return std::make_tuple(false,result);
+    }
+    return std::make_tuple(false,result);
 }
 
 void myClient::sendInsert(QString filename,Symbol s){

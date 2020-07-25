@@ -1,6 +1,8 @@
+/*
+ * Author: Antonino Musmeci
+ */
 
-#ifndef TEXTEDITORPROJECTS_TEXTEDITOR_H
-#define TEXTEDITORPROJECTS_TEXTEDITOR_H
+#pragma once
 #define APPLICATION "TEXTEDITOR"
 #include <QMainWindow>
 #include <QStackedWidget>
@@ -47,4 +49,4 @@ private:
 };
 
 
-#endif //TEXTEDITORPROJECTS_TEXTEDITOR_H
+
