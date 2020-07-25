@@ -59,7 +59,8 @@ std::tuple<bool,std::vector<QString>> myClient::login(QString& email, QString& p
 
 void myClient::logout() {
     std::shared_ptr<Message> logout_message = std::make_shared<LogoutMessage>();
-//    QString response = send_message(logout_message);
+//    std::shared_ptr<Message> response = send_message(logout_message);
+    send_message(logout_message);
 }
 
 std::tuple<bool,std::vector<QString>> myClient::signup(QString& username, QString& email, QString& password) {

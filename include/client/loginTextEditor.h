@@ -40,6 +40,8 @@ private slots:
     void on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item);
 
     void open_editor(QString filename);
+
+    void cleanAll();
 };
 
 

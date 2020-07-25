@@ -13,7 +13,6 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     this->setCurrentIndex(3); // open widget 3 (connect page)
     this->show();
     client = std::make_shared<myClient>();
-
 }
 
 loginTextEditor::~loginTextEditor(){
@@ -88,8 +87,9 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
 /********** user page function *******************/
 
 void loginTextEditor::init_user_page(std::vector<QString> files) {
+    ui->user_file_listWidget->clear();
     QStringList file_list;
-    for(auto f : files)
+    for(const auto& f : files)
         file_list.push_back(f);
     ui->user_file_listWidget->addItems(file_list);
     this->setCurrentIndex(0); // 0 -> user page
@@ -105,6 +105,7 @@ void loginTextEditor::on_user_create_file_pushButton_clicked() {
 
 void loginTextEditor::on_user_logout_pushButton_clicked() {
     client->logout();
+    cleanAll();
     this->setCurrentIndex(3);
 }
 
@@ -126,5 +127,14 @@ void loginTextEditor::open_editor(QString filename){
         QMessageBox::warning(this, "WARNING",
                              std::get<1>(result));
 
+}
 
+
+void loginTextEditor::cleanAll(){
+    ui->signup_password_lineEdit->clear();
+    ui->signup_email_lineEdit->clear();
+    ui->signup_username_lineEdit->clear();
+    ui->login_password_lineEdit->clear();
+    ui->login_email_lineEdit->clear();
+    ui->user_file_listWidget->clear();
 }
