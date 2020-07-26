@@ -11,6 +11,8 @@
 changePasswordDialog::changePasswordDialog(QWidget *parent, std::shared_ptr<myClient> client):
         QDialog(parent),ui(new Ui::changePasswordDialog), client(client){
     ui->setupUi(this);
+    ui->changepass_confirmpass_lineEdit->setEchoMode(QLineEdit::Password);
+    ui->changepass_newpass_lineEdit->setEchoMode(QLineEdit::Password);
 //    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject())
 
 

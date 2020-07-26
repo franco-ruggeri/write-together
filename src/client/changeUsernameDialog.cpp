@@ -14,10 +14,7 @@ changeUsernameDialog::changeUsernameDialog(QWidget *parent, std::shared_ptr<myCl
     ui->setupUi(this);
     ui->changeuser_currentuser_label->setText("current username: " + client->user->username());
 
-
-
 }
-
 
 void changeUsernameDialog::on_changeuser_change_pushButton_clicked() {
 

@@ -16,6 +16,8 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     this->setCurrentIndex(3); // open widget 3 (connect page)
     this->show();
     client = std::make_shared<myClient>();
+    ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
+    ui->login_password_lineEdit->setEchoMode(QLineEdit::Password);
 
 
 }
@@ -44,6 +46,8 @@ void loginTextEditor::on_login_signup_pushButton_clicked() {
 void loginTextEditor::on_login_signin_pushButton_clicked() {
     QString username = ui->login_email_lineEdit->text();
     QString password = ui->login_password_lineEdit->text();
+    if(username.isEmpty() || password.isEmpty())
+        return;
     /*** to do login function **/
     std::tuple valid = client->login(username,password);
     if(std::get<0>(valid)) {
