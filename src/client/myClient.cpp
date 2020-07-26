@@ -33,7 +33,6 @@ bool myClient::connect(QString ip_address) {
 }
 
 std::shared_ptr<Message> myClient::send_message(const std::shared_ptr<Message>& request) {
-//    QByteArray a = request->serialize();
     std::shared_ptr<Message> m;
     socket->write(request->serialize() + '\n');
     if(socket->waitForReadyRead(1000)) {
@@ -43,6 +42,8 @@ std::shared_ptr<Message> myClient::send_message(const std::shared_ptr<Message>& 
     }
     return std::make_shared<ErrorMessage>("TIME_OUT");
 }
+
+
 
 std::tuple<bool,std::vector<QString>> myClient::login(QString& email, QString& password) {
     std::vector<QString> result;
@@ -67,7 +68,6 @@ void myClient::logout() {
 }
 
 std::tuple<bool,std::vector<QString>> myClient::signup(QString& username, QString& email, QString& password) {
-
     std::vector<QString> result;
     std::shared_ptr<Message> signup_message = std::make_shared<SignUpMessage>(username,password);
     std::shared_ptr<Message> response = send_message(signup_message );
@@ -84,12 +84,12 @@ std::tuple<bool,std::vector<QString>> myClient::signup(QString& username, QStrin
 
 void myClient::sendInsert(const QString& filename,const Symbol& s){
     std::shared_ptr<Message> insert_message = std::make_shared<InsertMessage>(filename,s);
-//    send_message(insert_message);
+    socket->write(insert_message->serialize() + '\n');
 }
 
 void myClient::sendErase(const QString& filename, const Symbol& s){
     std::shared_ptr<Message> erase_message = std::make_shared<EraseMessage>(filename,s);
-    send_message(erase_message);
+    socket->write(erase_message->serialize() + '\n');
 }
 
 void myClient::new_file(const QString& filename){
@@ -125,7 +125,6 @@ bool myClient::change_password(const QString& new_password) {
 void myClient::file_close(const fileInfo& file){
     std::shared_ptr<Message> close_message = std::make_shared<CloseMessage>(file.getFilename(), user->username());
     std::shared_ptr<Message> response = send_message(close_message);
-
 }
 
 

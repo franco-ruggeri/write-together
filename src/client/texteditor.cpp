@@ -177,14 +177,20 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
 void texteditor::readyRead() {
 
-        QByteArray request = this->client->socket->readLine();
-        std::shared_ptr<Message> m = Message::deserialize(request);
+    QByteArray request = this->client->socket->readLine();
+    std::shared_ptr<Message> m = Message::deserialize(request);
 
-        if(m->type() == MessageType::insert){
-            change_from_server = true;
-            shared_editor->remote_insert(std::static_pointer_cast<InsertMessage>(m)->symbol());
-            this->editor->setText(shared_editor->to_string());
-        }
+    if(m->type() == MessageType::insert){
+        change_from_server = true;
+        shared_editor->remote_insert(std::static_pointer_cast<InsertMessage>(m)->symbol());
+        this->editor->setText(shared_editor->to_string());
+    }
+
+    if(m->type() == MessageType::erase){
+        change_from_server = true;
+        shared_editor->remote_erase(std::static_pointer_cast<InsertMessage>(m)->symbol());
+        this->editor->setText(shared_editor->to_string());
+    }
 
 }
 
