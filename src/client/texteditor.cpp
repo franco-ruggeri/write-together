@@ -154,9 +154,8 @@ void texteditor::file_close() {
 }
 
 void texteditor::file_share(){
-
+    emit share_file(file.getFilename());
 }
-
 
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {

@@ -13,7 +13,7 @@
 #include "crdt/Symbol.h"
 #include "protocol/User.h"
 #include "fileInfo.h"
-
+#include <optional>
 #define PORT 1111
 
 using namespace collaborative_text_editor;
@@ -53,6 +53,8 @@ public:
 
 
     bool change_username(const QString &new_username);
+
+    std::optional<QString> get_uri(const QString &filename);
 };
 
 

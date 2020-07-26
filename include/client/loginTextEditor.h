@@ -46,7 +46,9 @@ private slots:
     void on_user_change_username_pushButton_clicked();
 
 
+    void on_user_share_pushButton_clicked();
 
+    void share_file(QString filename);
 };
 
 

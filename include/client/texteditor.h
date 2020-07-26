@@ -23,6 +23,8 @@ public:
     void closeEvent(QCloseEvent *event) override;
 signals:
     void show_user_page();
+    void share_file(const QString string);
+
 private slots:
 
     void file_to_pdf();

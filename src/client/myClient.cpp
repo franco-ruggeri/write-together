@@ -27,19 +27,16 @@ myClient::myClient(QObject *parent) : QObject(parent) {
     socket = new QTcpSocket(this);
 }
 
-
 bool myClient::connect(QString ip_address) {
-
     socket->connectToHost(ip_address, PORT);
     return socket->waitForConnected(3000);
 }
-
 
 std::shared_ptr<Message> myClient::send_message(const std::shared_ptr<Message>& request) {
 //    QByteArray a = request->serialize();
     std::shared_ptr<Message> m;
     socket->write(request->serialize() + '\n');
-    if(socket->waitForReadyRead(3000)) {
+    if(socket->waitForReadyRead(1000)) {
         QByteArray response = socket->readLine();
         m = Message::deserialize(response);
         return m;
@@ -87,9 +84,8 @@ std::tuple<bool,std::vector<QString>> myClient::signup(QString& username, QStrin
 
 void myClient::sendInsert(const QString& filename,const Symbol& s){
     std::shared_ptr<Message> insert_message = std::make_shared<InsertMessage>(filename,s);
-    send_message(insert_message);
+//    send_message(insert_message);
 }
-
 
 void myClient::sendErase(const QString& filename, const Symbol& s){
     std::shared_ptr<Message> erase_message = std::make_shared<EraseMessage>(filename,s);
@@ -139,4 +135,10 @@ bool myClient::change_username(const QString& new_username){
     if(response -> type() == MessageType::error)
         return false;
     return response->type() == MessageType::profile_ok;
+}
+
+std::optional<QString> myClient::get_uri(const QString& filename){
+
+    /*************get uri from server*************/
+    return "uri_del_file_ritornato_dal_server";
 }

@@ -9,6 +9,7 @@
 #include "ui_loginTextEditor.h"
 #include "client/utility.h"
 #include "client/fileInfo.h"
+#include <QClipboard>
 
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
@@ -18,13 +19,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     client = std::make_shared<myClient>();
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
     ui->login_password_lineEdit->setEchoMode(QLineEdit::Password);
-
-
 }
-
-//loginTextEditor::~loginTextEditor(){
-//    delete file_dialog;
-//}
 
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
@@ -105,6 +100,7 @@ void loginTextEditor::init_user_page(std::vector<QString> files) {
     for(const auto& f : files)
         file_list.push_back(f);
     ui->user_file_listWidget->addItems(file_list);
+    ui->user_file_listWidget->setCurrentRow( 0 );
     this->setCurrentIndex(0); // 0 -> user page
 
 }
@@ -140,6 +136,15 @@ void loginTextEditor::on_user_change_username_pushButton_clicked() {
     changeuser_dialog->setModal(true);
     changeuser_dialog->show();
 }
+
+void loginTextEditor::on_user_share_pushButton_clicked() {
+    QListWidgetItem * file_selected = ui->user_file_listWidget->currentItem();
+    share_file(file_selected->text());
+}
+
+
+
+
 void loginTextEditor::open_editor(QString filename){
 
     this->hide();
@@ -148,6 +153,7 @@ void loginTextEditor::open_editor(QString filename){
         auto file = fileInfo("name",std::get<1>(result));
         editor = new texteditor(nullptr,client,file);
         connect(editor, &texteditor::show_user_page, this, &loginTextEditor::show);
+        connect(editor, &texteditor::share_file, this, &loginTextEditor::share_file);
         editor->show();
 
     }
@@ -156,7 +162,6 @@ void loginTextEditor::open_editor(QString filename){
                              std::get<1>(result));
 
 }
-
 
 void loginTextEditor::cleanAll(){
     ui->signup_password_lineEdit->clear();
@@ -168,3 +173,16 @@ void loginTextEditor::cleanAll(){
 }
 
 
+void loginTextEditor::share_file(QString filename){
+    std::optional<QString> response = client->get_uri(filename);
+    QMessageBox msgBox;
+    QClipboard *cb = QApplication::clipboard();
+    msgBox.setText(filename+" URI: " + *response);
+    QAbstractButton* pButtonYes = msgBox.addButton(tr("Copy"), QMessageBox::YesRole);
+    msgBox.addButton(tr("Close"), QMessageBox::NoRole);
+    msgBox.exec();
+    if (msgBox.clickedButton()==pButtonYes) {
+        cb->setText( *response);
+    }
+
+}
