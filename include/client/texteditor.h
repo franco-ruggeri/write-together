@@ -20,7 +20,7 @@ public:
     texteditor(QStackedWidget *parent, std::shared_ptr<myClient> ,fileInfo file);
     bool change_from_server;
     void setupFileActions();
-
+    void closeEvent(QCloseEvent *event) override;
 signals:
     void show_user_page();
 private slots:
@@ -46,6 +46,7 @@ private:
     QAction *actionCopy;
     QAction *actionPaste;
 #endif
+
 
 
 };

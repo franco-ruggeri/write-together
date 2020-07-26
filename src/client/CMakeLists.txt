@@ -33,6 +33,7 @@ add_executable(collaborative_text_editor
         ../../include/client/loginTextEditor.h
         ../../include/client/newFileDialog.h
         ../../include/client/changePasswordDialog.h
+        ../../include/client/changeUsernameDialog.h
         ../../include/client/utility.h
         ../../include/client/texteditor.h
         myClient.cpp
@@ -58,7 +59,7 @@ add_executable(collaborative_text_editor
         ../crdt/LSEQ.cpp
         fileInfo.cpp
         ../protocol/User.cpp
-        ../../include/protocol/User.h
+        changeUsernameDialog.cpp
 
         )
 

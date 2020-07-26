@@ -44,7 +44,6 @@ std::shared_ptr<Message> myClient::send_message(const std::shared_ptr<Message>& 
         m = Message::deserialize(response);
         return m;
     }
-
     return std::make_shared<ErrorMessage>("TIME_OUT");
 }
 
@@ -86,23 +85,23 @@ std::tuple<bool,std::vector<QString>> myClient::signup(QString& username, QStrin
     return std::make_tuple(false,result);
 }
 
-void myClient::sendInsert(QString filename,Symbol s){
+void myClient::sendInsert(const QString& filename,const Symbol& s){
     std::shared_ptr<Message> insert_message = std::make_shared<InsertMessage>(filename,s);
     send_message(insert_message);
 }
 
 
-void myClient::sendErase(QString filename, Symbol s){
+void myClient::sendErase(const QString& filename, const Symbol& s){
     std::shared_ptr<Message> erase_message = std::make_shared<EraseMessage>(filename,s);
     send_message(erase_message);
 }
 
-void myClient::new_file(QString filename){
+void myClient::new_file(const QString& filename){
     std::shared_ptr<Message> create_message = std::make_shared<CreateMessage>(filename);
     send_message(create_message);
 }
 
-std::tuple<bool,QString> myClient::open_file(QString filename){
+std::tuple<bool,QString> myClient::open_file(const QString& filename){
     std::shared_ptr<Message> open_message = std::make_shared<OpenMessage>(filename);
     std::shared_ptr<Message> response = send_message(open_message);
     QString text;
@@ -118,8 +117,8 @@ std::tuple<bool,QString> myClient::open_file(QString filename){
     return std::make_tuple(false,text);
 }
 
-bool myClient::change_password(QString new_password) {
-    std::shared_ptr<Message> profile_message = std::make_shared<ProfileMessage>(new_password,"",QPixmap(1,1).toImage());
+bool myClient::change_password(const QString& new_password) {
+    std::shared_ptr<Message> profile_message = std::make_shared<ProfileMessage>("",new_password,QPixmap(1,1).toImage());
     std::shared_ptr<Message> response = send_message(profile_message);
     if(response -> type() == MessageType::error)
         return false;
@@ -127,8 +126,17 @@ bool myClient::change_password(QString new_password) {
 
 }
 
-void myClient::file_close(fileInfo file){
+void myClient::file_close(const fileInfo& file){
     std::shared_ptr<Message> close_message = std::make_shared<CloseMessage>(file.getFilename(), user->username());
     std::shared_ptr<Message> response = send_message(close_message);
 
+}
+
+
+bool myClient::change_username(const QString& new_username){
+    std::shared_ptr<Message> profile_message = std::make_shared<ProfileMessage>(new_username,"",QPixmap(1,1).toImage());
+    std::shared_ptr<Message> response = send_message(profile_message);
+    if(response -> type() == MessageType::error)
+        return false;
+    return response->type() == MessageType::profile_ok;
 }

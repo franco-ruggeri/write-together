@@ -4,6 +4,7 @@
 
 #include <QMessageBox>
 #include <QPixmap>
+#include <client/changeUsernameDialog.h>
 #include "client/loginTextEditor.h"
 #include "ui_loginTextEditor.h"
 #include "client/utility.h"
@@ -121,6 +122,20 @@ void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem 
     open_editor(item->text());
 }
 
+void loginTextEditor::on_user_change_password_pushButton_clicked() {
+
+    if(changepass_dialog == nullptr)
+        changepass_dialog = std::make_shared<changePasswordDialog>(this,this->client);
+    changepass_dialog->setModal(true);
+    changepass_dialog->show();
+}
+
+void loginTextEditor::on_user_change_username_pushButton_clicked() {
+    if(changeuser_dialog == nullptr)
+        changeuser_dialog = std::make_shared<changeUsernameDialog>(this,this->client);
+    changeuser_dialog->setModal(true);
+    changeuser_dialog->show();
+}
 void loginTextEditor::open_editor(QString filename){
 
     this->hide();
@@ -130,7 +145,7 @@ void loginTextEditor::open_editor(QString filename){
         editor = new texteditor(nullptr,client,file);
         connect(editor, &texteditor::show_user_page, this, &loginTextEditor::show);
         editor->show();
-        //    connect(text_editor, &text_editor::showUserPage, this, &loginTextEditor::show);
+
     }
     else
         QMessageBox::warning(this, "WARNING",
@@ -148,10 +163,4 @@ void loginTextEditor::cleanAll(){
     ui->user_file_listWidget->clear();
 }
 
-void loginTextEditor::on_user_change_password_pushButton_clicked() {
 
-    if(changepass_dialog == nullptr)
-        changepass_dialog = std::make_shared<changePasswordDialog>(this,this->client);
-    changepass_dialog->setModal(true);
-    changepass_dialog->show();
-}

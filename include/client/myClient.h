@@ -36,20 +36,23 @@ public:
 
     void logout();
 
-    void sendInsert(QString filename, Symbol s);
+    void sendInsert(const QString& filename, const Symbol& s);
 
-    void new_file(QString filename);
+    void new_file(const QString& filename);
 
-    bool change_password(QString new_password);
+    bool change_password(const QString& new_password);
 
-    void sendErase(QString filename, Symbol s);
+    void sendErase(const QString& filename, const Symbol& s);
 
     void sendErase(int pos);
 
-    std::tuple<bool,QString> open_file(QString filename);
+    std::tuple<bool,QString> open_file(const QString& filename);
 
 
-    void file_close(fileInfo file);
+    void file_close(const fileInfo& file);
+
+
+    bool change_username(const QString &new_username);
 };
 
 

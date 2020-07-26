@@ -188,3 +188,9 @@ void texteditor::readyRead() {
         }
 
 }
+
+void texteditor::closeEvent(QCloseEvent *event)
+{
+    file_close();
+    event->accept();
+}
