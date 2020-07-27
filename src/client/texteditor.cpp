@@ -47,7 +47,6 @@ int site_id(){
 
 texteditor::texteditor(QStackedWidget *parent, std::shared_ptr<myClient> client, fileInfo file): QMainWindow(parent),
 file(file){
-
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION);
     editor = new QTextEdit(this);

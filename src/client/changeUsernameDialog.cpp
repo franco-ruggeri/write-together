@@ -17,7 +17,6 @@ changeUsernameDialog::changeUsernameDialog(QWidget *parent, std::shared_ptr<myCl
 }
 
 void changeUsernameDialog::on_changeuser_change_pushButton_clicked() {
-
     qDebug("pressed");
     QString new_username = ui->changeuser_newuser_lineEdit->text();
 
@@ -36,16 +35,13 @@ void changeUsernameDialog::on_changeuser_change_pushButton_clicked() {
             QMessageBox::warning(this, "WARNING", "ERROR");
             itsOkToClose = true;
         }
-
     }
     emit accept();
-
 }
 void changeUsernameDialog::on_changeuser_cancel_pushButton_clicked() {
     emit reject();
 }
 
-#include <iostream>
 void changeUsernameDialog::accept(){
     if (itsOkToClose){
         QDialog::reject();

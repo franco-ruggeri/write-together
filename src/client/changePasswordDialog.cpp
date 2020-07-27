@@ -17,7 +17,6 @@ changePasswordDialog::changePasswordDialog(QWidget *parent, std::shared_ptr<myCl
 }
 
 void changePasswordDialog::on_changepass_change_pushButton_clicked() {
-
     qDebug("pressed");
     QString new_password = ui->changepass_newpass_lineEdit->text();
     QString confirmed_new_password = ui->changepass_confirmpass_lineEdit->text();
@@ -46,12 +45,16 @@ void changePasswordDialog::on_changepass_change_pushButton_clicked() {
             itsOkToClose = false;
         }
     }
+    emit accept();
+}
+void changePasswordDialog::on_changepass_cancel_pushButton_clicked(){
+    emit reject();
 }
 
 #include <iostream>
 void changePasswordDialog::accept(){
     if (itsOkToClose){
-        QDialog::reject();
+        QDialog::accept();
     }
 }
 

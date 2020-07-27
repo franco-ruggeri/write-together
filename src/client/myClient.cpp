@@ -2,9 +2,7 @@
  * Author: Antonino Musmeci
  */
 
-
 #include "client/myClient.h"
-
 #include <QPixmap>
 #include <QJsonDocument>
 #include <protocol/OpenMessage.h>
@@ -92,9 +90,13 @@ void myClient::sendErase(const QString& filename, const Symbol& s){
     socket->write(erase_message->serialize() + '\n');
 }
 
-void myClient::new_file(const QString& filename){
+std::tuple<bool,QString> myClient::new_file(const QString& filename){
     std::shared_ptr<Message> create_message = std::make_shared<CreateMessage>(filename);
-    send_message(create_message);
+    std::shared_ptr<Message> response  =  send_message(create_message);
+    if(response -> type() == MessageType::error){
+        return std::make_tuple(false,"Unable to create file " + filename);
+    }
+    return std::make_tuple(true,"File created");
 }
 
 std::tuple<bool,QString> myClient::open_file(const QString& filename){

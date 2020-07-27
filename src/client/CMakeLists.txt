@@ -19,7 +19,6 @@ find_package(Qt5Concurrent REQUIRED)
 find_package(Qt5PrintSupport REQUIRED)
 
 
-
 set(SOURCE_FILES client.cpp)
 
 add_executable(collaborative_text_editor

@@ -23,6 +23,9 @@ private:
 private slots:
 
     void on_changepass_change_pushButton_clicked();
+    void on_changepass_cancel_pushButton_clicked();
+
 
     void accept() override;
+
 };

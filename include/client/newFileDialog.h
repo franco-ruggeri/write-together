@@ -26,7 +26,10 @@ private:
 
 private slots:
     void on_newfile_create_pushButton_clicked();
+    void on_newfile_cancel_pushButton_clicked();
 
+signals:
+   void open_editor(QString filename);
 };
 
 

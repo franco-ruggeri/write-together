@@ -106,8 +106,13 @@ void loginTextEditor::init_user_page(std::vector<QString> files) {
 }
 
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
-    if(file_dialog == nullptr)
-        file_dialog = std::make_shared<newFileDialog>(this,client,editor);
+    if(file_dialog == nullptr) {
+        file_dialog = std::make_shared<newFileDialog>(this, client, editor);
+//        file_dialog = new newFileDialog(this,client,editor);
+        connect(file_dialog.get(), &newFileDialog::open_editor, this, &loginTextEditor::open_editor);
+
+    }
+
     file_dialog->setModal(true);
     file_dialog->show();
 }
@@ -146,11 +151,10 @@ void loginTextEditor::on_user_share_pushButton_clicked() {
 
 
 void loginTextEditor::open_editor(QString filename){
-
     this->hide();
     std::tuple<bool,QString> result =  client->open_file(filename);
     if(std::get<0>(result)){
-        auto file = fileInfo("name",std::get<1>(result));
+        auto file = fileInfo(filename,std::get<1>(result));
         editor = new texteditor(nullptr,client,file);
         connect(editor, &texteditor::show_user_page, this, &loginTextEditor::show);
         connect(editor, &texteditor::share_file, this, &loginTextEditor::share_file);
@@ -160,7 +164,6 @@ void loginTextEditor::open_editor(QString filename){
     else
         QMessageBox::warning(this, "WARNING",
                              std::get<1>(result));
-
 }
 
 void loginTextEditor::cleanAll(){
@@ -171,7 +174,6 @@ void loginTextEditor::cleanAll(){
     ui->login_email_lineEdit->clear();
     ui->user_file_listWidget->clear();
 }
-
 
 void loginTextEditor::share_file(QString filename){
     std::optional<QString> response = client->get_uri(filename);
@@ -184,5 +186,4 @@ void loginTextEditor::share_file(QString filename){
     if (msgBox.clickedButton()==pButtonYes) {
         cb->setText( *response);
     }
-
 }

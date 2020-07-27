@@ -19,18 +19,24 @@ namespace Ui {
 
 class loginTextEditor: public QStackedWidget {
     Q_OBJECT
+
+
+
+
 public:
     explicit loginTextEditor(QWidget *parent = nullptr);
+    void open_editor(QString filename);
 
 private:
     std::shared_ptr<myClient> client;
     Ui::loginTextEditor *ui;
     std::shared_ptr< newFileDialog> file_dialog;
+//    newFileDialog * file_dialog;
     std::shared_ptr<changeUsernameDialog> changeuser_dialog;
     std::shared_ptr<changePasswordDialog> changepass_dialog;
     texteditor * editor;
     void init_user_page(std::vector<QString>);
-    void open_editor(QString filename);
+//    void open_editor(QString filename);
     void cleanAll();
 
 private slots:
@@ -44,11 +50,9 @@ private slots:
     void on_user_logout_pushButton_clicked();
     void on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item);
     void on_user_change_username_pushButton_clicked();
-
-
     void on_user_share_pushButton_clicked();
-
     void share_file(QString filename);
+
 };
 
 

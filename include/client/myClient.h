@@ -38,7 +38,7 @@ public:
 
     void sendInsert(const QString& filename, const Symbol& s);
 
-    void new_file(const QString& filename);
+    std::tuple<bool, QString> new_file(const QString& filename);
 
     bool change_password(const QString& new_password);
 
