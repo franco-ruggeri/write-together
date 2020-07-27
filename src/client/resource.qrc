@@ -17,6 +17,8 @@
         <file>images/textleft.png</file>
         <file>images/textright.png</file>
         <file>images/textunder.png</file>
+        <file>images/user.png</file>
+        <file>images/user_icon.png</file>
 
     </qresource>
 </RCC>

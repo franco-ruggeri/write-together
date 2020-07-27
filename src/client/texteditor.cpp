@@ -70,6 +70,7 @@ file(file){
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupFileActions();
     setupEditActions();
+    setupUserActions();
     editor->setText(file.getFileContent());
     connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
@@ -98,7 +99,16 @@ void texteditor::setupFileActions()
     tb->addAction(a);
     menu->addSeparator();
 }
+void texteditor::setupUserActions(){
 
+    QToolBar *tb = addToolBar(tr("User Actions"));
+    QMenu *menu = menuBar()->addMenu(tr("&User"));
+    const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_icon.png"));
+    show_peers = menu->addAction(showPeersIcon, tr("&Show"), connected_client,&QDockWidget::show);
+    tb->addAction(show_peers);
+
+
+}
 
 void texteditor::setupEditActions() {
 

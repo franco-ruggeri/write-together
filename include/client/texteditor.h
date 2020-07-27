@@ -34,6 +34,7 @@ private slots:
     void file_close();
 
     void setupEditActions();
+    void setupUserActions();
     void readyRead();
     void contentsChange(int position, int charsRemoved, int charsAdded);
 
@@ -44,6 +45,7 @@ private:
     std::shared_ptr<SharedEditor> shared_editor;
     QAction *actionUndo;
     QAction *actionRedo;
+    QAction *show_peers;
     fileInfo file;
     QListWidget *list_user;
 
