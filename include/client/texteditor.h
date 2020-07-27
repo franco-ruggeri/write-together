@@ -6,8 +6,10 @@
 #define APPLICATION "TEXTEDITOR"
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QDockWidget>
 #include <QPointer>
 #include <qtextedit.h>
+#include <QListWidget>
 #include "crdt/SharedEditor.h"
 #include "myClient.h"
 #include "fileInfo.h"
@@ -36,12 +38,14 @@ private slots:
     void contentsChange(int position, int charsRemoved, int charsAdded);
 
 private:
+    QDockWidget *connected_client ;
     QTextEdit *editor;
     std::shared_ptr<myClient> client;
     std::shared_ptr<SharedEditor> shared_editor;
     QAction *actionUndo;
     QAction *actionRedo;
     fileInfo file;
+    QListWidget *list_user;
 
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;

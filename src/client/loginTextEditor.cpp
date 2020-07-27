@@ -10,6 +10,7 @@
 #include "client/utility.h"
 #include "client/fileInfo.h"
 #include <QClipboard>
+const QString imgPath = ":/images";
 
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
@@ -46,7 +47,8 @@ void loginTextEditor::on_login_signin_pushButton_clicked() {
     /*** to do login function **/
     std::tuple valid = client->login(username,password);
     if(std::get<0>(valid)) {
-        client->user = new User(username,QPixmap(1,1).toImage());
+        client->user = new User(username,QImage(imgPath + "/user.png"));
+
         init_user_page(std::get<1>(valid));
     }
     else
@@ -82,7 +84,7 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
 
     std::tuple valid = client->signup(username, email,password);
     if(std::get<0>(valid)) {
-        client->user = new User(username,QPixmap(1,1).toImage());
+        client->user = new User(username,QImage(imgPath + "/user.png"));
         init_user_page(std::get<1>(valid));
     }
     else
@@ -102,13 +104,10 @@ void loginTextEditor::init_user_page(std::vector<QString> files) {
     ui->user_file_listWidget->addItems(file_list);
     ui->user_file_listWidget->setCurrentRow( 0 );
     this->setCurrentIndex(0); // 0 -> user page
-
 }
-
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
     if(file_dialog == nullptr) {
         file_dialog = std::make_shared<newFileDialog>(this, client, editor);
-//        file_dialog = new newFileDialog(this,client,editor);
         connect(file_dialog.get(), &newFileDialog::open_editor, this, &loginTextEditor::open_editor);
 
     }

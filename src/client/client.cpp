@@ -2,7 +2,6 @@
  * Author: Antonino Musmeci
  */
 
-
 #include "client/loginTextEditor.h"
 #include <QApplication>
 
