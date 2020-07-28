@@ -8,6 +8,8 @@ namespace collaborative_text_editor {
     const int SharedEditor::invalid_site_id = -1;
     const int SharedEditor::invalid_site_counter = -1;
 
+    SharedEditor::SharedEditor() :site_id_(invalid_site_id), site_counter_(invalid_site_counter) {}
+
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
 
     SharedEditor::SharedEditor(int site_id, const Lseq& pos_allocator) :
@@ -15,9 +17,9 @@ namespace collaborative_text_editor {
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
         // allocate position
-        std::vector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
-        std::vector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
-        std::vector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
+        QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
+        QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
+        QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
 
         // insert locally
         Symbol symbol(value, site_id_, site_counter_++, between_pos);

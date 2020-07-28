@@ -3,13 +3,13 @@
  */
 
 #include <protocol/CreateMessage.h>
+#include <QtCore/QSharedPointer>
 #include <iostream>
-#include <memory>
 
 using namespace collaborative_text_editor;
 
 int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<Message> message1, message2;
 
     if (argc < 2) {
         std::cerr << "usage: " << argv[0] << " document" << std::endl;
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     }
 
     // original message
-    message1 = std::make_shared<CreateMessage>(argv[1]);
+    message1 = QSharedPointer<CreateMessage>::create(argv[1]);
 
     // serialize -> deserialize
     message2 = Message::deserialize(message1->serialize());

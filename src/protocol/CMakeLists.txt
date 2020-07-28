@@ -2,13 +2,12 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 
 add_library(protocol
         Message.cpp
         ErrorMessage.cpp
-        SignUpMessage.cpp
+        SignupMessage.cpp
         LoginMessage.cpp
         LogoutMessage.cpp
         DocumentsMessage.cpp
@@ -21,6 +20,7 @@ add_library(protocol
         CloseMessage.cpp
         ProfileMessage.cpp
         ProfileOkMessage.cpp
+        UserProfile.cpp
         )
 
 target_link_libraries(protocol crdt Qt5::Core Qt5::Gui)

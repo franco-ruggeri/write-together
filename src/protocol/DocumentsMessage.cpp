@@ -3,10 +3,10 @@
  */
 
 #include <protocol/DocumentsMessage.h>
-#include <QJsonArray>
+#include <QtCore/QJsonArray>
 
 namespace collaborative_text_editor {
-    DocumentsMessage::DocumentsMessage(const std::vector<QString>& documents) :
+    DocumentsMessage::DocumentsMessage(const QVector<QString>& documents) :
         Message(MessageType::documents), documents_(documents) {}
 
     DocumentsMessage::DocumentsMessage(const QJsonObject &json_object) : Message(MessageType::documents) {
@@ -30,7 +30,7 @@ namespace collaborative_text_editor {
                this->documents_ == o->documents_;
     }
         
-    std::vector<QString> DocumentsMessage::documents() const {
+    QVector<QString> DocumentsMessage::documents() const {
         return documents_;
     }
 

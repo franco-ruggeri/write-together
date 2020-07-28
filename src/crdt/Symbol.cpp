@@ -4,13 +4,13 @@
 
 #include <crdt/Symbol.h>
 #include <crdt/SharedEditor.h>
-#include <QJsonArray>
+#include <QtCore/QJsonArray>
 
 namespace collaborative_text_editor {
     Symbol::Symbol() :
         value_('\0'), site_id_(SharedEditor::invalid_site_id), site_counter_(SharedEditor::invalid_site_counter) {}
 
-    Symbol::Symbol(QChar value, int site_id, int site_counter, const std::vector<int>& position) :
+    Symbol::Symbol(QChar value, int site_id, int site_counter, const QVector<int>& position) :
         value_(value), site_id_(site_id), site_counter_(site_counter), position_(position) {}
 
     bool Symbol::operator<(const Symbol& other) const {
@@ -35,7 +35,7 @@ namespace collaborative_text_editor {
         return site_counter_;
     }
 
-    std::vector<int> Symbol::position() const {
+    QVector<int> Symbol::position() const {
         return position_;
     }
 

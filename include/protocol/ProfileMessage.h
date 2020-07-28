@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <QString>
-#include <QImage>
-#include <QJsonObject>
+#include <QtCore/QString>
+#include <QtCore/QJsonObject>
+#include <QtGui/QImage>
 #include <protocol/Message.h>
 
 namespace collaborative_text_editor {

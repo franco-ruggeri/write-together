@@ -3,8 +3,8 @@
  */
 
 #include <protocol/ProfileMessage.h>
-#include <QBuffer>
-#include <QIODevice>
+#include <QtCore/QBuffer>
+#include <QtCore/QIODevice>
 
 namespace collaborative_text_editor {
     ProfileMessage::ProfileMessage(const QString& username, const QString& password, const QImage& icon) :

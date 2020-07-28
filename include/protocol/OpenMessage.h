@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <QJsonObject>
-#include <QString>
+#include <QtCore/QString>
+#include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 
 namespace collaborative_text_editor {

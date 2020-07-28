@@ -2,14 +2,14 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/SignUpMessage.h>
+#include <protocol/SignupMessage.h>
+#include <QtCore/QSharedPointer>
 #include <iostream>
-#include <memory>
 
 using namespace collaborative_text_editor;
 
 int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<Message> message1, message2;
 
     if (argc < 3) {
         std::cerr << "usage: " << argv[0] << " username password" << std::endl;
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     }
 
     // original message
-    message1 = std::make_shared<SignUpMessage>(argv[1], argv[2]);
+    message1 = QSharedPointer<SignupMessage>::create(argv[1], argv[2]);
 
     // serialize -> deserialize
     message2 = Message::deserialize(message1->serialize());

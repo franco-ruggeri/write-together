@@ -3,15 +3,15 @@
  */
 
 #include <protocol/LogoutMessage.h>
-#include <memory>
+#include <QtCore/QSharedPointer>
 
 using namespace collaborative_text_editor;
 
 int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<Message> message1, message2;
 
     // original message
-    message1 = std::make_shared<LogoutMessage>();
+    message1 = QSharedPointer<LogoutMessage>::create();
 
     // serialize -> deserialize
     message2 = Message::deserialize(message1->serialize());

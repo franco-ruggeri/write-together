@@ -6,9 +6,9 @@
 
 namespace collaborative_text_editor {
     SignupMessage::SignupMessage(const QString& username, const QString& password) :
-        Message(MessageType::sign_up), username_(username), password_(password) {}
+            Message(MessageType::signup), username_(username), password_(password) {}
 
-    SignupMessage::SignupMessage(const QJsonObject &json_object) : Message(MessageType::sign_up) {
+    SignupMessage::SignupMessage(const QJsonObject &json_object) : Message(MessageType::signup) {
         auto end_iterator = json_object.end();
         auto username_iterator = json_object.find("username");
         auto password_iterator = json_object.find("password");

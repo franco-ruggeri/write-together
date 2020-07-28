@@ -9,7 +9,7 @@
 namespace collaborative_text_editor {
     enum class MessageType : int {
         error=0,
-        sign_up=1,
+        signup=1,
         login=2,
         logout=3,
         documents=4,

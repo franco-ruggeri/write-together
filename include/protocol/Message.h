@@ -5,15 +5,17 @@
  * Serialization is exposed by means of methods serialize() and deserialize(), hiding the internal choice of JSON.
  * Everything related to JSON is intentionally not declared public. In this way, server and client are forced to use
  * the methods serialize() and deserialize(), guaranteeing an easy future change (e.g. binary serialization).
+ * Moreover, this class guarantees not to use new lines ('\n') in the serialization, so server and client can easily
+ * exchange messages by lines.
  *
  * Author: Franco Ruggeri
  */
 
 #pragma once
 
-#include <memory>
-#include <QJsonObject>
-#include <QByteArray>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QJsonObject>
+#include <QtCore/QByteArray>
 #include <protocol/MessageType.h>
 
 namespace collaborative_text_editor {
@@ -28,6 +30,6 @@ namespace collaborative_text_editor {
         virtual bool operator==(const Message& other) const = 0;
         MessageType type() const;
         QByteArray serialize() const;
-        static std::shared_ptr<Message> deserialize(const QByteArray& serialized_message);
+        static QSharedPointer<Message> deserialize(const QByteArray& serialized_message);
     };
 }

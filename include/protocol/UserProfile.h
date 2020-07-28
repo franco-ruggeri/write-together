@@ -9,16 +9,18 @@
 
 #pragma once
 
-#include <QString>
-#include <QImage>
+#include <QtCore/QString>
+#include <QtGui/QImage>
 
 namespace collaborative_text_editor {
-    class User {
+    class UserProfile {
         QString username_;
         QImage icon_;
 
     public:
-        User(const QString& username, const QImage& icon);
+        UserProfile();
+        UserProfile(const QString& username);
+        UserProfile(const QString& username, const QImage& icon);
         QString username() const;
         QImage icon() const;
     };

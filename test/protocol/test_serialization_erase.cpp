@@ -3,13 +3,14 @@
  */
 
 #include <protocol/EraseMessage.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QVector>
 #include <iostream>
-#include <memory>
 
 using namespace collaborative_text_editor;
 
 int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<Message> message1, message2;
 
     if (argc < 6 || argv[2][1] != 0) {
         std::cerr << "usage: " << argv[0] << " document value site_id site_counter position[0] [position[1] ...]" << std::endl;
@@ -17,12 +18,12 @@ int main(int argc, char **argv) {
     }
 
     // fill position
-    std::vector<int> position;
+    QVector<int> position;
     for (int i=6; i<argc; i++)
         position.push_back(std::stoi(argv[i]));
 
     // original message
-    message1 = std::make_shared<EraseMessage>(argv[1], Symbol(argv[2][0], std::stoi(argv[3]),
+    message1 = QSharedPointer<EraseMessage>::create(argv[1], Symbol(argv[2][0], std::stoi(argv[3]),
                                                               std::stoi(argv[4]), position));
 
     // serialize -> deserialize

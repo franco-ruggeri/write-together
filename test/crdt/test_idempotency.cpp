@@ -5,7 +5,7 @@
  */
 
 #include <crdt/SharedEditor.h>
-#include <QString>
+#include <QtCore/QString>
 #include <iostream>
 
 using namespace collaborative_text_editor;

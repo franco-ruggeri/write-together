@@ -3,19 +3,20 @@
  */
 
 #include <protocol/DocumentsMessage.h>
-#include <memory>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QVector>
 
 using namespace collaborative_text_editor;
 
 int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<Message> message1, message2;
 
-    std::vector<QString> documents;
+    QVector<QString> documents;
     for (int i=1; i<argc; i++)
         documents.push_back(argv[i]);
 
     // original message
-    message1 = std::make_shared<DocumentsMessage>(documents);
+    message1 = QSharedPointer<DocumentsMessage>::create(documents);
 
     // serialize -> deserialize
     message2 = Message::deserialize(message1->serialize());

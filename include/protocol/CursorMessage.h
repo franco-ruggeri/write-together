@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <QString>
-#include <QJsonObject>
+#include <QtCore/QString>
+#include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 #include <crdt/Symbol.h>
 

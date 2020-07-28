@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include <QTcpSocket>
+#include <QtCore/QSharedPointer>
+#include <QtNetwork/QTcpSocket>
 #include <protocol/Message.h>
 
 namespace collaborative_text_editor {
@@ -13,7 +14,7 @@ namespace collaborative_text_editor {
 
     public:
         TcpSocket(quintptr socket_fd);
-        std::shared_ptr<Message> read_message();
-        void write_message(std::shared_ptr<Message> message);
+        QSharedPointer<Message> read_message();
+        void write_message(QSharedPointer<Message> message);
     };
 }

@@ -10,7 +10,7 @@
 
 using namespace collaborative_text_editor;
 
-void print_position(const std::vector<int>& position) {
+void print_position(const QVector<int>& position) {
     std::cout << "[ ";
     for (const auto& p : position)
         std::cout << p << " ";
@@ -32,7 +32,7 @@ int main() {
         print_position(s.position());
     }
 
-     Symbol s = editor.local_insert(2, 'b');
+    Symbol s = editor.local_insert(2, 'b');
 
     return 0;
 }
