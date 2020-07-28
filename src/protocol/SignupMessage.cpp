@@ -2,13 +2,13 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/SignUpMessage.h>
+#include <protocol/SignupMessage.h>
 
 namespace collaborative_text_editor {
-    SignUpMessage::SignUpMessage(const QString& username, const QString& password) :
+    SignupMessage::SignupMessage(const QString& username, const QString& password) :
         Message(MessageType::sign_up), username_(username), password_(password) {}
 
-    SignUpMessage::SignUpMessage(const QJsonObject &json_object) : Message(MessageType::sign_up) {
+    SignupMessage::SignupMessage(const QJsonObject &json_object) : Message(MessageType::sign_up) {
         auto end_iterator = json_object.end();
         auto username_iterator = json_object.find("username");
         auto password_iterator = json_object.find("password");
@@ -23,21 +23,21 @@ namespace collaborative_text_editor {
             throw std::logic_error("invalid message: invalid fields");
     }
 
-    bool SignUpMessage::operator==(const Message& other) const {
-        const SignUpMessage *o = dynamic_cast<const SignUpMessage*>(&other);
+    bool SignupMessage::operator==(const Message& other) const {
+        const SignupMessage *o = dynamic_cast<const SignupMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->username_ == o->username_ && this->password_ == o->password_;
     }
         
-    QString SignUpMessage::username() const {
+    QString SignupMessage::username() const {
         return username_;
     }
 
-    QString SignUpMessage::password() const {
+    QString SignupMessage::password() const {
         return password_;
     }
 
-    QJsonObject SignUpMessage::json() const {
+    QJsonObject SignupMessage::json() const {
         QJsonObject json_object = Message::json();
         json_object["username"] = username_;
         json_object["password"] = password_;

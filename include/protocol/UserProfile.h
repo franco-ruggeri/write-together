@@ -15,7 +15,7 @@
 namespace collaborative_text_editor {
     class User {
         QString username_;
-        QPixmap icon_;
+        QImage icon_;
 
     public:
         User(const QString& username, const QImage& icon);
