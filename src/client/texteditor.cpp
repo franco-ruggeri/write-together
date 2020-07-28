@@ -187,7 +187,8 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
         return;
     }
     for(int i = 0 ; i < charsAdded; i++) {
-        client->sendInsert("filename",shared_editor->local_insert(position, editor->toPlainText()[position]));
+
+        client->sendInsert("filename",shared_editor->local_insert(position, editor->toPlainText()[position + i]));
     }
 
     for(int i = 0 ; i < charsRemoved; i++) {
@@ -197,21 +198,21 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
 
 void texteditor::readyRead() {
+    while(client->socket->canReadLine()) {
+        QByteArray request = this->client->socket->readLine();
+        std::shared_ptr<Message> m = Message::deserialize(request);
 
-    QByteArray request = this->client->socket->readLine();
-    std::shared_ptr<Message> m = Message::deserialize(request);
-
-    if(m->type() == MessageType::insert){
-        change_from_server = true;
-        shared_editor->remote_insert(std::static_pointer_cast<InsertMessage>(m)->symbol());
-        this->editor->setText(shared_editor->to_string());
+        if (m->type() == MessageType::insert) {
+            change_from_server = true;
+            shared_editor->remote_insert(std::static_pointer_cast<InsertMessage>(m)->symbol());
+            this->editor->setText(shared_editor->to_string());
+        }
+        if (m->type() == MessageType::erase) {
+            change_from_server = true;
+            shared_editor->remote_erase(std::static_pointer_cast<InsertMessage>(m)->symbol());
+            this->editor->setText(shared_editor->to_string());
+        }
     }
-    if(m->type() == MessageType::erase){
-        change_from_server = true;
-        shared_editor->remote_erase(std::static_pointer_cast<InsertMessage>(m)->symbol());
-        this->editor->setText(shared_editor->to_string());
-    }
-
 }
 
 void texteditor::closeEvent(QCloseEvent *event)

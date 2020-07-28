@@ -97,7 +97,6 @@ namespace collaborative_text_editor {
             default:
                 throw std::logic_error("invalid message: invalid type");
         }
-
         return message;
     }
 }
