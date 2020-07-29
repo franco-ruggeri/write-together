@@ -10,7 +10,7 @@
 #include "client/utility.h"
 #include "client/fileInfo.h"
 #include <QClipboard>
-const QString imgPath = ":/images";
+
 
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
@@ -47,7 +47,7 @@ void loginTextEditor::on_login_signin_pushButton_clicked() {
     /*** to do login function **/
     std::tuple valid = client->login(username,password);
     if(std::get<0>(valid)) {
-        client->user = new User(username,QImage(imgPath + "/user.png"));
+        client->user = new User(username,Symbol(),QImage(imgPath + "/user.png"));
 
         init_user_page(std::get<1>(valid));
     }
@@ -84,7 +84,7 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
 
     std::tuple valid = client->signup(username, email,password);
     if(std::get<0>(valid)) {
-        client->user = new User(username,QImage(imgPath + "/user.png"));
+        client->user = new User(username,Symbol(),QImage(imgPath + "/user.png"));
         init_user_page(std::get<1>(valid));
     }
     else
@@ -123,7 +123,7 @@ void loginTextEditor::on_user_logout_pushButton_clicked() {
 }
 
 void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item) {
-    open_editor(item->text());
+    open_editor(item->text(),false);
 }
 
 void loginTextEditor::on_user_change_password_pushButton_clicked() {
@@ -149,20 +149,26 @@ void loginTextEditor::on_user_share_pushButton_clicked() {
 
 
 
-void loginTextEditor::open_editor(QString filename){
+void loginTextEditor::open_editor(QString filename, bool newfile){
+    std::vector<User> connected_user;
+    fileInfo file = fileInfo(filename,"");
     this->hide();
-    std::tuple<bool,QString> result =  client->open_file(filename);
-    if(std::get<0>(result)){
-        auto file = fileInfo(filename,std::get<1>(result));
-        editor = new texteditor(nullptr,client,file);
-        connect(editor, &texteditor::show_user_page, this, &loginTextEditor::show);
-        connect(editor, &texteditor::share_file, this, &loginTextEditor::share_file);
-        editor->show();
-
+    if(!newfile){
+        std::tuple<bool, QString, std::vector<User>> result =  client->open_file(filename);
+        if(std::get<0>(result)){
+            file = fileInfo(filename,std::get<1>(result));
+            connected_user = get<2>(result);
+        }
+        else
+            QMessageBox::warning(this, "WARNING",
+                                 std::get<1>(result));
     }
-    else
-        QMessageBox::warning(this, "WARNING",
-                             std::get<1>(result));
+    editor = new texteditor(nullptr,client,file,connected_user);
+    connect(editor, &texteditor::show_user_page, this, &loginTextEditor::show);
+    connect(editor, &texteditor::share_file, this, &loginTextEditor::share_file);
+    editor->show();
+    editor->init_cursors();
+
 }
 
 void loginTextEditor::cleanAll(){

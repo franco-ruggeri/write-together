@@ -16,27 +16,21 @@ namespace Ui {
     class loginTextEditor;
 
 }
-
 class loginTextEditor: public QStackedWidget {
-    Q_OBJECT
-
-
-
+Q_OBJECT
 
 public:
     explicit loginTextEditor(QWidget *parent = nullptr);
-    void open_editor(QString filename);
+    void open_editor(QString filename,bool newfile);
 
 private:
     std::shared_ptr<myClient> client;
     Ui::loginTextEditor *ui;
     std::shared_ptr< newFileDialog> file_dialog;
-//    newFileDialog * file_dialog;
     std::shared_ptr<changeUsernameDialog> changeuser_dialog;
     std::shared_ptr<changePasswordDialog> changepass_dialog;
     texteditor * editor;
     void init_user_page(std::vector<QString>);
-//    void open_editor(QString filename);
     void cleanAll();
 
 private slots:

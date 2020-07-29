@@ -18,11 +18,14 @@ class texteditor : public QMainWindow{
     Q_OBJECT
 
 
+
 public:
-    texteditor(QStackedWidget *parent, std::shared_ptr<myClient> ,fileInfo file);
+    texteditor(QStackedWidget *parent, std::shared_ptr<myClient> client, fileInfo file, std::vector<User> users);
+
     bool change_from_server;
     void setupFileActions();
     void closeEvent(QCloseEvent *event) override;
+    void init_cursors();
 signals:
     void show_user_page();
     void share_file(const QString string);
@@ -48,6 +51,7 @@ private:
     QAction *show_peers;
     fileInfo file;
     QListWidget *list_user;
+    QMap<QString, User> map_username_to_User;
 
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;

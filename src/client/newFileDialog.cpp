@@ -22,7 +22,7 @@ void newFileDialog::on_newfile_create_pushButton_clicked() {
     std::tuple<bool,QString>response = client->new_file(filename);
     if(get<0>(response)){
         QMessageBox::information(this, "FILE CREATED", get<1>(response));
-        emit open_editor(filename);
+        emit open_editor(filename,true);
     }
     else{
         QMessageBox::warning(this, "ERROR", get<1>(response));

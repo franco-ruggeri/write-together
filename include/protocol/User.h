@@ -11,16 +11,35 @@
 
 #include <QString>
 #include <QImage>
+#include <QTextCursor>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QTextEdit>
+#include "crdt/Symbol.h"
 
+const QString imgPath = ":/images";
 namespace collaborative_text_editor {
     class User {
+        QTextCursor *cursor_;
+        QLabel* cursor_label_;
         QString username_;
         QImage icon_;
+        Symbol cursor_position_;
 
     public:
-        User(const QString& username, const QImage& icon);
+        User(const QString &username, const Symbol &cursor_position, const QImage &icon = QImage(imgPath + "/user.png"));
+
         QString username() const;
         QImage icon() const;
+        Symbol cursor_position() const;
+        void setIcon(const QImage &icon);
+
+
+//        void update_cursor_position(int newCursorPosition, const QTextEdit &editor);
+
+
+        void init_cursor(QTextEdit *editor, int newCursorPosition);
+
+
     };
 
 

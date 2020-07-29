@@ -46,7 +46,7 @@ public:
 
     void sendErase(int pos);
 
-    std::tuple<bool,QString> open_file(const QString& filename);
+    std::tuple<bool, QString, std::vector<User>> open_file(const QString& filename);
 
 
     void file_close(const fileInfo& file);
@@ -55,6 +55,8 @@ public:
     bool change_username(const QString &new_username);
 
     std::optional<QString> get_uri(const QString &filename);
+
+    std::vector<std::shared_ptr<Message>> send_message_with_multiple_response(const std::shared_ptr<Message> &request);
 };
 
 

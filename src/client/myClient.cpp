@@ -10,6 +10,7 @@
 #include <protocol/ProfileMessage.h>
 #include <client/fileInfo.h>
 #include <protocol/CloseMessage.h>
+#include <protocol/CursorMessage.h>
 #include "protocol/SignUpMessage.h"
 #include "protocol/LogoutMessage.h"
 #include "protocol/InsertMessage.h"
@@ -48,8 +49,8 @@ std::tuple<bool,std::vector<QString>> myClient::login(QString& email, QString& p
     std::shared_ptr<Message> login_message = std::make_shared<LoginMessage>(email, password);
     std::shared_ptr<Message> response = send_message(login_message);
     if(response ->type() == MessageType::documents){
-       result = std::static_pointer_cast<DocumentsMessage>(response)->documents();
-       return std::make_tuple(true,result);
+        result = std::static_pointer_cast<DocumentsMessage>(response)->documents();
+        return std::make_tuple(true,result);
     }
     if(response ->type() == MessageType::error){
         result = {std::static_pointer_cast<ErrorMessage>(response)->reason()};
@@ -99,20 +100,31 @@ std::tuple<bool,QString> myClient::new_file(const QString& filename){
     return std::make_tuple(true,"File created");
 }
 
-std::tuple<bool,QString> myClient::open_file(const QString& filename){
+std::tuple<bool,QString,std::vector<User>> myClient::open_file(const QString& filename){
+    std::vector<User> users;
+    bool result = true;
     std::shared_ptr<Message> open_message = std::make_shared<OpenMessage>(filename);
-    std::shared_ptr<Message> response = send_message(open_message);
-    QString text;
-    if(response ->type() == MessageType::text){
-        text = std::static_pointer_cast<TextMessage>(response)->text();
-        qDebug() << text;
-        return std::make_tuple(true,text);
+    std::vector<std::shared_ptr<Message>> responses = send_message_with_multiple_response(open_message);
+    QString text = "";
+    for(auto response : responses) {
+        if (response->type() == MessageType::text) {
+            text = std::static_pointer_cast<TextMessage>(response)->text();
+
+        }
+        if (response->type() == MessageType::cursor) {
+            auto m = std::static_pointer_cast<CursorMessage>(response);
+            users.emplace_back(m->username(),m->symbol());
+
+
+        }
+        if (response->type() == MessageType::error) {
+            text = {std::static_pointer_cast<ErrorMessage>(response)->reason()};
+            result = false;
+            break;
+        }
+
     }
-    if(response ->type() == MessageType::error){
-        text = {std::static_pointer_cast<ErrorMessage>(response)->reason()};
-        return std::make_tuple(false,text);
-    }
-    return std::make_tuple(false,text);
+    return std::make_tuple(result, text,users);
 }
 
 bool myClient::change_password(const QString& new_password) {
@@ -142,4 +154,18 @@ std::optional<QString> myClient::get_uri(const QString& filename){
 
     /*************get uri from server*************/
     return "uri_del_file_ritornato_dal_server";
+}
+
+std::vector<std::shared_ptr<Message>> myClient::send_message_with_multiple_response(const std::shared_ptr<Message>& request) {
+
+    std::vector<std::shared_ptr<Message>> v;
+    socket->write(request->serialize() + '\n');
+    if(socket->waitForReadyRead(1000)) {
+        while(socket->canReadLine()){
+            QByteArray response = socket->readLine();
+            v.push_back(Message::deserialize(response));
+        }
+        return v;
+    }
+    return {std::make_shared<ErrorMessage>("TIME_OUT")};
 }

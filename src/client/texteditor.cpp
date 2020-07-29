@@ -40,40 +40,64 @@
 #include <client/loginTextEditor.h>
 
 
-const QString imgPath = ":/images";
+//const QString imgPath = ":/images";
 
 int site_id(){
     return 0;
 }
 
-texteditor::texteditor(QStackedWidget *parent, std::shared_ptr<myClient> client, fileInfo file): QMainWindow(parent),
+
+texteditor::texteditor(QStackedWidget *parent, std::shared_ptr<myClient> client, fileInfo file, std::vector<User> users): QMainWindow(parent),
 file(file){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION);
     editor = new QTextEdit(this);
     this->client = client;
     change_from_server = false;
+
+    editor->setFontPointSize(12);
+
     shared_editor = std::make_shared<SharedEditor>(site_id(),file.getFileContent());
     setCentralWidget(editor);
     connected_client = new QDockWidget;
     connected_client->setObjectName("Peers");
     connected_client->setWindowTitle("Peers");
+    editor->setText(file.getFileContent());
+//    editor->textCursor().setPosition(editor->);
     list_user = new QListWidget;
     connected_client->setWidget(list_user);
-//    list_user->addItem(new QListWidgetItem(QIcon(rsrcPath + "/filesave.png"),client->user->username()));
-
     QIcon userIcon = QIcon(QPixmap::fromImage(client->user->icon()));
-    list_user->addItem(new QListWidgetItem(userIcon,client->user->username()));
+    list_user->addItem(new QListWidgetItem(userIcon,client->user->username() + " (you)"));
 
+    for(auto user: users){
+        map_username_to_User.insert(user.username(),user);
+        list_user->addItem(new QListWidgetItem( QIcon(QPixmap::fromImage(user.icon())),user.username()));
+//        qDebug() << QString(&"cursor pos: " [ editor->textCursor().position()]);
+//        int pos = 2 ;//shared_editor->remote_insert(user.cursor_position());
+//        user.initCursor(editor,10);
+
+
+    }
 
     addDockWidget(Qt::RightDockWidgetArea,connected_client);
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupFileActions();
     setupEditActions();
     setupUserActions();
-    editor->setText(file.getFileContent());
     connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
+//    connect(editor, &texteditor::show, this, &texteditor::init_cursors);
+
+
+}
+
+void texteditor::init_cursors(){
+    qDebug() << "inizializzazione cursori";
+    int i = 10;
+    for( auto user :  map_username_to_User){
+        user.init_cursor(editor,i++);
+    }
+
 }
 
 
