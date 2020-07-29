@@ -10,11 +10,9 @@
 
 namespace collaborative_text_editor {
     class TcpSocket : public QTcpSocket {
-        Q_OBJECT
-
     public:
         TcpSocket(quintptr socket_fd);
         QSharedPointer<Message> read_message();
-        void write_message(QSharedPointer<Message> message);
+        void write_message(const QSharedPointer<Message>& message);
     };
 }

@@ -21,7 +21,10 @@ namespace collaborative_text_editor {
         UserProfile();
         UserProfile(const QString& username);
         UserProfile(const QString& username, const QImage& icon);
+
         QString username() const;
         QImage icon() const;
+
+        void clear();
     };
 }

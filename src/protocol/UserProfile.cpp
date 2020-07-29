@@ -18,4 +18,9 @@ namespace collaborative_text_editor {
     QImage UserProfile::icon() const {
         return icon_;
     }
+
+    void UserProfile::clear() {
+        username_.clear();
+        icon_ = QImage{};
+    }
 }

@@ -21,7 +21,7 @@ fork_authentication --> lr : login
 fork_authentication --> nar : sign up
 lr --> join_authentication
 nar --> join_authentication
-join_authentication --> a : documents
+join_authentication --> a : profile\n+\ndocuments
 join_authentication --> na : error
 
 a --> na : logout

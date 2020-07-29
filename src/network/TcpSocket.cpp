@@ -6,20 +6,29 @@
 
 namespace collaborative_text_editor {
     TcpSocket::TcpSocket(quintptr socket_fd) {
-        setSocketDescriptor(socket_fd);
+        if (!setSocketDescriptor(socket_fd))
+            throw std::runtime_error("setSocketDescriptor() failed");
     }
 
     QSharedPointer<Message> TcpSocket::read_message() {
         QByteArray bytes = readLine();
-        bytes.remove(bytes.size()-1, 1);        // remove '\n'
+
+        // check result
+        if (bytes.at(bytes.size()-1) != '\n')
+            throw std::runtime_error("read() failed");
+
+        // remove '\n' and, if present, '\r'
+        bytes.remove(bytes.size()-1, 1);
         if (bytes.at(bytes.size()-1) == '\r')
-            bytes.remove(bytes.size()-1, 1);    // remove '\r', if present (e.g. telnet)
+            bytes.remove(bytes.size()-1, 1);
+
         return Message::deserialize(bytes);
     }
 
-    void TcpSocket::write_message(QSharedPointer<Message> message) {
+    void TcpSocket::write_message(const QSharedPointer<Message>& message) {
         QByteArray bytes = message->serialize();
         bytes.push_back('\n');
-        write(bytes);
+        if (write(bytes) == -1)
+            throw std::runtime_error("write() failed");
     }
 }
