@@ -44,6 +44,10 @@ namespace collaborative_text_editor {
         cursor_label_->show();
     }
 
+    int User::get_cursor_position() {
+        return 4;
+    }
+
 //    void User::updateCursorPosition(int newCursorPosition, const  QTextEdit & editor) {
 //        newCursorPosition = qMin(newCursorPosition, editor.toPlainText().size());
 //        userCursor->setPosition(newCursorPosition); // posizione cursore user.userCursor->

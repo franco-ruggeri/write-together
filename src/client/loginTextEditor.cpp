@@ -147,8 +147,6 @@ void loginTextEditor::on_user_share_pushButton_clicked() {
 }
 
 
-
-
 void loginTextEditor::open_editor(QString filename, bool newfile){
     std::vector<User> connected_user;
     fileInfo file = fileInfo(filename,"");

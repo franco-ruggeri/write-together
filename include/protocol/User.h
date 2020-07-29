@@ -31,6 +31,7 @@ namespace collaborative_text_editor {
         QString username() const;
         QImage icon() const;
         Symbol cursor_position() const;
+        int get_cursor_position();
         void setIcon(const QImage &icon);
 
 

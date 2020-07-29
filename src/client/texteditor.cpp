@@ -93,9 +93,9 @@ file(file){
 
 void texteditor::init_cursors(){
     qDebug() << "inizializzazione cursori";
-    int i = 10;
+
     for( auto user :  map_username_to_User){
-        user.init_cursor(editor,i++);
+        user.init_cursor(editor,user.get_cursor_position());
     }
 
 }
