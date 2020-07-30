@@ -10,7 +10,7 @@
 #include <protocol/DocumentsMessage.h>
 #include <protocol/CreateMessage.h>
 #include <protocol/OpenMessage.h>
-#include <protocol/TextMessage.h>
+#include <protocol/DocumentMessage.h>
 #include <protocol/InsertMessage.h>
 #include <protocol/EraseMessage.h>
 #include <protocol/CursorMessage.h>
@@ -73,8 +73,8 @@ namespace collaborative_text_editor {
             case MessageType::open:
                 message = QSharedPointer<OpenMessage>(new OpenMessage(json_object));
                 break;
-            case MessageType::text:
-                message = QSharedPointer<TextMessage>(new TextMessage(json_object));
+            case MessageType::document:
+                message = QSharedPointer<DocumentMessage>(new DocumentMessage(json_object));
                 break;
             case MessageType::insert:
                 message = QSharedPointer<InsertMessage>(new InsertMessage(json_object));

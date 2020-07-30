@@ -19,6 +19,7 @@ namespace collaborative_text_editor {
     public:
         Symbol();
         Symbol(QChar value, int site_id, int site_counter, const QVector<int>& position);
+        Symbol(const QJsonObject& json_object);
 
         bool operator<(const Symbol& other) const;
         bool operator==(const Symbol& other) const;
@@ -29,6 +30,5 @@ namespace collaborative_text_editor {
         QVector<int> position() const;
 
         QJsonObject json() const;
-        void from_json(const QJsonObject& json_object);
     };
 }

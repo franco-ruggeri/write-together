@@ -3,6 +3,7 @@
  */
 
 #include <protocol/CloseMessage.h>
+#include <protocol/Document.h>
 #include <QtCore/QSharedPointer>
 #include <iostream>
 
@@ -11,13 +12,13 @@ using namespace collaborative_text_editor;
 int main(int argc, char **argv) {
     QSharedPointer<Message> message1, message2;
 
-    if (argc < 3) {
-        std::cerr << "usage: " << argv[0] << " document username" << std::endl;
+    if (argc < 4) {
+        std::cerr << "usage: " << argv[0] << " document_owner document_name username" << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
     // original message
-    message1 = QSharedPointer<CloseMessage>::create(argv[1], argv[2]);
+    message1 = QSharedPointer<CloseMessage>::create(Document(argv[1], argv[2]), argv[3]);
 
     // serialize -> deserialize
     message2 = Message::deserialize(message1->serialize());

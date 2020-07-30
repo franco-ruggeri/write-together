@@ -6,21 +6,26 @@
 #include <QtCore/QJsonArray>
 
 namespace collaborative_text_editor {
-    DocumentsMessage::DocumentsMessage(const QList<QString>& documents) :
+    DocumentsMessage::DocumentsMessage() : Message(MessageType::documents) {}
+
+    DocumentsMessage::DocumentsMessage(const QList<Document>& documents) :
         Message(MessageType::documents), documents_(documents) {}
 
     DocumentsMessage::DocumentsMessage(const QJsonObject &json_object) : Message(MessageType::documents) {
         auto end_iterator = json_object.end();
         auto documents_iterator = json_object.find("documents");
 
-        if (documents_iterator == end_iterator || !documents_iterator->isArray())
-            throw std::logic_error("invalid message: invalid fields");
+        if (documents_iterator != end_iterator) {
+            if (!documents_iterator->isArray())
+                throw std::logic_error("invalid message: invalid fields");
 
-        QJsonArray documents_json = documents_iterator->toArray();
-        for (const auto& d_json : documents_json) {
-            QString d = d_json.toString();
-            if (d.isNull()) throw std::logic_error("invalid message: invalid fields");
-            documents_.push_back(d);
+            documents_ = QList<Document>{};
+            QJsonArray documents_json = documents_iterator->toArray();
+            for (const auto& d_json : documents_json) {
+                if (!d_json.isObject()) throw std::logic_error("invalid message: invalid fields");
+                Document d(d_json.toObject());
+                documents_->push_back(d);
+            }
         }
     }
 
@@ -30,16 +35,18 @@ namespace collaborative_text_editor {
                this->documents_ == o->documents_;
     }
         
-    QList<QString> DocumentsMessage::documents() const {
+    std::optional<QList<Document>> DocumentsMessage::documents() const {
         return documents_;
     }
 
     QJsonObject DocumentsMessage::json() const {
         QJsonObject json_object = Message::json();
-        QJsonArray json_array;
-        for (const auto& d : documents_)
-            json_array.push_back(d);
-        json_object["documents"] = json_array;
+        if (documents_) {
+            QJsonArray json_array;
+            for (const auto &d : *documents_)
+                json_array.push_back(d.json());
+            json_object["documents"] = json_array;
+        }
         return json_object;
     }
 }

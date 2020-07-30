@@ -10,21 +10,29 @@
 #pragma once
 
 #include <QtCore/QString>
+#include <QtCore/QJsonObject>
 #include <QtGui/QImage>
 
 namespace collaborative_text_editor {
-    class UserProfile {
-        QString username_;
+    class Profile {
+        QString username_, name_, surname_;
         QImage icon_;
 
     public:
-        UserProfile();
-        UserProfile(const QString& username);
-        UserProfile(const QString& username, const QImage& icon);
+        Profile();
+        Profile(const QString& username, const QString& name, const QString& surname);
+        Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon);
+        Profile(const QJsonObject& json_object);
+
+        bool operator==(const Profile& other) const;
 
         QString username() const;
+        QString name() const;
+        QString surname() const;
         QImage icon() const;
 
         void clear();
+
+        QJsonObject json() const;
     };
 }

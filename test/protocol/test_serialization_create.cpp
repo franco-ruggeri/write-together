@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     QSharedPointer<Message> message1, message2;
 
     if (argc < 2) {
-        std::cerr << "usage: " << argv[0] << " document" << std::endl;
+        std::cerr << "usage: " << argv[0] << " document_name" << std::endl;
         std::exit(EXIT_FAILURE);
     }
 

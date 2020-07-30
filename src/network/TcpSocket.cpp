@@ -28,7 +28,8 @@ namespace collaborative_text_editor {
     void TcpSocket::write_message(const QSharedPointer<Message>& message) {
         QByteArray bytes = message->serialize();
         bytes.push_back('\n');
-        if (write(bytes) == -1)
-            throw std::runtime_error("write() failed");
+
+        qint64 n_written = write(bytes);
+        if (n_written < bytes.size()) throw std::runtime_error("write() failed");
     }
 }

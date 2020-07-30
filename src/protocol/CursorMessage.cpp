@@ -5,7 +5,7 @@
 #include <protocol/CursorMessage.h>
 
 namespace collaborative_text_editor {
-    CursorMessage::CursorMessage(const QString& document, const QString& username, const Symbol& symbol) :
+    CursorMessage::CursorMessage(const Document& document, const QString& username, const Symbol& symbol) :
         Message(MessageType::cursor), document_(document), username_(username), symbol_(symbol) {}
 
     CursorMessage::CursorMessage(const QJsonObject &json_object) : Message(MessageType::cursor) {
@@ -15,14 +15,14 @@ namespace collaborative_text_editor {
         auto symbol_iterator = json_object.find("symbol");
 
         if (document_iterator == end_iterator || username_iterator == end_iterator || symbol_iterator == end_iterator ||
-            !symbol_iterator->isObject())
+            !document_iterator->isObject() || !symbol_iterator->isObject())
             throw std::logic_error("invalid message: invalid fields");
 
-        document_ = document_iterator->toString();
+        document_ = Document(document_iterator->toObject());
         username_ = username_iterator->toString();
-        symbol_.from_json(symbol_iterator->toObject());
+        symbol_ = Symbol(symbol_iterator->toObject());
 
-        if (document_.isNull() || username_.isNull())
+        if (username_.isNull())
             throw std::logic_error("invalid message: invalid fields");
     }
 
@@ -31,8 +31,8 @@ namespace collaborative_text_editor {
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->username_ == o->username_ && this->symbol_ == o->symbol_;
     }
-        
-    QString CursorMessage::document() const {
+
+    Document CursorMessage::document() const {
         return document_;
     }
 
@@ -46,7 +46,7 @@ namespace collaborative_text_editor {
 
     QJsonObject CursorMessage::json() const {
         QJsonObject json_object = Message::json();
-        json_object["document"] = document_;
+        json_object["document"] = document_.json();
         json_object["username"] = username_;
         json_object["symbol"] = symbol_.json();
         return json_object;

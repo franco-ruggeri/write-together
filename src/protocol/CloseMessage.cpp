@@ -5,7 +5,9 @@
 #include <protocol/CloseMessage.h>
 
 namespace collaborative_text_editor {
-    CloseMessage::CloseMessage(const QString& document, const QString& username) :
+    CloseMessage::CloseMessage(const Document& document) : Message(MessageType::close), document_(document) {}
+
+    CloseMessage::CloseMessage(const Document& document, const QString& username) :
         Message(MessageType::close), document_(document), username_(username) {}
 
     CloseMessage::CloseMessage(const QJsonObject &json_object) : Message(MessageType::close) {
@@ -13,14 +15,15 @@ namespace collaborative_text_editor {
         auto document_iterator = json_object.find("document");
         auto username_iterator = json_object.find("username");
 
-        if (document_iterator == end_iterator || username_iterator == end_iterator)
+        if (document_iterator == end_iterator || !document_iterator->isObject())
             throw std::logic_error("invalid message: invalid fields");
 
-        document_ = document_iterator->toString();
-        username_ = username_iterator->toString();
-
-        if (document_.isNull() || username_.isNull())
-            throw std::logic_error("invalid message: invalid fields");
+        document_ = Document(document_iterator->toObject());
+        if (username_iterator != end_iterator) {
+            username_ = username_iterator->toString();
+            if (username_->isNull())
+                throw std::logic_error("invalid message: invalid fields");
+        }
     }
 
     bool CloseMessage::operator==(const Message& other) const {
@@ -29,18 +32,18 @@ namespace collaborative_text_editor {
             this->document_ == o->document_ && this->username_ == o->username_;
     }
 
-    QString CloseMessage::document() const {
+    Document CloseMessage::document() const {
         return document_;
     }
 
-    QString CloseMessage::username() const {
+    std::optional<QString> CloseMessage::username() const {
         return username_;
     }
 
     QJsonObject CloseMessage::json() const {
         QJsonObject json_object = Message::json();
-        json_object["document"] = document_;
-        json_object["username"] = username_;
+        json_object["document"] = document_.json();
+        if (username_) json_object["username"] = *username_;
         return json_object;
     }
 }

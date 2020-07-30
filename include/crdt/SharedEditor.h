@@ -20,16 +20,18 @@ namespace collaborative_text_editor {
         Lseq pos_allocator_;
 
     public:
-        SharedEditor();
         SharedEditor(int site_id);
         SharedEditor(int site_id, const Lseq& pos_allocator);
+        SharedEditor(int site_id, const QVector<Symbol>& text);
+
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
         QString to_string();
 
-        static const int invalid_site_id;
-        static const int invalid_site_counter;
+        QVector<Symbol> text();
+
+        static const int invalid_site_id, server_site_id, invalid_site_counter;
     };
 }

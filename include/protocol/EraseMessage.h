@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include <QtCore/QString>
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
+#include <protocol/Document.h>
 #include <crdt/Symbol.h>
 
 namespace collaborative_text_editor {
     class EraseMessage : public Message {
-        QString document_;
+        Document document_;
         Symbol symbol_;
 
         EraseMessage(const QJsonObject& json_object);
@@ -19,9 +19,9 @@ namespace collaborative_text_editor {
         friend Message;
 
     public:
-        EraseMessage(const QString& document, const Symbol& symbol);
+        EraseMessage(const Document& document, const Symbol& symbol);
         bool operator==(const Message& other) const override;
-        QString document() const;
+        Document document() const;
         Symbol symbol() const;
     };
 }

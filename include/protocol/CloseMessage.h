@@ -7,19 +7,22 @@
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
+#include <protocol/Document.h>
 
 namespace collaborative_text_editor {
     class CloseMessage : public Message {
-        QString document_, username_;
+        Document document_;
+        std::optional<QString> username_;
 
         CloseMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        CloseMessage(const QString& document, const QString& username);
+        CloseMessage(const Document& document);
+        CloseMessage(const Document& document, const QString& username);
         bool operator==(const Message& other) const override;
-        QString document() const;
-        QString username() const;
+        Document document() const;
+        std::optional<QString> username() const;
     };
 }
