@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <QtCore/QString>
 #include <crdt/SharedEditor.h>
 #include <crdt/Lseq.h>
 
@@ -18,10 +19,11 @@ void print_position(const QVector<int>& position) {
 }
 
 int main() {
+    const QString text = "test";
+
     Lseq pos_allocator(1);
     SharedEditor editor(1, pos_allocator);
 
-    std::string text("test");
     for (int i=0; i<text.size(); i++) {
         Symbol s = editor.local_insert(i, text[i]);
         print_position(s.position());

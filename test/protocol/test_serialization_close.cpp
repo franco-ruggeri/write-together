@@ -5,22 +5,23 @@
 #include <protocol/CloseMessage.h>
 #include <protocol/Document.h>
 #include <QtCore/QSharedPointer>
-#include <iostream>
+#include <QtCore/QString>
 
 using namespace collaborative_text_editor;
 
-int main(int argc, char **argv) {
+int main() {
+    const Document document("test owner", "test name");
+    const QString username("test username");
+
     QSharedPointer<Message> message1, message2;
 
-    if (argc < 4) {
-        std::cerr << "usage: " << argv[0] << " document_owner document_name username" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+    // with optional argument
+    message1 = QSharedPointer<CloseMessage>::create(document, username);
+    message2 = Message::deserialize(message1->serialize());
+    assert(*message1 == *message2);
 
-    // original message
-    message1 = QSharedPointer<CloseMessage>::create(Document(argv[1], argv[2]), argv[3]);
-
-    // serialize -> deserialize
+    // without optional argument
+    message1 = QSharedPointer<CloseMessage>::create(document);
     message2 = Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 

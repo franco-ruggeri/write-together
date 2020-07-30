@@ -6,39 +6,29 @@
 #include <protocol/Document.h>
 #include <crdt/SharedEditor.h>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QString>
 #include <QtCore/QHash>
-#include <iostream>
+#include <QtCore/QString>
 
 using namespace collaborative_text_editor;
 
-int main(int argc, char **argv) {
-    QSharedPointer<Message> message1, message2;
-
-    if (argc < 9) {
-        std::cerr << "usage: " << argv[0]
-                  << " document_owner document_name text sharing_link site_id username name surname" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+int main() {
+    const Document document("test owner", "test name");
+    const QString text("test text");
+    const QString sharing_link("fnsc:test_uri");
+    const QHash<int,Profile> users{
+            {1, Profile("test username 1", "test name 1", "test surname 1")},
+            {2, Profile("test username 2", "test name 2", "test surname 2")}
+    };
 
     // text
     SharedEditor editor(0);
-    for (int i=0; argv[3][i]!='\0'; i++)
-        editor.local_insert(i, argv[3][i]);
-    QVector<Symbol> text = editor.text();
+    for (int i=0; i<text.size(); i++)
+        editor.local_insert(i, text[i]);
+    QVector symbols = editor.text();
 
-    // users
-    QHash<int,Profile> users;
-    Profile profile(argv[6], argv[7], argv[8]);
-    users.insert(std::stoi(argv[5]), profile);
-
-    // original message
-    Document document(argv[1], argv[2]);
-    QString sharing_link = argv[4];
-    message1 = QSharedPointer<DocumentMessage>::create(document, text, users, sharing_link);
-
-    // serialize -> deserialize
-    message2 = Message::deserialize(message1->serialize());
+    // serialization
+    QSharedPointer<Message> message1 = QSharedPointer<DocumentMessage>::create(document, symbols, users, sharing_link);
+    QSharedPointer<Message> message2 = Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;
