@@ -59,13 +59,6 @@ namespace collaborative_text_editor {
         return icon_;
     }
 
-    void Profile::clear() {
-        username_.clear();
-        name_.clear();
-        surname_.clear();
-        icon_ = QImage{};
-    }
-
     QJsonObject Profile::json() const {
         QJsonObject json_object;
 

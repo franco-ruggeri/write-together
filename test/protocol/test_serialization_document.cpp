@@ -7,6 +7,7 @@
 #include <crdt/SharedEditor.h>
 #include <crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtCore/QString>
 
@@ -22,7 +23,7 @@ int main() {
     SharedEditor editor(0);
     for (int i=0; i<text_string.size(); i++)
         editor.local_insert(i, text_string[i]);
-    QVector<Symbol> text = editor.text();
+    QList<Symbol> text = editor.text();
 
     // site_ids
     const QHash<QString,int> site_ids{

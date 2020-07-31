@@ -7,7 +7,7 @@
 #include <QtCore/QJsonArray>
 
 namespace collaborative_text_editor {
-    DocumentMessage::DocumentMessage(const Document& document, const QVector<Symbol>& text,
+    DocumentMessage::DocumentMessage(const Document& document, const QList<Symbol>& text,
                                      const QHash<QString,int>& site_ids, const QHash<QString,Profile>& profiles,
                                      const QHash<QString,Symbol>& cursors, const QString& sharing_link) :
         Message(MessageType::document), document_(document), text_(text), site_ids_(site_ids), profiles_(profiles),
@@ -115,7 +115,7 @@ namespace collaborative_text_editor {
         return document_;
     }
 
-    QVector<Symbol> DocumentMessage::text() const {
+    QList<Symbol> DocumentMessage::text() const {
         return text_;
     }
 

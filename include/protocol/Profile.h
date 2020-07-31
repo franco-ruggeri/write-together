@@ -31,8 +31,6 @@ namespace collaborative_text_editor {
         QString surname() const;
         QImage icon() const;
 
-        void clear();
-
         QJsonObject json() const;
     };
 }
