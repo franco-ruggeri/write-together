@@ -24,7 +24,7 @@ Further details:
 - *\<document>* contains: *owner* (username) and *document_name*.
 - *\<symbol>* contains: *site_id*, *site_counter*, *value*, and *position* (array of integers).
 - *\<profile>* contains: *username*, *name*, *surname*, and *icon*.
-- *\<text>* contains a sorted array of *\<symbol>*
+- *\<text>* contains a sorted array of *\<symbol>*.
 - *\<site_ids>* contains a map username -> *site_id*, for all the users with access to the document (even if currently offline).
 - *\<profiles>* contains a map username -> *\<profile>*, for all the users with access to the document (even if currently offline).
 - *\<cursors>* contains a map username -> *\<symbol>*, for all the users currently editing the document.

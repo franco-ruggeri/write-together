@@ -3,6 +3,7 @@
  */
 
 #include <crdt/SharedEditor.h>
+#include <algorithm>
 
 namespace collaborative_text_editor {
     const int SharedEditor::invalid_site_id = -1;
@@ -42,6 +43,12 @@ namespace collaborative_text_editor {
     void SharedEditor::remote_erase(const Symbol& symbol) {
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
         if (it != text_.end() && *it == symbol) text_.erase(it);
+    }
+
+    int SharedEditor::find(const Symbol& symbol) {
+        auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
+        if (it != text_.end() || *it == symbol) return std::distance(text_.begin(), it);
+        else throw std::logic_error("symbol not found");
     }
 
     QString SharedEditor::to_string() const {
