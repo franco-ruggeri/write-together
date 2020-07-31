@@ -15,10 +15,10 @@ Q_OBJECT
 public:
 
     Ui::changeUsernameDialog *ui;
-    changeUsernameDialog(QWidget *parent, std::shared_ptr<myClient> client);
+    changeUsernameDialog(QWidget *parent, QSharedPointer<myClient> client);
 
 private:
-    std::shared_ptr<myClient> client;
+    QSharedPointer<myClient> client;
     bool itsOkToClose = true;
 private slots:
 

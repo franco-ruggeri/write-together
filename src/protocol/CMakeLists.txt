@@ -14,14 +14,16 @@ add_library(protocol
         DocumentsMessage.cpp
         CreateMessage.cpp
         OpenMessage.cpp
-        TextMessage.cpp
         InsertMessage.cpp
         EraseMessage.cpp
         CursorMessage.cpp
         CloseMessage.cpp
         ProfileMessage.cpp
         ProfileOkMessage.cpp
+        Profile.cpp
         User.cpp
+        Document.cpp
+        DocumentMessage.cpp
         )
 
 target_link_libraries(protocol crdt Qt5::Core Qt5::Gui)

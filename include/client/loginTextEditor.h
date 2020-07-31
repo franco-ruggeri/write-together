@@ -21,15 +21,15 @@ Q_OBJECT
 
 public:
     explicit loginTextEditor(QWidget *parent = nullptr);
-    void open_editor(QString filename,bool newfile);
+    void open_editor(const QString& filename,bool newfile);
 
 private:
-    std::shared_ptr<myClient> client;
+    QSharedPointer<myClient> client;
     Ui::loginTextEditor *ui;
-    std::shared_ptr< newFileDialog> file_dialog;
-    std::shared_ptr<changeUsernameDialog> changeuser_dialog;
-    std::shared_ptr<changePasswordDialog> changepass_dialog;
-    texteditor * editor;
+    QSharedPointer< newFileDialog> file_dialog;
+    QSharedPointer<changeUsernameDialog> changeuser_dialog;
+    QSharedPointer<changePasswordDialog> changepass_dialog;
+    QSharedPointer<texteditor>  editor;
     void init_user_page(std::vector<QString>);
     void cleanAll();
 
@@ -47,6 +47,7 @@ private slots:
     void on_user_share_pushButton_clicked();
     void share_file(QString filename);
 
+    void init_user_page();
 };
 
 

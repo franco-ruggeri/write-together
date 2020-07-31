@@ -9,7 +9,6 @@ namespace collaborative_text_editor {
     User::User(const QString &username, const Symbol &cursor_position, const QImage &icon) : username_(username), icon_(icon),
                                                                                              cursor_position_(cursor_position){
 
-
     }
 
     QImage User::icon() const {
@@ -47,16 +46,5 @@ namespace collaborative_text_editor {
     int User::get_cursor_position() {
         return 4;
     }
-
-//    void User::updateCursorPosition(int newCursorPosition, const  QTextEdit & editor) {
-//        newCursorPosition = qMin(newCursorPosition, editor.toPlainText().size());
-//        userCursor->setPosition(newCursorPosition); // posizione cursore user.userCursor->
-//        const QRect qRect = editor.cursorRect(*userCursor);
-//        userCursorLabel->move(qRect.left(), qRect.top());
-//        userCursorLabel->show();
-//
-//    }
-
-
 
 }

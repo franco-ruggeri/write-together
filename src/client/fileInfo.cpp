@@ -4,15 +4,20 @@
 
 #include "client/fileInfo.h"
 
-fileInfo::fileInfo(QString filename, QString file_content): filename(filename),
-file_content(file_content){
+
+fileInfo::fileInfo(Document document, QVector<Symbol> file_content, QHash<QString,Profile> users): document(document),
+file_content(file_content), users(users){
 
 }
 
-const QString &fileInfo::getFileContent() const {
+const QVector<Symbol> &fileInfo::getFileContent() const {
     return file_content;
 }
 
-const QString &fileInfo::getFilename() const {
-    return filename;
+const Document fileInfo::getDocument() const {
+    return document;
+}
+
+const QHash<QString,Profile> &fileInfo::getUsers() const {
+    return users;
 }

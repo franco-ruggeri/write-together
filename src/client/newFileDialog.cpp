@@ -9,7 +9,7 @@
 #include <QtWidgets/QWidget>
 #include <client/loginTextEditor.h>
 
-newFileDialog::newFileDialog(QWidget *parent,std::shared_ptr<myClient> client, texteditor *editor):
+newFileDialog::newFileDialog(QWidget *parent,QSharedPointer<myClient> client, QSharedPointer<texteditor> editor):
     QDialog(parent),ui(new Ui::newFileDialog),client(client),editor(editor) {
     ui->setupUi(this);
 }

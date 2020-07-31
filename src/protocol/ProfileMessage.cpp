@@ -3,63 +3,48 @@
  */
 
 #include <protocol/ProfileMessage.h>
-#include <QBuffer>
-#include <QIODevice>
 
 namespace collaborative_text_editor {
-    ProfileMessage::ProfileMessage(const QString& username, const QString& password, const QImage& icon) :
-        Message(MessageType::profile), username_(username), password_(password), icon_(icon) {}
+    ProfileMessage::ProfileMessage(const Profile& profile) :
+            Message(MessageType::profile), profile_(profile) {}
+
+    ProfileMessage::ProfileMessage(const Profile& profile, const QString& password) :
+        Message(MessageType::profile), profile_(profile), password_(password) {}
 
     ProfileMessage::ProfileMessage(const QJsonObject &json_object) : Message(MessageType::profile) {
         auto end_iterator = json_object.end();
-        auto username_iterator = json_object.find("username");
+        auto profile_iterator = json_object.find("profile");
         auto password_iterator = json_object.find("password");
-        auto icon_iterator = json_object.find("icon");
 
-        if (username_iterator == end_iterator || password_iterator == end_iterator || icon_iterator == end_iterator)
+        if (profile_iterator == end_iterator || !profile_iterator->isObject())
             throw std::logic_error("invalid message: invalid fields");
 
-        username_ = username_iterator->toString();
-        password_ = password_iterator->toString();
-        QString icon_base64 = icon_iterator->toString();
-
-        if (username_.isNull() || password_.isNull() || icon_base64.isNull())
-            throw std::logic_error("invalid message: invalid fields");
-
-        QByteArray bytes = QByteArray::fromBase64(icon_base64.toLatin1());
-        icon_.loadFromData(bytes, "PNG");
+        profile_ = Profile(profile_iterator->toObject());
+        if (password_iterator != end_iterator) {
+            password_ = password_iterator->toString();
+            if (password_->isNull())
+                throw std::logic_error("invalid message: invalid fields");
+        }
     }
 
     bool ProfileMessage::operator==(const Message& other) const {
         const ProfileMessage *o = dynamic_cast<const ProfileMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
-               this->username_ == o->username_ && this->password_ == o->password_ && this->icon_ == o->icon_;
-    }
-        
-    QString ProfileMessage::username() const {
-        return username_;
+               this->profile_ == o->profile_ && this->password_ == o->password_;
     }
 
-    QString ProfileMessage::password() const {
+    Profile ProfileMessage::profile() const {
+        return profile_;
+    }
+
+    std::optional<QString> ProfileMessage::password() const {
         return password_;
-    }
-
-    QImage ProfileMessage::icon() const {
-        return icon_;
     }
 
     QJsonObject ProfileMessage::json() const {
         QJsonObject json_object = Message::json();
-        json_object["username"] = username_;
-        json_object["password"] = password_;
-
-        // icon in base64
-        QByteArray bytes;
-        QBuffer buffer(&bytes);
-        buffer.open(QIODevice::WriteOnly);
-        icon_.save(&buffer, "PNG");
-        json_object["icon"] = QLatin1String(bytes.toBase64());
-
+        json_object["profile"] = profile_.json();
+        if (password_) json_object["password"] = *password_;
         return json_object;
     }
 }

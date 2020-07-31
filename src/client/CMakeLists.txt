@@ -46,19 +46,22 @@ add_executable(collaborative_text_editor
         ../protocol/CreateMessage.cpp
         ../protocol/EraseMessage.cpp
         ../protocol/ErrorMessage.cpp
-        ../protocol/TextMessage.cpp
+        ../protocol/Profile.cpp
         ../protocol/CursorMessage.cpp
         ../protocol/CloseMessage.cpp
         ../protocol/ProfileMessage.cpp
         ../protocol/ProfileOkMessage.cpp
         ../protocol/OpenMessage.cpp
         ../protocol/DocumentsMessage.cpp
+        ../protocol/DocumentMessage.cpp
+        ../protocol/Document.cpp
         ../crdt/SharedEditor.cpp
         ../crdt/Symbol.cpp
         ../crdt/LSEQ.cpp
         fileInfo.cpp
         ../protocol/User.cpp
         changeUsernameDialog.cpp
+
 
         )
 

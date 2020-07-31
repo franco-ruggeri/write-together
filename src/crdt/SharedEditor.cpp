@@ -3,29 +3,25 @@
  */
 
 #include <crdt/SharedEditor.h>
+#include <algorithm>
 
 namespace collaborative_text_editor {
     const int SharedEditor::invalid_site_id = -1;
     const int SharedEditor::invalid_site_counter = -1;
 
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
-    
-     SharedEditor::SharedEditor(int site_id,const QString& file_content_) : site_id_(site_id), site_counter_(0) {
-        int i = 0;
-        for( auto character : file_content_) {
-            local_insert(i, character);
-            i++;
-        }
-    }
 
     SharedEditor::SharedEditor(int site_id, const Lseq& pos_allocator) :
-        site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
+            site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
+
+    SharedEditor::SharedEditor(int site_id, const QVector<Symbol>& text) :
+            site_id_(site_id), site_counter_(0), text_(text) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
         // allocate position
-        std::vector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
-        std::vector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
-        std::vector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
+        QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
+        QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
+        QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
 
         // insert locally
         Symbol symbol(value, site_id_, site_counter_++, between_pos);
@@ -49,10 +45,20 @@ namespace collaborative_text_editor {
         if (it != text_.end() && *it == symbol) text_.erase(it);
     }
 
-    QString SharedEditor::to_string() {
+    int SharedEditor::find(const Symbol& symbol) {
+        auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
+        if (it != text_.end() || *it == symbol) return std::distance(text_.begin(), it);
+        else throw std::logic_error("symbol not found");
+    }
+
+    QString SharedEditor::to_string() const {
         QString result;
         for (const auto& s : text_)
             result.append(s.value());
         return result;
+    }
+
+    QVector<Symbol> SharedEditor::text() const {
+        return text_;
     }
 }

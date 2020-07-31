@@ -20,7 +20,7 @@ class texteditor : public QMainWindow{
 
 
 public:
-    texteditor(QStackedWidget *parent, std::shared_ptr<myClient> client, fileInfo file, std::vector<User> users);
+    texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file,QHash<QString,Symbol>  users);
 
     bool change_from_server;
     void setupFileActions();
@@ -40,18 +40,20 @@ private slots:
     void setupUserActions();
     void readyRead();
     void contentsChange(int position, int charsRemoved, int charsAdded);
-
+    void cursorPositionChanged();
+    void textChange();
 private:
-    QDockWidget *connected_client ;
-    QTextEdit *editor;
-    std::shared_ptr<myClient> client;
-    std::shared_ptr<SharedEditor> shared_editor;
+    QSharedPointer<QDockWidget>connected_client ;
+    QSharedPointer<QTextEdit> editor;
+    QSharedPointer<myClient> client;
+    QSharedPointer<SharedEditor> shared_editor;
     QAction *actionUndo;
-    QAction *actionRedo;
+    QAction * actionRedo;
     QAction *show_peers;
     fileInfo file;
-    QListWidget *list_user;
+    QSharedPointer<QListWidget>list_user;
     QMap<QString, User> map_username_to_User;
+    QHash<QString,Symbol> connected_user;
 
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;
@@ -59,8 +61,6 @@ private:
     QAction *actionPaste;
 #endif
 
-
-    void textChange();
 };
 
 

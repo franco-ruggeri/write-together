@@ -4,14 +4,16 @@
 
 #pragma once
 
-#include <QString>
-#include <QJsonObject>
+#include <QtCore/QString>
+#include <QtCore/QJsonObject>
 #include <protocol/Message.h>
+#include <protocol/Document.h>
 #include <crdt/Symbol.h>
 
 namespace collaborative_text_editor {
     class CursorMessage : public Message {
-        QString document_, username_;
+        Document document_;
+        QString username_;
         Symbol symbol_;
 
         CursorMessage(const QJsonObject& json_object);
@@ -19,9 +21,9 @@ namespace collaborative_text_editor {
         friend Message;
 
     public:
-        CursorMessage(const QString& document, const QString& username, const Symbol& symbol);
+        CursorMessage(const Document& document, const QString& username, const Symbol& symbol);
         bool operator==(const Message& other) const override;
-        QString document() const;
+        Document document() const;
         QString username() const;
         Symbol symbol() const;
     };

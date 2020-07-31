@@ -4,25 +4,27 @@
 
 #pragma once
 
-#include <QString>
-#include <QImage>
-#include <QJsonObject>
+#include <QtCore/QString>
+#include <QtCore/QJsonObject>
+#include <QtGui/QImage>
 #include <protocol/Message.h>
+#include <protocol/Profile.h>
+#include <optional>
 
 namespace collaborative_text_editor {
     class ProfileMessage : public Message {
-        QString username_, password_;
-        QImage icon_;
+        Profile profile_;
+        std::optional<QString> password_;
 
         ProfileMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        ProfileMessage(const QString& username, const QString& password, const QImage& icon);
+        ProfileMessage(const Profile& profile);
+        ProfileMessage(const Profile& profile, const QString& password);
         bool operator==(const Message& other) const override;
-        QString username() const;
-        QString password() const;
-        QImage icon() const;
+        Profile profile() const;
+        std::optional<QString> password() const;
     };
 }

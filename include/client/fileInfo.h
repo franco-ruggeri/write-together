@@ -4,18 +4,27 @@
 
 #pragma once
 
+#include "crdt/Symbol.h"
 #include <QString>
+#include <protocol/Profile.h>
 
+using namespace collaborative_text_editor;
 class fileInfo {
 private:
-    QString filename;
-    QString file_content;
+
+
+    Document document;
+    QVector<Symbol> file_content;
+    QHash<QString,Profile> users;
 public:
-    fileInfo(QString filename,QString file_content);
+    fileInfo(Document document, QVector<Symbol> file_content, QHash<QString,Profile> users);
 
-    const QString &getFileContent() const;
+    const QVector<Symbol> &getFileContent() const;
 
-    const QString &getFilename() const;
+    const Document getDocument() const;
+
+    const QHash<QString,Profile> &getUsers() const;
+
 };
 
 

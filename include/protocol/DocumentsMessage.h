@@ -4,22 +4,24 @@
 
 #pragma once
 
-#include <vector>
-#include <QString>
-#include <QJsonObject>
+#include <QtCore/QList>
+#include <QtCore/QJsonObject>
 #include <protocol/Message.h>
+#include <protocol/Document.h>
+#include <optional>
 
 namespace collaborative_text_editor {
     class DocumentsMessage : public Message {
-        std::vector<QString> documents_;
+        std::optional<QList<Document>> documents_;
 
         DocumentsMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        DocumentsMessage(const std::vector<QString>& documents);
+        DocumentsMessage();
+        DocumentsMessage(const QList<Document>& documents);
         bool operator==(const Message& other) const override;
-        std::vector<QString> documents() const;
+        std::optional<QList<Document>> documents() const;
     };
 }

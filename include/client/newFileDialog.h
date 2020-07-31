@@ -18,11 +18,11 @@ class newFileDialog:public QDialog {
 public:
 
     Ui::newFileDialog *ui;
-    newFileDialog(QWidget *parent, std::shared_ptr<myClient> client, texteditor *editor);
+    newFileDialog(QWidget *parent, QSharedPointer<myClient> client, QSharedPointer<texteditor> editor);
 
 private:
-    texteditor *editor = nullptr;
-    std::shared_ptr<myClient> client;
+    QSharedPointer<texteditor> editor;
+    QSharedPointer<myClient> client;
 
 private slots:
     void on_newfile_create_pushButton_clicked();

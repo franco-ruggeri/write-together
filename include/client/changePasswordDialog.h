@@ -15,10 +15,10 @@ Q_OBJECT
 public:
 
     Ui::changePasswordDialog *ui;
-    changePasswordDialog(QWidget *parent, std::shared_ptr<myClient> client);
+    changePasswordDialog(QWidget *parent, QSharedPointer<myClient> client);
 
 private:
-    std::shared_ptr<myClient> client;
+    QSharedPointer<myClient> client;
     bool itsOkToClose = true;
 private slots:
 

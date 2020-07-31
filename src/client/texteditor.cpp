@@ -38,55 +38,46 @@
 #include <utility>
 #include <protocol/InsertMessage.h>
 #include <client/loginTextEditor.h>
+#include <protocol/EraseMessage.h>
 
-
-//const QString imgPath = ":/images";
 
 int site_id(){
     return 0;
 }
 
 
-texteditor::texteditor(QStackedWidget *parent, std::shared_ptr<myClient> client, fileInfo file, std::vector<User> users): QMainWindow(parent),
+texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file, QHash<QString,Symbol>  users): QMainWindow(parent),
 file(file){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION);
-    editor = new QTextEdit(this);
+    editor = QSharedPointer<QTextEdit>::create(this);
     this->client = client;
     change_from_server = false;
 
     editor->setFontPointSize(12);
 
-    shared_editor = std::make_shared<SharedEditor>(site_id(),file.getFileContent());
-    setCentralWidget(editor);
-    connected_client = new QDockWidget;
+    shared_editor = QSharedPointer<SharedEditor>::create(site_id(),file.getFileContent());
+    setCentralWidget(editor.get());
+    connected_client = QSharedPointer<QDockWidget>();
     connected_client->setObjectName("Peers");
     connected_client->setWindowTitle("Peers");
-    editor->setText(file.getFileContent());
-//    editor->textCursor().setPosition(editor->);
-    list_user = new QListWidget;
-    connected_client->setWidget(list_user);
-    QIcon userIcon = QIcon(QPixmap::fromImage(client->user->icon()));
-    list_user->addItem(new QListWidgetItem(userIcon,client->user->username() + " (you)"));
+    editor->setText(shared_editor->to_string());
 
-    for(auto user: users){
-        map_username_to_User.insert(user.username(),user);
-        list_user->addItem(new QListWidgetItem( QIcon(QPixmap::fromImage(user.icon())),user.username()));
-//        qDebug() << QString(&"cursor pos: " [ editor->textCursor().position()]);
-//        int pos = 2 ;//shared_editor->remote_insert(user.cursor_position());
-//        user.initCursor(editor,10);
+    list_user = QSharedPointer<QListWidget>();
+    connected_client->setWidget(list_user.get());
+    QIcon userIcon = QIcon(QPixmap::fromImage(client->user.icon()));
+    list_user->addItem(new QListWidgetItem(userIcon,client->user.username() + " (you)"));
 
 
-    }
-
-    addDockWidget(Qt::RightDockWidgetArea,connected_client);
+    addDockWidget(Qt::RightDockWidgetArea,connected_client.get());
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupFileActions();
     setupEditActions();
     setupUserActions();
     connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-    connect(editor, &QTextEdit::textChanged, this, &texteditor::textChange);
+    connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
+    connect(editor.get(), &QTextEdit::cursorPositionChanged, this, &texteditor::cursorPositionChanged);
 
 
 }
@@ -94,8 +85,11 @@ file(file){
 void texteditor::init_cursors(){
     qDebug() << "inizializzazione cursori";
 
-    for( auto user :  map_username_to_User){
-        user.init_cursor(editor,user.get_cursor_position());
+    for( auto user : file.getUsers()){
+        if(connected_user.count(user.username())) {
+            int cursor_pos = shared_editor->find(connected_user[user.username()]);
+            user.init_cursor(editor.get(), cursor_pos);
+        }
     }
 
 }
@@ -128,7 +122,7 @@ void texteditor::setupUserActions(){
     QToolBar *tb = addToolBar(tr("User Actions"));
     QMenu *menu = menuBar()->addMenu(tr("&User"));
     const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_icon.png"));
-    show_peers = menu->addAction(showPeersIcon, tr("&Show"), connected_client,&QDockWidget::show);
+    show_peers = menu->addAction(showPeersIcon, tr("&Show"), connected_client.get(),&QDockWidget::show);
     tb->addAction(show_peers);
 
 
@@ -140,12 +134,12 @@ void texteditor::setupEditActions() {
     QMenu *menu = menuBar()->addMenu(tr("&Edit"));
 
     const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
-    actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor, &QTextEdit::undo);
+    actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor.get(), &QTextEdit::undo);
     actionUndo->setShortcut(QKeySequence::Undo);
     tb->addAction(actionUndo);
 
     const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(imgPath + "/editredo.png"));
-    actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor, &QTextEdit::redo);
+    actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor.get(), &QTextEdit::redo);
     actionRedo->setPriority(QAction::LowPriority);
     actionRedo->setShortcut(QKeySequence::Redo);
     tb->addAction(actionRedo);
@@ -153,19 +147,19 @@ void texteditor::setupEditActions() {
 
 #ifndef QT_NO_CLIPBOARD
     const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(imgPath + "/editcut.png"));
-    actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor, &QTextEdit::cut);
+    actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor.get(), &QTextEdit::cut);
     actionCut->setPriority(QAction::LowPriority);
     actionCut->setShortcut(QKeySequence::Cut);
     tb->addAction(actionCut);
 
     const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(imgPath + "/editcopy.png"));
-    actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor, &QTextEdit::copy);
+    actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor.get(), &QTextEdit::copy);
     actionCopy->setPriority(QAction::LowPriority);
     actionCopy->setShortcut(QKeySequence::Copy);
     tb->addAction(actionCopy);
 
     const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(imgPath + "/editpaste.png"));
-    actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor, &QTextEdit::paste);
+    actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor.get(), &QTextEdit::paste);
     actionPaste->setPriority(QAction::LowPriority);
     actionPaste->setShortcut(QKeySequence::Paste);
     tb->addAction(actionPaste);
@@ -200,7 +194,7 @@ void texteditor::file_close() {
 }
 
 void texteditor::file_share(){
-    emit share_file(file.getFilename());
+    emit share_file(file.getDocument().name());
 }
 
 
@@ -210,11 +204,11 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
     for(int i = 0 ; i < charsAdded; i++) {
 
-        client->sendInsert(file.getFilename(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
+        client->sendInsert(file.getDocument(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
     }
 
     for(int i = 0 ; i < charsRemoved; i++) {
-        client->sendErase(file.getFilename(),shared_editor->local_erase(position));
+        client->sendErase(file.getDocument(),shared_editor->local_erase(position));
     }
 }
 
@@ -222,16 +216,17 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 void texteditor::readyRead(){
     while(client->socket->canReadLine()) {
         QByteArray request = this->client->socket->readLine();
-        std::shared_ptr<Message> m = Message::deserialize(request);
+        QSharedPointer<Message> m = Message::deserialize(request);
 
         if (m->type() == MessageType::insert) {
+            qDebug() << "remote Insert";
             change_from_server = true;
-            shared_editor->remote_insert(std::static_pointer_cast<InsertMessage>(m)->symbol());
+            shared_editor->remote_insert(m.staticCast<InsertMessage>()->symbol());
             this->editor->setText(shared_editor->to_string());
         }
         if (m->type() == MessageType::erase) {
             change_from_server = true;
-            shared_editor->remote_erase(std::static_pointer_cast<InsertMessage>(m)->symbol());
+            shared_editor->remote_erase(m.staticCast<EraseMessage>()->symbol());
             this->editor->setText(shared_editor->to_string());
         }
     }
@@ -249,4 +244,10 @@ void texteditor::textChange() {
         change_from_server  = false;
         return;
     }
+}
+
+void texteditor::cursorPositionChanged() {
+    QTextCursor cursor = editor->textCursor();
+//    this->client->send_cursor(cursor.position());
+
 }

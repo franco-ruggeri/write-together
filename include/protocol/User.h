@@ -33,13 +33,8 @@ namespace collaborative_text_editor {
         Symbol cursor_position() const;
         int get_cursor_position();
         void setIcon(const QImage &icon);
-
-
-//        void update_cursor_position(int newCursorPosition, const QTextEdit &editor);
-
-
+        QMap<QString,QString> filename_to_owner_map;
         void init_cursor(QTextEdit *editor, int newCursorPosition);
-
 
     };
 

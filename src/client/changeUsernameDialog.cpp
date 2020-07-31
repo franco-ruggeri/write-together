@@ -8,11 +8,11 @@
 #include "client/changeUsernameDialog.h"
 #include "ui_changeUsernameDialog.h"
 
-changeUsernameDialog::changeUsernameDialog(QWidget *parent, std::shared_ptr<myClient> client):
+changeUsernameDialog::changeUsernameDialog(QWidget *parent, QSharedPointer<myClient> client):
         QDialog(parent),ui(new Ui::changeUsernameDialog), client(client){
 
     ui->setupUi(this);
-    ui->changeuser_currentuser_label->setText("current username: " + client->user->username());
+    ui->changeuser_currentuser_label->setText("current username: " + client->user.username());
 
 }
 

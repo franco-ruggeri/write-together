@@ -1,5 +1,5 @@
 /*
- * Message types for the collaborative text editor application protocol.
+ * Message types for the collaborative text editor application protocol (see docs/protocol.md).
  *
  * Author: Franco Ruggeri
  */
@@ -9,13 +9,13 @@
 namespace collaborative_text_editor {
     enum class MessageType : int {
         error=0,
-        sign_up=1,
+        signup=1,
         login=2,
         logout=3,
         documents=4,
         create=5,
         open=6,
-        text=7,
+        document=7,
         insert=8,
         erase=9,
         cursor=10,

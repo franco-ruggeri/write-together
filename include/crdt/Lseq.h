@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <vector>
+#include <QVector>
 
 namespace collaborative_text_editor {
     class Lseq {
@@ -25,7 +25,7 @@ namespace collaborative_text_editor {
             boundary_plus=true, boundary_minus=false
         };
 
-        std::vector<Strategy> strategies_;      // strategy at each depth
+        QVector<Strategy> strategies_;          // strategy at each depth
         const unsigned int boundary_;
 
         static const int begin_;                // first possible child of a node, reserved
@@ -35,8 +35,8 @@ namespace collaborative_text_editor {
     public:
         Lseq();
         Lseq(unsigned int boundary);
-        static std::vector<int> begin();        // get dummy begin (to use as prev when there is no prev)
-        static std::vector<int> end();          // get dummy end (to use as next when there is no next)
-        std::vector<int> between(std::vector<int> prev, std::vector<int> next);
+        static QVector<int> begin();            // get dummy begin (to use as prev when there is no prev)
+        static QVector<int> end();              // get dummy end (to use as next when there is no next)
+        QVector<int> between(QVector<int> prev, QVector<int> next);
     };
 }
