@@ -86,7 +86,7 @@ file(file){
     setupUserActions();
     connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-//    connect(editor, &texteditor::show, this, &texteditor::init_cursors);
+    connect(editor, &QTextEdit::textChanged, this, &texteditor::textChange);
 
 
 }
@@ -206,22 +206,20 @@ void texteditor::file_share(){
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
  //   std::cout << position << " " << charsRemoved << " " << charsAdded << '\n';
-    if(change_from_server) {
-        change_from_server = false;
-        return;
-    }
+    if(change_from_server) return;
+
     for(int i = 0 ; i < charsAdded; i++) {
 
-        client->sendInsert("filename",shared_editor->local_insert(position, editor->toPlainText()[position + i]));
+        client->sendInsert(file.getFilename(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
     }
 
     for(int i = 0 ; i < charsRemoved; i++) {
-        client->sendErase("filename",shared_editor->local_erase(position));
+        client->sendErase(file.getFilename(),shared_editor->local_erase(position));
     }
 }
 
 
-void texteditor::readyRead() {
+void texteditor::readyRead(){
     while(client->socket->canReadLine()) {
         QByteArray request = this->client->socket->readLine();
         std::shared_ptr<Message> m = Message::deserialize(request);
@@ -239,8 +237,16 @@ void texteditor::readyRead() {
     }
 }
 
-void texteditor::closeEvent(QCloseEvent *event)
-{
+void texteditor::closeEvent(QCloseEvent *event){
     file_close();
     event->accept();
+}
+
+
+void texteditor::textChange() {
+    editor->setFontPointSize(12);
+    if(change_from_server) {
+        change_from_server  = false;
+        return;
+    }
 }

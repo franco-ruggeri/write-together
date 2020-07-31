@@ -60,7 +60,7 @@ private:
 #endif
 
 
-
+    void textChange();
 };
 
 
