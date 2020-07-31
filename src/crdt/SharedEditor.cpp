@@ -44,14 +44,14 @@ namespace collaborative_text_editor {
         if (it != text_.end() && *it == symbol) text_.erase(it);
     }
 
-    QString SharedEditor::to_string() {
+    QString SharedEditor::to_string() const {
         QString result;
         for (const auto& s : text_)
             result.append(s.value());
         return result;
     }
 
-    QVector<Symbol> SharedEditor::text() {
+    QVector<Symbol> SharedEditor::text() const {
         return text_;
     }
 }

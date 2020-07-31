@@ -17,7 +17,8 @@ namespace collaborative_text_editor {
     class DocumentMessage : public Message {
         Document document_;
         QVector<Symbol> text_;
-        QHash<int,Profile> users_;  // site_id -> Profile, for all users with access to the document
+        QHash<int,Profile> users_;          // site_id -> Profile, for all users with access to the document
+        QHash<QString,Symbol> cursors_;     // username -> symbol, for all the users currently editing
         QString sharing_link_;
 
         DocumentMessage(const QJsonObject& json_object);
@@ -25,12 +26,13 @@ namespace collaborative_text_editor {
         friend Message;
 
     public:
-        DocumentMessage(const Document &document, const QVector<Symbol> &text,
-                        const QHash<int, Profile> &users, const QString &sharing_link);
+        DocumentMessage(const Document& document, const QVector<Symbol>& text, const QHash<int, Profile>& users,
+                        const QHash<QString, Symbol>& cursors, const QString& sharing_link);
         bool operator==(const Message& other) const override;
         Document document() const;
         QVector<Symbol> text() const;
         QHash<int,Profile> users() const;
+        QHash<QString,Symbol> cursors() const;
         QString sharing_link() const;
     };
 }

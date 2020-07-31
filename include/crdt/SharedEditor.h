@@ -28,9 +28,9 @@ namespace collaborative_text_editor {
         Symbol local_erase(int index);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
-        QString to_string();
+        QString to_string() const;
 
-        QVector<Symbol> text();
+        QVector<Symbol> text() const;
 
         static const int invalid_site_id, server_site_id, invalid_site_counter;
     };

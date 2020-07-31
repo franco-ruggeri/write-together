@@ -39,7 +39,8 @@ namespace collaborative_text_editor {
     }
 
     bool Profile::operator==(const Profile& other) const {
-        return this->username_ == other.username_ && this->name_ == other.name_ && this->surname_ == other.surname_;
+        return this->username_ == other.username_ && this->name_ == other.name_ && this->surname_ == other.surname_ &&
+               this->icon_ == other.icon_;
     }
 
     QString Profile::username() const {
