@@ -14,30 +14,37 @@ using namespace collaborative_text_editor;
 
 int main() {
     const Document document("test owner", "test name");
-    const QString text("test text");
+    const QString text_string("test text");
     const QString sharing_link("fnsc:test_uri");
-
-    // users
-    const QHash<int,Profile> users{
-            {1, Profile("test username 1", "test name 1", "test surname 1")},
-            {2, Profile("test username 2", "test name 2", "test surname 2")}
-    };
+    const QString username1("test username 1"), username2("test username 2");
 
     // text
     SharedEditor editor(0);
-    for (int i=0; i<text.size(); i++)
-        editor.local_insert(i, text[i]);
-    QVector<Symbol> symbols = editor.text();
+    for (int i=0; i<text_string.size(); i++)
+        editor.local_insert(i, text_string[i]);
+    QVector<Symbol> text = editor.text();
+
+    // site_ids
+    const QHash<QString,int> site_ids{
+            {username1, 1},
+            {username2, 2}
+    };
+
+    // profiles
+    const QHash<QString,Profile> profiles{
+            {username1, Profile(username1, "test name 1", "test surname 1")},
+            {username2, Profile(username2, "test name 2", "test surname 2")}
+    };
 
     // cursors
     const QHash<QString,Symbol> cursors{
-            {users[1].username(), symbols[0]},
-            {users[2].username(), symbols[1]}
+            {username1, text[0]},
+            {username2, text[1]}
     };
 
     // serialization
-    QSharedPointer<Message> message1 = QSharedPointer<DocumentMessage>::create(document, symbols, users, cursors,
-                                                                               sharing_link);
+    QSharedPointer<Message> message1 = QSharedPointer<DocumentMessage>::create(document, text, site_ids, profiles,
+                                                                               cursors, sharing_link);
     QSharedPointer<Message> message2 = Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 

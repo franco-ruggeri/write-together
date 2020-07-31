@@ -8,23 +8,26 @@
 
 namespace collaborative_text_editor {
     DocumentMessage::DocumentMessage(const Document& document, const QVector<Symbol>& text,
-                                     const QHash<int, Profile>& users, const QHash<QString, Symbol>& cursors,
-                                     const QString& sharing_link) :
-        Message(MessageType::document), document_(document), text_(text), users_(users), cursors_(cursors),
-        sharing_link_(sharing_link) {}
+                                     const QHash<QString,int>& site_ids, const QHash<QString,Profile>& profiles,
+                                     const QHash<QString,Symbol>& cursors, const QString& sharing_link) :
+        Message(MessageType::document), document_(document), text_(text), site_ids_(site_ids), profiles_(profiles),
+        cursors_(cursors), sharing_link_(sharing_link) {}
 
     DocumentMessage::DocumentMessage(const QJsonObject &json_object) : Message(MessageType::document) {
         auto end_iterator = json_object.end();
         auto document_iterator = json_object.find("document");
         auto text_iterator = json_object.find("text");
-        auto users_iterator = json_object.find("users");
+        auto site_ids_iterator = json_object.find("site_ids");
+        auto profiles_iterator = json_object.find("profiles");
         auto cursors_iterator = json_object.find("cursors");
         auto sharing_link_iterator = json_object.find("sharing_link");
 
         if (document_iterator == end_iterator || text_iterator == end_iterator ||
-            users_iterator == end_iterator || cursors_iterator == end_iterator ||
-            sharing_link_iterator == end_iterator || !document_iterator->isObject() ||
-            !text_iterator->isArray() || !users_iterator->isArray() || !cursors_iterator->isArray())
+            site_ids_iterator == end_iterator || profiles_iterator == end_iterator ||
+            cursors_iterator == end_iterator || sharing_link_iterator == end_iterator ||
+            !document_iterator->isObject() || !text_iterator->isArray() ||
+            !site_ids_iterator->isArray() || !profiles_iterator->isArray() ||
+            !cursors_iterator->isArray())
             throw std::logic_error("invalid message: invalid fields");
 
         document_ = Document(document_iterator->toObject());
@@ -41,24 +44,43 @@ namespace collaborative_text_editor {
             text_.push_back(s);
         }
 
-        // users
-        json_array = users_iterator->toArray();
+        // site_ids
+        json_array = site_ids_iterator->toArray();
         for (const auto& u_json : json_array) {
             if (!u_json.isObject()) throw std::logic_error("invalid message: invalid fields");
             QJsonObject u_json_object = u_json.toObject();
 
             auto end_iterator = u_json_object.end();
+            auto username_iterator = u_json_object.find("username");
             auto site_id_iterator = u_json_object.find("site_id");
-            auto profile_iterator = u_json_object.find("profile");
-            if (site_id_iterator == end_iterator || profile_iterator == end_iterator || !profile_iterator->isObject())
+            if (username_iterator == end_iterator || site_id_iterator == end_iterator)
                 throw std::logic_error("invalid message: invalid fields");
 
+            QString username = username_iterator->toString();
             int site_id = site_id_iterator->toInt(SharedEditor::invalid_site_id);
-            if (site_id == SharedEditor::invalid_site_id)
+            if (username.isNull() || site_id == SharedEditor::invalid_site_id)
                 throw std::logic_error("invalid message: invalid fields");
-            Profile profile(profile_iterator->toObject());
 
-            users_.insert(site_id, profile);
+            site_ids_.insert(username, site_id);
+        }
+
+        // profiles
+        json_array = profiles_iterator->toArray();
+        for (const auto& c_json : json_array) {
+            if (!c_json.isObject()) throw std::logic_error("invalid message: invalid fields");
+            QJsonObject c_json_object = c_json.toObject();
+
+            auto end_iterator = c_json_object.end();
+            auto username_iterator = c_json_object.find("username");
+            auto profile_iterator = c_json_object.find("profile");
+            if (username_iterator == end_iterator || profile_iterator == end_iterator || !profile_iterator->isObject())
+                throw std::logic_error("invalid message: invalid fields");
+
+            QString username = username_iterator->toString();
+            Profile profile(profile_iterator->toObject());
+            if (username.isNull()) throw std::logic_error("invalid message: invalid fields");
+
+            profiles_.insert(username, profile);
         }
 
         // cursors
@@ -74,8 +96,8 @@ namespace collaborative_text_editor {
                 throw std::logic_error("invalid message: invalid fields");
 
             QString username = username_iterator->toString();
-            if (username.isNull()) throw std::logic_error("invalid message: invalid fields");
             Symbol symbol(symbol_iterator->toObject());
+            if (username.isNull()) throw std::logic_error("invalid message: invalid fields");
 
             cursors_.insert(username, symbol);
         }
@@ -85,10 +107,10 @@ namespace collaborative_text_editor {
         const DocumentMessage *o = dynamic_cast<const DocumentMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->text_ == o->text_ &&
-               this->users_ == o->users_ && this->cursors_ == o->cursors_ &&
-               this->sharing_link_ == o->sharing_link_;
+               this->site_ids_ == o->site_ids_ && this->profiles_ == o->profiles_ &&
+               this->cursors_ == o->cursors_ && this->sharing_link_ == o->sharing_link_;
     }
-        
+
     Document DocumentMessage::document() const {
         return document_;
     }
@@ -97,11 +119,15 @@ namespace collaborative_text_editor {
         return text_;
     }
 
-    QHash<int, Profile> DocumentMessage::users() const {
-        return users_;
+    QHash<QString,int> DocumentMessage::site_ids() const {
+        return site_ids_;
     }
 
-    QHash<QString, Symbol> DocumentMessage::cursors() const {
+    QHash<QString,Profile> DocumentMessage::profiles() const {
+        return profiles_;
+    }
+
+    QHash<QString,Symbol> DocumentMessage::cursors() const {
         return cursors_;
     }
 
@@ -120,15 +146,25 @@ namespace collaborative_text_editor {
             json_array.push_back(s.json());
         json_object["text"] = json_array;
 
-        // users
+        // site_ids
         json_array = QJsonArray{};
-        for (auto it=users_.begin(); it!=users_.end(); it++) {
+        for (auto it=site_ids_.begin(); it!=site_ids_.end(); it++) {
             QJsonObject u_json;
-            u_json["site_id"] = it.key();
-            u_json["profile"] = it.value().json();
+            u_json["username"] = it.key();
+            u_json["site_id"] = it.value();
             json_array.push_back(u_json);
         }
-        json_object["users"] = json_array;
+        json_object["site_ids"] = json_array;
+
+        // profiles
+        json_array = QJsonArray{};
+        for (auto it=profiles_.begin(); it!=profiles_.end(); it++) {
+            QJsonObject c_json;
+            c_json["username"] = it.key();
+            c_json["profile"] = it.value().json();
+            json_array.push_back(c_json);
+        }
+        json_object["profiles"] = json_array;
 
         // cursors
         json_array = QJsonArray{};

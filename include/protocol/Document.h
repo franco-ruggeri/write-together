@@ -9,7 +9,7 @@
 
 namespace collaborative_text_editor {
     class Document {
-        QString owner_;             // username of who creates the document
+        QString owner_;     // username of who creates the document
         QString name_;
 
     public:
