@@ -20,6 +20,7 @@ namespace collaborative_text_editor {
 
     public:
         Profile();
+        Profile(const QString& username);
         Profile(const QString& username, const QString& name, const QString& surname);
         Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon);
         Profile(const QJsonObject& json_object);

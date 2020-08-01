@@ -2,12 +2,12 @@
  * Author: Franco Ruggeri
  */
 
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QThread>
 #include "Server.h"
 
 int main(int argc, char **argv) {
-    const QString& usage = QString("usage") + argv[0] + " port";
-    const unsigned int n_threads = 50;
+    const QString& usage = QString("usage ") + argv[0] + " port";
 
     QCoreApplication app(argc, argv);
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     }
 
     // launch server
-    Server server(port, n_threads);
+    Server server(port, QThread::idealThreadCount());
 
     return app.exec();
 }

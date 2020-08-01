@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
 
-add_executable(server main.cpp Server.cpp Worker.cpp User.cpp SafeSharedEditor.cpp)
+add_executable(server main.cpp Server.cpp Worker.cpp User.cpp SafeSharedEditor.cpp OpenDocument.cpp)
 
 target_link_libraries(server crdt protocol network Qt5::Core Qt5::Network)
 

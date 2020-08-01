@@ -9,6 +9,8 @@
 namespace collaborative_text_editor {
     Profile::Profile() {}
 
+    Profile::Profile(const QString &username) : username_(username) {}
+
     Profile::Profile(const QString &username, const QString &name, const QString &surname) :
         username_(username), name_(name), surname_(surname) {}
 

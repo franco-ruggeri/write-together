@@ -4,7 +4,7 @@
 
 #include "SafeSharedEditor.h"
 
-SafeSharedEditor::SafeSharedEditor() {}
+SafeSharedEditor::SafeSharedEditor(int site_id) : editor_(site_id) {}
 
 void SafeSharedEditor::remote_insert(const Symbol &symbol) {
     QMutexLocker ml(&m_editor_);

@@ -5,19 +5,28 @@
 #pragma once
 
 #include <QtCore/QObject>
-#include <QtCore/QHash>
-#include <QtCore/QMutex>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QHash>
+#include <QtCore/QSet>
+#include <QtCore/QString>
+#include <QtCore/QMutex>
 #include <network/TcpSocket.h>
+#include <protocol/Document.h>
+#include "OpenDocument.h"
 #include "User.h"
 
 using namespace collaborative_text_editor;
 
+extern QHash<QString,QSharedPointer<Profile>> online_users;
+extern QHash<Document,OpenDocument> open_documents;
+extern QMutex m_users, m_documents;
+
 class Worker : public QObject {
     Q_OBJECT
 
-    QHash<int,User> users_;     // socket_fd -> user
-    QMutex m_users_;            // access both from main thread (new connections) and worker thread (event loop)
+    QHash<TcpSocket*,User> users_;
+    QHash<Document,QSet<TcpSocket*>> editing_clients_;
+    QMutex m_users_;    // just because Server (in main thread) uses number_of_connections()
 
     void signup(User& user, QSharedPointer<Message> message);
     void login(User& user, QSharedPointer<Message> message);
@@ -35,13 +44,15 @@ signals:
     void new_message(QSharedPointer<Message> message);
 
 private slots:
-    void serve_request();
+    void create_socket(int socket_fd);
+    void delete_socket(TcpSocket* socket);
+    void serve_request(User& user);
 
 public slots:
-    void create_socket(int socket_fd);
     void dispatch_message(QSharedPointer<Message> message);
 
 public:
-    void assign_connection(qintptr socket_fd);
-    unsigned int number_of_connections();
+    Worker();
+    void assign_connection(int socket_fd);
+    unsigned int number_of_connections() const;
 };

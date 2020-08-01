@@ -5,7 +5,7 @@
 #include <network/TcpSocket.h>
 
 namespace collaborative_text_editor {
-    TcpSocket::TcpSocket(quintptr socket_fd) {
+    TcpSocket::TcpSocket(int socket_fd) {
         if (!setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");
     }

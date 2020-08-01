@@ -17,10 +17,7 @@ Server::Server(unsigned int port, unsigned int n_threads) {
         workers_.push_back(QSharedPointer<Worker>::create());
         workers_[i]->moveToThread(thread);
 
-        // connect for socket distribution
-        connect(workers_[i].get(), &Worker::new_connection, workers_[i].get(), &Worker::create_socket);
-
-        // connect workers for dispatching
+        // connect workers
         for (int j=0; j<i; j++) {
             connect(workers_[i].get(), &Worker::new_message, workers_[j].get(), &Worker::dispatch_message);
             connect(workers_[j].get(), &Worker::new_message, workers_[i].get(), &Worker::dispatch_message);

@@ -5,12 +5,12 @@
 #include <protocol/DocumentsMessage.h>
 #include <protocol/Document.h>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QList>
+#include <QtCore/QSet>
 
 using namespace collaborative_text_editor;
 
 int main() {
-    const QList<Document> documents = {
+    const QSet<Document> documents = {
             Document("test owner 1", "test name 1"),
             Document("test owner 2", "test name 2")
     };

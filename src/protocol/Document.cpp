@@ -3,6 +3,7 @@
  */
 
 #include <protocol/Document.h>
+#include <boost/functional/hash.hpp>
 
 namespace collaborative_text_editor {
     Document::Document() {}
@@ -42,5 +43,12 @@ namespace collaborative_text_editor {
         json_object["owner"] = owner_;
         json_object["name"] = name_;
         return json_object;
+    }
+
+    uint qHash(const Document &key, uint seed) {
+        size_t s = static_cast<size_t>(seed);
+        boost::hash_combine(s, key.owner_.toStdString());
+        boost::hash_combine(s, key.name_.toStdString());
+        return s;
     }
 }
