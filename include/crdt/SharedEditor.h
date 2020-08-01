@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QChar>
 #include <protocol/Message.h>
@@ -16,13 +17,13 @@
 namespace collaborative_text_editor {
     class SharedEditor {
         int site_id_, site_counter_;
-        QVector<Symbol> text_;
+        QList<Symbol> text_;
         Lseq pos_allocator_;
 
     public:
         SharedEditor(int site_id);
         SharedEditor(int site_id, const Lseq& pos_allocator);
-        SharedEditor(int site_id, const QVector<Symbol>& text);
+        SharedEditor(int site_id, const QList<Symbol>& text);
 
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
@@ -31,8 +32,9 @@ namespace collaborative_text_editor {
         int find(const Symbol& symbol);
 
         QString to_string() const;
-        QVector<Symbol> text() const;
+        QList<Symbol> text() const;
 
-        static const int invalid_site_id, server_site_id, invalid_site_counter;
+        static const int invalid_site_id, invalid_site_counter;
+        static const int server_site_id;
     };
 }

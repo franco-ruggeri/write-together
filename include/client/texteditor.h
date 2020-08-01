@@ -52,7 +52,7 @@ private:
     QAction *show_peers;
     fileInfo file;
     QSharedPointer<QListWidget>list_user;
-    QMap<QString, User> map_username_to_User;
+    QMap<QString, Profile> map_username_to_User;
     QHash<QString,Symbol> connected_user;
 
 #ifndef QT_NO_CLIPBOARD

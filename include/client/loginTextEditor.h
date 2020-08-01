@@ -45,7 +45,7 @@ private slots:
     void on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item);
     void on_user_change_username_pushButton_clicked();
     void on_user_share_pushButton_clicked();
-    void share_file(QString filename);
+    void share_file(const QString& filename);
 
     void init_user_page();
 };

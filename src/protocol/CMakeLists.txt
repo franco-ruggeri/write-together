@@ -21,7 +21,6 @@ add_library(protocol
         ProfileMessage.cpp
         ProfileOkMessage.cpp
         Profile.cpp
-        User.cpp
         Document.cpp
         DocumentMessage.cpp
         )

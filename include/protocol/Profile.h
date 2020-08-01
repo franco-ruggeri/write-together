@@ -9,34 +9,47 @@
 
 #pragma once
 
-#include <QString>
-#include <QImage>
-#include <QTextCursor>
+#include <QtCore/QString>
+#include <QtCore/QJsonObject>
+#include <QtGui/QImage>
+#include <QtGui/QTextCursor>
 #include <QtWidgets/QLabel>
+#include <crdt/Symbol.h>
 #include <QtWidgets/QTextEdit>
-#include "crdt/Symbol.h"
+#include "Document.h"
 
-const QString imgPath = ":/images";
 namespace collaborative_text_editor {
-    class User {
+    class Profile {
+        QString username_, name_, surname_;
+        QImage icon_;
+
+
+//cursor
         QTextCursor *cursor_;
         QLabel* cursor_label_;
-        QString username_;
-        QImage icon_;
         Symbol cursor_position_;
 
     public:
-        User(const QString &username, const Symbol &cursor_position, const QImage &icon = QImage(imgPath + "/user.png"));
+        Profile();
+        Profile(const QString& username, const QString& name, const QString& surname);
+        Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon);
+        Profile(const QJsonObject& json_object);
+
+        bool operator==(const Profile& other) const;
 
         QString username() const;
+        QString name() const;
+        QString surname() const;
         QImage icon() const;
-        Symbol cursor_position() const;
+
+        QJsonObject json() const;
+
+
+
+        //cursors
         int get_cursor_position();
         void setIcon(const QImage &icon);
-        QMap<QString,QString> filename_to_owner_map;
+        QMap<QString,Document> filename_to_owner_map;
         void init_cursor(QTextEdit *editor, int newCursorPosition);
-
     };
-
-
 }

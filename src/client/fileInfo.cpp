@@ -4,17 +4,19 @@
 
 #include "client/fileInfo.h"
 
+#include <utility>
 
-fileInfo::fileInfo(Document document, QVector<Symbol> file_content, QHash<QString,Profile> users): document(document),
-file_content(file_content), users(users){
+
+fileInfo::fileInfo(Document document, QList<Symbol> file_content, QHash<QString,Profile> users,QHash<QString,int> site_ids): document(std::move(document)),
+file_content(std::move(file_content)), users(std::move(users)), site_ids(std::move( site_ids)){
 
 }
 
-const QVector<Symbol> &fileInfo::getFileContent() const {
+const QList<Symbol> &fileInfo::getFileContent() const {
     return file_content;
 }
 
-const Document fileInfo::getDocument() const {
+Document fileInfo::getDocument() const {
     return document;
 }
 

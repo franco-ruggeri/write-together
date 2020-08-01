@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <QVector>
+#include <QtCore/QVector>
 #include <QtCore/QChar>
 #include <QtCore/QJsonObject>
 

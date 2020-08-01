@@ -14,14 +14,15 @@ private:
 
 
     Document document;
-    QVector<Symbol> file_content;
+    QList<Symbol> file_content;
     QHash<QString,Profile> users;
+    QHash<QString,int> site_ids;
 public:
-    fileInfo(Document document, QVector<Symbol> file_content, QHash<QString,Profile> users);
+    fileInfo(Document document, QList<Symbol> file_content, QHash<QString,Profile> users, QHash<QString,int> site_ids);
 
-    const QVector<Symbol> &getFileContent() const;
+    const QList<Symbol> &getFileContent() const;
 
-    const Document getDocument() const;
+    Document getDocument() const;
 
     const QHash<QString,Profile> &getUsers() const;
 

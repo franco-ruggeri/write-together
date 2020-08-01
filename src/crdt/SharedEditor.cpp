@@ -8,13 +8,14 @@
 namespace collaborative_text_editor {
     const int SharedEditor::invalid_site_id = -1;
     const int SharedEditor::invalid_site_counter = -1;
+    const int SharedEditor::server_site_id = 0;
 
     SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
 
     SharedEditor::SharedEditor(int site_id, const Lseq& pos_allocator) :
             site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
 
-    SharedEditor::SharedEditor(int site_id, const QVector<Symbol>& text) :
+    SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text) :
             site_id_(site_id), site_counter_(0), text_(text) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
@@ -58,7 +59,7 @@ namespace collaborative_text_editor {
         return result;
     }
 
-    QVector<Symbol> SharedEditor::text() const {
+    QList<Symbol> SharedEditor::text() const {
         return text_;
     }
 }

@@ -11,7 +11,6 @@
 #include "client/utility.h"
 #include "protocol/Message.h"
 #include "crdt/Symbol.h"
-#include "protocol/User.h"
 #include "fileInfo.h"
 #include <optional>
 #include <protocol/Document.h>
@@ -45,7 +44,8 @@ public:
 
     void sendErase(int pos);
 
-    std::tuple<bool, QHash<QString, Profile>, QVector<Symbol>, QHash<QString, Symbol>> open_file(const QString& filename);
+    std::tuple<bool, QHash<QString, Profile>, QList<Symbol>, QHash<QString, Symbol>, QHash<QString, int>>
+    open_file(const QString& filename);
 
 
     void file_close(const fileInfo& file);

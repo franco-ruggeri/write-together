@@ -59,7 +59,6 @@ add_executable(collaborative_text_editor
         ../crdt/Symbol.cpp
         ../crdt/LSEQ.cpp
         fileInfo.cpp
-        ../protocol/User.cpp
         changeUsernameDialog.cpp
 
 

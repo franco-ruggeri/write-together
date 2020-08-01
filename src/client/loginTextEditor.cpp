@@ -152,13 +152,15 @@ void loginTextEditor::on_user_share_pushButton_clicked() {
 void loginTextEditor::open_editor(const QString& filename, bool newfile){
 
     QHash<QString,Symbol> connected_user; // cursors of all users currently editing the document
+    QHash<QString,int> user_ids; //site_id of all users that can edit the document
     Document d = client->user.filename_to_owner_map[filename];
-    fileInfo file = fileInfo(d,QVector<Symbol>(),QHash<QString,Profile>());
+
+    fileInfo file = fileInfo(d,QList<Symbol>(),QHash<QString,Profile>(),user_ids);
     this->hide();
     if(!newfile){
-        std::tuple<bool,QHash<QString,Profile>,QVector<Symbol>, QHash<QString,Symbol>> result =  client->open_file(filename);
+        std::tuple<bool,QHash<QString,Profile>,QList<Symbol>, QHash<QString,Symbol> , QHash<QString,int>> result =  client->open_file(filename);
         if(std::get<0>(result)){
-            file = fileInfo(d,std::get<2>(result),std::get<1>(result));
+            file = fileInfo(d,std::get<2>(result),std::get<1>(result),std::get<4>(result));
             connected_user = get<3>(result);
         }
         else
@@ -182,7 +184,7 @@ void loginTextEditor::cleanAll(){
     ui->user_file_listWidget->clear();
 }
 
-void loginTextEditor::share_file(QString filename){
+void loginTextEditor::share_file(const QString& filename){
     std::optional<QString> response = client->get_uri(filename);
     QMessageBox msgBox;
     QClipboard *cb = QApplication::clipboard();

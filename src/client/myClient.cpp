@@ -20,7 +20,7 @@
 #include "protocol/LoginMessage.h"
 #include "protocol/ErrorMessage.h"
 #include "protocol/DocumentsMessage.h"
-#include "protocol/User.h"
+
 
 using namespace collaborative_text_editor;
 myClient::myClient(QObject *parent) : QObject(parent) {
@@ -104,10 +104,11 @@ std::tuple<bool,QString> myClient::new_file(const QString& filename){
     return std::make_tuple(true,"File created");
 }
 
-std::tuple<bool,QHash<QString,Profile>,QVector<Symbol>, QHash<QString,Symbol>> myClient::open_file(const QString& filename){
+std::tuple<bool,QHash<QString,Profile>,QList<Symbol>, QHash<QString,Symbol>, QHash<QString,int>> myClient::open_file(const QString& filename){
     QHash<QString,Symbol> connected_users; // connected user. This is uses also for print the cursors
-    QVector<Symbol> text; // document's content
+    QList<Symbol> text; // document's content
     QHash<QString,Profile> users;   // profiles of all users with access to the document (even offline)
+    QHash<QString,int> users_ids; // site_ids of all users
     bool result = true;
     QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(filename);
     QSharedPointer<Message> response = send_message(open_message);
@@ -115,8 +116,9 @@ std::tuple<bool,QHash<QString,Profile>,QVector<Symbol>, QHash<QString,Symbol>> m
     text = document_info->text();
     users = document_info->profiles();
     connected_users = document_info->cursors();
+    users_ids = document_info->site_ids();
     //TODO: side_id
-    return std::make_tuple(result,users,text, connected_users);
+    return std::make_tuple(result,users,text, connected_users, users_ids);
 }
 
 bool myClient::change_password(const QString& new_password) {

@@ -39,7 +39,7 @@
 #include <protocol/InsertMessage.h>
 #include <client/loginTextEditor.h>
 #include <protocol/EraseMessage.h>
-
+const QString imgPath = ":/images";
 
 int site_id(){
     return 0;
@@ -53,9 +53,7 @@ file(file){
     editor = QSharedPointer<QTextEdit>::create(this);
     this->client = client;
     change_from_server = false;
-
     editor->setFontPointSize(12);
-
     shared_editor = QSharedPointer<SharedEditor>::create(site_id(),file.getFileContent());
     setCentralWidget(editor.get());
     connected_client = QSharedPointer<QDockWidget>();
