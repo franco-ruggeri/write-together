@@ -41,8 +41,9 @@ class Worker : public QObject {
     void close_document(User& user, const QSharedPointer<Message>& message);
 
     // document editing
-    void edit_document(const User& user, const QSharedPointer<Message>& message,
-                       const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)>& edit);
+    void edit_document(const User &user, const Document &document, const Symbol &symbol,
+                       const QSharedPointer<Message> &message_to_dispatch,
+                       const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)> &edit);
     void insert_symbol(const User& user, const QSharedPointer<Message>& message);
     void erase_symbol(const User& user, const QSharedPointer<Message>& message);
     void move_cursor(const User& user, const QSharedPointer<Message>& message);

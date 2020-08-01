@@ -8,6 +8,8 @@
  * Moreover, this class guarantees not to use new lines ('\n') in the serialization, so server and client can easily
  * exchange messages by lines.
  *
+ * Getters for the documented members return references, to avoid copies (optimization).
+ *
  * Author: Franco Ruggeri
  */
 

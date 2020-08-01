@@ -70,7 +70,7 @@ void Worker::create_socket(int socket_fd) {
     QMutexLocker ml(&m_users_);
     users_.insert(socket, User(socket));
 
-    qDebug() << "new connection from: { IP:" << socket->peerAddress().toString()
+    qDebug() << "new connection from: { ip address:" << socket->peerAddress().toString()
              << ", port:" << socket->peerPort() << "}";
 }
 
@@ -87,7 +87,7 @@ void Worker::delete_socket(TcpSocket *socket) {
     QMutexLocker ml(&m_users_);
     users_.remove(socket);
 
-    qDebug() << "connection closed: { IP:" << socket->peerAddress().toString()
+    qDebug() << "connection closed: { ip address:" << socket->peerAddress().toString()
              << ", port:" << socket->peerPort() << "}";
 }
 
@@ -197,8 +197,8 @@ void Worker::signup(User &user, const QSharedPointer<Message>& message) {
 
     // unpack message
     QSharedPointer<SignupMessage> m = message.staticCast<SignupMessage>();
-    QString username = m->username();
-    QString password = m->password();
+    QString& username = m->username();
+    QString& password = m->password();
 
     // check inputs
     if (username.isEmpty() || password.isEmpty()) {
@@ -235,9 +235,9 @@ void Worker::login(User &user, const QSharedPointer<Message>& message) {
     }
 
     // unpack message
-    QSharedPointer<SignupMessage> m = message.staticCast<SignupMessage>();
-    QString username = m->username();
-    QString password = m->password();
+    QSharedPointer<LoginMessage> m = message.staticCast<LoginMessage>();
+    QString& username = m->username();
+    QString& password = m->password();
 
     // check inputs
     QMutexLocker ml(&m_users);
@@ -298,6 +298,7 @@ void Worker::update_profile(User& user, const QSharedPointer<Message>& message) 
 }
 
 void Worker::create_document(User &user, const QSharedPointer<Message>& message) {
+
 //    // TODO: modifica check, devo controllare che non ci sia sul disco, non in memoria
 //
 //    // check protocol errors
@@ -358,14 +359,10 @@ void Worker::close_document(User& user, const QSharedPointer<Message>& message) 
 //    user.close_document(document);
 }
 
-void Worker::edit_document(const User& user, const QSharedPointer<Message>& message,
+void Worker::edit_document(const User &user, const Document& document, const Symbol& symbol,
+                           const QSharedPointer<Message>& message_to_dispatch,
                            const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)>& edit) {
     TcpSocket *socket = user.socket();
-
-    // unpack message
-    QSharedPointer<InsertMessage> m = message.staticCast<InsertMessage>();
-    Document document = m->document();
-    Symbol symbol = m->symbol();
 
     // check protocol errors
     if (!user.authenticated()) {
@@ -374,7 +371,7 @@ void Worker::edit_document(const User& user, const QSharedPointer<Message>& mess
         throw std::logic_error(reason.toStdString());
     }
     if (!user.is_open(document)) {
-        QString reason = "document not previously opened";
+        QString reason = "document not opened";
         send_error(socket, reason);
         throw std::logic_error(reason.toStdString());
     }
@@ -386,24 +383,43 @@ void Worker::edit_document(const User& user, const QSharedPointer<Message>& mess
     edit(local_editor, symbol);
 
     // notify insertion
-    emit new_message(message);
+    emit new_message(message_to_dispatch);
 }
 
 
 void Worker::insert_symbol(const User& user, const QSharedPointer<Message>& message) {
-    edit_document(user, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
+    QSharedPointer<InsertMessage> m = message.staticCast<InsertMessage>();
+    Document& document = m->document();
+    Symbol& symbol = m->symbol();
+
+    edit_document(user, document, symbol, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
         sse->remote_insert(s);
     });
 }
 
 void Worker::erase_symbol(const User& user, const QSharedPointer<Message>& message) {
-    edit_document(user, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
+    QSharedPointer<EraseMessage> m = message.staticCast<EraseMessage>();
+    Document& document = m->document();
+    Symbol& symbol = m->symbol();
+
+    edit_document(user, document, symbol, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
         sse->remote_erase(s);
     });
 }
 
 void Worker::move_cursor(const User& user, const QSharedPointer<Message>& message) {
-    edit_document(user, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
-        // nothing to do in the server copy of the document, it is just a cursor movement for the clients
-    });
+    QSharedPointer<CursorMessage> m = message.staticCast<CursorMessage>();
+    Document& document = m->document();
+    Symbol& symbol = m->symbol();
+    std::optional<QString>& username = m->username();
+
+    QString correct_username = user.profile()->username();
+    if (username && *username != correct_username)
+        throw std::logic_error("attempt of source username spoofing");
+    QSharedPointer<Message> message_to_dispatch = QSharedPointer<CursorMessage>::create(document, symbol,
+                                                                                        correct_username);
+
+    edit_document(user, document, symbol, message_to_dispatch,
+                  // dummy edit, nothing to do in local copy
+                  [](const QSharedPointer<SafeSharedEditor> &sse, const Symbol &s) {});
 }
