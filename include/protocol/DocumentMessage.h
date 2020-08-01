@@ -31,11 +31,11 @@ namespace collaborative_text_editor {
                         const QHash<QString,Profile>& profiles, const QHash<QString,Symbol>& cursors,
                         const QString& sharing_link);
         bool operator==(const Message& other) const override;
-        Document document() const;
-        QList<Symbol> text() const;
-        QHash<QString,int> site_ids() const;
-        QHash<QString,Profile> profiles() const;
-        QHash<QString,Symbol> cursors() const;
-        QString sharing_link() const;
+        Document& document();
+        QList<Symbol>& text();
+        QHash<QString,int>& site_ids();
+        QHash<QString,Profile>& profiles();
+        QHash<QString,Symbol>& cursors();
+        QString& sharing_link();
     };
 }

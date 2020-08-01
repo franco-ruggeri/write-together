@@ -27,7 +27,7 @@ namespace collaborative_text_editor {
                this->document_name_ == o->document_name_;
     }
 
-    QString CreateMessage::document_name() const {
+    QString& CreateMessage::document_name() {
         return document_name_;
     }
 

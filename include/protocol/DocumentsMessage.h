@@ -21,6 +21,6 @@ namespace collaborative_text_editor {
         DocumentsMessage();
         DocumentsMessage(const QSet<Document>& documents);
         bool operator==(const Message& other) const override;
-        std::optional<QSet<Document>> documents() const;
+        std::optional<QSet<Document>>& documents();
     };
 }

@@ -32,11 +32,11 @@ namespace collaborative_text_editor {
             this->document_ == o->document_ && this->username_ == o->username_;
     }
 
-    Document CloseMessage::document() const {
+    Document& CloseMessage::document() {
         return document_;
     }
 
-    std::optional<QString> CloseMessage::username() const {
+    std::optional<QString>& CloseMessage::username() {
         return username_;
     }
 

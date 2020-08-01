@@ -38,6 +38,10 @@ namespace collaborative_text_editor {
         return name_;
     }
 
+    QString Document::full_name() const {
+        return owner_ + "/" + name_;
+    }
+
     QJsonObject Document::json() const {
         QJsonObject json_object;
         json_object["owner"] = owner_;

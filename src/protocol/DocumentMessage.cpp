@@ -111,27 +111,27 @@ namespace collaborative_text_editor {
                this->cursors_ == o->cursors_ && this->sharing_link_ == o->sharing_link_;
     }
 
-    Document DocumentMessage::document() const {
+    Document& DocumentMessage::document() {
         return document_;
     }
 
-    QList<Symbol> DocumentMessage::text() const {
+    QList<Symbol>& DocumentMessage::text() {
         return text_;
     }
 
-    QHash<QString,int> DocumentMessage::site_ids() const {
+    QHash<QString,int>& DocumentMessage::site_ids() {
         return site_ids_;
     }
 
-    QHash<QString,Profile> DocumentMessage::profiles() const {
+    QHash<QString,Profile>& DocumentMessage::profiles() {
         return profiles_;
     }
 
-    QHash<QString,Symbol> DocumentMessage::cursors() const {
+    QHash<QString,Symbol>& DocumentMessage::cursors() {
         return cursors_;
     }
 
-    QString DocumentMessage::sharing_link() const {
+    QString& DocumentMessage::sharing_link() {
         return sharing_link_;
     }
 

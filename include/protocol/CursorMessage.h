@@ -13,18 +13,19 @@
 namespace collaborative_text_editor {
     class CursorMessage : public Message {
         Document document_;
-        QString username_;
         Symbol symbol_;
+        std::optional<QString> username_;
 
         CursorMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        CursorMessage(const Document& document, const QString& username, const Symbol& symbol);
+        CursorMessage(const Document& document, const Symbol& symbol);
+        CursorMessage(const Document& document, const Symbol& symbol, const QString& username);
         bool operator==(const Message& other) const override;
-        Document document() const;
-        QString username() const;
-        Symbol symbol() const;
+        Document& document();
+        Symbol& symbol();
+        std::optional<QString>& username();
     };
 }

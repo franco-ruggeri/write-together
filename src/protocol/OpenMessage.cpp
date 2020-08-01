@@ -56,19 +56,19 @@ namespace collaborative_text_editor {
                this->site_id_ == o->site_id_ && this->profile_ == o->profile_;
     }
     
-    std::optional<Document> OpenMessage::document() const {
+    std::optional<Document>& OpenMessage::document() {
         return document_;
     }
 
-    std::optional<QString> OpenMessage::sharing_link() const {
+    std::optional<QString>& OpenMessage::sharing_link() {
         return sharing_link_;
     }
 
-    std::optional<int> OpenMessage::site_id() const {
+    std::optional<int>& OpenMessage::site_id() {
         return site_id_;
     }
 
-    std::optional<Profile> OpenMessage::profile() const {
+    std::optional<Profile>& OpenMessage::profile() {
         return profile_;
     }
 

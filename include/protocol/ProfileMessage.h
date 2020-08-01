@@ -23,7 +23,7 @@ namespace collaborative_text_editor {
         ProfileMessage(const Profile& profile);
         ProfileMessage(const Profile& profile, const QString& password);
         bool operator==(const Message& other) const override;
-        Profile profile() const;
-        std::optional<QString> password() const;
+        Profile& profile();
+        std::optional<QString>& password();
     };
 }

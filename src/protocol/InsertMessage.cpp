@@ -27,11 +27,11 @@ namespace collaborative_text_editor {
                this->document_ == o->document_ && this->symbol_ == o->symbol_;
     }
 
-    Document InsertMessage::document() const {
+    Document& InsertMessage::document() {
         return document_;
     }
 
-    Symbol InsertMessage::symbol() const {
+    Symbol& InsertMessage::symbol() {
         return symbol_;
     }
 

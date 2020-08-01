@@ -26,7 +26,7 @@ namespace collaborative_text_editor {
             this->reason_ == o->reason_;
     }
 
-    QString ErrorMessage::reason() const {
+    QString& ErrorMessage::reason() {
         return reason_;
     }
 

@@ -27,11 +27,11 @@ namespace collaborative_text_editor {
                this->document_ == o->document_ && this->symbol_ == o->symbol_;
     }
 
-    Document EraseMessage::document() const {
+    Document& EraseMessage::document() {
         return document_;
     }
 
-    Symbol EraseMessage::symbol() const {
+    Symbol& EraseMessage::symbol() {
         return symbol_;
     }
 

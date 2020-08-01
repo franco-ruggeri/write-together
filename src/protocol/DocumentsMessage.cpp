@@ -35,7 +35,7 @@ namespace collaborative_text_editor {
                this->documents_ == o->documents_;
     }
         
-    std::optional<QSet<Document>> DocumentsMessage::documents() const {
+    std::optional<QSet<Document>>& DocumentsMessage::documents() {
         return documents_;
     }
 

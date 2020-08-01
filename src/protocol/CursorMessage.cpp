@@ -5,25 +5,30 @@
 #include <protocol/CursorMessage.h>
 
 namespace collaborative_text_editor {
-    CursorMessage::CursorMessage(const Document& document, const QString& username, const Symbol& symbol) :
-        Message(MessageType::cursor), document_(document), username_(username), symbol_(symbol) {}
+    CursorMessage::CursorMessage(const Document &document, const Symbol &symbol) :
+        Message(MessageType::cursor), document_(document), symbol_(symbol) {}
+
+    CursorMessage::CursorMessage(const Document &document, const Symbol &symbol, const QString& username) :
+        Message(MessageType::cursor), document_(document), symbol_(symbol), username_(username) {}
 
     CursorMessage::CursorMessage(const QJsonObject &json_object) : Message(MessageType::cursor) {
         auto end_iterator = json_object.end();
         auto document_iterator = json_object.find("document");
-        auto username_iterator = json_object.find("username");
         auto symbol_iterator = json_object.find("symbol");
+        auto username_iterator = json_object.find("username");
 
-        if (document_iterator == end_iterator || username_iterator == end_iterator || symbol_iterator == end_iterator ||
+        if (document_iterator == end_iterator || symbol_iterator == end_iterator ||
             !document_iterator->isObject() || !symbol_iterator->isObject())
             throw std::logic_error("invalid message: invalid fields");
 
         document_ = Document(document_iterator->toObject());
-        username_ = username_iterator->toString();
         symbol_ = Symbol(symbol_iterator->toObject());
 
-        if (username_.isNull())
-            throw std::logic_error("invalid message: invalid fields");
+        if (username_iterator != end_iterator) {
+            username_ = username_iterator->toString();
+            if (username_->isNull())
+                throw std::logic_error("invalid message: invalid fields");
+        }
     }
 
     bool CursorMessage::operator==(const Message& other) const {
@@ -32,23 +37,23 @@ namespace collaborative_text_editor {
                this->document_ == o->document_ && this->username_ == o->username_ && this->symbol_ == o->symbol_;
     }
 
-    Document CursorMessage::document() const {
+    Document& CursorMessage::document() {
         return document_;
     }
 
-    QString CursorMessage::username() const {
-        return username_;
+    Symbol& CursorMessage::symbol() {
+        return symbol_;
     }
 
-    Symbol CursorMessage::symbol() const {
-        return symbol_;
+    std::optional<QString>& CursorMessage::username() {
+        return username_;
     }
 
     QJsonObject CursorMessage::json() const {
         QJsonObject json_object = Message::json();
         json_object["document"] = document_.json();
-        json_object["username"] = username_;
         json_object["symbol"] = symbol_.json();
+        if (username_) json_object["username"] = *username_;
         return json_object;
     }
 }
