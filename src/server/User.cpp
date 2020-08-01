@@ -46,15 +46,17 @@ void User::set_authenticated(bool authenticated) {
 //void User::close_document(const QString &document) {
 //    local_editors_.remove(document);
 //}
-//
-//bool User::is_open(const QString &document) {
-//    return local_editors_.contains(document);
-//}
-//
+
+bool User::is_open(const Document& document) const {
+    return open_documents_.contains(document);
+}
+
 //bool User::is_available(const QString &document) {
 //    return available_documents_.contains(document);
 //}
-//
-//QSharedPointer<SafeSharedEditor> User::local_editor(const QString &document) {
-//    return local_editors_[document];
-//}
+
+QSharedPointer<SafeSharedEditor> User::editor(const Document& document) const {
+    auto it = open_documents_.find(document);
+    if (it == open_documents_.end()) throw std::logic_error("document not found");
+    return *it;
+}

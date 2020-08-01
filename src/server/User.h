@@ -37,9 +37,9 @@ public:
 //    void create_document(const QString& document, QSharedPointer<SafeSharedEditor> local_editor);
 //    void open_document(const QString& document, QSharedPointer<SafeSharedEditor> local_editor);
 //    void close_document(const QString& document);
-//    bool is_open(const QString& document);
-//    bool is_available(const QString& document);
-//    QSharedPointer<SafeSharedEditor> local_editor(const QString& document);
+    bool is_open(const Document& document) const;
+//    bool is_available(const QString& document) const;
+    QSharedPointer<SafeSharedEditor> editor(const Document& document) const;
 };
 
 

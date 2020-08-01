@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <functional>
 #include <QtCore/QObject>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
@@ -28,16 +29,23 @@ class Worker : public QObject {
     QHash<Document,QSet<TcpSocket*>> editing_clients_;
     QMutex m_users_;    // just because Server (in main thread) uses number_of_connections()
 
-    void signup(User& user, QSharedPointer<Message> message);
-    void login(User& user, QSharedPointer<Message> message);
-    void logout(User& user, QSharedPointer<Message> message);
-    void create_document(User& user, QSharedPointer<Message> message);
-    void open_document(User& user, QSharedPointer<Message> message);
-    void insert_symbol(User& user, QSharedPointer<Message> message);
-    void erase_symbol(User& user, QSharedPointer<Message> message);
-    void move_cursor(User &user, QSharedPointer<Message> message);
-    void close_document(User& user, QSharedPointer<Message> message);
-    void update_profile(User& user, QSharedPointer<Message> message);
+    // identity management
+    void signup(User& user, const QSharedPointer<Message>& message);
+    void login(User& user, const QSharedPointer<Message>& message);
+    void logout(User& user, const QSharedPointer<Message>& message);
+    void update_profile(User& user, const QSharedPointer<Message>& message);
+
+    // document management
+    void create_document(User& user, const QSharedPointer<Message>& message);
+    void open_document(User& user, const QSharedPointer<Message>& message);
+    void close_document(User& user, const QSharedPointer<Message>& message);
+
+    // document editing
+    void edit_document(const User& user, const QSharedPointer<Message>& message,
+                       const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)>& edit);
+    void insert_symbol(const User& user, const QSharedPointer<Message>& message);
+    void erase_symbol(const User& user, const QSharedPointer<Message>& message);
+    void move_cursor(const User& user, const QSharedPointer<Message>& message);
 
 signals:
     void new_connection(int socket_fd);
