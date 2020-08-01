@@ -19,8 +19,9 @@ class texteditor : public QMainWindow{
 
 
 
+
 public:
-    texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file,QHash<QString,Symbol>  users);
+    texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file);
 
     bool change_from_server;
     void setupFileActions();

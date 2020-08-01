@@ -39,6 +39,8 @@
 #include <protocol/InsertMessage.h>
 #include <client/loginTextEditor.h>
 #include <protocol/EraseMessage.h>
+#include <protocol/CursorMessage.h>
+
 const QString imgPath = ":/images";
 
 int site_id(){
@@ -46,7 +48,7 @@ int site_id(){
 }
 
 
-texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file, QHash<QString,Symbol>  users): QMainWindow(parent),
+texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file): QMainWindow(parent),
 file(file){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION);
@@ -60,7 +62,6 @@ file(file){
     connected_client->setObjectName("Peers");
     connected_client->setWindowTitle("Peers");
     editor->setText(shared_editor->to_string());
-
     list_user = QSharedPointer<QListWidget>();
     connected_client->setWidget(list_user.get());
     QIcon userIcon = QIcon(QPixmap::fromImage(client->user.icon()));
@@ -83,8 +84,9 @@ file(file){
 void texteditor::init_cursors(){
     qDebug() << "inizializzazione cursori";
 
-    for( auto user : file.getUsers()){
-        if(connected_user.count(user.username())) {
+    for( auto user : file.users()){
+        if(file.connected_user().count(user.username())) {
+            map_username_to_User.insert(user.username(),user);
             int cursor_pos = shared_editor->find(connected_user[user.username()]);
             user.init_cursor(editor.get(), cursor_pos);
         }
@@ -192,7 +194,7 @@ void texteditor::file_close() {
 }
 
 void texteditor::file_share(){
-    emit share_file(file.getDocument().name());
+    emit share_file(file.document().name());
 }
 
 
@@ -202,11 +204,11 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
     for(int i = 0 ; i < charsAdded; i++) {
 
-        client->sendInsert(file.getDocument(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
+        client->sendInsert(file.document(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
     }
 
     for(int i = 0 ; i < charsRemoved; i++) {
-        client->sendErase(file.getDocument(),shared_editor->local_erase(position));
+        client->sendErase(file.document(),shared_editor->local_erase(position));
     }
 }
 
@@ -227,6 +229,13 @@ void texteditor::readyRead(){
             shared_editor->remote_erase(m.staticCast<EraseMessage>()->symbol());
             this->editor->setText(shared_editor->to_string());
         }
+        if (m->type() == MessageType::cursor) {
+            change_from_server = true;
+            auto cursor_message = m.staticCast<CursorMessage>();
+            int position = shared_editor->find(cursor_message->symbol());
+            map_username_to_User[cursor_message->username()].change_cursor_position(editor.get(),position);
+
+        }
     }
 }
 
@@ -246,6 +255,6 @@ void texteditor::textChange() {
 
 void texteditor::cursorPositionChanged() {
     QTextCursor cursor = editor->textCursor();
-//    this->client->send_cursor(cursor.position());
+    this->client->send_cursor(this->file.document(), this->shared_editor->local_insert(cursor.position(),QChar()));
 
 }

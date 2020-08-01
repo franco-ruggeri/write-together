@@ -13,18 +13,22 @@ class fileInfo {
 private:
 
 
-    Document document;
-    QList<Symbol> file_content;
-    QHash<QString,Profile> users;
-    QHash<QString,int> site_ids;
+    Document document_;
+    QList<Symbol> file_content_;
+    QHash<QString,Profile> users_;
+    QHash<QString,int> site_ids_;
+    QHash<QString,Symbol> connected_user_;
+    QString sharing_link_;
 public:
-    fileInfo(Document document, QList<Symbol> file_content, QHash<QString,Profile> users, QHash<QString,int> site_ids);
+    fileInfo(Document document, QList<Symbol> file_content, QHash<QString,Profile> users, QHash<QString,int> site_ids,QString sharing_link,QHash<QString,Symbol> connected_user);
 
     const QList<Symbol> &getFileContent() const;
 
-    Document getDocument() const;
+    const Document &document() const;
 
-    const QHash<QString,Profile> &getUsers() const;
+    const QHash<QString,Profile> &users() const;
+    const QHash<QString,Symbol> &connected_user() const;
+    const QString &sharing_link() const;
 
 };
 

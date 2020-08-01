@@ -111,9 +111,7 @@ void loginTextEditor::on_user_create_file_pushButton_clicked() {
     if(file_dialog == nullptr) {
         file_dialog = QSharedPointer<newFileDialog>::create(this, client, editor);
         connect(file_dialog.get(), &newFileDialog::open_editor, this, &loginTextEditor::open_editor);
-
     }
-
     file_dialog->setModal(true);
     file_dialog->show();
 }
@@ -125,7 +123,8 @@ void loginTextEditor::on_user_logout_pushButton_clicked() {
 }
 
 void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item) {
-    open_editor(item->text(),false);
+    fileInfo file =  client->open_file(item->text());
+    open_editor(file);
 }
 
 void loginTextEditor::on_user_change_password_pushButton_clicked() {
@@ -143,31 +142,17 @@ void loginTextEditor::on_user_change_username_pushButton_clicked() {
     changeuser_dialog->show();
 }
 
-void loginTextEditor::on_user_share_pushButton_clicked() {
-    QListWidgetItem * file_selected = ui->user_file_listWidget->currentItem();
-    share_file(file_selected->text());
-}
+//void loginTextEditor::on_user_share_pushButton_clicked() {
+//    QListWidgetItem * file_selected = ui->user_file_listWidget->currentItem();
+//    share_file(file_selected->text());
+//}
 
 
-void loginTextEditor::open_editor(const QString& filename, bool newfile){
 
-    QHash<QString,Symbol> connected_user; // cursors of all users currently editing the document
-    QHash<QString,int> user_ids; //site_id of all users that can edit the document
-    Document d = client->user.filename_to_owner_map[filename];
+void loginTextEditor::open_editor(fileInfo file){
 
-    fileInfo file = fileInfo(d,QList<Symbol>(),QHash<QString,Profile>(),user_ids);
     this->hide();
-    if(!newfile){
-        std::tuple<bool,QHash<QString,Profile>,QList<Symbol>, QHash<QString,Symbol> , QHash<QString,int>> result =  client->open_file(filename);
-        if(std::get<0>(result)){
-            file = fileInfo(d,std::get<2>(result),std::get<1>(result),std::get<4>(result));
-            connected_user = get<3>(result);
-        }
-        else
-            QMessageBox::warning(this, "WARNING",
-                                 "ERROR!");
-    }
-    editor = QSharedPointer<texteditor>::create(nullptr,client,file,connected_user);
+    editor = QSharedPointer<texteditor>::create(nullptr,client,file);
     connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::show);
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
     editor->show();
@@ -184,15 +169,15 @@ void loginTextEditor::cleanAll(){
     ui->user_file_listWidget->clear();
 }
 
-void loginTextEditor::share_file(const QString& filename){
-    std::optional<QString> response = client->get_uri(filename);
+void loginTextEditor::share_file(const QString& shared_link){
+//    std::optional<QString> response = client->get_uri(filename);
     QMessageBox msgBox;
     QClipboard *cb = QApplication::clipboard();
-    msgBox.setText(filename+" URI: " + *response);
+    msgBox.setText(" URI: " + shared_link);
     QAbstractButton* pButtonYes = msgBox.addButton(tr("Copy"), QMessageBox::YesRole);
     msgBox.addButton(tr("Close"), QMessageBox::NoRole);
     msgBox.exec();
     if (msgBox.clickedButton()==pButtonYes) {
-        cb->setText( *response);
+        cb->setText(shared_link);
     }
 }

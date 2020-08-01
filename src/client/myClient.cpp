@@ -2,7 +2,7 @@
  * Author: Antonino Musmeci
  */
 //TODO: add user name
-//TODO: side id
+
 #include "client/myClient.h"
 #include <QPixmap>
 #include <QJsonDocument>
@@ -95,30 +95,27 @@ void myClient::sendErase(const Document& document, const Symbol& s){
     socket->write(erase_message->serialize() + '\n');
 }
 
-std::tuple<bool,QString> myClient::new_file(const QString& filename){
+std::optional<fileInfo> myClient::new_file(const QString& filename){
+
     QSharedPointer<Message> create_message =  QSharedPointer<CreateMessage>::create(filename);
     QSharedPointer<Message> response  =  send_message(create_message);
-    if(response -> type() == MessageType::error){
-        return std::make_tuple(false,"Unable to create file " + filename);
+    if(response -> type() == MessageType::document){
+        QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
+        return fileInfo(document_info->document(),document_info->text(),document_info->profiles(),
+                        document_info->site_ids(),document_info->sharing_link(),document_info->cursors());
     }
-    return std::make_tuple(true,"File created");
+
+    return std::nullopt;
 }
 
-std::tuple<bool,QHash<QString,Profile>,QList<Symbol>, QHash<QString,Symbol>, QHash<QString,int>> myClient::open_file(const QString& filename){
-    QHash<QString,Symbol> connected_users; // connected user. This is uses also for print the cursors
-    QList<Symbol> text; // document's content
-    QHash<QString,Profile> users;   // profiles of all users with access to the document (even offline)
-    QHash<QString,int> users_ids; // site_ids of all users
-    bool result = true;
+fileInfo myClient::open_file(const QString& filename){
+
     QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(filename);
     QSharedPointer<Message> response = send_message(open_message);
     QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
-    text = document_info->text();
-    users = document_info->profiles();
-    connected_users = document_info->cursors();
-    users_ids = document_info->site_ids();
-    //TODO: side_id
-    return std::make_tuple(result,users,text, connected_users, users_ids);
+    fileInfo file(document_info->document(),document_info->text(),document_info->profiles(),
+            document_info->site_ids(),document_info->sharing_link(),document_info->cursors());
+    return file;
 }
 
 bool myClient::change_password(const QString& new_password) {
@@ -132,7 +129,7 @@ bool myClient::change_password(const QString& new_password) {
 }
 
 void myClient::file_close(const fileInfo& file){
-    QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(file.getDocument(), user.username());
+    QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(file.document(), user.username());
     QSharedPointer<Message> response = send_message(close_message);
 }
 
@@ -146,11 +143,11 @@ bool myClient::change_username(const QString& new_username){
     return response->type() == MessageType::profile_ok;
 }
 
-std::optional<QString> myClient::get_uri(const QString& filename){
-
-    /*************get uri from server*************/
-    return "uri_del_file_ritornato_dal_server";
-}
+//std::optional<QString> myClient::get_uri(const QString& filename){
+//
+//    /*************get uri from server*************/
+//    return "uri_del_file_ritornato_dal_server";
+//}
 
 QList<Document> myClient::get_documents_form_server() {
     QSharedPointer<Message> documents_message = QSharedPointer<DocumentsMessage>::create();
@@ -160,16 +157,9 @@ QList<Document> myClient::get_documents_form_server() {
     }
 }
 
-//QSharedPointer<std::shared_ptr<Message>> myClient::send_message_with_multiple_response(const std::shared_ptr<Message>& request) {
-//
-//    QVector<QSharedPointer<Message>> v;
-//    socket->write(request->serialize() + '\n');
-//    if(socket->waitForReadyRead(1000)) {
-//        while(socket->canReadLine()){
-//            QByteArray response = socket->readLine();
-//            v.push_back(Message::deserialize(response));
-//        }
-//        return v;
-//    }
-//    return {QSharedPointer<ErrorMessage>::create("TIME_OUT")};
-//}
+
+void myClient::send_cursor(Document document, Symbol cursor_position){
+    QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, user.username(), cursor_position);
+    socket->write(cursor_message->serialize() + '\n');
+
+}

@@ -38,13 +38,13 @@ public:
     void logout();
 
 
-    std::tuple<bool, QString> new_file(const QString& filename);
+    std::optional<fileInfo> new_file(const QString& filename);
 
     bool change_password(const QString& new_password);
 
     void sendErase(int pos);
 
-    std::tuple<bool, QHash<QString, Profile>, QList<Symbol>, QHash<QString, Symbol>, QHash<QString, int>>
+    fileInfo
     open_file(const QString& filename);
 
 
@@ -60,6 +60,8 @@ public:
     void sendErase(const Document &document, const Symbol &s);
 
     void sendInsert(const Document &document, const Symbol &s);
+
+    void send_cursor(Document document, Symbol cursor_position);
 };
 
 

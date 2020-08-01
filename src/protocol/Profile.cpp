@@ -12,7 +12,7 @@ namespace collaborative_text_editor {
     Profile::Profile(const QString &username, const QString &name, const QString &surname) :
             username_(username), name_(name), surname_(surname) {}
 
-    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage& icon) :
+    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage &icon) :
             username_(username), name_(name), surname_(surname), icon_(icon) {}
 
     Profile::Profile(const QJsonObject &json_object) {
@@ -38,7 +38,7 @@ namespace collaborative_text_editor {
         icon_.loadFromData(bytes, "PNG");
     }
 
-    bool Profile::operator==(const Profile& other) const {
+    bool Profile::operator==(const Profile &other) const {
         return this->username_ == other.username_ && this->name_ == other.name_ && this->surname_ == other.surname_ &&
                this->icon_ == other.icon_;
     }
@@ -81,23 +81,27 @@ namespace collaborative_text_editor {
 
     //cursors
 
-    void Profile::init_cursor(QTextEdit *editor,int newCursorPosition){
+    void Profile::init_cursor(QTextEdit *editor, int newCursorPosition) {
         cursor_ = new QTextCursor(editor->document());
         newCursorPosition = qMin(newCursorPosition, editor->toPlainText().size());
         cursor_->setPosition(newCursorPosition);
         cursor_label_ = new QLabel(editor);
         QPixmap pix(3, 24);
         pix.fill(Qt::yellow);
-        cursor_label_ ->setPixmap(pix);
+        cursor_label_->setPixmap(pix);
 
         const QRect qRect = editor->cursorRect(*cursor_);
-
-
         cursor_label_->move(qRect.left(), qRect.top());
         cursor_label_->show();
     }
 
-    int Profile::get_cursor_position() {
-        return 4;
+
+    void Profile::change_cursor_position(QTextEdit *editor, int new_position) {
+        new_position = qMin(new_position, editor->toPlainText().size());
+        cursor_->setPosition(new_position);
+        const QRect qRect = editor->cursorRect(*cursor_);
+        cursor_label_->move(qRect.left(), qRect.top());
+        cursor_label_->show();
+
     }
 }
