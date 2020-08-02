@@ -7,22 +7,26 @@
 #include <QtCore/QJsonArray>
 
 namespace collaborative_text_editor {
-    DocumentMessage::DocumentMessage(const Document& document, const QList<Symbol>& text,
+    DocumentMessage::DocumentMessage(const Document& document, const QList<Symbol>& text, int site_id, int site_counter,
                                      const QHash<QString,int>& site_ids, const QHash<QString,Profile>& profiles,
                                      const QHash<QString,Symbol>& cursors, const QString& sharing_link) :
-        Message(MessageType::document), document_(document), text_(text), site_ids_(site_ids), profiles_(profiles),
-        cursors_(cursors), sharing_link_(sharing_link) {}
+        Message(MessageType::document), document_(document), text_(text), site_id_(site_id),
+        site_counter_(site_counter), site_ids_(site_ids), profiles_(profiles), cursors_(cursors),
+        sharing_link_(sharing_link) {}
 
     DocumentMessage::DocumentMessage(const QJsonObject &json_object) : Message(MessageType::document) {
         auto end_iterator = json_object.end();
         auto document_iterator = json_object.find("document");
         auto text_iterator = json_object.find("text");
+        auto site_id_iterator = json_object.find("site_id");
+        auto site_counter_iterator = json_object.find("site_counter");
         auto site_ids_iterator = json_object.find("site_ids");
         auto profiles_iterator = json_object.find("profiles");
         auto cursors_iterator = json_object.find("cursors");
         auto sharing_link_iterator = json_object.find("sharing_link");
 
         if (document_iterator == end_iterator || text_iterator == end_iterator ||
+            site_id_iterator == end_iterator || site_counter_iterator == end_iterator ||
             site_ids_iterator == end_iterator || profiles_iterator == end_iterator ||
             cursors_iterator == end_iterator || sharing_link_iterator == end_iterator ||
             !document_iterator->isObject() || !text_iterator->isArray() ||
@@ -31,9 +35,12 @@ namespace collaborative_text_editor {
             throw std::logic_error("invalid message: invalid fields");
 
         document_ = Document(document_iterator->toObject());
+        site_id_ = site_id_iterator->toInt(SharedEditor::invalid_site_id);
+        site_counter_ = site_counter_iterator->toInt(SharedEditor::invalid_site_counter);
         sharing_link_ = sharing_link_iterator->toString();
 
-        if (sharing_link_.isNull())
+        if (sharing_link_.isNull() || site_id_ == SharedEditor::invalid_site_id ||
+            site_counter_ == SharedEditor::invalid_site_counter)
             throw std::logic_error("invalid message: invalid fields");
 
         // text
@@ -107,6 +114,7 @@ namespace collaborative_text_editor {
         const DocumentMessage *o = dynamic_cast<const DocumentMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->text_ == o->text_ &&
+               this->site_id_ == o->site_id_ && this->site_counter_ == o->site_counter_ &&
                this->site_ids_ == o->site_ids_ && this->profiles_ == o->profiles_ &&
                this->cursors_ == o->cursors_ && this->sharing_link_ == o->sharing_link_;
     }
@@ -117,6 +125,14 @@ namespace collaborative_text_editor {
 
     QList<Symbol>& DocumentMessage::text() {
         return text_;
+    }
+
+    int DocumentMessage::site_id() const {
+        return site_id_;
+    }
+
+    int DocumentMessage::site_counter() const {
+        return site_counter_;
     }
 
     QHash<QString,int>& DocumentMessage::site_ids() {
@@ -139,6 +155,8 @@ namespace collaborative_text_editor {
         QJsonObject json_object = Message::json();
         json_object["document"] = document_.json();
         json_object["sharing_link"] = sharing_link_;
+        json_object["site_id"] = site_id_;
+        json_object["site_counter"] = site_counter_;
 
         // text
         QJsonArray json_array;

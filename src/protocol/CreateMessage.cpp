@@ -10,7 +10,7 @@ namespace collaborative_text_editor {
 
     CreateMessage::CreateMessage(const QJsonObject& json_object) : Message(MessageType::create) {
         auto end_iterator = json_object.end();
-        auto document_iterator = json_object.find("document");
+        auto document_iterator = json_object.find("document_name");
 
         if (document_iterator == end_iterator)
             throw std::logic_error("invalid message: invalid fields");
@@ -33,7 +33,7 @@ namespace collaborative_text_editor {
 
     QJsonObject CreateMessage::json() const {
         QJsonObject json_object = Message::json();
-        json_object["document"] = document_name_;
+        json_object["document_name"] = document_name_;
         return json_object;
     }
 }

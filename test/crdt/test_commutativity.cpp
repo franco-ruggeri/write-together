@@ -15,8 +15,8 @@ int main() {
     const int index = 1;
     const QChar value = 'H';
 
-    SharedEditor editor1(1);
-    SharedEditor editor2(2);
+    SharedEditor editor1(SharedEditor::start_site_id, SharedEditor::start_site_counter);
+    SharedEditor editor2(SharedEditor::start_site_id+1, SharedEditor::start_site_counter);
 
     // initial text
     for (int i=0; i<text.size(); i++) {

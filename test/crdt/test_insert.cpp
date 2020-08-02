@@ -22,7 +22,7 @@ int main() {
     const QString text = "test";
 
     Lseq pos_allocator(1);
-    SharedEditor editor(1, pos_allocator);
+    SharedEditor editor(SharedEditor::start_site_id, SharedEditor::start_site_counter, pos_allocator);
 
     for (int i=0; i<text.size(); i++) {
         Symbol s = editor.local_insert(i, text[i]);

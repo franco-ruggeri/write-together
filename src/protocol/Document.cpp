@@ -9,7 +9,7 @@ namespace collaborative_text_editor {
     Document::Document() {}
 
     Document::Document(const QString& owner, const QString& name) :
-            owner_(owner), name_(name) {}
+        owner_(owner), name_(name) {}
 
     Document::Document(const QJsonObject& json_object) {
         auto end_iterator = json_object.end();

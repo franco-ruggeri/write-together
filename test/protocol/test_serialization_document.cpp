@@ -16,11 +16,12 @@ using namespace collaborative_text_editor;
 int main() {
     const Document document("test owner", "test name");
     const QString text_string("test text");
+    const int site_id(SharedEditor::start_site_id), site_counter(SharedEditor::start_site_counter);
     const QString sharing_link("fnsc:test_uri");
     const QString username1("test username 1"), username2("test username 2");
 
     // text
-    SharedEditor editor(0);
+    SharedEditor editor(site_id, site_counter);
     for (int i=0; i<text_string.size(); i++)
         editor.local_insert(i, text_string[i]);
     QList<Symbol> text = editor.text();
@@ -44,8 +45,9 @@ int main() {
     };
 
     // serialization
-    QSharedPointer<Message> message1 = QSharedPointer<DocumentMessage>::create(document, text, site_ids, profiles,
-                                                                               cursors, sharing_link);
+    QSharedPointer<Message> message1 = QSharedPointer<DocumentMessage>::create(document, text, editor.site_id(),
+                                                                               editor.site_counter(), site_ids,
+                                                                               profiles, cursors, sharing_link);
     QSharedPointer<Message> message2 = Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 

@@ -8,15 +8,16 @@
 namespace collaborative_text_editor {
     const int SharedEditor::invalid_site_id = -1;
     const int SharedEditor::invalid_site_counter = -1;
-    const int SharedEditor::server_site_id = 0;
+    const int SharedEditor::start_site_id = 0;
+    const int SharedEditor::start_site_counter = 0;
 
-    SharedEditor::SharedEditor(int site_id) : site_id_(site_id), site_counter_(0) {}
+    SharedEditor::SharedEditor(int site_id, int site_counter) : site_id_(site_id), site_counter_(site_counter) {}
 
-    SharedEditor::SharedEditor(int site_id, const Lseq& pos_allocator) :
-        site_id_(site_id), site_counter_(0), pos_allocator_(pos_allocator) {}
+    SharedEditor::SharedEditor(int site_id, int site_counter, const Lseq& pos_allocator) :
+        site_id_(site_id), site_counter_(site_counter), pos_allocator_(pos_allocator) {}
 
-    SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text) :
-        site_id_(site_id), site_counter_(0), text_(text) {}
+    SharedEditor::SharedEditor(int site_id, int site_counter, const QList<Symbol>& text) :
+        site_id_(site_id), site_counter_(site_counter), text_(text) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
         // allocate position
@@ -52,14 +53,22 @@ namespace collaborative_text_editor {
         else throw std::logic_error("symbol not found");
     }
 
+    int SharedEditor::site_id() const {
+        return site_id_;
+    }
+
+    int SharedEditor::site_counter() const {
+        return site_counter_;
+    }
+
+    QList<Symbol> SharedEditor::text() const {
+        return text_;
+    }
+
     QString SharedEditor::to_string() const {
         QString result;
         for (const auto& s : text_)
             result.append(s.value());
         return result;
-    }
-
-    QList<Symbol> SharedEditor::text() const {
-        return text_;
     }
 }

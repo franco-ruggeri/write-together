@@ -21,9 +21,9 @@ namespace collaborative_text_editor {
         Lseq pos_allocator_;
 
     public:
-        SharedEditor(int site_id);
-        SharedEditor(int site_id, const Lseq& pos_allocator);
-        SharedEditor(int site_id, const QList<Symbol>& text);
+        SharedEditor(int site_id, int site_counter);
+        SharedEditor(int site_id, int site_counter, const Lseq& pos_allocator);
+        SharedEditor(int site_id, int site_counter, const QList<Symbol>& text);
 
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
@@ -31,10 +31,12 @@ namespace collaborative_text_editor {
         void remote_erase(const Symbol& symbol);
         int find(const Symbol& symbol);
 
-        QString to_string() const;
+        int site_id() const;
+        int site_counter() const;
         QList<Symbol> text() const;
+        QString to_string() const;
 
         static const int invalid_site_id, invalid_site_counter;
-        static const int server_site_id;
+        static const int start_site_id, start_site_counter;
     };
 }
