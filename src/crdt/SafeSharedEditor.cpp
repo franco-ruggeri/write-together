@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include "SafeSharedEditor.h"
+#include "crdt/SafeSharedEditor.h"
 
 SafeSharedEditor::SafeSharedEditor(int site_id) : editor_(site_id) {}
 
