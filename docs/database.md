@@ -6,12 +6,12 @@
 ## Logical schema
 
 ### Tables
-User(<ins>username</ins>, name, surname, icon)  
-Document(<ins>owner</ins>, <ins>name</ins>)  
-Site(<ins>site_id</ins>)  
-Symbol(<ins>symbol_id</ins>, document_owner, document_name, site_id, site_counter, value)  
-PositionNode(<ins>symbol_id</ins>, <ins>depth</ins>, value)  
-Sharing(<ins>sharing_user</ins>, <ins>document_owner</ins>, <ins>document_name</ins>, site_counter>  
+User(**username**, name, surname, icon)  
+Document(**owner**, **name**)  
+Site(**site_id**)  
+Symbol(**symbol_id**, document_owner, document_name, site_id, site_counter, value)  
+PositionNode(**symbol_id**, **depth**, value)  
+Sharing(**sharing_id**, sharing_user, document_owner, document_name, site_counter>  
 
 ### Referential integrity constraints
 Document(owner) REFERENCES User(username)  
