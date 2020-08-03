@@ -23,7 +23,7 @@ namespace collaborative_text_editor {
         CloseMessage(const Document& document);
         CloseMessage(const Document& document, const QString& username);
         bool operator==(const Message& other) const override;
-        Document document() const;
-        std::optional<QString> username() const;
+        Document& document();
+        std::optional<QString>& username();
     };
 }

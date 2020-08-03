@@ -55,13 +55,16 @@ public:
 
     std::optional<QString> get_uri(const QString &filename);
 
-    QList<Document> get_documents_form_server();
+    QSet<Document> get_documents_form_server();
 
     void sendErase(const Document &document, const Symbol &s);
 
     void sendInsert(const Document &document, const Symbol &s);
 
     void send_cursor(Document document, Symbol cursor_position);
+
+    std::tuple<bool, QString>
+    signup(QString &username, QString &email, QString &password, QString name, QString surname);
 };
 
 

@@ -1,4 +1,3 @@
-
 /*
  * Author: Franco Ruggeri
  */
@@ -13,6 +12,8 @@ namespace collaborative_text_editor {
         QString owner_;     // username of who creates the document
         QString name_;
 
+        friend uint qHash(const Document &key, uint seed);
+
     public:
         Document();
         Document(const QString& owner, const QString& name);
@@ -22,6 +23,7 @@ namespace collaborative_text_editor {
 
         QString owner() const;
         QString name() const;
+        QString full_name() const;
 
         QJsonObject json() const;
     };

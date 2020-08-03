@@ -24,7 +24,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
 
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
-    QString ip_address = ui->connect_address_lineEdit->text();
+    QString ip_address = ui->connect_address_lineEdit_->text();
     if (!utility::check_ip_address(ip_address)) {
         QMessageBox::warning(this, "WARNING", "Insert a valid IP address");
         return;
@@ -80,10 +80,10 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
         return;
     }
 
-    QString name = "name";
-    QString surname = "surname";
+    QString name = ui->signup_name_lineEdit->text();
+    QString surname = ui->signup_surname_lineEdit->text();
 
-    std::tuple valid = client->signup(username, email,password);
+    std::tuple valid = client->signup(username, email,password , name, surname);
     if(std::get<0>(valid)) {
        init_user_page();
     }
@@ -96,7 +96,7 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
 /********** user page function *******************/
 
 void loginTextEditor::init_user_page() {
-    QList<Document> documents = client->get_documents_form_server();
+    QSet<Document> documents = client->get_documents_form_server();
     ui->user_file_listWidget->clear();
     QStringList file_list;
     for(const auto& d : documents) {

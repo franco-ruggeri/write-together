@@ -9,18 +9,24 @@
 namespace collaborative_text_editor {
     enum class MessageType : int {
         error=0,
+
+        // identity management
         signup=1,
         login=2,
         logout=3,
-        documents=4,
-        create=5,
-        open=6,
-        document=7,
-        insert=8,
-        erase=9,
-        cursor=10,
-        close=11,
-        profile=12,
-        profile_ok=13
+        profile=4,
+        profile_ok=5,
+
+        // document management
+        documents=6,
+        create=7,
+        open=8,
+        close=9,
+        document=10,
+
+        // document editing
+        insert=11,
+        erase=12,
+        cursor=13
     };
 }

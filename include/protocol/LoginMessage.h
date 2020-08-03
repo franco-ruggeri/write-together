@@ -19,7 +19,7 @@ namespace collaborative_text_editor {
     public:
         LoginMessage(const QString& username, const QString& password);
         bool operator==(const Message& other) const override;
-        QString username() const;
-        QString password() const;
+        QString& username();
+        QString& password();
     };
 }

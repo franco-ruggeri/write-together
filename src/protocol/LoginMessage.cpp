@@ -29,11 +29,11 @@ namespace collaborative_text_editor {
                this->username_ == o->username_ && this->password_ == o->password_;
     }
         
-    QString LoginMessage::username() const {
+    QString& LoginMessage::username() {
         return username_;
     }
 
-    QString LoginMessage::password() const {
+    QString& LoginMessage::password() {
         return password_;
     }
 

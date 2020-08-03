@@ -21,7 +21,7 @@ namespace collaborative_text_editor {
     public:
         EraseMessage(const Document& document, const Symbol& symbol);
         bool operator==(const Message& other) const override;
-        Document document() const;
-        Symbol symbol() const;
+        Document& document();
+        Symbol& symbol();
     };
 }

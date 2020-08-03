@@ -8,9 +8,9 @@
 
 
 fileInfo::fileInfo(Document document, QList<Symbol> file_content, QHash<QString,Profile> users,
-        QHash<QString,int> site_ids, QString sharing_link, QHash<QString,Symbol> connected_user): document_(std::move(document)),
+                    QHash<QString,int> site_ids,QString sharing_link,QHash<QString,Symbol> connected_user, int site_id,int site_counter): document_(std::move(document)),
 file_content_(std::move(file_content)), users_(std::move(users)),
-    site_ids_(std::move( site_ids)) ,sharing_link_(sharing_link), connected_user_(connected_user){
+    site_ids_(std::move( site_ids)) ,sharing_link_(sharing_link), connected_user_(connected_user),site_id_(site_id), site_counter_(site_counter){
 
 }
 
@@ -32,4 +32,11 @@ const QHash<QString,Symbol> &fileInfo::connected_user() const {
 
 const QString &fileInfo::sharing_link() const {
     return sharing_link_;
+}
+int fileInfo::site_id() {
+    return site_id_;
+}
+
+int fileInfo::site_counter() {
+    return site_counter_;
 }

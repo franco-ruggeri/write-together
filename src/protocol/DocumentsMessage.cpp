@@ -8,7 +8,7 @@
 namespace collaborative_text_editor {
     DocumentsMessage::DocumentsMessage() : Message(MessageType::documents) {}
 
-    DocumentsMessage::DocumentsMessage(const QList<Document>& documents) :
+    DocumentsMessage::DocumentsMessage(const QSet<Document>& documents) :
         Message(MessageType::documents), documents_(documents) {}
 
     DocumentsMessage::DocumentsMessage(const QJsonObject &json_object) : Message(MessageType::documents) {
@@ -19,12 +19,12 @@ namespace collaborative_text_editor {
             if (!documents_iterator->isArray())
                 throw std::logic_error("invalid message: invalid fields");
 
-            documents_ = QList<Document>{};
+            documents_ = QSet<Document>{};
             QJsonArray documents_json = documents_iterator->toArray();
             for (const auto& d_json : documents_json) {
                 if (!d_json.isObject()) throw std::logic_error("invalid message: invalid fields");
                 Document d(d_json.toObject());
-                documents_->push_back(d);
+                documents_->insert(d);
             }
         }
     }
@@ -35,7 +35,7 @@ namespace collaborative_text_editor {
                this->documents_ == o->documents_;
     }
         
-    std::optional<QList<Document>> DocumentsMessage::documents() const {
+    std::optional<QSet<Document>>& DocumentsMessage::documents() {
         return documents_;
     }
 

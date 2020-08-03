@@ -26,9 +26,9 @@ namespace collaborative_text_editor {
         OpenMessage(const Document& document, int site_id, const Profile& profile);
         OpenMessage(const QString& sharing_link);
         bool operator==(const Message& other) const override;
-        std::optional<Document> document() const;
-        std::optional<QString> sharing_link() const;
-        std::optional<int> site_id() const;
-        std::optional<Profile> profile() const;
+        std::optional<Document>& document();
+        std::optional<QString>& sharing_link();
+        std::optional<int>& site_id();
+        std::optional<Profile>& profile();
     };
 }

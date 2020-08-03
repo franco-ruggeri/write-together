@@ -43,7 +43,10 @@
 
 const QString imgPath = ":/images";
 
-int site_id(){
+int site_id() {
+    return 0;
+}
+int counter_id(){
     return 0;
 }
 
@@ -56,7 +59,7 @@ file(file){
     this->client = client;
     change_from_server = false;
     editor->setFontPointSize(12);
-    shared_editor = QSharedPointer<SharedEditor>::create(site_id(),file.getFileContent());
+    shared_editor = QSharedPointer<SharedEditor>::create(site_id(), counter_id(),file.getFileContent());
     setCentralWidget(editor.get());
     connected_client = QSharedPointer<QDockWidget>();
     connected_client->setObjectName("Peers");
@@ -233,7 +236,7 @@ void texteditor::readyRead(){
             change_from_server = true;
             auto cursor_message = m.staticCast<CursorMessage>();
             int position = shared_editor->find(cursor_message->symbol());
-            map_username_to_User[cursor_message->username()].change_cursor_position(editor.get(),position);
+            map_username_to_User[*cursor_message->username()].change_cursor_position(editor.get(),position);
 
         }
     }

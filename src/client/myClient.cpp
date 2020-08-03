@@ -43,8 +43,6 @@ QSharedPointer<Message> myClient::send_message(const QSharedPointer<Message>& re
     return QSharedPointer<ErrorMessage>::create("TIME_OUT");
 }
 
-
-
 std::tuple<bool,QString> myClient::login(QString& email, QString& password) {
     QString result = "ERROR!";
     QSharedPointer<Message> login_message = QSharedPointer<LoginMessage>::create(email, password);
@@ -69,7 +67,7 @@ void myClient::logout() {
     send_message(logout_message);
 }
 
-std::tuple<bool,QString> myClient::signup(QString& username, QString& email, QString& password) {
+std::tuple<bool,QString> myClient::signup(QString& username, QString& email, QString& password, QString name, QString surname) {
     QString result;
     QSharedPointer<Message> signup_message = QSharedPointer<SignupMessage>::create(username,password);
     QSharedPointer<Message> response = send_message(signup_message );
@@ -96,15 +94,13 @@ void myClient::sendErase(const Document& document, const Symbol& s){
 }
 
 std::optional<fileInfo> myClient::new_file(const QString& filename){
-
     QSharedPointer<Message> create_message =  QSharedPointer<CreateMessage>::create(filename);
     QSharedPointer<Message> response  =  send_message(create_message);
     if(response -> type() == MessageType::document){
         QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
         return fileInfo(document_info->document(),document_info->text(),document_info->profiles(),
-                        document_info->site_ids(),document_info->sharing_link(),document_info->cursors());
+                        document_info->site_ids(),document_info->sharing_link(),document_info->cursors(),document_info->site_id(),document_info->site_counter());
     }
-
     return std::nullopt;
 }
 
@@ -113,8 +109,11 @@ fileInfo myClient::open_file(const QString& filename){
     QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(filename);
     QSharedPointer<Message> response = send_message(open_message);
     QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
+
+
     fileInfo file(document_info->document(),document_info->text(),document_info->profiles(),
-            document_info->site_ids(),document_info->sharing_link(),document_info->cursors());
+            document_info->site_ids(),document_info->sharing_link(),document_info->cursors(),
+            document_info->site_id(),document_info->site_counter());
     return file;
 }
 
@@ -143,23 +142,19 @@ bool myClient::change_username(const QString& new_username){
     return response->type() == MessageType::profile_ok;
 }
 
-//std::optional<QString> myClient::get_uri(const QString& filename){
-//
-//    /*************get uri from server*************/
-//    return "uri_del_file_ritornato_dal_server";
-//}
 
-QList<Document> myClient::get_documents_form_server() {
+QSet<Document> myClient::get_documents_form_server() {
     QSharedPointer<Message> documents_message = QSharedPointer<DocumentsMessage>::create();
     QSharedPointer<Message> response = send_message(documents_message);
     if(response->type() == MessageType::documents){
         return *response.staticCast<DocumentsMessage>()->documents();
+
     }
 }
 
 
 void myClient::send_cursor(Document document, Symbol cursor_position){
-    QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, user.username(), cursor_position);
-    socket->write(cursor_message->serialize() + '\n');
+//    QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, user.username(), cursor_position);
+//    socket->write(cursor_message->serialize() + '\n');
 
 }

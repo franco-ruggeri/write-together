@@ -33,11 +33,11 @@ namespace collaborative_text_editor {
                this->profile_ == o->profile_ && this->password_ == o->password_;
     }
 
-    Profile ProfileMessage::profile() const {
+    Profile& ProfileMessage::profile() {
         return profile_;
     }
 
-    std::optional<QString> ProfileMessage::password() const {
+    std::optional<QString>& ProfileMessage::password() {
         return password_;
     }
 
