@@ -9,8 +9,6 @@
 namespace editor {
     Profile::Profile() {}
 
-    Profile::Profile(const QString &username) : username_(username) {}
-
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage& icon) :
         username_(username), name_(name), surname_(surname), icon_(icon) {}
 

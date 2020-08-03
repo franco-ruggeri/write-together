@@ -5,18 +5,19 @@
 #include <editor/protocol/Message.h>
 #include <editor/protocol/ErrorMessage.h>
 #include <editor/protocol/SignupMessage.h>
+#include <editor/protocol/SignupOkMessage.h>
 #include <editor/protocol/LoginMessage.h>
 #include <editor/protocol/LogoutMessage.h>
+#include <editor/protocol/ProfileMessage.h>
+#include <editor/protocol/ProfileOkMessage.h>
 #include <editor/protocol/DocumentsMessage.h>
 #include <editor/protocol/CreateMessage.h>
 #include <editor/protocol/OpenMessage.h>
+#include <editor/protocol/CloseMessage.h>
 #include <editor/protocol/DocumentMessage.h>
 #include <editor/protocol/InsertMessage.h>
 #include <editor/protocol/EraseMessage.h>
 #include <editor/protocol/CursorMessage.h>
-#include <editor/protocol/CloseMessage.h>
-#include <editor/protocol/ProfileMessage.h>
-#include <editor/protocol/ProfileOkMessage.h>
 #include <QtCore/QJsonDocument>
 
 namespace editor {
@@ -58,11 +59,20 @@ namespace editor {
             case MessageType::signup:
                 message = QSharedPointer<SignupMessage>(new SignupMessage(json_object));
                 break;
+            case MessageType::signup_ok:
+                message = QSharedPointer<SignupOkMessage>(new SignupOkMessage(json_object));
+                break;
             case MessageType::login:
                 message = QSharedPointer<LoginMessage>(new LoginMessage(json_object));
                 break;
             case MessageType::logout:
                 message = QSharedPointer<LogoutMessage>(new LogoutMessage(json_object));
+                break;
+            case MessageType::profile:
+                message = QSharedPointer<ProfileMessage>(new ProfileMessage(json_object));
+                break;
+            case MessageType::profile_ok:
+                message = QSharedPointer<ProfileOkMessage>(new ProfileOkMessage(json_object));
                 break;
             case MessageType::documents:
                 message = QSharedPointer<DocumentsMessage>(new DocumentsMessage(json_object));
@@ -72,6 +82,9 @@ namespace editor {
                 break;
             case MessageType::open:
                 message = QSharedPointer<OpenMessage>(new OpenMessage(json_object));
+                break;
+            case MessageType::close:
+                message = QSharedPointer<CloseMessage>(new CloseMessage(json_object));
                 break;
             case MessageType::document:
                 message = QSharedPointer<DocumentMessage>(new DocumentMessage(json_object));
@@ -84,15 +97,6 @@ namespace editor {
                 break;
             case MessageType::cursor:
                 message = QSharedPointer<CursorMessage>(new CursorMessage(json_object));
-                break;
-            case MessageType::close:
-                message = QSharedPointer<CloseMessage>(new CloseMessage(json_object));
-                break;
-            case MessageType::profile:
-                message = QSharedPointer<ProfileMessage>(new ProfileMessage(json_object));
-                break;
-            case MessageType::profile_ok:
-                message = QSharedPointer<ProfileOkMessage>(new ProfileOkMessage(json_object));
                 break;
             default:
                 throw std::logic_error("invalid message: invalid type");

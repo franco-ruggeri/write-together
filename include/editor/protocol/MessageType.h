@@ -12,21 +12,22 @@ namespace editor {
 
         // identity management
         signup=1,
-        login=2,
-        logout=3,
-        profile=4,
-        profile_ok=5,
+        signup_ok=2,
+        login=3,
+        logout=4,
+        profile=5,
+        profile_ok=6,
 
         // document management
-        documents=6,
-        create=7,
-        open=8,
-        close=9,
-        document=10,
+        documents=7,
+        create=8,
+        open=9,
+        close=10,
+        document=11,
 
         // document editing
-        insert=11,
-        erase=12,
-        cursor=13
+        insert=12,
+        erase=13,
+        cursor=14
     };
 }

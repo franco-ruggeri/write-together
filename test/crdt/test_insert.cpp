@@ -7,9 +7,8 @@
 #include <iostream>
 #include <QtCore/QString>
 #include <editor/crdt/SharedEditor.h>
+#include <editor/crdt/Symbol.h>
 #include <editor/crdt/Lseq.h>
-
-using namespace editor;
 
 void print_position(const QVector<int>& position) {
     std::cout << "[ ";
@@ -20,19 +19,19 @@ void print_position(const QVector<int>& position) {
 
 int main() {
     const QString text = "test";
-    SharedEditor editor(SharedEditor::start_site_id, SharedEditor::start_site_counter, Lseq(1));
+    editor::SharedEditor editor(editor::SharedEditor::start_site_id, editor::SharedEditor::start_site_counter, editor::Lseq(1));
 
     for (int i=0; i<text.size(); i++) {
-        Symbol s = editor.local_insert(i, text[i]);
+        editor::Symbol s = editor.local_insert(i, text[i]);
         print_position(s.position());
     }
 
     for (int i=1; i<text.size()+1; i++) {
-        Symbol s = editor.local_insert(i, text[i-1]);
+        editor::Symbol s = editor.local_insert(i, text[i-1]);
         print_position(s.position());
     }
 
-    Symbol s = editor.local_insert(2, 'b');
+    editor::Symbol s = editor.local_insert(2, 'b');
 
     return 0;
 }

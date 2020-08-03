@@ -20,8 +20,7 @@ namespace editor {
 
     public:
         Profile();
-        Profile(const QString& username);
-        Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon=QImage{});
+        Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon);
         Profile(const QJsonObject& json_object);
 
         bool operator==(const Profile& other) const;

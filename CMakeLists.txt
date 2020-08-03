@@ -6,6 +6,7 @@ include_directories(include)
 include_directories(lib/libbcrypt/include)
 
 add_subdirectory(src)
+add_subdirectory(lib)
 
 enable_testing()
 add_subdirectory(test)

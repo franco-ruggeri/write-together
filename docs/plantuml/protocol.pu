@@ -12,7 +12,7 @@ state "PROFILE UPDATE\nREQUESTED" as pur
 [*] --> na
 
 na --> pr : login / signup
-pr --> a : profile
+pr --> a : profile / signup_ok
 pr --> na : error
 a --> na : logout
 
