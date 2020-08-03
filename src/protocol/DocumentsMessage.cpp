@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/DocumentsMessage.h>
+#include <editor/protocol/DocumentsMessage.h>
 #include <QtCore/QJsonArray>
 
-namespace collaborative_text_editor {
+namespace editor {
     DocumentsMessage::DocumentsMessage() : Message(MessageType::documents) {}
 
     DocumentsMessage::DocumentsMessage(const QSet<Document>& documents) :

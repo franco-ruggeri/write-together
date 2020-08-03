@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/SignupMessage.h>
+#include <editor/protocol/SignupMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const QString username("test username");

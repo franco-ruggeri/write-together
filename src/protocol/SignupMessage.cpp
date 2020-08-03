@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/SignupMessage.h>
+#include <editor/protocol/SignupMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     SignupMessage::SignupMessage(const QString& username, const QString& password) :
             Message(MessageType::signup), username_(username), password_(password) {}
 

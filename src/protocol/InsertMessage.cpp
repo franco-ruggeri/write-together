@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/InsertMessage.h>
+#include <editor/protocol/InsertMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     InsertMessage::InsertMessage(const Document& document, const Symbol& symbol) :
         Message(MessageType::insert), document_(document), symbol_(symbol) {}
 

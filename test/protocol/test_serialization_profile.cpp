@@ -2,13 +2,13 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/ProfileMessage.h>
-#include <protocol/Profile.h>
+#include <editor/protocol/ProfileMessage.h>
+#include <editor/protocol/Profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtGui/QImage>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     // icon

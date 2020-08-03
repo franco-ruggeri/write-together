@@ -4,11 +4,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <crdt/SharedEditor.h>
+#include <editor/crdt/SharedEditor.h>
 #include <QtCore/QString>
 #include <QtCore/QChar>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     QString text = "CAT";

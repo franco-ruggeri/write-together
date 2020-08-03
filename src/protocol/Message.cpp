@@ -2,24 +2,24 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/Message.h>
-#include <protocol/ErrorMessage.h>
-#include <protocol/SignupMessage.h>
-#include <protocol/LoginMessage.h>
-#include <protocol/LogoutMessage.h>
-#include <protocol/DocumentsMessage.h>
-#include <protocol/CreateMessage.h>
-#include <protocol/OpenMessage.h>
-#include <protocol/DocumentMessage.h>
-#include <protocol/InsertMessage.h>
-#include <protocol/EraseMessage.h>
-#include <protocol/CursorMessage.h>
-#include <protocol/CloseMessage.h>
-#include <protocol/ProfileMessage.h>
-#include <protocol/ProfileOkMessage.h>
+#include <editor/protocol/Message.h>
+#include <editor/protocol/ErrorMessage.h>
+#include <editor/protocol/SignupMessage.h>
+#include <editor/protocol/LoginMessage.h>
+#include <editor/protocol/LogoutMessage.h>
+#include <editor/protocol/DocumentsMessage.h>
+#include <editor/protocol/CreateMessage.h>
+#include <editor/protocol/OpenMessage.h>
+#include <editor/protocol/DocumentMessage.h>
+#include <editor/protocol/InsertMessage.h>
+#include <editor/protocol/EraseMessage.h>
+#include <editor/protocol/CursorMessage.h>
+#include <editor/protocol/CloseMessage.h>
+#include <editor/protocol/ProfileMessage.h>
+#include <editor/protocol/ProfileOkMessage.h>
 #include <QtCore/QJsonDocument>
 
-namespace collaborative_text_editor {
+namespace editor {
     Message::Message(MessageType type) : type_(type) {}
 
     MessageType Message::type() const {

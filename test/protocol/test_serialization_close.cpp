@@ -2,12 +2,12 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CloseMessage.h>
-#include <protocol/Document.h>
+#include <editor/protocol/CloseMessage.h>
+#include <editor/protocol/Document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const Document document("test owner", "test name");

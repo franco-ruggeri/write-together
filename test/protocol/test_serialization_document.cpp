@@ -2,16 +2,16 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/DocumentMessage.h>
-#include <protocol/Document.h>
-#include <crdt/SharedEditor.h>
-#include <crdt/Symbol.h>
+#include <editor/protocol/DocumentMessage.h>
+#include <editor/protocol/Document.h>
+#include <editor/crdt/SharedEditor.h>
+#include <editor/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const Document document("test owner", "test name");

@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/Document.h>
+#include <editor/protocol/Document.h>
 #include <boost/functional/hash.hpp>
 
-namespace collaborative_text_editor {
+namespace editor {
     Document::Document() {}
 
     Document::Document(const QString& owner, const QString& name) :

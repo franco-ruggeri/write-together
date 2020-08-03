@@ -2,13 +2,13 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/OpenMessage.h>
-#include <protocol/Document.h>
-#include <protocol/Profile.h>
+#include <editor/protocol/OpenMessage.h>
+#include <editor/protocol/Document.h>
+#include <editor/protocol/Profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const Document document("test owner", "test name");

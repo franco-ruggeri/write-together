@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CursorMessage.h>
+#include <editor/protocol/CursorMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     CursorMessage::CursorMessage(const Document &document, const Symbol &symbol) :
         Message(MessageType::cursor), document_(document), symbol_(symbol) {}
 

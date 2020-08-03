@@ -2,12 +2,12 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CursorMessage.h>
-#include <protocol/Document.h>
-#include <crdt/Symbol.h>
+#include <editor/protocol/CursorMessage.h>
+#include <editor/protocol/Document.h>
+#include <editor/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const Document document("test owner", "test name");

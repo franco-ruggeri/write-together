@@ -2,22 +2,20 @@
  * Author: Franco Ruggeri
  */
 
-#include <crdt/SharedEditor.h>
+#include <editor/crdt/SharedEditor.h>
 #include <algorithm>
 
-namespace collaborative_text_editor {
+namespace editor {
     const int SharedEditor::invalid_site_id = -1;
     const int SharedEditor::invalid_site_counter = -1;
     const int SharedEditor::start_site_id = 0;
     const int SharedEditor::start_site_counter = 0;
 
-    SharedEditor::SharedEditor(int site_id, int site_counter) : site_id_(site_id), site_counter_(site_counter) {}
-
     SharedEditor::SharedEditor(int site_id, int site_counter, const Lseq& pos_allocator) :
         site_id_(site_id), site_counter_(site_counter), pos_allocator_(pos_allocator) {}
 
-    SharedEditor::SharedEditor(int site_id, int site_counter, const QList<Symbol>& text) :
-        site_id_(site_id), site_counter_(site_counter), text_(text) {}
+    SharedEditor::SharedEditor(int site_id, int site_counter, const QList<Symbol>& text, const Lseq& pos_allocator) :
+        site_id_(site_id), site_counter_(site_counter), text_(text), pos_allocator_(pos_allocator) {}
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
         // allocate position

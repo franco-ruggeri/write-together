@@ -3,9 +3,9 @@
  */
 
 #include <iostream>
-#include <crdt/SharedEditor.h>
+#include <editor/crdt/SharedEditor.h>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     std::cout << "client - hello world!" << std::endl;

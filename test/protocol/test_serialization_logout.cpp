@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/LogoutMessage.h>
+#include <editor/protocol/LogoutMessage.h>
 #include <QtCore/QSharedPointer>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     QSharedPointer<Message> message1 = QSharedPointer<LogoutMessage>::create();

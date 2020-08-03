@@ -2,17 +2,14 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/Profile.h>
+#include <editor/protocol/Profile.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
 
-namespace collaborative_text_editor {
+namespace editor {
     Profile::Profile() {}
 
     Profile::Profile(const QString &username) : username_(username) {}
-
-    Profile::Profile(const QString &username, const QString &name, const QString &surname) :
-        username_(username), name_(name), surname_(surname) {}
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage& icon) :
         username_(username), name_(name), surname_(surname), icon_(icon) {}

@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/ProfileOkMessage.h>
+#include <editor/protocol/ProfileOkMessage.h>
 #include <QtCore/QSharedPointer>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     QSharedPointer<Message> message1 = QSharedPointer<ProfileOkMessage>::create();

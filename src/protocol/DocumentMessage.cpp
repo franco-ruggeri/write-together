@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/DocumentMessage.h>
-#include <crdt/SharedEditor.h>
+#include <editor/protocol/DocumentMessage.h>
+#include <editor/crdt/SharedEditor.h>
 #include <QtCore/QJsonArray>
 
-namespace collaborative_text_editor {
+namespace editor {
     DocumentMessage::DocumentMessage(const Document& document, const QList<Symbol>& text, int site_id, int site_counter,
                                      const QHash<QString,int>& site_ids, const QHash<QString,Profile>& profiles,
                                      const QHash<QString,Symbol>& cursors, const QString& sharing_link) :

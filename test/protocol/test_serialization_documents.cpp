@@ -2,12 +2,12 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/DocumentsMessage.h>
-#include <protocol/Document.h>
+#include <editor/protocol/DocumentsMessage.h>
+#include <editor/protocol/Document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QSet>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const QSet<Document> documents = {

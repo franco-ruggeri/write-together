@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/ErrorMessage.h>
+#include <editor/protocol/ErrorMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     ErrorMessage::ErrorMessage(const QString& reason) : Message(MessageType::error), reason_(reason) {}
 
     ErrorMessage::ErrorMessage(const QJsonObject &json_object) : Message(MessageType::error) {

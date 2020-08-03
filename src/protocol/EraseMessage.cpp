@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/EraseMessage.h>
+#include <editor/protocol/EraseMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     EraseMessage::EraseMessage(const Document& document, const Symbol& symbol) :
         Message(MessageType::erase), document_(document), symbol_(symbol) {}
 

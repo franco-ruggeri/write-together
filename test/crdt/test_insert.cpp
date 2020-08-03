@@ -6,10 +6,10 @@
 
 #include <iostream>
 #include <QtCore/QString>
-#include <crdt/SharedEditor.h>
-#include <crdt/Lseq.h>
+#include <editor/crdt/SharedEditor.h>
+#include <editor/crdt/Lseq.h>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 void print_position(const QVector<int>& position) {
     std::cout << "[ ";
@@ -20,9 +20,7 @@ void print_position(const QVector<int>& position) {
 
 int main() {
     const QString text = "test";
-
-    Lseq pos_allocator(1);
-    SharedEditor editor(SharedEditor::start_site_id, SharedEditor::start_site_counter, pos_allocator);
+    SharedEditor editor(SharedEditor::start_site_id, SharedEditor::start_site_counter, Lseq(1));
 
     for (int i=0; i<text.size(); i++) {
         Symbol s = editor.local_insert(i, text[i]);

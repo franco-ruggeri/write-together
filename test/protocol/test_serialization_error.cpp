@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/ErrorMessage.h>
+#include <editor/protocol/ErrorMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const QString reason("test reason");

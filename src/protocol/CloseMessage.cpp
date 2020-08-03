@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CloseMessage.h>
+#include <editor/protocol/CloseMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     CloseMessage::CloseMessage(const Document& document) : Message(MessageType::close), document_(document) {}
 
     CloseMessage::CloseMessage(const Document& document, const QString& username) :

@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CreateMessage.h>
+#include <editor/protocol/CreateMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 
 int main() {
     const QString document_name("test name");
