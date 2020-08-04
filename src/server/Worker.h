@@ -1,4 +1,7 @@
 /*
+ * Server worker. It can manage many sessions at the same time. A session represents a network connection (a possible
+ * identifier is the socket file descriptor).
+ *
  * Author: Franco Ruggeri
  */
 
@@ -12,28 +15,27 @@
 #include <QtCore/QMutex>
 #include <editor/network/TcpSocket.h>
 #include <editor/protocol/Message.h>
-#include "IdentityManager.h"
-#include "DocumentManager.h"
+#include <editor/protocol/Document.h>
 
 class Worker : public QObject {
     Q_OBJECT
 
+    QHash<editor::Document,QVector<editor::TcpSocket*>> editing_clients;     // for dispatching
     int number_of_connections_;
-    QHash<QTcpSocket*,QString> users_;
     mutable QMutex m_number_of_connections_;
 
     // identity management
-    void signup(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
-    void login(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
-    void logout(editor::TcpSocket *socket);
-    void update_profile(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
+    void signup(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
+    void login(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
+    void logout(int session_id);
+    void update_profile(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
 
     // document management
-    void create_document(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
+    void create_document(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
 //    void open_document(User& user, const QSharedPointer<Message>& message);
 //    void close_document(User& user, const QSharedPointer<Message>& message);
 //
-//    // document editing
+    // document editing
 //    void edit_document(const User &user, const Document &document, const Symbol &symbol,
 //                       const QSharedPointer<Message> &message_to_dispatch,
 //                       const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)> &edit);
@@ -43,15 +45,15 @@ class Worker : public QObject {
 
 signals:
     void new_connection(int socket_fd);
-    void new_message(QSharedPointer<editor::Message> message);
+    void new_message(int source_socket_fd, QSharedPointer<editor::Message> message);
 
 private slots:
-    void create_socket(int socket_fd);
-    void delete_socket(editor::TcpSocket *socket);
-    void serve_request(editor::TcpSocket *socket);
+    void start_session(int socket_fd);
+    void close_session(int session_id, editor::TcpSocket *socket);
+    void serve_request(int session_id, editor::TcpSocket *socket);
 
 public slots:
-    void dispatch_message(QSharedPointer<editor::Message> message);
+    void dispatch_message(int source_socket_fd, QSharedPointer<editor::Message> message);
 
 public:
     Worker();

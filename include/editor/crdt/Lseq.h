@@ -26,7 +26,7 @@ namespace editor {
         };
 
         QVector<Strategy> strategies_;          // strategy at each depth
-        const unsigned int boundary_;
+        unsigned int boundary_;
 
         static const int begin_;                // first possible child of a node, reserved
         static const int end_;                  // last possible child of a node, reserved

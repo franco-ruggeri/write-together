@@ -15,7 +15,7 @@
 int main() {
     const editor::Document document("test owner", "test name");
     const QString text_string("test text");
-    const int site_id(editor::SharedEditor::start_site_id), site_counter(editor::SharedEditor::start_site_counter);
+    const int site_id(editor::SharedEditor::starting_site_id), site_counter(editor::SharedEditor::starting_site_counter);
     const QString sharing_link("fnsc:test_uri");
     const QString username1("test username 1"), username2("test username 2");
 

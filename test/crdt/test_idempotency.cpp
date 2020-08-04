@@ -12,8 +12,8 @@ int main() {
     QString text = "HAT";
     const int index = 0;
 
-    editor::SharedEditor editor1(editor::SharedEditor::start_site_id, editor::SharedEditor::start_site_counter);
-    editor::SharedEditor editor2(editor::SharedEditor::start_site_id+1, editor::SharedEditor::start_site_counter);
+    editor::SharedEditor editor1(editor::SharedEditor::starting_site_id, editor::SharedEditor::starting_site_counter);
+    editor::SharedEditor editor2(editor::SharedEditor::starting_site_id + 1, editor::SharedEditor::starting_site_counter);
 
     // initial text
     for (int i=0; i<text.size(); i++) {

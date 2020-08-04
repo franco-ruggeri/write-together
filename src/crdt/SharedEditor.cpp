@@ -8,8 +8,9 @@
 namespace editor {
     const int SharedEditor::invalid_site_id = -1;
     const int SharedEditor::invalid_site_counter = -1;
-    const int SharedEditor::start_site_id = 0;
-    const int SharedEditor::start_site_counter = 0;
+    const int SharedEditor::starting_site_id = 1;
+    const int SharedEditor::starting_site_counter = 0;
+    const int SharedEditor::server_site_id = 0;
 
     SharedEditor::SharedEditor(int site_id, int site_counter, const Lseq& pos_allocator) :
         site_id_(site_id), site_counter_(site_counter), pos_allocator_(pos_allocator) {}

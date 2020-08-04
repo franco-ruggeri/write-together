@@ -19,7 +19,7 @@ void print_position(const QVector<int>& position) {
 
 int main() {
     const QString text = "test";
-    editor::SharedEditor editor(editor::SharedEditor::start_site_id, editor::SharedEditor::start_site_counter, editor::Lseq(1));
+    editor::SharedEditor editor(editor::SharedEditor::starting_site_id, editor::SharedEditor::starting_site_counter, editor::Lseq(1));
 
     for (int i=0; i<text.size(); i++) {
         editor::Symbol s = editor.local_insert(i, text[i]);

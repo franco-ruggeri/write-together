@@ -36,6 +36,7 @@ namespace editor {
         QString to_string() const;
 
         static const int invalid_site_id, invalid_site_counter;
-        static const int start_site_id, start_site_counter;
+        static const int starting_site_id, starting_site_counter;
+        static const int server_site_id;
     };
 }
