@@ -19,6 +19,6 @@ namespace editor {
     public:
         ErrorMessage(const QString& reason);
         bool operator==(const Message& other) const override;
-        QString& reason();
+        QString reason() const;
     };
 }

@@ -22,7 +22,7 @@ namespace editor {
         CloseMessage(const Document& document);
         CloseMessage(const Document& document, const QString& username);
         bool operator==(const Message& other) const override;
-        Document& document();
-        std::optional<QString>& username();
+        Document document() const;
+        std::optional<QString> username() const;
     };
 }

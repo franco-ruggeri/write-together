@@ -9,6 +9,7 @@ add_library(protocol
         Message.cpp
         Profile.cpp
         Document.cpp
+        DocumentData.cpp
         ErrorMessage.cpp
         SignupMessage.cpp
         SignupOkMessage.cpp

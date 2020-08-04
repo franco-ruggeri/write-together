@@ -35,7 +35,7 @@ namespace editor {
                this->documents_ == o->documents_;
     }
         
-    std::optional<QSet<Document>>& DocumentsMessage::documents() {
+    std::optional<QSet<Document>> DocumentsMessage::documents() const {
         return documents_;
     }
 

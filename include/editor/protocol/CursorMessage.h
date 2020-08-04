@@ -24,8 +24,8 @@ namespace editor {
         CursorMessage(const Document& document, const Symbol& symbol);
         CursorMessage(const Document& document, const Symbol& symbol, const QString& username);
         bool operator==(const Message& other) const override;
-        Document& document();
-        Symbol& symbol();
-        std::optional<QString>& username();
+        Document document() const;
+        Symbol symbol() const;
+        std::optional<QString> username() const;
     };
 }

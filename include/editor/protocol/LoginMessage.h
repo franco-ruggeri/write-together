@@ -19,7 +19,7 @@ namespace editor {
     public:
         LoginMessage(const QString& username, const QString& password);
         bool operator==(const Message& other) const override;
-        QString& username();
-        QString& password();
+        QString username() const;
+        QString password() const;
     };
 }

@@ -33,11 +33,11 @@ namespace editor {
                this->profile_ == o->profile_ && this->password_ == o->password_;
     }
 
-    Profile& ProfileMessage::profile() {
+    Profile ProfileMessage::profile() const {
         return profile_;
     }
 
-    std::optional<QString>& ProfileMessage::password() {
+    std::optional<QString> ProfileMessage::password() const {
         return password_;
     }
 

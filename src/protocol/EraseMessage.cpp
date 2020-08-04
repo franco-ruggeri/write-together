@@ -27,11 +27,11 @@ namespace editor {
                this->document_ == o->document_ && this->symbol_ == o->symbol_;
     }
 
-    Document& EraseMessage::document() {
+    Document EraseMessage::document() const {
         return document_;
     }
 
-    Symbol& EraseMessage::symbol() {
+    Symbol EraseMessage::symbol() const {
         return symbol_;
     }
 

@@ -32,11 +32,11 @@ namespace editor {
             this->document_ == o->document_ && this->username_ == o->username_;
     }
 
-    Document& CloseMessage::document() {
+    Document CloseMessage::document() const {
         return document_;
     }
 
-    std::optional<QString>& CloseMessage::username() {
+    std::optional<QString> CloseMessage::username() const {
         return username_;
     }
 

@@ -27,7 +27,7 @@ namespace editor {
                this->document_name_ == o->document_name_;
     }
 
-    QString& CreateMessage::document_name() {
+    QString CreateMessage::document_name() const {
         return document_name_;
     }
 

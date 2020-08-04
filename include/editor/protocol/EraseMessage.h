@@ -21,7 +21,7 @@ namespace editor {
     public:
         EraseMessage(const Document& document, const Symbol& symbol);
         bool operator==(const Message& other) const override;
-        Document& document();
-        Symbol& symbol();
+        Document document() const;
+        Symbol symbol() const;
     };
 }

@@ -29,11 +29,11 @@ namespace editor {
                this->profile_ == o->profile_ && this->password_ == o->password_;
     }
         
-    Profile& SignupMessage::profile() {
+    Profile SignupMessage::profile() const {
         return profile_;
     }
 
-    QString& SignupMessage::password() {
+    QString SignupMessage::password() const {
         return password_;
     }
 

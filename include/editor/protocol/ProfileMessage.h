@@ -23,7 +23,7 @@ namespace editor {
         ProfileMessage(const Profile& profile);
         ProfileMessage(const Profile& profile, const QString& password);
         bool operator==(const Message& other) const override;
-        Profile& profile();
-        std::optional<QString>& password();
+        Profile profile() const;
+        std::optional<QString> password() const;
     };
 }

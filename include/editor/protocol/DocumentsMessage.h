@@ -21,6 +21,6 @@ namespace editor {
         DocumentsMessage();
         DocumentsMessage(const QSet<Document>& documents);
         bool operator==(const Message& other) const override;
-        std::optional<QSet<Document>>& documents();
+        std::optional<QSet<Document>> documents() const;
     };
 }

@@ -19,6 +19,6 @@ namespace editor {
     public:
         CreateMessage(const QString& document_name);
         bool operator==(const Message& other) const override;
-        QString& document_name();
+        QString document_name() const;
     };
 }

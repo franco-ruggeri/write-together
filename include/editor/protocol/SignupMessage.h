@@ -21,7 +21,7 @@ namespace editor {
     public:
         SignupMessage(const Profile& profile, const QString& password);
         bool operator==(const Message& other) const override;
-        Profile& profile();
-        QString& password();
+        Profile profile() const;
+        QString password() const;
     };
 }

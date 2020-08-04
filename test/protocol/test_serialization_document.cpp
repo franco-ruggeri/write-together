@@ -4,6 +4,7 @@
 
 #include <editor/protocol/DocumentMessage.h>
 #include <editor/protocol/Document.h>
+#include <editor/protocol/DocumentData.h>
 #include <editor/crdt/SharedEditor.h>
 #include <editor/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
@@ -24,14 +25,14 @@ int main() {
         editor.local_insert(i, text_string[i]);
     QList<editor::Symbol> text = editor.text();
 
-    // site_ids
-    const QHash<QString,int> site_ids{
+    // site_id_others
+    const QHash<QString,int> site_id_others{
             {username1, 1},
             {username2, 2}
     };
 
-    // profiles
-    const QHash<QString,editor::Profile> profiles{
+    // profile_others
+    const QHash<QString,editor::Profile> profile_others{
             {username1, editor::Profile(username1, "test name 1", "test surname 1", QImage{})},
             {username2, editor::Profile(username2, "test name 2", "test surname 2", QImage{})}
     };
@@ -43,11 +44,9 @@ int main() {
     };
 
     // serialization
-    QSharedPointer<editor::Message> message1 = QSharedPointer<editor::DocumentMessage>::create(document, text,
-                                                                                               editor.site_id(),
-                                                                                               editor.site_counter(),
-                                                                                               site_ids, profiles,
-                                                                                               cursors, sharing_link);
+    editor::DocumentData document_data(text, editor.site_id(), editor.site_counter(), site_id_others, profile_others,
+                                       cursors, sharing_link);
+    QSharedPointer<editor::Message> message1 = QSharedPointer<editor::DocumentMessage>::create(document, document_data);
     QSharedPointer<editor::Message> message2 = editor::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 

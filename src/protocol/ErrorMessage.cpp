@@ -26,7 +26,7 @@ namespace editor {
             this->reason_ == o->reason_;
     }
 
-    QString& ErrorMessage::reason() {
+    QString ErrorMessage::reason() const {
         return reason_;
     }
 

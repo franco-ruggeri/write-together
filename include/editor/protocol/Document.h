@@ -24,7 +24,6 @@ namespace editor {
         QString owner() const;
         QString name() const;
         QString full_name() const;
-
         QJsonObject json() const;
     };
 }

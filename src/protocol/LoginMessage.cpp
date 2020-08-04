@@ -29,11 +29,11 @@ namespace editor {
                this->username_ == o->username_ && this->password_ == o->password_;
     }
         
-    QString& LoginMessage::username() {
+    QString LoginMessage::username() const {
         return username_;
     }
 
-    QString& LoginMessage::password() {
+    QString LoginMessage::password() const {
         return password_;
     }
 
