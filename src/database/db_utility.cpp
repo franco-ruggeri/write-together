@@ -2,35 +2,40 @@
  * Author: Franco Ruggeri
  */
 
-#include "db_utility.h"
+#include <editor/database/db_utility.h>
 #include <QtCore/QThread>
 #include <QtCore/QDebug>
 #include <QtSql/QSqlError>
 
-static const QString driver_type("QMYSQL");
-static const QString database_name("collaborative_text_editor");
-static const QString hostname("127.0.0.1");
-static const QString username("collaborative_text_editor");
-static const QString password("?PdSPr0j3ct!");
+namespace editor {
+    QSqlDatabase connect_to_database(const QString& driver_type, const QString& database_name, const QString& hostname,
+                                     const QString& username, const QString& password) {
+        // different connections for different threads, to exploit multiple cores
+        QString name = reinterpret_cast<char *>(QThread::currentThread());
+        QSqlDatabase database = QSqlDatabase::database(name);
 
-QSqlDatabase connect_to_database() {
-    QString name = reinterpret_cast<char *>(QThread::currentThread());
-    QSqlDatabase database = QSqlDatabase::database(name);
+        // first time
+        if (!database.isValid()) {
+            database = QSqlDatabase::addDatabase(driver_type, name);
+            database.setDatabaseName(database_name);
+            database.setHostName(hostname);
+            database.setUserName(username);
+            database.setPassword(password);
+            database.open();
+        }
 
-    // first time
-    if (!database.isValid()) {
-        database = QSqlDatabase::addDatabase(driver_type, name);
-        database.setDatabaseName(database_name);
-        database.setHostName(hostname);
-        database.setUserName(username);
-        database.setPassword(password);
-        database.open();
+        if (!database.isOpen()) {
+            qDebug() << database.lastError();
+            throw std::runtime_error("connection to database failed");
+        }
+
+        return database;
     }
 
-    if (!database.isOpen()) {
-        qDebug() << database.lastError();
-        throw std::runtime_error("connection to database failed");
+    void execute_query(QSqlQuery& query) {
+        if (!query.exec()) {
+            qDebug() << query.lastError();
+            throw std::runtime_error("query to database failed");
+        }
     }
-
-    return database;
 }

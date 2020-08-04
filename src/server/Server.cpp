@@ -5,7 +5,6 @@
 #include "Server.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QThread>
-#include <QtCore/QMetaType>
 #include <algorithm>
 
 Server::Server(unsigned int port, unsigned int n_threads) {

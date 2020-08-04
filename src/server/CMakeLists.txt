@@ -4,10 +4,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
 
-add_executable(server main.cpp Server.cpp Worker.cpp User.cpp SafeSharedEditor.cpp OpenDocument.cpp)
+add_executable(server main.cpp Server.cpp Worker.cpp IdentityManager.cpp DocumentManager.cpp db_utility.cpp)
 
-target_link_libraries(server crdt protocol network Qt5::Core Qt5::Network)
+target_link_libraries(server crdt protocol network database bcrypt Qt5::Core Qt5::Network Qt5::Sql)
 
 install(TARGETS server DESTINATION ${PROJECT_SOURCE_DIR}/bin)

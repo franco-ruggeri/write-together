@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(collaborative_text_editor)
 
 include_directories(include)
-include_directories(lib/libbcrypt/include)
+include_directories(lib/bcrypt/include)
 
 add_subdirectory(src)
 add_subdirectory(lib)

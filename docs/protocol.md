@@ -6,7 +6,7 @@
 ## Message types
 Here are the fields and the explanation of each message type appearing in the state diagram:
 - *error \<reason>* : either a runtime error due to user input or a programming error due to bug.
-- *signup \<username> \<password>* : client requests to create a new account.
+- *signup \<profile> \<password>* : client requests to create a new account.
 - *signup_ok* : server confirms success of signup.
 - *login \<username> \<password>* : client requests to log in with an existing account.
 - *logout* : client logs out.

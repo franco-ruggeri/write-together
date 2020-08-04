@@ -1,10 +1,11 @@
 /*
+ * Utilities for QtSql with secrete information, not to be distributed as library.
+ *
  * Author: Franco Ruggeri
  */
 
 #pragma once
 
-#include <QtCore/QString>
 #include <QtSql/QSqlDatabase>
 
 QSqlDatabase connect_to_database();

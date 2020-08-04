@@ -6,6 +6,11 @@
 #include <QtCore/QThread>
 #include "Server.h"
 
+#include <iostream>
+#include <string>
+#include <bcrypt/BCrypt.hpp>
+#include <bcrypt/bcrypt.h>
+
 int main(int argc, char **argv) {
     const QString& usage = QString("usage ") + argv[0] + " port";
 
