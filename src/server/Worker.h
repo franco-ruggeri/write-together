@@ -28,8 +28,8 @@ class Worker : public QObject {
     void logout(editor::TcpSocket *socket);
     void update_profile(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
 
-//    // document management
-//    void create_document(User& user, const QSharedPointer<Message>& message);
+    // document management
+    void create_document(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message);
 //    void open_document(User& user, const QSharedPointer<Message>& message);
 //    void close_document(User& user, const QSharedPointer<Message>& message);
 //

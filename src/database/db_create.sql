@@ -42,17 +42,10 @@ CREATE TABLE IF NOT EXISTS `symbol`
 	`site_id` SMALLINT NOT NULL,
 	`site_counter` BIGINT NOT NULL,
 	`value` CHAR(1) NOT NULL,
+	`position` BLOB NOT NULL,
 	PRIMARY KEY (`symbol_id`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`),
 	FOREIGN KEY (`site_id`) REFERENCES site(`site_id`)
-);
-
-CREATE TABLE IF NOT EXISTS `position_node`
-(
-	`symbol_id` BIGINT NOT NULL,
-	`depth` SMALLINT NOT NULL,
-	PRIMARY KEY (`symbol_id`, `depth`),
-	FOREIGN KEY (`symbol_id`) REFERENCES `symbol`(`symbol_id`)
 );
 
 CREATE TABLE IF NOT EXISTS sharing

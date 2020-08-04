@@ -22,12 +22,11 @@
 #include <editor/protocol/EraseMessage.h>
 #include <editor/protocol/CursorMessage.h>
 
-// TODO: debugga login, da' wrong credentials
 // TODO: prova auto_increment, funziona?
-// TODO: logout e delete_socket => chiudi tutti i file di quell'utente
 // TODO: update github workflow to install boost (https://raymii.org/s/articles/Github_Actions_cpp_boost_cmake_speedup.html)
 // TODO: alla fine confronta flusso con UML
 // TODO: sharing_link -> QUrl
+// TODO: DocumentData ha username->site_id, username->profile, si potrebbe fare username-><site_id,profile> con std::pair
 
 IdentityManager identity_manager;
 DocumentManager document_manager;
@@ -152,9 +151,9 @@ void Worker::serve_request(editor::TcpSocket *socket) {
 //            case MessageType::documents:
 //                // TODO
 //                break;
-//            case MessageType::create:
-//                create_document(user, message);
-//                break;
+            case editor::MessageType::create:
+                create_document(socket, message);
+                break;
 //            case MessageType::open:
 //                open_document(user, message);
 //                break;
@@ -200,8 +199,8 @@ void Worker::signup(editor::TcpSocket *socket, const QSharedPointer<editor::Mess
 
     // unpack message
     QSharedPointer<editor::SignupMessage> m = message.staticCast<editor::SignupMessage>();
-    editor::Profile& profile = m->profile();
-    QString& password = m->password();
+    editor::Profile profile = m->profile();
+    QString password = m->password();
 
     // signup
     if (!identity_manager.signup(profile, password)) {
@@ -226,8 +225,8 @@ void Worker::login(editor::TcpSocket *socket, const QSharedPointer<editor::Messa
 
     // unpack message
     QSharedPointer<editor::LoginMessage> m = message.staticCast<editor::LoginMessage>();
-    QString& username = m->username();
-    QString& password = m->password();
+    QString username = m->username();
+    QString password = m->password();
 
     // login
     std::optional<editor::Profile> profile = identity_manager.login(username, password);
@@ -254,9 +253,6 @@ void Worker::logout(editor::TcpSocket *socket) {
 
     // TODO: chiudi tutti i file aperti
 
-    // logout
-    identity_manager.logout(username);
-
     // unbind socket from user
     users_.remove(socket);
 
@@ -271,8 +267,8 @@ void Worker::update_profile(editor::TcpSocket *socket, const QSharedPointer<edit
 
     // unpack message
     QSharedPointer<editor::ProfileMessage> m = message.staticCast<editor::ProfileMessage>();
-    editor::Profile& profile = m->profile();
-    std::optional<QString>& password = m->password();
+    editor::Profile profile = m->profile();
+    std::optional<QString> password = m->password();
 
     // update profile
     if (!identity_manager.update_profile(username, profile, password.value_or(QString{}))) {
@@ -285,6 +281,31 @@ void Worker::update_profile(editor::TcpSocket *socket, const QSharedPointer<edit
     socket->write_message(response);
 
     qDebug() << "profile update by:" << profile.username() << "(" + username + ")";
+}
+
+void Worker::create_document(editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message) {
+    // check protocol errors
+    auto it = users_.find(socket);
+    if (it == users_.end()) throw std::logic_error("protocol error: user not authenticated");
+    QString& owner = it.value();
+
+    // unpack message
+    QSharedPointer<editor::CreateMessage> m = message.staticCast<editor::CreateMessage>();
+    QString name = m->document_name();
+    editor::Document document(owner, name);
+
+    // create document
+    std::optional<editor::DocumentData> document_data = document_manager.create_document(document);
+    if (!document_data) {
+        send_error(socket, "document creation failed: document already existing");
+        return;
+    }
+
+    // send acknowledgement
+    QSharedPointer<editor::Message> response = QSharedPointer<editor::DocumentMessage>::create(document, *document_data);
+    socket->write_message(response);
+
+    qDebug() << "document created:" << document.full_name();
 }
 
 //void Worker::create_document(User &user, const QSharedPointer<Message>& message) {

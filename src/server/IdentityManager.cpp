@@ -28,14 +28,13 @@ bool IdentityManager::signup(const editor::Profile& profile, const QString& pass
     QSqlQuery query(database);
 
     // check if the username is already used
-    query.prepare("SELECT * FROM `user` WHERE username=:username FOR UPDATE");
+    query.prepare("SELECT * FROM user WHERE username=:username FOR UPDATE");
     query.bindValue(":username", QVariant(username));
     editor::execute_query(query);
 
     // signup
     bool signed_up = false;
     if (query.size() == 0) {
-        // insert in DB
         QString hash = QString::fromStdString(BCrypt::generateHash(password.toStdString()));
         query.prepare("INSERT INTO user (username, password, name, surname, icon) "
                       "VALUES (:username, :password, :name, :surname, :icon)");
@@ -45,10 +44,6 @@ bool IdentityManager::signup(const editor::Profile& profile, const QString& pass
         query.bindValue(":surname", QVariant(profile.surname()));
         query.bindValue(":icon", QVariant(profile.icon()));
         editor::execute_query(query);
-
-        // insert in memory
-        QMutexLocker ml(&m_online_users_);
-        online_users_.insert(username);
         signed_up = true;
     }
 
@@ -61,42 +56,25 @@ bool IdentityManager::signup(const editor::Profile& profile, const QString& pass
 std::optional<editor::Profile> IdentityManager::login(const QString& username, const QString& password) {
     std::optional<editor::Profile> profile;
 
-    // check if the username is already online
-    QMutexLocker ml(&m_online_users_);
-    if (online_users_.contains(username))
-        throw std::logic_error("user already online");
-    ml.unlock();
-
     // open connection
     QSqlDatabase database = connect_to_database();
     editor::DatabaseGuard dg(database);
     QSqlQuery query(database);
 
     // load profile
-    query.prepare("SELECT * FROM `user` WHERE username=:username");
+    query.prepare("SELECT * FROM user WHERE username=:username");
     query.bindValue(":username", QVariant(username));
-    if (!query.exec()) {
-        qDebug() << query.lastError();
-        throw std::runtime_error("query to database failed");
-    }
+    editor::execute_query(query);
 
     // login
     if (query.next()) {
         QString hash = query.value("password").toString();
-        if (BCrypt::validatePassword(password.toStdString(), hash.toStdString())) {
+        if (BCrypt::validatePassword(password.toStdString(), hash.toStdString()))
             profile = editor::Profile(username, query.value("name").toString(), query.value("surname").toString(),
                                       query.value("icon").value<QImage>());
-            QMutexLocker ml(&m_online_users_);
-            online_users_.insert(username);
-        }
     }
 
     return profile;
-}
-
-void IdentityManager::logout(const QString &username) {
-    QMutexLocker ml(&m_online_users_);
-    online_users_.remove(username);
 }
 
 bool IdentityManager::update_profile(const QString& old_username, const editor::Profile& new_profile,
@@ -115,7 +93,7 @@ bool IdentityManager::update_profile(const QString& old_username, const editor::
     QSqlQuery query(database);
 
     // check if the new username is already used
-    query.prepare("SELECT * FROM `user` WHERE username=:username FOR UPDATE");
+    query.prepare("SELECT * FROM user WHERE username=:username FOR UPDATE");
     query.bindValue(":username", QVariant(new_username));
     editor::execute_query(query);
 
