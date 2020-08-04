@@ -6,7 +6,7 @@
 #include <crdt/SharedEditor.h>
 #include <QtCore/QJsonArray>
 
-namespace collaborative_text_editor {
+namespace editor {
     Symbol::Symbol() :
         value_('\0'), site_id_(SharedEditor::invalid_site_id), site_counter_(SharedEditor::invalid_site_counter) {}
 

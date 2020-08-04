@@ -1,18 +1,21 @@
-/*
- * Author: Franco Ruggeri
- */
+//
+// Created by Nino on 04/08/2020.
+//
 
-#include <protocol/Profile.h>
+#include "UserInfo.h"
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
 
-namespace editor {
-    Profile::Profile() {}
 
-    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage &icon) :
+    User::Profile() {}
+
+    User::Profile(const QString &username, const QString &name, const QString &surname) :
+            username_(username), name_(name), surname_(surname) {}
+
+    User::Profile(const QString &username, const QString &name, const QString &surname, const QImage &icon) :
             username_(username), name_(name), surname_(surname), icon_(icon) {}
 
-    Profile::Profile(const QJsonObject &json_object) {
+    User::Profile(const QJsonObject &json_object) {
         auto end_iterator = json_object.end();
         auto username_iterator = json_object.find("username");
         auto name_iterator = json_object.find("name");
@@ -35,28 +38,28 @@ namespace editor {
         icon_.loadFromData(bytes, "PNG");
     }
 
-    bool Profile::operator==(const Profile &other) const {
+    bool User::operator==(const Profile &other) const {
         return this->username_ == other.username_ && this->name_ == other.name_ && this->surname_ == other.surname_ &&
                this->icon_ == other.icon_;
     }
 
-    QString Profile::username() const {
+    QString User::username() const {
         return username_;
     }
 
-    QString Profile::name() const {
+    QString User::name() const {
         return name_;
     }
 
-    QString Profile::surname() const {
+    QString User::surname() const {
         return surname_;
     }
 
-    QImage Profile::icon() const {
+    QImage User::icon() const {
         return icon_;
     }
 
-    QJsonObject Profile::json() const {
+    QJsonObject User::json() const {
         QJsonObject json_object;
 
         json_object["username"] = username_;
@@ -78,7 +81,7 @@ namespace editor {
 
     //cursors
 
-    void Profile::init_cursor(QTextEdit *editor, int newCursorPosition) {
+    void User::init_cursor(QTextEdit *editor, int newCursorPosition) {
         cursor_ = new QTextCursor(editor->document());
         newCursorPosition = qMin(newCursorPosition, editor->toPlainText().size());
         cursor_->setPosition(newCursorPosition);
@@ -93,7 +96,7 @@ namespace editor {
     }
 
 
-    void Profile::change_cursor_position(QTextEdit *editor, int new_position) {
+    void User::change_cursor_position(QTextEdit *editor, int new_position) {
         new_position = qMin(new_position, editor->toPlainText().size());
         cursor_->setPosition(new_position);
         const QRect qRect = editor->cursorRect(*cursor_);
@@ -101,4 +104,3 @@ namespace editor {
         cursor_label_->show();
 
     }
-}

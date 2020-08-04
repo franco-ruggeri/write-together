@@ -8,9 +8,8 @@
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 #include <protocol/Document.h>
-#include <optional>
 
-namespace collaborative_text_editor {
+namespace editor {
     class CloseMessage : public Message {
         Document document_;
         std::optional<QString> username_;
@@ -23,7 +22,7 @@ namespace collaborative_text_editor {
         CloseMessage(const Document& document);
         CloseMessage(const Document& document, const QString& username);
         bool operator==(const Message& other) const override;
-        Document& document();
-        std::optional<QString>& username();
+        Document document() const;
+        std::optional<QString> username() const;
     };
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 #project(collaborative_text_editor)
 
-set(CMAKE_PREFIX_PATH "C:\\Qt\\5.14.1\\msvc2017")
+#set(CMAKE_PREFIX_PATH "C:\\Qt\\5.14.1\\msvc2017")
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -60,7 +60,8 @@ add_executable(collaborative_text_editor
         ../crdt/LSEQ.cpp
         fileInfo.cpp
         changeUsernameDialog.cpp
-
+        ../protocol/DocumentData.cpp
+        ../protocol/SignupOkMessage.cpp
 
         )
 

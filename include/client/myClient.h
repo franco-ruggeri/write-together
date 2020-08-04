@@ -17,7 +17,7 @@
 #include <protocol/Profile.h>
 #define PORT 1111
 
-using namespace collaborative_text_editor;
+using namespace editor;
 class myClient : public QObject {
 
 public:

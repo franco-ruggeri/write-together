@@ -4,7 +4,7 @@
 
 #include <protocol/ProfileOkMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     ProfileOkMessage::ProfileOkMessage() : Message(MessageType::profile_ok) {}
 
     ProfileOkMessage::ProfileOkMessage(const QJsonObject &json_object) : Message(MessageType::profile_ok) {}

@@ -13,7 +13,7 @@
 #include "crdt/SharedEditor.h"
 #include "myClient.h"
 #include "fileInfo.h"
-using namespace collaborative_text_editor;
+using namespace editor;
 class texteditor : public QMainWindow{
     Q_OBJECT
 

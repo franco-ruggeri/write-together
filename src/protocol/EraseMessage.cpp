@@ -4,7 +4,7 @@
 
 #include <protocol/EraseMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     EraseMessage::EraseMessage(const Document& document, const Symbol& symbol) :
         Message(MessageType::erase), document_(document), symbol_(symbol) {}
 
@@ -27,11 +27,11 @@ namespace collaborative_text_editor {
                this->document_ == o->document_ && this->symbol_ == o->symbol_;
     }
 
-    Document& EraseMessage::document() {
+    Document EraseMessage::document() const {
         return document_;
     }
 
-    Symbol& EraseMessage::symbol() {
+    Symbol EraseMessage::symbol() const {
         return symbol_;
     }
 

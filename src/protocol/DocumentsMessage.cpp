@@ -5,7 +5,7 @@
 #include <protocol/DocumentsMessage.h>
 #include <QtCore/QJsonArray>
 
-namespace collaborative_text_editor {
+namespace editor {
     DocumentsMessage::DocumentsMessage() : Message(MessageType::documents) {}
 
     DocumentsMessage::DocumentsMessage(const QSet<Document>& documents) :
@@ -35,7 +35,7 @@ namespace collaborative_text_editor {
                this->documents_ == o->documents_;
     }
         
-    std::optional<QSet<Document>>& DocumentsMessage::documents() {
+    std::optional<QSet<Document>> DocumentsMessage::documents() const {
         return documents_;
     }
 

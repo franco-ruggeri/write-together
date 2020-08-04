@@ -7,8 +7,9 @@
 #include "crdt/Symbol.h"
 #include <QString>
 #include <protocol/Profile.h>
+#include <protocol/DocumentData.h>
 
-using namespace collaborative_text_editor;
+using namespace editor;
 class fileInfo {
 private:
 
@@ -24,6 +25,7 @@ private:
 public:
     fileInfo(Document document, QList<Symbol> file_content, QHash<QString,Profile> users,
             QHash<QString,int> site_ids,QString sharing_link,QHash<QString,Symbol> connected_user, int site_id,int site_counter);
+    fileInfo(Document const& document, DocumentData const &data);
 
     const QList<Symbol> &getFileContent() const;
 

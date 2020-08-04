@@ -18,7 +18,7 @@
 #include <QtWidgets/QTextEdit>
 #include "Document.h"
 
-namespace collaborative_text_editor {
+namespace editor {
     class Profile {
         QString username_, name_, surname_;
         QImage icon_;
@@ -31,7 +31,6 @@ namespace collaborative_text_editor {
 
     public:
         Profile();
-        Profile(const QString& username, const QString& name, const QString& surname);
         Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon);
         Profile(const QJsonObject& json_object);
 

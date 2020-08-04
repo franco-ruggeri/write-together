@@ -6,14 +6,11 @@
 #include <limits>
 #include <stdexcept>
 
-namespace collaborative_text_editor {
+namespace editor {
     // max range divided by 4 to avoid overflows in between()
     const int Lseq::begin_ = std::numeric_limits<int>::min() / 4 + 1;   // +1 to have begin_ = -end_ (easier to debug)
     const int Lseq::end_ = std::numeric_limits<int>::max() / 4;
-
-    const unsigned int Lseq::default_boundary = 10;
-
-    Lseq::Lseq() : boundary_(default_boundary) {}
+    const unsigned int Lseq::default_boundary = 100;
 
     Lseq::Lseq(unsigned int boundary) : boundary_(boundary) {}
 

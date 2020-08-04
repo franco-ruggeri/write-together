@@ -8,7 +8,7 @@
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class CreateMessage : public Message {
         QString document_name_;
 
@@ -19,6 +19,6 @@ namespace collaborative_text_editor {
     public:
         CreateMessage(const QString& document_name);
         bool operator==(const Message& other) const override;
-        QString& document_name();
+        QString document_name() const;
     };
 }

@@ -8,7 +8,7 @@
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class LoginMessage : public Message {
         QString username_, password_;
 
@@ -19,7 +19,7 @@ namespace collaborative_text_editor {
     public:
         LoginMessage(const QString& username, const QString& password);
         bool operator==(const Message& other) const override;
-        QString& username();
-        QString& password();
+        QString username() const;
+        QString password() const;
     };
 }

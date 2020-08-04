@@ -7,12 +7,12 @@
 #include <protocol/Message.h>
 
 namespace editor {
-    class ProfileOkMessage : public Message {
-        ProfileOkMessage(const QJsonObject& json_object);
+    class SignupOkMessage : public Message {
+        SignupOkMessage(const QJsonObject& json_object);
         friend Message;
 
     public:
-        ProfileOkMessage();
+        SignupOkMessage();
         bool operator==(const Message& other) const override;
     };
 }

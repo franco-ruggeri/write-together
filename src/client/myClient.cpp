@@ -22,7 +22,7 @@
 #include "protocol/DocumentsMessage.h"
 
 
-using namespace collaborative_text_editor;
+using namespace editor;
 myClient::myClient(QObject *parent) : QObject(parent) {
     socket = new QTcpSocket(this);
 }
@@ -69,11 +69,13 @@ void myClient::logout() {
 
 std::tuple<bool,QString> myClient::signup(QString& username, QString& email, QString& password, QString name, QString surname) {
     QString result;
-    QSharedPointer<Message> signup_message = QSharedPointer<SignupMessage>::create(username,password);
+    //TODO: add icon on signup
+    QImage icon = QPixmap(1, 1).toImage();
+    Profile profile(username,name,surname,icon);
+    QSharedPointer<Message> signup_message = QSharedPointer<SignupMessage>::create(profile,password);
     QSharedPointer<Message> response = send_message(signup_message );
-    if(response ->type() == MessageType::profile){
-        auto profile = response.staticCast<ProfileMessage>();
-        user = profile->profile();
+    if(response ->type() == MessageType::signup_ok){
+        user = profile;
         return std::make_tuple(true,"OK");
     }
     if(response ->type() == MessageType::error){
@@ -93,13 +95,13 @@ void myClient::sendErase(const Document& document, const Symbol& s){
     socket->write(erase_message->serialize() + '\n');
 }
 
+
 std::optional<fileInfo> myClient::new_file(const QString& filename){
     QSharedPointer<Message> create_message =  QSharedPointer<CreateMessage>::create(filename);
     QSharedPointer<Message> response  =  send_message(create_message);
     if(response -> type() == MessageType::document){
         QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
-        return fileInfo(document_info->document(),document_info->text(),document_info->profiles(),
-                        document_info->site_ids(),document_info->sharing_link(),document_info->cursors(),document_info->site_id(),document_info->site_counter());
+        return fileInfo(document_info->document(),document_info->document_data());
     }
     return std::nullopt;
 }
@@ -111,10 +113,8 @@ fileInfo myClient::open_file(const QString& filename){
     QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
 
 
-    fileInfo file(document_info->document(),document_info->text(),document_info->profiles(),
-            document_info->site_ids(),document_info->sharing_link(),document_info->cursors(),
-            document_info->site_id(),document_info->site_counter());
-    return file;
+    return fileInfo(document_info->document(),document_info->document_data());
+
 }
 
 bool myClient::change_password(const QString& new_password) {

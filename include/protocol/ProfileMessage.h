@@ -9,9 +9,8 @@
 #include <QtGui/QImage>
 #include <protocol/Message.h>
 #include <protocol/Profile.h>
-#include <optional>
 
-namespace collaborative_text_editor {
+namespace editor {
     class ProfileMessage : public Message {
         Profile profile_;
         std::optional<QString> password_;
@@ -24,7 +23,7 @@ namespace collaborative_text_editor {
         ProfileMessage(const Profile& profile);
         ProfileMessage(const Profile& profile, const QString& password);
         bool operator==(const Message& other) const override;
-        Profile& profile();
-        std::optional<QString>& password();
+        Profile profile() const;
+        std::optional<QString> password() const;
     };
 }

@@ -9,7 +9,7 @@
 #include <protocol/Document.h>
 #include <crdt/Symbol.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class InsertMessage : public Message {
         Document document_;
         Symbol symbol_;
@@ -21,7 +21,7 @@ namespace collaborative_text_editor {
     public:
         InsertMessage(const Document& document, const Symbol& symbol);
         bool operator==(const Message& other) const override;
-        Document& document();
-        Symbol& symbol();
+        Document document() const;
+        Symbol symbol() const;
     };
 }

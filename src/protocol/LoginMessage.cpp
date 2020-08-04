@@ -4,7 +4,7 @@
 
 #include <protocol/LoginMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     LoginMessage::LoginMessage(const QString& username, const QString& password) :
         Message(MessageType::login), username_(username), password_(password) {}
 
@@ -29,11 +29,11 @@ namespace collaborative_text_editor {
                this->username_ == o->username_ && this->password_ == o->password_;
     }
         
-    QString& LoginMessage::username() {
+    QString LoginMessage::username() const {
         return username_;
     }
 
-    QString& LoginMessage::password() {
+    QString LoginMessage::password() const {
         return password_;
     }
 

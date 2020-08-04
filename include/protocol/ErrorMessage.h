@@ -8,7 +8,7 @@
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class ErrorMessage : public Message {
         QString reason_;
 
@@ -19,6 +19,6 @@ namespace collaborative_text_editor {
     public:
         ErrorMessage(const QString& reason);
         bool operator==(const Message& other) const override;
-        QString& reason();
+        QString reason() const;
     };
 }

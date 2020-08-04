@@ -4,7 +4,7 @@
 
 #include <protocol/CursorMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     CursorMessage::CursorMessage(const Document &document, const Symbol &symbol) :
         Message(MessageType::cursor), document_(document), symbol_(symbol) {}
 
@@ -37,15 +37,15 @@ namespace collaborative_text_editor {
                this->document_ == o->document_ && this->username_ == o->username_ && this->symbol_ == o->symbol_;
     }
 
-    Document& CursorMessage::document() {
+    Document CursorMessage::document() const {
         return document_;
     }
 
-    Symbol& CursorMessage::symbol() {
+    Symbol CursorMessage::symbol() const {
         return symbol_;
     }
 
-    std::optional<QString>& CursorMessage::username() {
+    std::optional<QString> CursorMessage::username() const {
         return username_;
     }
 

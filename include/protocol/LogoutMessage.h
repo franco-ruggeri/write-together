@@ -7,7 +7,7 @@
 #include <QtCore/QJsonObject>
 #include <protocol/Message.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class LogoutMessage : public Message {
         LogoutMessage(const QJsonObject& json_object);
         friend Message;

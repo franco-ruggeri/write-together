@@ -4,9 +4,9 @@
 
 #include <protocol/CreateMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     CreateMessage::CreateMessage(const QString& document_name) :
-            Message(MessageType::create), document_name_(document_name) {}
+        Message(MessageType::create), document_name_(document_name) {}
 
     CreateMessage::CreateMessage(const QJsonObject& json_object) : Message(MessageType::create) {
         auto end_iterator = json_object.end();
@@ -27,7 +27,7 @@ namespace collaborative_text_editor {
                this->document_name_ == o->document_name_;
     }
 
-    QString& CreateMessage::document_name() {
+    QString CreateMessage::document_name() const {
         return document_name_;
     }
 

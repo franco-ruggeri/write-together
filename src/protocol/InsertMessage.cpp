@@ -4,7 +4,7 @@
 
 #include <protocol/InsertMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     InsertMessage::InsertMessage(const Document& document, const Symbol& symbol) :
         Message(MessageType::insert), document_(document), symbol_(symbol) {}
 
@@ -27,11 +27,11 @@ namespace collaborative_text_editor {
                this->document_ == o->document_ && this->symbol_ == o->symbol_;
     }
 
-    Document& InsertMessage::document() {
+    Document InsertMessage::document() const {
         return document_;
     }
 
-    Symbol& InsertMessage::symbol() {
+    Symbol InsertMessage::symbol() const {
         return symbol_;
     }
 

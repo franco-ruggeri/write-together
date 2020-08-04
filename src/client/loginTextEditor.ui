@@ -23,7 +23,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>3</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="user_page">
    <widget class="QFrame" name="user_information_frame">
@@ -122,106 +122,146 @@
    </widget>
   </widget>
   <widget class="QWidget" name="signup_page">
-   <widget class="QWidget" name="gridLayoutWidget_2">
+   <widget class="QPushButton" name="signup_login_pushButton">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>40</y>
-      <width>371</width>
-      <height>301</height>
+      <x>130</x>
+      <y>280</y>
+      <width>201</width>
+      <height>28</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0" alignment="Qt::AlignVCenter">
-      <widget class="QLabel" name="signup_label">
+    <property name="text">
+     <string>Already a member? Click to login</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="singup_register_pushButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>220</y>
+      <width>93</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>93</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 2px solid gray;
+ border-radius: 10px</string>
+    </property>
+    <property name="text">
+     <string>SIGN UP</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="signup_label">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>10</y>
+      <width>419</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Sign Up&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>50</y>
+      <width>419</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;SIGNUP&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Surname</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="signup_surname_lineEdit">
+       <property name="styleSheet">
+        <string notr="true">border: 2px solid gray;
+ border-radius: 10px</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="signup_name_lineEdit">
+       <property name="styleSheet">
+        <string notr="true">border: 2px solid gray;
+ border-radius: 10px</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
-      <layout class="QFormLayout" name="formLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Surname</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="signup_surname_lineEdit"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Name</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="signup_name_lineEdit"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="signup_email_label">
-         <property name="text">
-          <string>Email</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="signup_email_lineEdit">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="signup_user_label">
-         <property name="text">
-          <string>Username</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="signup_username_lineEdit">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="signup_password_label">
-         <property name="text">
-          <string>Password</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="signup_password_lineEdit">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="5" column="0" alignment="Qt::AlignLeft">
-      <widget class="QPushButton" name="signup_login_pushButton">
+      <widget class="QLabel" name="signup_email_label">
        <property name="text">
-        <string>Already a member? Click to login</string>
+        <string>Email</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0" alignment="Qt::AlignLeft">
-      <widget class="QPushButton" name="singup_register_pushButton">
-       <property name="maximumSize">
-        <size>
-         <width>93</width>
-         <height>16777215</height>
-        </size>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="signup_email_lineEdit">
+       <property name="styleSheet">
+        <string notr="true">border: 2px solid gray;
+ border-radius: 10px</string>
        </property>
        <property name="text">
-        <string>SIGNUP</string>
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="signup_user_label">
+       <property name="text">
+        <string>Username</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="signup_username_lineEdit">
+       <property name="styleSheet">
+        <string notr="true">border: 2px solid gray;
+ border-radius: 10px</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="signup_password_label">
+       <property name="text">
+        <string>Password</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="signup_password_lineEdit">
+       <property name="styleSheet">
+        <string notr="true">border: 2px solid gray;
+ border-radius: 10px</string>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

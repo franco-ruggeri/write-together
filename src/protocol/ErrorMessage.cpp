@@ -4,7 +4,7 @@
 
 #include <protocol/ErrorMessage.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     ErrorMessage::ErrorMessage(const QString& reason) : Message(MessageType::error), reason_(reason) {}
 
     ErrorMessage::ErrorMessage(const QJsonObject &json_object) : Message(MessageType::error) {
@@ -26,7 +26,7 @@ namespace collaborative_text_editor {
             this->reason_ == o->reason_;
     }
 
-    QString& ErrorMessage::reason() {
+    QString ErrorMessage::reason() const {
         return reason_;
     }
 

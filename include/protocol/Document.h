@@ -7,7 +7,7 @@
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
 
-namespace collaborative_text_editor {
+namespace editor {
     class Document {
         QString owner_;     // username of who creates the document
         QString name_;
@@ -24,7 +24,6 @@ namespace collaborative_text_editor {
         QString owner() const;
         QString name() const;
         QString full_name() const;
-
         QJsonObject json() const;
     };
 }

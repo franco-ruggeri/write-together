@@ -9,9 +9,8 @@
 #include <protocol/Message.h>
 #include <protocol/Document.h>
 #include <crdt/Symbol.h>
-#include <optional>
 
-namespace collaborative_text_editor {
+namespace editor {
     class CursorMessage : public Message {
         Document document_;
         Symbol symbol_;
@@ -25,8 +24,8 @@ namespace collaborative_text_editor {
         CursorMessage(const Document& document, const Symbol& symbol);
         CursorMessage(const Document& document, const Symbol& symbol, const QString& username);
         bool operator==(const Message& other) const override;
-        Document& document();
-        Symbol& symbol();
-        std::optional<QString>& username();
+        Document document() const;
+        Symbol symbol() const;
+        std::optional<QString> username() const;
     };
 }

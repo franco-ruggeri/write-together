@@ -14,16 +14,15 @@
 #include <crdt/Symbol.h>
 #include <crdt/Lseq.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class SharedEditor {
         int site_id_, site_counter_;
         QList<Symbol> text_;
         Lseq pos_allocator_;
 
     public:
-        SharedEditor(int site_id, int site_counter);
-        SharedEditor(int site_id, int site_counter, const Lseq& pos_allocator);
-        SharedEditor(int site_id, int site_counter, const QList<Symbol>& text);
+        SharedEditor(int site_id, int site_counter, const Lseq& pos_allocator=Lseq{});
+        SharedEditor(int site_id, int site_counter, const QList<Symbol>& text, const Lseq& pos_allocator=Lseq{});
 
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);

@@ -25,6 +25,8 @@ add_library(protocol
         Profile.cpp
         Document.cpp
         DocumentMessage.cpp
+        DocumentData.cpp
+        SignupOkMessage.cpp
         )
 
 target_link_libraries(protocol crdt Qt5::Core Qt5::Gui )

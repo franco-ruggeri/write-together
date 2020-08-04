@@ -10,7 +10,7 @@
 #include <QtCore/QChar>
 #include <QtCore/QJsonObject>
 
-namespace collaborative_text_editor {
+namespace editor {
     class Symbol {
         QChar value_;
         int site_id_, site_counter_;

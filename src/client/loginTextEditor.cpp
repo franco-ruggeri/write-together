@@ -20,6 +20,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     client = QSharedPointer<myClient>::create();
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
     ui->login_password_lineEdit->setEchoMode(QLineEdit::Password);
+   
 }
 
 /**************home-page function***************/
@@ -100,8 +101,8 @@ void loginTextEditor::init_user_page() {
     ui->user_file_listWidget->clear();
     QStringList file_list;
     for(const auto& d : documents) {
-        file_list.push_back(d.name());
-        client->user.filename_to_owner_map.insert(d.name(),d);
+        file_list.push_back(d.full_name());
+        client->user.filename_to_owner_map.insert(d.full_name(),d);
     }
     ui->user_file_listWidget->addItems(file_list);
     ui->user_file_listWidget->setCurrentRow( 0 );
@@ -142,12 +143,6 @@ void loginTextEditor::on_user_change_username_pushButton_clicked() {
     changeuser_dialog->show();
 }
 
-//void loginTextEditor::on_user_share_pushButton_clicked() {
-//    QListWidgetItem * file_selected = ui->user_file_listWidget->currentItem();
-//    share_file(file_selected->text());
-//}
-
-
 
 void loginTextEditor::open_editor(fileInfo file){
 
@@ -163,6 +158,8 @@ void loginTextEditor::open_editor(fileInfo file){
 void loginTextEditor::cleanAll(){
     ui->signup_password_lineEdit->clear();
     ui->signup_email_lineEdit->clear();
+    ui->signup_username_lineEdit->clear();
+    ui->signup_name_lineEdit->clear();
     ui->signup_username_lineEdit->clear();
     ui->login_password_lineEdit->clear();
     ui->login_email_lineEdit->clear();

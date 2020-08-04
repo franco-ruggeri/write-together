@@ -9,7 +9,7 @@
 #include <protocol/Document.h>
 #include <crdt/Symbol.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     class EraseMessage : public Message {
         Document document_;
         Symbol symbol_;
@@ -21,7 +21,7 @@ namespace collaborative_text_editor {
     public:
         EraseMessage(const Document& document, const Symbol& symbol);
         bool operator==(const Message& other) const override;
-        Document& document();
-        Symbol& symbol();
+        Document document() const;
+        Symbol symbol() const;
     };
 }

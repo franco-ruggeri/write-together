@@ -5,7 +5,7 @@
 #include <protocol/OpenMessage.h>
 #include <crdt/SharedEditor.h>
 
-namespace collaborative_text_editor {
+namespace editor {
     OpenMessage::OpenMessage(const Document& document) : Message(MessageType::open), document_(document) {}
 
     OpenMessage::OpenMessage(const Document &document, int site_id, const Profile &profile) :
@@ -56,19 +56,19 @@ namespace collaborative_text_editor {
                this->site_id_ == o->site_id_ && this->profile_ == o->profile_;
     }
     
-    std::optional<Document>& OpenMessage::document() {
+    std::optional<Document> OpenMessage::document() const {
         return document_;
     }
 
-    std::optional<QString>& OpenMessage::sharing_link() {
+    std::optional<QString> OpenMessage::sharing_link() const {
         return sharing_link_;
     }
 
-    std::optional<int>& OpenMessage::site_id() {
+    std::optional<int> OpenMessage::site_id() const {
         return site_id_;
     }
 
-    std::optional<Profile>& OpenMessage::profile() {
+    std::optional<Profile> OpenMessage::profile() const {
         return profile_;
     }
 
