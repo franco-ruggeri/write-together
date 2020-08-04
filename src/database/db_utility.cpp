@@ -11,12 +11,14 @@ namespace editor {
     QSqlDatabase connect_to_database(const QString& driver_type, const QString& database_name, const QString& hostname,
                                      const QString& username, const QString& password) {
         // different connections for different threads, to exploit multiple cores
-        QString name = reinterpret_cast<char *>(QThread::currentThread());
-        QSqlDatabase database = QSqlDatabase::database(name);
+        QString connection_name;
+        QDebug stream(&connection_name);
+        stream << QThread::currentThreadId();
+        QSqlDatabase database = QSqlDatabase::database(connection_name);
 
         // first time
         if (!database.isValid()) {
-            database = QSqlDatabase::addDatabase(driver_type, name);
+            database = QSqlDatabase::addDatabase(driver_type, connection_name);
             database.setDatabaseName(database_name);
             database.setHostName(hostname);
             database.setUserName(username);
