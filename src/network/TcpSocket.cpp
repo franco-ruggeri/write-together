@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/network/TcpSocket.h>
+#include <cte/network/TcpSocket.h>
 
-namespace editor {
+namespace cte {
     TcpSocket::TcpSocket(int socket_fd) {
         if (!setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");

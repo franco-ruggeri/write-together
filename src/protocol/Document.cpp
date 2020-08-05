@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/Document.h>
+#include <cte/protocol/Document.h>
 #include <boost/functional/hash.hpp>
 
-namespace editor {
+namespace cte {
     Document::Document() {}
 
     Document::Document(const QString& owner, const QString& name) :
@@ -47,6 +47,10 @@ namespace editor {
         json_object["owner"] = owner_;
         json_object["name"] = name_;
         return json_object;
+    }
+
+    QString Document::generate_sharing_link() const {
+        return "cte:" + full_name();    // TODO: add ?random_string
     }
 
     uint qHash(const Document &key, uint seed) {

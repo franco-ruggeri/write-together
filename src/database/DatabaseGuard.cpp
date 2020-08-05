@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/database/DatabaseGuard.h>
+#include <cte/database/DatabaseGuard.h>
 
-namespace editor {
+namespace cte {
     DatabaseGuard::DatabaseGuard(const QSqlDatabase& database) : database_(database) {}
 
     DatabaseGuard::~DatabaseGuard() {

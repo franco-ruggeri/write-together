@@ -9,8 +9,8 @@
 int main() {
     const QString reason("test reason");
 
-    QSharedPointer<editor::Message> message1 = QSharedPointer<editor::ErrorMessage>::create(reason);
-    QSharedPointer<editor::Message> message2 = editor::Message::deserialize(message1->serialize());
+    QSharedPointer<cte::Message> message1 = QSharedPointer<cte::ErrorMessage>::create(reason);
+    QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;

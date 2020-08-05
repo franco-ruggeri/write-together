@@ -8,26 +8,32 @@
 #include <QtCore/QSet>
 #include <QtCore/QVector>
 #include <QtCore/QMutex>
-#include <editor/crdt/Symbol.h>
-#include <editor/crdt/SafeSharedEditor.h>
-#include <editor/protocol/Document.h>
-#include <editor/protocol/DocumentData.h>
+#include <cte/crdt/Symbol.h>
+#include <cte/crdt/SafeSharedEditor.h>
+#include <cte/protocol/Document.h>
+#include <cte/protocol/DocumentData.h>
 
 class DocumentManager {
-    // local dummy editors, dummy because they don't insert/erase, they just keep updating (necessary for save())
-    QHash<editor::Document,QSharedPointer<editor::SafeSharedEditor>> local_copies_;
+    typedef struct {
+        QSharedPointer<cte::SafeSharedEditor> local_copy;    // pointer because SafeSharedEditor is not assignable
+        int reference_count;
+        int next_site_id;
+        // TODO: cursors
+    } open_document_t;
 
-    // session_id -> documents, for open documents, to avoid multiple opens from same session
-    QHash<int,QSet<editor::Document>> open_documents_;
-
-    // all accesses in mutual exclusion (thread-safe)
+    QHash<cte::Document,open_document_t> open_documents_;
+    QHash<int,QHash<cte::Document,int>> site_ids_;           // session_id -> {document -> site_id}
     QMutex mutex_;
 
-    QSharedPointer<editor::SafeSharedEditor> local_copy(const editor::Document& document);
+    QSharedPointer<cte::SafeSharedEditor> local_copy(const cte::Document& document);
+    bool site_id_spoofing(int session_id, const cte::Document& document, const cte::Symbol& symbol);
 
 public:
-    std::optional<editor::DocumentData> create_document(int session_id, const QString& document_name);
-    void insert_symbol(const editor::Document& document, const editor::Symbol& symbol);
-    void erase_symbol(const editor::Document& document, const editor::Symbol& symbol);
+    std::optional<cte::DocumentData> create_document(int session_id, const cte::Document& document);
+    std::optional<cte::DocumentData> open_document(int session_id, const QString& username,
+                                                   const cte::Document& document);
+    void insert_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
+    void erase_symbol(const cte::Document& document, const cte::Symbol& symbol);
+
     void save();
 };

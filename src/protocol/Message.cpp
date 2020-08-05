@@ -2,25 +2,25 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/Message.h>
-#include <editor/protocol/ErrorMessage.h>
-#include <editor/protocol/SignupMessage.h>
-#include <editor/protocol/SignupOkMessage.h>
-#include <editor/protocol/LoginMessage.h>
-#include <editor/protocol/LogoutMessage.h>
-#include <editor/protocol/ProfileMessage.h>
-#include <editor/protocol/ProfileOkMessage.h>
-#include <editor/protocol/DocumentsMessage.h>
-#include <editor/protocol/CreateMessage.h>
-#include <editor/protocol/OpenMessage.h>
-#include <editor/protocol/CloseMessage.h>
-#include <editor/protocol/DocumentMessage.h>
-#include <editor/protocol/InsertMessage.h>
-#include <editor/protocol/EraseMessage.h>
-#include <editor/protocol/CursorMessage.h>
+#include <cte/protocol/Message.h>
+#include <cte/protocol/ErrorMessage.h>
+#include <cte/protocol/SignupMessage.h>
+#include <cte/protocol/SignupOkMessage.h>
+#include <cte/protocol/LoginMessage.h>
+#include <cte/protocol/LogoutMessage.h>
+#include <cte/protocol/ProfileMessage.h>
+#include <cte/protocol/ProfileOkMessage.h>
+#include <cte/protocol/DocumentsMessage.h>
+#include <cte/protocol/CreateMessage.h>
+#include <cte/protocol/OpenMessage.h>
+#include <cte/protocol/CloseMessage.h>
+#include <cte/protocol/DocumentMessage.h>
+#include <cte/protocol/InsertMessage.h>
+#include <cte/protocol/EraseMessage.h>
+#include <cte/protocol/CursorMessage.h>
 #include <QtCore/QJsonDocument>
 
-namespace editor {
+namespace cte {
     Message::Message(MessageType type) : type_(type) {}
 
     MessageType Message::type() const {

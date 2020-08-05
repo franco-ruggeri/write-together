@@ -5,7 +5,7 @@
 #include <iostream>
 #include <editor/crdt/SharedEditor.h>
 
-using namespace editor;
+using namespace cte;
 
 int main() {
     std::cout << "client - hello world!" << std::endl;

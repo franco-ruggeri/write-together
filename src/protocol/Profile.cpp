@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/Profile.h>
+#include <cte/protocol/Profile.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
 
-namespace editor {
+namespace cte {
     Profile::Profile() {}
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage& icon) :

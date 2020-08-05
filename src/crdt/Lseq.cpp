@@ -6,7 +6,7 @@
 #include <limits>
 #include <stdexcept>
 
-namespace editor {
+namespace cte {
     // max range divided by 4 to avoid overflows in between()
     const int Lseq::begin_ = std::numeric_limits<int>::min() / 4 + 1;   // +1 to have begin_ = -end_ (easier to debug)
     const int Lseq::end_ = std::numeric_limits<int>::max() / 4;

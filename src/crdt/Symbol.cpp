@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/crdt/Symbol.h>
-#include <editor/crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
+#include <cte/crdt/SharedEditor.h>
 #include <QtCore/QJsonArray>
 
-namespace editor {
+namespace cte {
     Symbol::Symbol() :
         value_('\0'), site_id_(SharedEditor::invalid_site_id), site_counter_(SharedEditor::invalid_site_counter) {}
 

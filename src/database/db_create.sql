@@ -28,38 +28,29 @@ CREATE TABLE IF NOT EXISTS `document`
 	FOREIGN KEY (`owner`) REFERENCES user(`username`)
 );
 
-CREATE TABLE IF NOT EXISTS `site`
+CREATE TABLE IF NOT EXISTS `character`
 (
-	`site_id` SMALLINT NOT NULL AUTO_INCREMENT,
-	PRIMARY KEY (`site_id`)
-);
-
-CREATE TABLE IF NOT EXISTS `symbol`
-(
-	`symbol_id` BIGINT NOT NULL AUTO_INCREMENT,
+    `character_id` BIGINT NOT NULL AUTO_INCREMENT,
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
-	`site_id` SMALLINT NOT NULL,
-	`site_counter` BIGINT NOT NULL,
+	`index` BIGINT NOT NULL,
+	`author` VARCHAR(100) NOT NULL,
 	`value` CHAR(1) NOT NULL,
-	`position` BLOB NOT NULL,
-	PRIMARY KEY (`symbol_id`),
+	PRIMARY KEY (`character_id`),
+	UNIQUE (`document_owner`, `document_name`, `index`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`),
-	FOREIGN KEY (`site_id`) REFERENCES site(`site_id`)
+	FOREIGN KEY (`author`) REFERENCES user(`username`)
 );
 
 CREATE TABLE IF NOT EXISTS sharing
 (
-	`sharing_id` INT NOT NULL AUTO_INCREMENT,
+    `sharing_id` BIGINT NOT NULL AUTO_INCREMENT,
 	`sharing_user` VARCHAR(100) NOT NULL,
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
-	`site_id` SMALLINT NOT NULL,
-	`site_counter` BIGINT NOT NULL,
 	PRIMARY KEY (`sharing_id`),
 	FOREIGN KEY (`sharing_user`) REFERENCES user(`username`),
-	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`),
-	FOREIGN KEY (`site_id`) REFERENCES site(`site_id`)
+	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`)
 );
 
 

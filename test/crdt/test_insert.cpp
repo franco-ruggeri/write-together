@@ -1,5 +1,5 @@
 /*
- * Test the commutativity property required by a collaborative text editor and obtained by means of CRDT.
+ * Test the commutativity property required by a collaborative text cte and obtained by means of CRDT.
  *
  * Authors: Antonino Musmeci, Franco Ruggeri
  */
@@ -19,19 +19,19 @@ void print_position(const QVector<int>& position) {
 
 int main() {
     const QString text = "test";
-    editor::SharedEditor editor(editor::SharedEditor::starting_site_id, editor::SharedEditor::starting_site_counter, editor::Lseq(1));
+    cte::SharedEditor editor(cte::SharedEditor::starting_site_id, cte::SharedEditor::starting_site_counter, cte::Lseq(1));
 
     for (int i=0; i<text.size(); i++) {
-        editor::Symbol s = editor.local_insert(i, text[i]);
+        cte::Symbol s = editor.local_insert(i, text[i]);
         print_position(s.position());
     }
 
     for (int i=1; i<text.size()+1; i++) {
-        editor::Symbol s = editor.local_insert(i, text[i-1]);
+        cte::Symbol s = editor.local_insert(i, text[i - 1]);
         print_position(s.position());
     }
 
-    editor::Symbol s = editor.local_insert(2, 'b');
+    cte::Symbol s = editor.local_insert(2, 'b');
 
     return 0;
 }

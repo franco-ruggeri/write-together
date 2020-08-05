@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/DocumentMessage.h>
+#include <cte/protocol/DocumentMessage.h>
 
-namespace editor {
+namespace cte {
     DocumentMessage::DocumentMessage(const Document& document, const DocumentData& document_data) :
         Message(MessageType::document), document_(document), document_data_(document_data) {}
 

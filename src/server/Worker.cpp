@@ -7,23 +7,24 @@
 #include "DocumentManager.h"
 #include <QtCore/QThread>
 #include <QtNetwork/QHostAddress>
-#include <editor/protocol/ErrorMessage.h>
-#include <editor/protocol/SignupMessage.h>
-#include <editor/protocol/SignupOkMessage.h>
-#include <editor/protocol/LoginMessage.h>
-#include <editor/protocol/LogoutMessage.h>
-#include <editor/protocol/ProfileMessage.h>
-#include <editor/protocol/ProfileOkMessage.h>
-#include <editor/protocol/DocumentsMessage.h>
-#include <editor/protocol/CreateMessage.h>
-#include <editor/protocol/OpenMessage.h>
-#include <editor/protocol/CloseMessage.h>
-#include <editor/protocol/DocumentMessage.h>
-#include <editor/protocol/InsertMessage.h>
-#include <editor/protocol/EraseMessage.h>
-#include <editor/protocol/CursorMessage.h>
+#include <cte/protocol/ErrorMessage.h>
+#include <cte/protocol/SignupMessage.h>
+#include <cte/protocol/SignupOkMessage.h>
+#include <cte/protocol/LoginMessage.h>
+#include <cte/protocol/LogoutMessage.h>
+#include <cte/protocol/ProfileMessage.h>
+#include <cte/protocol/ProfileOkMessage.h>
+#include <cte/protocol/DocumentsMessage.h>
+#include <cte/protocol/CreateMessage.h>
+#include <cte/protocol/OpenMessage.h>
+#include <cte/protocol/CloseMessage.h>
+#include <cte/protocol/DocumentMessage.h>
+#include <cte/protocol/InsertMessage.h>
+#include <cte/protocol/EraseMessage.h>
+#include <cte/protocol/CursorMessage.h>
 
 // TODO: prova auto_increment, funziona?
+// TODO: rifai foto ER diagram
 // TODO: update github workflow to install boost (https://raymii.org/s/articles/Github_Actions_cpp_boost_cmake_speedup.html)
 // TODO: alla fine confronta flusso con UML
 // TODO: sharing_link -> QUrl
@@ -52,18 +53,18 @@ unsigned int Worker::number_of_connections() const {
 
 void Worker::start_session(int socket_fd) {
     // create socket
-    editor::TcpSocket *socket;
+    cte::TcpSocket *socket;
     try {
-        socket = new editor::TcpSocket(socket_fd);
+        socket = new cte::TcpSocket(socket_fd);
     } catch (const std::exception &e) {
         qDebug() << e.what();
         return; // this socket could not be created correctly, but the worker can continue to serve the other clients
     }
 
     // connect signals and slots (use socket_fd as session_id)
-    connect(socket, &editor::TcpSocket::readyRead,
+    connect(socket, &cte::TcpSocket::readyRead,
             [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
-    connect(socket, &editor::TcpSocket::disconnected,
+    connect(socket, &cte::TcpSocket::disconnected,
             [this, socket_fd, socket]() { close_session(socket_fd, socket); });
 
     // increment number of sessions
@@ -75,7 +76,7 @@ void Worker::start_session(int socket_fd) {
              << ", thread: " << QThread::currentThreadId() << "}";
 }
 
-void Worker::close_session(int session_id, editor::TcpSocket *socket) {
+void Worker::close_session(int session_id, cte::TcpSocket *socket) {
     // logout if authenticated
     if (identity_manager.authenticated(session_id))
         logout(session_id);
@@ -91,24 +92,24 @@ void Worker::close_session(int session_id, editor::TcpSocket *socket) {
              << ", port:" << socket->peerPort() << "}";
 }
 
-void Worker::dispatch_message(int source_socket_fd, QSharedPointer<editor::Message> message) {
+void Worker::dispatch_message(int source_socket_fd, QSharedPointer<cte::Message> message) {
     // get document
-    editor::Document document;
+    cte::Document document;
     switch (message->type()) {
-        case editor::MessageType::insert:
-            document = message.staticCast<editor::InsertMessage>()->document();
+        case cte::MessageType::insert:
+            document = message.staticCast<cte::InsertMessage>()->document();
             break;
-        case editor::MessageType::erase:
-            document = message.staticCast<editor::EraseMessage>()->document();
+        case cte::MessageType::erase:
+            document = message.staticCast<cte::EraseMessage>()->document();
             break;
-        case editor::MessageType::cursor:
-            document = message.staticCast<editor::CursorMessage>()->document();
+        case cte::MessageType::cursor:
+            document = message.staticCast<cte::CursorMessage>()->document();
             break;
-        case editor::MessageType::open:
+        case cte::MessageType::open:
             // TODO
             break;
-        case editor::MessageType::close:
-            document = message.staticCast<editor::CloseMessage>()->document();
+        case cte::MessageType::close:
+            document = message.staticCast<cte::CloseMessage>()->document();
             break;
         default:
             throw std::logic_error("invalid message: invalid type to dispatch");
@@ -117,66 +118,63 @@ void Worker::dispatch_message(int source_socket_fd, QSharedPointer<editor::Messa
     // dispatch to clients editing the document
     auto it = editing_clients.find(document);
     if (it == editing_clients.end()) return;    // no editing clients
-    for (editor::TcpSocket *socket : *it) {
+    for (cte::TcpSocket *socket : *it) {
         if (socket->socketDescriptor() == source_socket_fd) continue;
         try {
             socket->write_message(message);
         } catch (const std::exception &e) {
-            // session compromised, the shared editor is not correct anymore
+            // session compromised, the shared cte is not correct anymore
             qDebug() << "error -" << e.what();
             socket->disconnectFromHost();
         }
     }
 }
 
-static void send_error(editor::TcpSocket *socket, const QString& reason) {
-    QSharedPointer<editor::Message> message = QSharedPointer<editor::ErrorMessage>::create(reason);
+static void send_error(cte::TcpSocket *socket, const QString& reason) {
+    QSharedPointer<cte::Message> message = QSharedPointer<cte::ErrorMessage>::create(reason);
     socket->write_message(message);
 }
 
-void Worker::serve_request(int session_id, editor::TcpSocket *socket) {
+void Worker::serve_request(int session_id, cte::TcpSocket *socket) {
     // not a whole message => wait next signal
     if (!socket->canReadLine()) return;
 
     // process message
     try {
-        QSharedPointer<editor::Message> message = socket->read_message();
+        QSharedPointer<cte::Message> message = socket->read_message();
         switch (message->type()) {
-            case editor::MessageType::signup:
+            case cte::MessageType::signup:
                 signup(session_id, socket, message);
                 break;
-            case editor::MessageType::login:
+            case cte::MessageType::login:
                 login(session_id, socket, message);
                 break;
-            case editor::MessageType::logout:
+            case cte::MessageType::logout:
                 logout(session_id);
                 break;
-            case editor::MessageType::profile:
+            case cte::MessageType::profile:
                 update_profile(session_id, socket, message);
                 break;
 //            case MessageType::documents:
 //                // TODO
 //                break;
-            case editor::MessageType::create:
+            case cte::MessageType::create:
                 create_document(session_id, socket, message);
                 break;
 //            case MessageType::open:
 //                open_document(user, message);
 //                break;
-//            case MessageType::insert:
-//                insert_symbol(user, message);
-//                break;
-//            case MessageType::erase:
-//                erase_symbol(user, message);
-//                break;
-//            case MessageType::cursor:
-//                move_cursor(user, message);
-//                break;
 //            case MessageType::close:
 //                close_document(user, message);
 //                break;
-//            case MessageType::profile:
-//                update_profile(user, message);
+            case cte::MessageType::insert:
+                insert_symbol(session_id, socket, message);
+                break;
+            case cte::MessageType::erase:
+                erase_symbol(session_id, socket, message);
+                break;
+//            case MessageType::cursor:
+//                move_cursor(user, message);
 //                break;
             default:    // should never happen, since the message is generated through Message::deserialize
                 throw std::logic_error("invalid message: invalid type");
@@ -198,10 +196,10 @@ void Worker::serve_request(int session_id, editor::TcpSocket *socket) {
     }
 }
 
-void Worker::signup(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message) {
+void Worker::signup(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
     // unpack message
-    QSharedPointer<editor::SignupMessage> m = message.staticCast<editor::SignupMessage>();
-    editor::Profile profile = m->profile();
+    QSharedPointer<cte::SignupMessage> m = message.staticCast<cte::SignupMessage>();
+    cte::Profile profile = m->profile();
     QString password = m->password();
 
     // signup
@@ -211,49 +209,51 @@ void Worker::signup(int session_id, editor::TcpSocket *socket, const QSharedPoin
     }
 
     // send acknowledgement
-    QSharedPointer<editor::Message> response = QSharedPointer<editor::SignupOkMessage>::create();
+    QSharedPointer<cte::Message> response = QSharedPointer<cte::SignupOkMessage>::create();
     socket->write_message(response);
 
     qDebug() << "signup by:" << profile.username();
 }
 
-void Worker::login(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message) {
+void Worker::login(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
     // unpack message
-    QSharedPointer<editor::LoginMessage> m = message.staticCast<editor::LoginMessage>();
+    QSharedPointer<cte::LoginMessage> m = message.staticCast<cte::LoginMessage>();
     QString username = m->username();
     QString password = m->password();
 
     // login
-    std::optional<editor::Profile> profile = identity_manager.login(session_id, username, password);
+    std::optional<cte::Profile> profile = identity_manager.login(session_id, username, password);
     if (!profile) {
         send_error(socket, "login failed: wrong credentials");
         return;
     }
 
     // send profile
-    QSharedPointer<editor::Message> response = QSharedPointer<editor::ProfileMessage>::create(*profile);
+    QSharedPointer<cte::Message> response = QSharedPointer<cte::ProfileMessage>::create(*profile);
     socket->write_message(response);
 
     qDebug() << "login by:" << username;
 }
 
 void Worker::logout(int session_id) {
-    QString username = identity_manager.username(session_id);
+    // save username (just for final print)
+    std::optional<QString> username = identity_manager.username(session_id);
 
+    // logout
     identity_manager.logout(session_id);
     // TODO: close open documents
 
-    qDebug() << "logout by:" << username;
+    qDebug() << "logout by:" << *username;
 }
 
-void Worker::update_profile(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message> &message) {
+void Worker::update_profile(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message> &message) {
     // unpack message
-    QSharedPointer<editor::ProfileMessage> m = message.staticCast<editor::ProfileMessage>();
-    editor::Profile profile = m->profile();
+    QSharedPointer<cte::ProfileMessage> m = message.staticCast<cte::ProfileMessage>();
+    cte::Profile profile = m->profile();
     std::optional<QString> password = m->password();
 
     // save old username (just for final print)
-    QString old_username = identity_manager.username(session_id);
+    std::optional<QString> old_username = identity_manager.username(session_id);
 
     // update profile
     if (!identity_manager.update_profile(session_id, profile, password.value_or(QString{}))) {
@@ -262,73 +262,40 @@ void Worker::update_profile(int session_id, editor::TcpSocket *socket, const QSh
     }
 
     // send acknowledgement
-    QSharedPointer<editor::Message> response = QSharedPointer<editor::ProfileOkMessage>::create();
+    QSharedPointer<cte::Message> response = QSharedPointer<cte::ProfileOkMessage>::create();
     socket->write_message(response);
 
-    qDebug() << "profile update by:" << profile.username() << "(" + old_username + ")";
+    qDebug() << "profile update by:" << profile.username() << "(" + *old_username + ")";
 }
 
-void Worker::create_document(int session_id, editor::TcpSocket *socket, const QSharedPointer<editor::Message>& message) {
+void Worker::create_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
+    // get owner
+    std::optional<QString> opt = identity_manager.username(session_id);
+    if (!opt) throw std::logic_error("session not authenticated");
+    QString document_owner = *opt;
+
     // unpack message
-    QSharedPointer<editor::CreateMessage> m = message.staticCast<editor::CreateMessage>();
+    QSharedPointer<cte::CreateMessage> m = message.staticCast<cte::CreateMessage>();
     QString document_name = m->document_name();
 
     // create document
-    std::optional<editor::DocumentData> document_data = document_manager.create_document(session_id, document_name);
+    cte::Document document(document_owner, document_name);
+    std::optional<cte::DocumentData> document_data = document_manager.create_document(session_id, document);
     if (!document_data) {
         send_error(socket, "document creation failed: document already existing");
         return;
     }
 
     // register for dispatching
-    editor::Document document(identity_manager.username(session_id), document_name);
     editing_clients.insert(document, QVector{socket});;
 
     // send acknowledgement
-    QSharedPointer<editor::Message> response = QSharedPointer<editor::DocumentMessage>::create(document, *document_data);
+    QSharedPointer<cte::Message> response = QSharedPointer<cte::DocumentMessage>::create(document, *document_data);
     socket->write_message(response);
 
     qDebug() << "document created:" << document.full_name();
 }
 
-//void Worker::create_document(User &user, const QSharedPointer<Message>& message) {
-//    TcpSocket *socket = user.socket();
-//
-//    // check protocol errors
-//    if (!user.authenticated()) {
-//        QString reason = "user not authenticated";
-//        send_error(socket, reason);
-//        throw std::logic_error(reason.toStdString());
-//    }
-//
-//    // unpack message
-//    QSharedPointer<CreateMessage> m = message.staticCast<CreateMessage>();
-//    QString& name = m->document_name();
-//    QString owner = user.profile()->username();
-//
-//    // check inputs
-//    if (name.isEmpty()) {
-//        send_error(socket, "invalid document name");
-//        return;
-//    }
-//
-//    // TODO: check if document already exists on disk
-//
-//    // register
-//    Document document(owner, name);
-//    QMutexLocker ml(&m_documents);
-//    open_documents.insert(document, OpenDocument{});
-//    ml.unlock();
-//    // TODO: register document on disk
-//
-//    // send document
-//    // TODO
-////    QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create();
-////    socket->write_message(response);
-//
-//    qDebug() << "document created:" << document.full_name();
-//}
-//
 //void Worker::open_document(User &user, const QSharedPointer<Message>& message) {
 //    TcpSocket *socket = user.socket();
 //
@@ -399,7 +366,7 @@ void Worker::create_document(int session_id, editor::TcpSocket *socket, const QS
 //
 //void Worker::edit_document(const User &user, const Document& document, const Symbol& symbol,
 //                           const QSharedPointer<Message>& message_to_dispatch,
-//                           const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)>& edit) {
+//                           const std::function<void(const QSharedPointer<SafeSharedcte> &, const Symbol &)>& edit) {
 //    TcpSocket *socket = user.socket();
 //
 //    // check protocol errors
@@ -417,38 +384,54 @@ void Worker::create_document(int session_id, editor::TcpSocket *socket, const QS
 //    // TODO: check site_id to avoid source spoofing
 //
 //    // edit document
-//    QSharedPointer<SafeSharedEditor> local_editor = user.editor(document);
-//    edit(local_editor, symbol);
+//    QSharedPointer<SafeSharedcte> local_cte = user.cte(document);
+//    edit(local_cte, symbol);
 //
 //    // notify insertion
 //    emit new_message(message_to_dispatch);
 //}
-//
-//
-//void Worker::insert_symbol(const User& user, const QSharedPointer<Message>& message) {
-//    QSharedPointer<InsertMessage> m = message.staticCast<InsertMessage>();
-//    Document& document = m->document();
-//    Symbol& symbol = m->symbol();
-//
-//    edit_document(user, document, symbol, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
-//        sse->remote_insert(s);
-//    });
-//
-//    qDebug() << "symbol inserted by:" << user.profile()->username();
-//}
-//
-//void Worker::erase_symbol(const User& user, const QSharedPointer<Message>& message) {
-//    QSharedPointer<EraseMessage> m = message.staticCast<EraseMessage>();
-//    Document& document = m->document();
-//    Symbol& symbol = m->symbol();
-//
-//    edit_document(user, document, symbol, message, [](const QSharedPointer<SafeSharedEditor>& sse, const Symbol& s) {
-//        sse->remote_erase(s);
-//    });
-//
-//    qDebug() << "symbol erased by:" << user.profile()->username();
-//}
-//
+
+void Worker::insert_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
+    // check authentication
+    if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
+
+    // unpack message
+    QSharedPointer<cte::InsertMessage> m = message.staticCast<cte::InsertMessage>();
+    cte::Document document = m->document();
+    cte::Symbol symbol = m->symbol();
+
+    // insert symbol
+    document_manager.insert_symbol(session_id, document, symbol);
+
+    // dispatch message
+    emit new_message(socket->socketDescriptor(), message);
+
+    qDebug() << "insert: { document:" << document.full_name()
+             << ", user:" << *identity_manager.username(session_id)
+             << ", character:" << symbol.value() << "}";
+}
+
+void Worker::erase_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
+    // check authentication
+    if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
+
+    // unpack message
+    QSharedPointer<cte::EraseMessage> m = message.staticCast<cte::EraseMessage>();
+    cte::Document document = m->document();
+    cte::Symbol symbol = m->symbol();
+
+    // insert symbol
+    document_manager.erase_symbol(document, symbol);
+
+    // dispatch message
+    emit new_message(socket->socketDescriptor(), message);
+
+    qDebug() << "erase: { document:" << document.full_name()
+             << ", user:" << *identity_manager.username(session_id)
+             << ", character:" << symbol.value() << "}";
+}
+
+
 //void Worker::move_cursor(const User& user, const QSharedPointer<Message>& message) {
 //    QSharedPointer<CursorMessage> m = message.staticCast<CursorMessage>();
 //    Document& document = m->document();
@@ -462,7 +445,7 @@ void Worker::create_document(int session_id, editor::TcpSocket *socket, const QS
 //
 //    edit_document(user, document, symbol, message_to_dispatch,
 //                  // dummy edit, nothing to do in local copy
-//                  [](const QSharedPointer<SafeSharedEditor> &sse, const Symbol &s) {});
+//                  [](const QSharedPointer<SafeSharedcte> &sse, const Symbol &s) {});
 //
 //    qDebug() << "cursor moved by:" << username;
 //}

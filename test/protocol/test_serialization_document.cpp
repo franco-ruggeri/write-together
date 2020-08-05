@@ -13,17 +13,17 @@
 #include <QtCore/QString>
 
 int main() {
-    const editor::Document document("test owner", "test name");
+    const cte::Document document("test owner", "test name");
     const QString text_string("test text");
-    const int site_id(editor::SharedEditor::starting_site_id), site_counter(editor::SharedEditor::starting_site_counter);
+    const int site_id(cte::SharedEditor::starting_site_id), site_counter(cte::SharedEditor::starting_site_counter);
     const QString sharing_link("fnsc:test_uri");
     const QString username1("test username 1"), username2("test username 2");
 
     // text
-    editor::SharedEditor editor(site_id, site_counter);
+    cte::SharedEditor editor(site_id, site_counter);
     for (int i=0; i<text_string.size(); i++)
         editor.local_insert(i, text_string[i]);
-    QList<editor::Symbol> text = editor.text();
+    QList<cte::Symbol> text = editor.text();
 
     // site_id_others
     const QHash<QString,int> site_id_others{
@@ -32,22 +32,22 @@ int main() {
     };
 
     // profile_others
-    const QHash<QString,editor::Profile> profile_others{
-            {username1, editor::Profile(username1, "test name 1", "test surname 1", QImage{})},
-            {username2, editor::Profile(username2, "test name 2", "test surname 2", QImage{})}
+    const QHash<QString,cte::Profile> profile_others{
+            {username1, cte::Profile(username1, "test name 1", "test surname 1", QImage{})},
+            {username2, cte::Profile(username2, "test name 2", "test surname 2", QImage{})}
     };
 
     // cursors
-    const QHash<QString,editor::Symbol> cursors{
+    const QHash<QString,cte::Symbol> cursors{
             {username1, text[0]},
             {username2, text[1]}
     };
 
     // serialization
-    editor::DocumentData document_data(text, editor.site_id(), editor.site_counter(), site_id_others, profile_others,
-                                       cursors, sharing_link);
-    QSharedPointer<editor::Message> message1 = QSharedPointer<editor::DocumentMessage>::create(document, document_data);
-    QSharedPointer<editor::Message> message2 = editor::Message::deserialize(message1->serialize());
+    cte::DocumentData document_data(text, editor.site_id(), editor.site_counter(), site_id_others, profile_others,
+                                    cursors, sharing_link);
+    QSharedPointer<cte::Message> message1 = QSharedPointer<cte::DocumentMessage>::create(document, document_data);
+    QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;

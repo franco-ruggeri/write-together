@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/SignupMessage.h>
+#include <cte/protocol/SignupMessage.h>
 
-namespace editor {
+namespace cte {
     SignupMessage::SignupMessage(const Profile& profile, const QString& password) :
             Message(MessageType::signup), profile_(profile), password_(password) {}
 

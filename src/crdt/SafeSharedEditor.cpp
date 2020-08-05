@@ -4,8 +4,8 @@
 
 #include <editor/crdt/SafeSharedEditor.h>
 
-namespace editor {
-    SafeSharedEditor::SafeSharedEditor(int site_id, int site_counter) : editor_(site_id, site_counter) {}
+namespace cte {
+    SafeSharedEditor::SafeSharedEditor(int site_id) : editor_(site_id) {}
 
     void SafeSharedEditor::remote_insert(const Symbol &symbol) {
         QMutexLocker ml(&m_editor_);

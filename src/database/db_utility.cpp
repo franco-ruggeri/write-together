@@ -2,12 +2,12 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/database/db_utility.h>
+#include <cte/database/db_utility.h>
 #include <QtCore/QThread>
 #include <QtCore/QDebug>
 #include <QtSql/QSqlError>
 
-namespace editor {
+namespace cte {
     QSqlDatabase connect_to_database(const QString& driver_type, const QString& database_name, const QString& hostname,
                                      const QString& username, const QString& password) {
         // different connections for different threads, to exploit multiple cores

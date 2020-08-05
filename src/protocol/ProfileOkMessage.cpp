@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/ProfileOkMessage.h>
+#include <cte/protocol/ProfileOkMessage.h>
 
-namespace editor {
+namespace cte {
     ProfileOkMessage::ProfileOkMessage() : Message(MessageType::profile_ok) {}
 
     ProfileOkMessage::ProfileOkMessage(const QJsonObject &json_object) : Message(MessageType::profile_ok) {}

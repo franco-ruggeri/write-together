@@ -12,18 +12,19 @@
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QMutex>
-#include <editor/protocol/Profile.h>
+#include <cte/protocol/Profile.h>
 
 class IdentityManager {
     QHash<int,QString> sessions_;     // session_id -> username, for authenticated sessions
-    QMutex m_sessions_;
+    mutable QMutex m_sessions_;
 
 public:
-    bool signup(int session_id, const editor::Profile& profile, const QString& password);
-    std::optional<editor::Profile> login(int session_id, const QString& username, const QString& password);
+    IdentityManager();
+    bool signup(int session_id, const cte::Profile& profile, const QString& password);
+    std::optional<cte::Profile> login(int session_id, const QString& username, const QString& password);
     void logout(int session_id);
-    bool update_profile(int session_id, const editor::Profile& new_profile, const QString& new_password=QString{});
+    bool update_profile(int session_id, const cte::Profile& new_profile, const QString& new_password=QString{});
 
-    bool authenticated(int session_id);
-    QString username(int session_id);
+    bool authenticated(int session_id) const;
+    std::optional<QString> username(int session_id) const;
 };

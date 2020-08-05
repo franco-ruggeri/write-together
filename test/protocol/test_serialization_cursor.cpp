@@ -8,12 +8,12 @@
 #include <QtCore/QSharedPointer>
 
 int main() {
-    const editor::Document document("test owner", "test name");
+    const cte::Document document("test owner", "test name");
     const QString username("test username");
-    const editor::Symbol symbol('C', 1, 5, {2, 4, 5});
+    const cte::Symbol symbol('C', 1, 5, {2, 4, 5});
 
-    QSharedPointer<editor::Message> message1 = QSharedPointer<editor::CursorMessage>::create(document, symbol, username);
-    QSharedPointer<editor::Message> message2 = editor::Message::deserialize(message1->serialize());
+    QSharedPointer<cte::Message> message1 = QSharedPointer<cte::CursorMessage>::create(document, symbol, username);
+    QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;

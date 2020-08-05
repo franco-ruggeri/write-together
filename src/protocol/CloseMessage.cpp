@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/CloseMessage.h>
+#include <cte/protocol/CloseMessage.h>
 
-namespace editor {
+namespace cte {
     CloseMessage::CloseMessage(const Document& document) : Message(MessageType::close), document_(document) {}
 
     CloseMessage::CloseMessage(const Document& document, const QString& username) :

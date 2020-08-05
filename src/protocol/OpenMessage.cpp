@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/OpenMessage.h>
-#include <editor/crdt/SharedEditor.h>
+#include <cte/protocol/OpenMessage.h>
+#include <cte/crdt/SharedEditor.h>
 
-namespace editor {
+namespace cte {
     OpenMessage::OpenMessage(const Document& document) : Message(MessageType::open), document_(document) {}
 
     OpenMessage::OpenMessage(const Document &document, int site_id, const Profile &profile) :

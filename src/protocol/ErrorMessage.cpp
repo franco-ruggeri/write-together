@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/ErrorMessage.h>
+#include <cte/protocol/ErrorMessage.h>
 
-namespace editor {
+namespace cte {
     ErrorMessage::ErrorMessage(const QString& reason) : Message(MessageType::error), reason_(reason) {}
 
     ErrorMessage::ErrorMessage(const QJsonObject &json_object) : Message(MessageType::error) {
