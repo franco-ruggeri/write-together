@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/CursorMessage.h>
-#include <editor/protocol/Document.h>
-#include <editor/crdt/Symbol.h>
+#include <cte/protocol/CursorMessage.h>
+#include <cte/protocol/Document.h>
+#include <cte/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
 
 int main() {

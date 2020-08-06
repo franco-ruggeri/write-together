@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/CreateMessage.h>
+#include <cte/protocol/CreateMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 

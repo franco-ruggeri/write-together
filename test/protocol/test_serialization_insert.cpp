@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/InsertMessage.h>
-#include <editor/protocol/Document.h>
-#include <editor/crdt/Symbol.h>
+#include <cte/protocol/InsertMessage.h>
+#include <cte/protocol/Document.h>
+#include <cte/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
 
 int main() {

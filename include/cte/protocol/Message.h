@@ -23,7 +23,7 @@ namespace cte {
         MessageType type_;
 
     protected:
-        Message(MessageType type);
+        explicit Message(MessageType type);
         virtual QJsonObject json() const;
 
     public:

@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/LoginMessage.h>
+#include <cte/protocol/LoginMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 

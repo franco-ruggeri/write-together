@@ -19,7 +19,7 @@ namespace cte {
     public:
         Symbol();
         Symbol(QChar value, int site_id, int site_counter, const QVector<int>& position);
-        Symbol(const QJsonObject& json_object);
+        explicit Symbol(const QJsonObject& json_object);
 
         bool operator<(const Symbol& other) const;
         bool operator==(const Symbol& other) const;

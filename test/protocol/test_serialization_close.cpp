@@ -2,8 +2,8 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/CloseMessage.h>
-#include <editor/protocol/Document.h>
+#include <cte/protocol/CloseMessage.h>
+#include <cte/protocol/Document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 

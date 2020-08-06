@@ -14,7 +14,7 @@ namespace cte {
         Document document_;
         Symbol symbol_;
 
-        EraseMessage(const QJsonObject& json_object);
+        explicit EraseMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 

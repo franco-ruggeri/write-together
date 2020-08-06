@@ -14,7 +14,7 @@ namespace cte {
         Document document_;
         Symbol symbol_;
 
-        InsertMessage(const QJsonObject& json_object);
+        explicit InsertMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 

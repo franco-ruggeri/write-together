@@ -2,8 +2,8 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/ProfileMessage.h>
-#include <editor/protocol/Profile.h>
+#include <cte/protocol/ProfileMessage.h>
+#include <cte/protocol/Profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtGui/QImage>

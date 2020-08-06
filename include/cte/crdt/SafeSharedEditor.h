@@ -15,8 +15,7 @@ namespace cte {
         mutable QMutex m_editor_;
 
     public:
-        SafeSharedEditor(int site_id);
-        SafeSharedEditor(SafeSharedEditor&& other);
+        explicit SafeSharedEditor(int site_id);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
         QList<Symbol> text() const;

@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/DocumentMessage.h>
-#include <editor/protocol/Document.h>
-#include <editor/protocol/DocumentData.h>
-#include <editor/crdt/SharedEditor.h>
-#include <editor/crdt/Symbol.h>
+#include <cte/protocol/DocumentMessage.h>
+#include <cte/protocol/Document.h>
+#include <cte/protocol/DocumentData.h>
+#include <cte/crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QList>
 #include <QtCore/QHash>
@@ -20,19 +20,20 @@ int main() {
     const QString username1("test username 1"), username2("test username 2");
 
     // text
-    cte::SharedEditor editor(site_id, site_counter);
+    cte::SharedEditor editor(site_id);
     for (int i=0; i<text_string.size(); i++)
         editor.local_insert(i, text_string[i]);
     QList<cte::Symbol> text = editor.text();
 
     // site_id_others
-    const QHash<QString,int> site_id_others{
+    const QMultiHash<QString,int> site_ids{
             {username1, 1},
-            {username2, 2}
+            {username2, 2},
+            {username1, 3}
     };
 
     // profile_others
-    const QHash<QString,cte::Profile> profile_others{
+    const QHash<QString,cte::Profile> profiles{
             {username1, cte::Profile(username1, "test name 1", "test surname 1", QImage{})},
             {username2, cte::Profile(username2, "test name 2", "test surname 2", QImage{})}
     };
@@ -44,8 +45,7 @@ int main() {
     };
 
     // serialization
-    cte::DocumentData document_data(text, editor.site_id(), editor.site_counter(), site_id_others, profile_others,
-                                    cursors, sharing_link);
+    cte::DocumentData document_data(text, editor.site_id(), profiles, cursors, site_ids, sharing_link);
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::DocumentMessage>::create(document, document_data);
     QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);

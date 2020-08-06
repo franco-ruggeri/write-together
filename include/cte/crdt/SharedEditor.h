@@ -21,7 +21,7 @@ namespace cte {
         Lseq pos_allocator_;
 
     public:
-        SharedEditor(int site_id, const Lseq& pos_allocator=Lseq{});
+        explicit SharedEditor(int site_id, const Lseq& pos_allocator=Lseq{});
         SharedEditor(int site_id, const QList<Symbol>& text, const Lseq& pos_allocator=Lseq{});
 
         Symbol local_insert(int index, QChar value);

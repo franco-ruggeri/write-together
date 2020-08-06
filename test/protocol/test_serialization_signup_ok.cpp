@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/SignupOkMessage.h>
+#include <cte/protocol/SignupOkMessage.h>
 #include <QtCore/QSharedPointer>
 
 int main() {

@@ -14,12 +14,12 @@ namespace cte {
         Document document_;
         std::optional<QString> username_;
 
-        CloseMessage(const QJsonObject& json_object);
+        explicit CloseMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        CloseMessage(const Document& document);
+        explicit CloseMessage(const Document& document);
         CloseMessage(const Document& document, const QString& username);
         bool operator==(const Message& other) const override;
         Document document() const;

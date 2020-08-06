@@ -16,14 +16,14 @@ namespace cte {
         std::optional<int> site_id_;
         std::optional<Profile> profile_;
 
-        OpenMessage(const QJsonObject& json_object);
+        explicit OpenMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        OpenMessage(const Document& document);
+        explicit OpenMessage(const Document& document);
         OpenMessage(const Document& document, int site_id, const Profile& profile);
-        OpenMessage(const QString& sharing_link);
+        explicit OpenMessage(const QString& sharing_link);
 
         bool operator==(const Message& other) const override;
 
@@ -31,5 +31,7 @@ namespace cte {
         std::optional<QString> sharing_link() const;
         std::optional<int> site_id() const;
         std::optional<Profile> profile() const;
+        void set_site_id(int site_id);
+        void set_profile(const Profile& profile);
     };
 }

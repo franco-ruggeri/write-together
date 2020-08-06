@@ -4,8 +4,8 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/crdt/SharedEditor.h>
-#include <editor/crdt/Symbol.h>
+#include <cte/crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
 #include <QtCore/QString>
 #include <QtCore/QChar>
 
@@ -14,8 +14,8 @@ int main() {
     const int index = 1;
     const QChar value = 'H';
 
-    cte::SharedEditor editor1(cte::SharedEditor::starting_site_id, cte::SharedEditor::starting_site_counter);
-    cte::SharedEditor editor2(cte::SharedEditor::starting_site_id + 1, cte::SharedEditor::starting_site_counter);
+    cte::SharedEditor editor1(cte::SharedEditor::starting_site_id);
+    cte::SharedEditor editor2(cte::SharedEditor::starting_site_id + 1);
 
     // initial text
     for (int i=0; i<text.size(); i++) {

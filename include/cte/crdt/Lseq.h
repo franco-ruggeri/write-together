@@ -33,7 +33,7 @@ namespace cte {
         static const unsigned int default_boundary;
 
     public:
-        Lseq(unsigned int boundary=default_boundary);
+        explicit Lseq(unsigned int boundary=default_boundary);
         static QVector<int> begin();            // get dummy begin (to use as prev when there is no prev)
         static QVector<int> end();              // get dummy end (to use as next when there is no next)
         QVector<int> between(QVector<int> prev, QVector<int> next);

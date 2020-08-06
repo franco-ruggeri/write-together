@@ -12,7 +12,7 @@ namespace cte {
     class LoginMessage : public Message {
         QString username_, password_;
 
-        LoginMessage(const QJsonObject& json_object);
+        explicit LoginMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 

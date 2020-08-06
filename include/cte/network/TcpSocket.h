@@ -11,7 +11,7 @@
 namespace cte {
     class TcpSocket : public QTcpSocket {
     public:
-        TcpSocket(int socket_fd);
+        explicit TcpSocket(int socket_fd);
         QSharedPointer<Message> read_message();
         void write_message(const QSharedPointer<Message>& message);
     };

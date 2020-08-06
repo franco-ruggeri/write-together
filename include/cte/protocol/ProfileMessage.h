@@ -15,12 +15,12 @@ namespace cte {
         Profile profile_;
         std::optional<QString> password_;
 
-        ProfileMessage(const QJsonObject& json_object);
+        explicit ProfileMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 
     public:
-        ProfileMessage(const Profile& profile);
+        explicit ProfileMessage(const Profile& profile);
         ProfileMessage(const Profile& profile, const QString& password);
         bool operator==(const Message& other) const override;
         Profile profile() const;

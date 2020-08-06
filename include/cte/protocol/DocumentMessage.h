@@ -19,7 +19,7 @@ namespace cte {
         Document document_;
         DocumentData document_data_;
 
-        DocumentMessage(const QJsonObject& json_object);
+        explicit DocumentMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 

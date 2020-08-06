@@ -14,7 +14,7 @@ namespace cte {
         Profile profile_;
         QString password_;
 
-        SignupMessage(const QJsonObject& json_object);
+        explicit SignupMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 

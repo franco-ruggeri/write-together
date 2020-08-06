@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/LogoutMessage.h>
+#include <cte/protocol/LogoutMessage.h>
 #include <QtCore/QSharedPointer>
 
 int main() {

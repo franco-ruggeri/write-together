@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/crdt/SafeSharedEditor.h>
+#include <cte/crdt/SafeSharedEditor.h>
 
 namespace cte {
     SafeSharedEditor::SafeSharedEditor(int site_id) : editor_(site_id) {}

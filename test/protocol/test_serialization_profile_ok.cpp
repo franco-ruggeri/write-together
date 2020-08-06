@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/ProfileOkMessage.h>
+#include <cte/protocol/ProfileOkMessage.h>
 #include <QtCore/QSharedPointer>
 
 int main() {

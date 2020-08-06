@@ -16,7 +16,7 @@ namespace cte {
         Symbol symbol_;
         std::optional<QString> username_;
 
-        CursorMessage(const QJsonObject& json_object);
+        explicit CursorMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
         friend Message;
 

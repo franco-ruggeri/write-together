@@ -72,6 +72,14 @@ namespace cte {
         return profile_;
     }
 
+    void OpenMessage::set_site_id(int site_id) {
+        site_id_ = site_id;
+    }
+
+    void OpenMessage::set_profile(const Profile &profile) {
+        profile_ = profile;
+    }
+
     QJsonObject OpenMessage::json() const {
         QJsonObject json_object = Message::json();
         if (document_) json_object["document"] = document_->json();

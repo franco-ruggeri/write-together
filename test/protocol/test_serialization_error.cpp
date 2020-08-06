@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/protocol/ErrorMessage.h>
+#include <cte/protocol/ErrorMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 

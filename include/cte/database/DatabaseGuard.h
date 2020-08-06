@@ -16,7 +16,7 @@ namespace cte {
         DatabaseGuard& operator=(const DatabaseGuard& other) = delete;
 
     public:
-        DatabaseGuard(const QSqlDatabase& database);
+        explicit DatabaseGuard(const QSqlDatabase& database);
         ~DatabaseGuard();
     };
 }

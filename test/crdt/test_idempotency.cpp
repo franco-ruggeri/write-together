@@ -4,16 +4,16 @@
  * Author: Franco Ruggeri
  */
 
-#include <editor/crdt/SharedEditor.h>
-#include <editor/crdt/Symbol.h>
+#include <cte/crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
 #include <QtCore/QString>
 
 int main() {
     QString text = "HAT";
     const int index = 0;
 
-    cte::SharedEditor editor1(cte::SharedEditor::starting_site_id, cte::SharedEditor::starting_site_counter);
-    cte::SharedEditor editor2(cte::SharedEditor::starting_site_id + 1, cte::SharedEditor::starting_site_counter);
+    cte::SharedEditor editor1(cte::SharedEditor::starting_site_id);
+    cte::SharedEditor editor2(cte::SharedEditor::starting_site_id + 1);
 
     // initial text
     for (int i=0; i<text.size(); i++) {

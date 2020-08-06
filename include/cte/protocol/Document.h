@@ -17,7 +17,7 @@ namespace cte {
     public:
         Document();
         Document(const QString& owner, const QString& name);
-        Document(const QJsonObject& json_object);
+        explicit Document(const QJsonObject& json_object);
 
         bool operator==(const Document& other) const;
 
