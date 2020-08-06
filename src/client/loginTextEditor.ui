@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>434</height>
+    <width>643</width>
+    <height>432</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -22,17 +22,52 @@
   <property name="windowTitle">
    <string>StackedWidget</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">*{background-color:#455265;
+	}
+QFrame{background-color: white;}
+QPushButton { background-color: #138a07; 
+					 border-radius: 10px;
+					 color:white;
+					width: 100%;
+    margin-bottom: 0;
+    font-weight: 700;
+    padding: 4px 16px 5px;
+    line-height: 1.5625;
+   }
+QLineEdit{
+	color:#5d6879;
+    width: 100%;
+    height: 34px;
+    padding: 5px 16px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+ 
+  	border-radius: 10px
+    
+}
+QLabel{
+color:#5d6879;
+}
+QMessageBox  QLabel {
+  background-color:#455265;
+  color: white
+}
+QMessageBox  QIcon {
+  background-color:#455265;
+}</string>
+  </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>1</number>
   </property>
   <widget class="QWidget" name="user_page">
    <widget class="QFrame" name="user_information_frame">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>80</y>
+      <y>0</y>
       <width>191</width>
-      <height>241</height>
+      <height>451</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -79,9 +114,9 @@
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>40</y>
-      <width>371</width>
-      <height>381</height>
+      <y>20</y>
+      <width>411</width>
+      <height>391</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -122,257 +157,352 @@
    </widget>
   </widget>
   <widget class="QWidget" name="signup_page">
-   <widget class="QPushButton" name="signup_login_pushButton">
+   <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>280</y>
-      <width>201</width>
-      <height>28</height>
+      <x>140</x>
+      <y>-10</y>
+      <width>361</width>
+      <height>441</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Already a member? Click to login</string>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
     </property>
-   </widget>
-   <widget class="QPushButton" name="singup_register_pushButton">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>220</y>
-      <width>93</width>
-      <height>41</height>
-     </rect>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
-    <property name="maximumSize">
-     <size>
-      <width>93</width>
-      <height>16777215</height>
-     </size>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">border: 2px solid gray;
+    <widget class="QLabel" name="signup_label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>341</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Sign Up&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="singup_register_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>320</y>
+       <width>221</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>930</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>SIGN UP</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="signup_login_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>390</y>
+       <width>261</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:white;
+ color:#3e70bb;;
+</string>
+     </property>
+     <property name="text">
+      <string>Already a member? Click to login</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="signup_surname_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>61</x>
+       <y>51</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
  border-radius: 10px</string>
-    </property>
-    <property name="text">
-     <string>SIGN UP</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="signup_label">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>10</y>
-      <width>419</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Sign Up&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>50</y>
-      <width>419</width>
-      <height>161</height>
-     </rect>
-    </property>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Surname</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="signup_surname_lineEdit">
-       <property name="styleSheet">
-        <string notr="true">border: 2px solid gray;
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Surname</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="signup_email_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>61</x>
+       <y>155</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
  border-radius: 10px</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="signup_name_lineEdit">
-       <property name="styleSheet">
-        <string notr="true">border: 2px solid gray;
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Email</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="signup_name_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>61</x>
+       <y>103</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
  border-radius: 10px</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="signup_email_label">
-       <property name="text">
-        <string>Email</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="signup_email_lineEdit">
-       <property name="styleSheet">
-        <string notr="true">border: 2px solid gray;
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Name</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="signup_username_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>61</x>
+       <y>207</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
  border-radius: 10px</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="signup_user_label">
-       <property name="text">
-        <string>Username</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="signup_username_lineEdit">
-       <property name="styleSheet">
-        <string notr="true">border: 2px solid gray;
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Username</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="signup_password_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>61</x>
+       <y>259</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
  border-radius: 10px</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="signup_password_label">
-       <property name="text">
-        <string>Password</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="signup_password_lineEdit">
-       <property name="styleSheet">
-        <string notr="true">border: 2px solid gray;
- border-radius: 10px</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Password</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QWidget" name="login_page">
-   <widget class="QWidget" name="gridLayoutWidget_3">
+   <widget class="QFrame" name="frame_2">
     <property name="geometry">
      <rect>
-      <x>96</x>
-      <y>60</y>
-      <width>401</width>
-      <height>211</height>
+      <x>140</x>
+      <y>0</y>
+      <width>361</width>
+      <height>441</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="QLabel" name="login_label">
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;LOGIN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QPushButton" name="login_signin_pushButton">
-       <property name="text">
-        <string>Sign In</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" rowspan="2">
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="3" column="0">
-        <widget class="QLabel" name="login_password_label">
-         <property name="text">
-          <string>Password</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="login_password_lineEdit"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="login_email_label">
-         <property name="text">
-          <string>Username</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="login_email_lineEdit"/>
-       </item>
-      </layout>
-     </item>
-     <item row="4" column="0" alignment="Qt::AlignLeft">
-      <widget class="QPushButton" name="login_signup_pushButton">
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">backgrount-color:rgb(255, 255, 255)</string>
-       </property>
-       <property name="text">
-        <string>Need Account?   | register</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="login_label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>341</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Login&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="login_email_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>60</y>
+       <width>241</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Username</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="login_password_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>120</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Password</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="login_signup_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>270</y>
+       <width>211</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:white;
+ color:#3e70bb;;
+</string>
+     </property>
+     <property name="text">
+      <string>Need Account?   | register</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="login_signin_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>180</y>
+       <width>221</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>SIGN IN</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QWidget" name="connect_page">
-   <widget class="QWidget" name="gridLayoutWidget_4">
+   <widget class="QFrame" name="frame_4">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>170</y>
-      <width>341</width>
-      <height>122</height>
+      <x>150</x>
+      <y>70</y>
+      <width>361</width>
+      <height>261</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="2" column="0">
-      <widget class="QPushButton" name="connect_pushButton">
-       <property name="text">
-        <string>CONNECT</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <layout class="QFormLayout" name="formLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="connect_address_label_2">
-         <property name="text">
-          <string>IP Address</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="connect_address_lineEdit_"/>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Insert a valid IP address to connect to a server</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLineEdit" name="connect_address_lineEdit_">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>90</y>
+       <width>241</width>
+       <height>46</height>
+      </rect>
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string>127.0.0.1</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="connect_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>150</y>
+       <width>221</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>CONNECT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>20</y>
+       <width>291</width>
+       <height>57</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Insert a valid IP address to connect to a server</string>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
