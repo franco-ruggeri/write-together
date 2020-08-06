@@ -17,21 +17,31 @@ QSqlDatabase connect_to_database() {
 }
 
 QSqlQuery query_select_profile(const QSqlDatabase& database, const QString& username) {
+    QString query_string = "SELECT * FROM user WHERE username=:username";
     QSqlQuery query(database);
-    query.prepare("SELECT * FROM user WHERE username=:username FOR UPDATE");
-    query.bindValue(":username", QVariant(username));
+    query.prepare(query_string);
+    query.bindValue(":username", username);
+    return query;
+}
+
+QSqlQuery query_select_profile_for_update(const QSqlDatabase& database, const QString& username) {
+    QString query_string = "SELECT * FROM user WHERE username=:username FOR UPDATE";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":username", username);
     return query;
 }
 
 QSqlQuery query_insert_profile(const QSqlDatabase& database, const cte::Profile& profile, const QString& password) {
+    QString query_string = "INSERT INTO user (username, password, name, surname, icon) "
+                           "VALUES (:username, :password, :name, :surname, :icon)";
     QSqlQuery query(database);
-    query.prepare("INSERT INTO user (username, password, name, surname, icon) "
-                  "VALUES (:username, :password, :name, :surname, :icon)");
-    query.bindValue(":username", QVariant(profile.username()));
-    query.bindValue(":password", QVariant(password));
-    query.bindValue(":name", QVariant(profile.name()));
-    query.bindValue(":surname", QVariant(profile.surname()));
-    query.bindValue(":icon", QVariant(profile.icon()));
+    query.prepare(query_string);
+    query.bindValue(":username", profile.username());
+    query.bindValue(":password", password);
+    query.bindValue(":name", profile.name());
+    query.bindValue(":surname", profile.surname());
+    query.bindValue(":icon", profile.icon());
     return query;
 }
 
@@ -43,30 +53,81 @@ QSqlQuery query_update_profile(const QSqlDatabase& database, const QString& old_
                            "name=:name, surname=:surname, icon=:icon WHERE username=:old_username";
     QSqlQuery query(database);
     query.prepare(query_string);
-    query.bindValue(":old_username", QVariant(old_username));
-    query.bindValue(":username", QVariant(new_profile.username()));
-    query.bindValue(":name", QVariant(new_profile.name()));
-    query.bindValue(":surname", QVariant(new_profile.surname()));
-    query.bindValue(":icon", QVariant(new_profile.icon()));
+    query.bindValue(":old_username", old_username);
+    query.bindValue(":username", new_profile.username());
+    query.bindValue(":name", new_profile.name());
+    query.bindValue(":surname", new_profile.surname());
+    query.bindValue(":icon", new_profile.icon());
     if (update_password) query.bindValue(":password", new_password);
     return query;
 }
 
-QSqlQuery query_select_document(const QSqlDatabase& database, const cte::Document& document) {
+QSqlQuery query_select_document_for_update(const QSqlDatabase& database, const cte::Document& document) {
+    QString query_string = "SELECT * FROM document WHERE owner=:owner AND name=:name FOR UPDATE";
     QSqlQuery query(database);
-    query.prepare("SELECT * FROM document WHERE owner=:owner AND name=:name FOR UPDATE");
-    query.bindValue(":owner", QVariant(document.owner()));
-    query.bindValue(":name", QVariant(document.name()));
+    query.prepare(query_string);
+    query.bindValue(":owner", document.owner());
+    query.bindValue(":name", document.name());
     return query;
 }
 
 QSqlQuery query_insert_document(const QSqlDatabase& database, const cte::Document& document,
                                 const QString& sharing_link) {
+    QString query_string = "INSERT INTO document (owner, name, sharing_link) "
+                           "VALUES (:owner, :name, :sharing_link)";
     QSqlQuery query(database);
-    query.prepare("INSERT INTO document (owner, name, sharing_link) "
-                  "VALUES (:owner, :name, :sharing_link)");
-    query.bindValue(":owner", QVariant(document.owner()));
-    query.bindValue(":name", QVariant(document.name()));
+    query.prepare(query_string);
+    query.bindValue(":owner", document.owner());
+    query.bindValue(":name", document.name());
     query.bindValue(":sharing_link", sharing_link);
+    return query;
+}
+
+QSqlQuery query_insert_sharing(const QSqlDatabase& database, const cte::Document& document, const QString& username) {
+    QString query_string = "INSERT INTO sharing (sharing_user, document_owner, document_name) "
+                           "VALUES (:username, :document_owner, :document_name)";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":document_owner", document.owner());
+    query.bindValue(":document_name", document.name());
+    query.bindValue(":username", username);
+    return query;
+}
+
+QSqlQuery query_select_shared_document(const QSqlDatabase& database, const cte::Document& document,
+                                       const QString& username) {
+    QString query_string = "SELECT * "
+                           "FROM sharing s, document d "
+                           "WHERE s.document_owner=d.owner AND s.document_name=d.name AND "
+                           "      d.owner=:document_owner AND d.name=:document_name AND s.sharing_user=:username";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":document_owner", document.owner());
+    query.bindValue(":document_name", document.name());
+    query.bindValue(":username", username);
+    return query;
+}
+
+QSqlQuery query_select_document_profiles(const QSqlDatabase& database, const cte::Document& document) {
+    QString query_string = "SELECT username, name, surname, icon "
+                           "FROM user u, sharing s, document d "
+                           "WHERE u.username=s.sharing_user AND s.document_owner=d.owner AND s.document_name=d.name AND"
+                           "      d.owner=:document_owner AND d.name=:document_name";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":document_owner", document.owner());
+    query.bindValue(":document_name", document.name());
+    return query;
+}
+
+QSqlQuery query_select_document_text(const QSqlDatabase& database, const cte::Document& document) {
+    QString query_string = "SELECT index, value, author "
+                           "FROM character "
+                           "WHERE document_owner=:document_owner AND document_name=:document_name "
+                           "SORT BY index";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":document_owner", document.owner());
+    query.bindValue(":document_name", document.name());
     return query;
 }

@@ -24,6 +24,7 @@ namespace cte {
             database.setUserName(username);
             database.setPassword(password);
             database.open();
+            qDebug() << "new connection to database:" << connection_name;
         }
 
         if (!database.isOpen()) {

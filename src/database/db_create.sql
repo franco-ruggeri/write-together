@@ -30,25 +30,22 @@ CREATE TABLE IF NOT EXISTS `document`
 
 CREATE TABLE IF NOT EXISTS `character`
 (
-    `character_id` BIGINT NOT NULL AUTO_INCREMENT,
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
 	`index` BIGINT NOT NULL,
 	`author` VARCHAR(100) NOT NULL,
 	`value` CHAR(1) NOT NULL,
-	PRIMARY KEY (`character_id`),
-	UNIQUE (`document_owner`, `document_name`, `index`),
+	PRIMARY KEY (`document_owner`, `document_name`, `index`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`),
 	FOREIGN KEY (`author`) REFERENCES user(`username`)
 );
 
 CREATE TABLE IF NOT EXISTS sharing
 (
-    `sharing_id` BIGINT NOT NULL AUTO_INCREMENT,
 	`sharing_user` VARCHAR(100) NOT NULL,
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
-	PRIMARY KEY (`sharing_id`),
+	PRIMARY KEY (`sharing_user`, `document_owner`, `document_name`),
 	FOREIGN KEY (`sharing_user`) REFERENCES user(`username`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`)
 );
