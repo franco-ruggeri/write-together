@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(DATABASE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/database)
-set(QOBJECT_INCLUDE_DIR include)
+set(QOBJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/cte/server)
 
 find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
 
@@ -14,6 +14,6 @@ add_executable(server main.cpp Server.cpp Worker.cpp IdentityManager.cpp Documen
 
 target_link_libraries(server crdt protocol network database bcrypt Qt5::Core Qt5::Network Qt5::Sql)
 
-target_include_directories(server PUBLIC ${QOBJECT_INCLUDE_DIR} ${DATABASE_SOURCE_DIR}/include)
+target_include_directories(server PUBLIC ${QOBJECT_INCLUDE_DIR} ${DATABASE_SOURCE_DIR})
 
 install(TARGETS server DESTINATION ${PROJECT_SOURCE_DIR}/bin)

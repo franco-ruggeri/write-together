@@ -4,7 +4,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QThread>
-#include <Server.h>
+#include <cte/server/Server.h>
 
 int main(int argc, char **argv) {
     const QString& usage = QString("usage ") + argv[0] + " port milliseconds";
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     }
 
     // launch server
-    Server server(port, QThread::idealThreadCount(), saving_interval_ms);
+    cte::Server server(port, QThread::idealThreadCount(), saving_interval_ms);
 
     return app.exec();
 }
