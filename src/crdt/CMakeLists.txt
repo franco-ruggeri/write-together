@@ -1,5 +1,9 @@
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
-add_library(crdt Symbol.cpp SharedEditor.cpp Lseq.cpp)
+list(APPEND SRC Symbol.cpp SharedEditor.cpp Lseq.cpp)
+list(APPEND LIB Qt5::Core)
+list(APPEND INCLUDE)
 
-target_link_libraries(crdt Qt5::Core)
+add_library(crdt STATIC ${SRC})
+target_link_libraries(crdt ${LIB})
+target_include_directories(crdt PUBLIC ${INCLUDE})

@@ -1,15 +1,31 @@
 set(CMAKE_AUTOMOC ON)
-set(DATABASE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/database)
-set(QOBJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/cte/server)
+set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/server)
+set(DB_SRC_DIR ${PROJECT_SOURCE_DIR}/src/database)
 
 find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
 
-add_executable(server main.cpp Server.cpp Worker.cpp IdentityManager.cpp DocumentManager.cpp OpenDocument.cpp Saver.cpp
-        ${DATABASE_SOURCE_DIR}/db_utility_secret.cpp ${QOBJECT_INCLUDE_DIR}/Server.h ${QOBJECT_INCLUDE_DIR}/Worker.h
-        ${QOBJECT_INCLUDE_DIR}/DocumentManager.h ${QOBJECT_INCLUDE_DIR}/Saver.h)
+list(APPEND SRC
+        main.cpp
+        Server.cpp
+        Worker.cpp
+        IdentityManager.cpp
+        DocumentManager.cpp
+        OpenDocument.cpp
+        Saver.cpp
+        ${DB_SRC_DIR}/db_utility_secret.cpp
+        )
 
-target_link_libraries(server crdt protocol network database bcrypt Qt5::Core Qt5::Network Qt5::Sql)
+list(APPEND QOBJ_HEADERS
+        ${QOBJ_DIR}/Server.h
+        ${QOBJ_DIR}/Worker.h
+        ${QOBJ_DIR}/DocumentManager.h
+        ${QOBJ_DIR}/Saver.h
+        )
 
-target_include_directories(server PUBLIC ${QOBJECT_INCLUDE_DIR} ${DATABASE_SOURCE_DIR})
+list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database bcrypt)
+list(APPEND INCLUDE ${QOBJ_DIR})
 
+add_executable(server ${SRC} ${QOBJ_HEADERS})
+target_link_libraries(server ${LIB})
+target_include_directories(server PUBLIC ${INCLUDE})
 install(TARGETS server DESTINATION ${PROJECT_SOURCE_DIR}/bin)

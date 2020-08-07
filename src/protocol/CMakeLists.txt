@@ -1,6 +1,6 @@
 find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 
-add_library(protocol
+list(APPEND SRC
         Message.cpp
         Profile.cpp
         Document.cpp
@@ -21,5 +21,9 @@ add_library(protocol
         EraseMessage.cpp
         CursorMessage.cpp
         )
+list(APPEND LIB Qt5::Core Qt5::Gui crdt)
+list(APPEND INCLUDE)
 
-target_link_libraries(protocol crdt Qt5::Core Qt5::Gui)
+add_library(protocol STATIC ${SRC})
+target_link_libraries(protocol ${LIB})
+target_include_directories(protocol PUBLIC ${INCLUDE})
