@@ -1,8 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 add_executable(test_serialization_error test_serialization_error.cpp)
 target_link_libraries(test_serialization_error protocol)
 add_test(NAME serialization_error COMMAND test_serialization_error)
