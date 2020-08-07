@@ -23,7 +23,7 @@ list(APPEND QOBJ_HEADERS
         )
 
 list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database bcrypt)
-list(APPEND INCLUDE ${QOBJ_DIR})
+list(APPEND INCLUDE ${QOBJ_DIR} ${DB_SRC_DIR})
 
 add_executable(server ${SRC} ${QOBJ_HEADERS})
 target_link_libraries(server ${LIB})
