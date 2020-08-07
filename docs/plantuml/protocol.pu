@@ -2,43 +2,32 @@
 hide empty description
 
 state "NOT AUTHENTICATED" as na
-state "LOGIN\nREQUESTED" as lr
-state "NEW ACCOUNT\nREQUESTED" as nar
+state "PROFILE\nREQUESTED" as pr
 state "AUTHENTICATED" as a
+state "DOCUMENT LIST\nREQUESTED" as dlr
 state "DOCUMENT\nREQUESTED" as dr
-state "NEW DOCUMENT\nREQUESTED" as ndr
 state "DOCUMENT\nOPENED" as do
 state "PROFILE UPDATE\nREQUESTED" as pur
-state fork_authentication <<fork>>
-state join_authentication <<join>>
-state fork_document <<fork>>
-state join_document <<join>>
 
 [*] --> na
 
-na --> fork_authentication
-fork_authentication --> lr : login
-fork_authentication --> nar : sign up
-lr --> join_authentication
-nar --> join_authentication
-join_authentication --> a : documents
-join_authentication --> na : error
-
+na --> pr : login / signup
+pr --> a : profile / signup_ok
+pr --> na : error
 a --> na : logout
 
-a -> pur : profile
-pur --> a : profile_ok / error
+a -left-> pur : profile
+pur -right-> a : profile_ok / error
 
-a --> fork_document
-fork_document --> dr : open
-fork_document --> ndr : create
-dr --> join_document
-ndr --> join_document
-join_document --> do : text\n+ sequence of\ncursor
-join_document --> a : error
+a -right-> dlr : documents
+dlr -left-> a : documents
+
+a --> dr : open / create
+dr --> do : document
+dr --> a : error
 do --> a : close
-do --> do : insert / erase / cursor
+do --> do : insert / erase / cursor / open / close
 
 note top of pur : Can be done even while one or\nmore documents are opened
-note top of fork_document : More than one document can be\nopened with the same mechanism
+note right of dr : More than one document can be\nopened with the same mechanism
 @enduml

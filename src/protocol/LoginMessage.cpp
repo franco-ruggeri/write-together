@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/LoginMessage.h>
+#include <cte/protocol/LoginMessage.h>
 
-namespace collaborative_text_editor {
+namespace cte {
     LoginMessage::LoginMessage(const QString& username, const QString& password) :
         Message(MessageType::login), username_(username), password_(password) {}
 

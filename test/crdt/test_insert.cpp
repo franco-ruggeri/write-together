@@ -1,16 +1,16 @@
 /*
- * Test the commutativity property required by a collaborative text editor and obtained by means of CRDT.
+ * Test the commutativity property required by a collaborative text cte and obtained by means of CRDT.
  *
  * Authors: Antonino Musmeci, Franco Ruggeri
  */
 
 #include <iostream>
-#include <crdt/SharedEditor.h>
-#include <crdt/Lseq.h>
+#include <QtCore/QString>
+#include <cte/crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
+#include <cte/crdt/Lseq.h>
 
-using namespace collaborative_text_editor;
-
-void print_position(const std::vector<int>& position) {
+void print_position(const QVector<int>& position) {
     std::cout << "[ ";
     for (const auto& p : position)
         std::cout << p << " ";
@@ -18,21 +18,20 @@ void print_position(const std::vector<int>& position) {
 }
 
 int main() {
-    Lseq pos_allocator(1);
-    SharedEditor editor(1, pos_allocator);
+    const QString text = "test";
+    cte::SharedEditor editor(cte::SharedEditor::starting_site_id, cte::Lseq(1));
 
-    std::string text("test");
     for (int i=0; i<text.size(); i++) {
-        Symbol s = editor.local_insert(i, text[i]);
+        cte::Symbol s = editor.local_insert(i, text[i]);
         print_position(s.position());
     }
 
     for (int i=1; i<text.size()+1; i++) {
-        Symbol s = editor.local_insert(i, text[i-1]);
+        cte::Symbol s = editor.local_insert(i, text[i - 1]);
         print_position(s.position());
     }
 
-     Symbol s = editor.local_insert(2, 'b');
+    cte::Symbol s = editor.local_insert(2, 'b');
 
     return 0;
 }

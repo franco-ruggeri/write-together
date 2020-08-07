@@ -2,30 +2,27 @@
  * Author: Franco Ruggeri
  */
 
-#include <crdt/Lseq.h>
+#include <cte/crdt/Lseq.h>
 #include <limits>
 #include <stdexcept>
 
-namespace collaborative_text_editor {
+namespace cte {
     // max range divided by 4 to avoid overflows in between()
     const int Lseq::begin_ = std::numeric_limits<int>::min() / 4 + 1;   // +1 to have begin_ = -end_ (easier to debug)
     const int Lseq::end_ = std::numeric_limits<int>::max() / 4;
-
-    const unsigned int Lseq::default_boundary = 10;
-
-    Lseq::Lseq() : boundary_(default_boundary) {}
+    const unsigned int Lseq::default_boundary = 100;
 
     Lseq::Lseq(unsigned int boundary) : boundary_(boundary) {}
 
-    std::vector<int> Lseq::begin() {
-        return std::vector<int>{begin_};
+    QVector<int> Lseq::begin() {
+        return QVector<int>{begin_};
     }
 
-    std::vector<int> Lseq::end() {
-        return std::vector<int>{end_};
+    QVector<int> Lseq::end() {
+        return QVector<int>{end_};
     }
 
-    std::vector<int> Lseq::between(std::vector<int> prev, std::vector<int> next) {
+    QVector<int> Lseq::between(QVector<int> prev, QVector<int> next) {
         // fill with begin_ (e.g. begin_=0 => 1 == 1.0 == 1.00)
         auto prev_depth = prev.size();
         auto next_depth = next.size();
@@ -65,7 +62,7 @@ namespace collaborative_text_editor {
         }
 
         // allocate
-        std::vector<int> between;
+        QVector<int> between;
         int step = rand() % interval + 1;
         switch (strategy) {
             case Strategy::boundary_plus:

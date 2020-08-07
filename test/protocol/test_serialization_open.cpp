@@ -2,26 +2,34 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/OpenMessage.h>
-#include <iostream>
-#include <memory>
+#include <cte/protocol/OpenMessage.h>
+#include <cte/protocol/Document.h>
+#include <cte/protocol/Profile.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+int main() {
+    const cte::Document document("test owner", "test name");
+    const QString sharing_link("fnsc:test_uri");
+    const int site_id = 1;
+    const cte::Profile profile("test username", "test name", "test surname", QImage{});
 
-int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<cte::Message> message1, message2;
 
-    if (argc < 2) {
-        std::cerr << "usage: " << argv[0] << " document" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    // original message
-    message1 = std::make_shared<OpenMessage>(argv[1]);
-
-    // serialize -> deserialize
-    message2 = Message::deserialize(message1->serialize());
+    // with document (owner + name), without optional arguments
+    message1 = QSharedPointer<cte::OpenMessage>::create(document);
+    message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
-    
+
+    // with document (owner + name), with optional arguments
+    message1 = QSharedPointer<cte::OpenMessage>::create(document, site_id, profile);
+    message2 = cte::Message::deserialize(message1->serialize());
+    assert(*message1 == *message2);
+
+    // with sharing link
+    message1 = QSharedPointer<cte::OpenMessage>::create(sharing_link);
+    message2 = cte::Message::deserialize(message1->serialize());
+    assert(*message1 == *message2);
+
     return 0;
 }

@@ -2,23 +2,27 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/DocumentsMessage.h>
-#include <memory>
+#include <cte/protocol/DocumentsMessage.h>
+#include <cte/protocol/Document.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QSet>
 
-using namespace collaborative_text_editor;
+int main() {
+    const QSet<cte::Document> documents = {
+            cte::Document("test owner 1", "test name 1"),
+            cte::Document("test owner 2", "test name 2")
+    };
 
-int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<cte::Message> message1, message2;
 
-    std::vector<QString> documents;
-    for (int i=1; i<argc; i++)
-        documents.push_back(argv[i]);
+    // with optional argument
+    message1 = QSharedPointer<cte::DocumentsMessage>::create(documents);
+    message2 = cte::Message::deserialize(message1->serialize());
+    assert(*message1 == *message2);
 
-    // original message
-    message1 = std::make_shared<DocumentsMessage>(documents);
-
-    // serialize -> deserialize
-    message2 = Message::deserialize(message1->serialize());
+    // without optional argument
+    message1 = QSharedPointer<cte::DocumentsMessage>::create();
+    message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;

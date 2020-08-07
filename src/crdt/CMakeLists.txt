@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+find_package(Qt5 COMPONENTS Core REQUIRED)
 
-set(CMAKE_CXX_STANDARD 20)
+list(APPEND SRC Symbol.cpp SharedEditor.cpp Lseq.cpp)
+list(APPEND LIB Qt5::Core)
+list(APPEND INCLUDE)
 
-find_package(Qt5Core REQUIRED)
-
-add_library(crdt Symbol.cpp SharedEditor.cpp Lseq.cpp)
-
-target_link_libraries(crdt Qt5::Core)
+add_library(crdt STATIC ${SRC})
+target_link_libraries(crdt ${LIB})
+target_include_directories(crdt PUBLIC ${INCLUDE})

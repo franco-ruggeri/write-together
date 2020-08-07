@@ -2,25 +2,15 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CreateMessage.h>
-#include <iostream>
-#include <memory>
+#include <cte/protocol/CreateMessage.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+int main() {
+    const QString document_name("test name");
 
-int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
-
-    if (argc < 2) {
-        std::cerr << "usage: " << argv[0] << " document" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    // original message
-    message1 = std::make_shared<CreateMessage>(argv[1]);
-
-    // serialize -> deserialize
-    message2 = Message::deserialize(message1->serialize());
+    QSharedPointer<cte::Message> message1 = QSharedPointer<cte::CreateMessage>::create(document_name);
+    QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;

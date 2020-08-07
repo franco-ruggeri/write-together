@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/LogoutMessage.h>
+#include <cte/protocol/LogoutMessage.h>
 
-namespace collaborative_text_editor {
+namespace cte {
     LogoutMessage::LogoutMessage() : Message(MessageType::logout) {}
 
     LogoutMessage::LogoutMessage(const QJsonObject &json_object) : Message(MessageType::logout) {}
