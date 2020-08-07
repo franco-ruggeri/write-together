@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: sudo apt update && sudo apt install -yq qt5-default libboost-dev-all
+        run: sudo apt update && sudo apt install -yq qt5-default libboost-all-dev
       - name: Build
         run: |
           cmake .
