@@ -124,6 +124,7 @@ void DocumentManager::close_document(int session_id, const cte::Document& docume
 }
 
 void DocumentManager::close_documents(int session_id) {
+    QMutexLocker ml(&mutex_);
     auto it_sessions = site_ids_.find(session_id);
     if (it_sessions == site_ids_.end()) return;  // no documents opened
     QHash<cte::Document,int> session_site_ids = *it_sessions;
@@ -168,10 +169,6 @@ void DocumentManager::move_cursor(int session_id, const cte::Document& document,
     get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
 }
 
-void DocumentManager::save() const {
-    // TODO
-}
-
 cte::Document DocumentManager::document(const QUrl &sharing_link) const {
     // open connection
     QSqlDatabase database = connect_to_database();
@@ -182,4 +179,32 @@ cte::Document DocumentManager::document(const QUrl &sharing_link) const {
     query = query_select_document(database, sharing_link);
     if (!query.next()) throw std::logic_error("invalid sharing link");
     return cte::Document(query.value("owner").toString(), query.value("name").toString());
+}
+
+QSet<cte::Document> DocumentManager::documents(int session_id, const QString& username) const {
+    // open connection
+    QSqlDatabase database = connect_to_database();
+    cte::DatabaseGuard dg(database);
+    QSqlQuery query(database);
+
+    // load accessible documents
+    query = query_select_shared_documents(database, username);
+    QSet<cte::Document> documents;
+    while (query.next()) {
+        cte::Document document(query.value("document_owner").toString(), query.value("document_name").toString());
+        documents.insert(document);
+    }
+
+    // remove already opened ones
+    QMutexLocker ml(&mutex_);
+    auto it = site_ids_.find(session_id);
+    if (it != site_ids_.end())
+        for (const auto& document : it->keys())
+            documents.remove(document);
+
+    return documents;
+}
+
+void DocumentManager::save() const {
+    // TODO
 }

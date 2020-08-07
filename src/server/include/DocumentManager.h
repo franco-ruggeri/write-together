@@ -12,6 +12,7 @@
 #include "OpenDocument.h"
 #include <QtCore/QString>
 #include <QtCore/QHash>
+#include <QtCore/QSet>
 #include <QtCore/QMutex>
 #include <QtCore/QUrl>
 #include <cte/crdt/Symbol.h>
@@ -37,7 +38,7 @@ public:
     void insert_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
     void erase_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
     void move_cursor(int session_id, const cte::Document& document, const cte::Symbol& symbol);
-
-    void save() const;
+    QSet<cte::Document> documents(int session_id, const QString& username) const;   // those that can still be opened
     cte::Document document(const QUrl& sharing_link) const;
+    void save() const;
 };

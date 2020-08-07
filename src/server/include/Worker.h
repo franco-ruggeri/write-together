@@ -34,6 +34,7 @@ class Worker : public QObject {
     void create_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
     void open_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
     void close_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
+    void accessible_documents(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
 
     // document editing
     void insert_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);

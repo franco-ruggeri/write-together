@@ -101,7 +101,7 @@ void Worker::dispatch_message(int source_socket_fd, QSharedPointer<cte::Message>
             document = message.staticCast<cte::CursorMessage>()->document();
             break;
         case cte::MessageType::open:
-            // TODO
+            document = message.staticCast<cte::CursorMessage>()->document();
             break;
         case cte::MessageType::close:
             document = message.staticCast<cte::CloseMessage>()->document();
@@ -150,9 +150,9 @@ void Worker::serve_request(int session_id, cte::TcpSocket *socket) {
             case cte::MessageType::profile:
                 update_profile(session_id, socket, message);
                 break;
-//            case MessageType::documents:
-//                // TODO
-//                break;
+            case cte::MessageType::documents:
+                accessible_documents(session_id, socket, message);
+                break;
             case cte::MessageType::create:
                 create_document(session_id, socket, message);
                 break;
@@ -349,6 +349,20 @@ void Worker::close_document(int session_id, cte::TcpSocket *socket, const QShare
     emit new_message(socket->socketDescriptor(), close_message);
 
     qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
+}
+
+void Worker::accessible_documents(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
+    // get user
+    std::optional<QString> opt = identity_manager.username(session_id);
+    if (!opt) throw std::logic_error("session not authenticated");
+    QString username = *opt;
+
+    // get documents
+    QSet<cte::Document> documents = document_manager.documents(session_id, username);
+
+    // send documents
+    QSharedPointer<cte::Message> response = QSharedPointer<cte::DocumentsMessage>::create(documents);
+    socket->write_message(response);
 }
 
 void Worker::insert_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {

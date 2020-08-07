@@ -108,6 +108,16 @@ QSqlQuery query_select_shared_document(const QSqlDatabase& database, const cte::
     return query;
 }
 
+QSqlQuery query_select_shared_documents(const QSqlDatabase& database, const QString& username) {
+    QString query_string = "SELECT * "
+                           "FROM sharing "
+                           "WHERE sharing_user=:username";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":username", username);
+    return query;
+}
+
 QSqlQuery query_select_document_profiles(const QSqlDatabase& database, const cte::Document& document) {
     QString query_string = "SELECT username, name, surname, icon "
                            "FROM user u, sharing s, document d "

@@ -29,6 +29,7 @@ QSqlQuery query_insert_document(const QSqlDatabase& database, const cte::Documen
                                 const QUrl& sharing_link);
 QSqlQuery query_insert_sharing(const QSqlDatabase& database, const cte::Document& document, const QString& username);
 QSqlQuery query_select_shared_document(const QSqlDatabase& database, const cte::Document& document, const QString& username);
+QSqlQuery query_select_shared_documents(const QSqlDatabase& database, const QString& username);
 QSqlQuery query_select_document_profiles(const QSqlDatabase& database, const cte::Document& document);
 QSqlQuery query_select_document_text(const QSqlDatabase& database, const cte::Document& document);
 QSqlQuery query_select_document(const QSqlDatabase& database, const QUrl& sharing_link);

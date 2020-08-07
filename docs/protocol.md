@@ -12,7 +12,7 @@ Here are the fields and the explanation of each message type appearing in the st
 - *logout* : client logs out.
 - *profile \<profile> [\<password>]* : client requests a profile update.
 - *profile_ok* : server confirms success of profile update.
-- *documents [\<list_of_documents>]* : client requests (without optional argument) or server sends (with optional argument) list of documents accessible by the client (created or obtained with sharing link).
+- *documents [\<list_of_documents>]* : client requests (without optional argument) or server sends (with optional argument) list of documents that can still be opened (accessible, i.e. created or accessed previously with sharing link, and not yet opened).
 - *create \<document_name>* : client requests to create a new document.
 - *open \<document|sharing_link> [\<site_id> \<profile>]* : client requests to open an existing document (without optional arguments) or server notifies a new user with access to the document (with *\<document>* and optional arguments).
 - *close \<document> [\<username>]* : client requests to close an opened document (without optional argument) or server notifies a close to the other editing users (with optional argument).
