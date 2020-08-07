@@ -22,10 +22,6 @@
 #include <cte/protocol/EraseMessage.h>
 #include <cte/protocol/CursorMessage.h>
 
-// TODO: update github workflow to install boost (https://raymii.org/s/articles/Github_Actions_cpp_boost_cmake_speedup.html)
-// TODO: alla fine confronta flusso con UML (magari fai test)
-// TODO: controlla che accedo in mutex sempre le strutture dati in IdentityManager e DocumentManager
-
 namespace cte {
     extern IdentityManager identity_manager;
     extern DocumentManager document_manager;
