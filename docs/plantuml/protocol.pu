@@ -26,7 +26,7 @@ a --> dr : open / create
 dr --> do : document
 dr --> a : error
 do --> a : close
-do --> do : insert / erase / cursor / open / close
+do --> do : insert / erase / cursor / open / close 
 
 note top of pur : Can be done even while one or\nmore documents are opened
 note right of dr : More than one document can be\nopened with the same mechanism
