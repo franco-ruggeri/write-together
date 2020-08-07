@@ -8,7 +8,6 @@
 
 #include <QtCore/QString>
 #include <QtCore/QHash>
-#include <QtCore/QMultiHash>
 #include <QtCore/QUrl>
 #include <QtCore/QJsonObject>
 #include <cte/protocol/Profile.h>
@@ -19,7 +18,7 @@ namespace cte {
         QList<Symbol> text_;
         int site_id_;                       // assigned to the client
         QHash<int,Symbol> cursors_;         // site_id -> symbol, for users currently editing the document
-        QMultiHash<int,QString> site_ids_;  // site_id -> username, for all users with access to the document
+        QHash<int,QString> site_ids_;       // site_id -> username, for all users with access to the document
         QHash<QString,Profile> profiles_;   // username -> profile, for all users with access to the document
         QUrl sharing_link_;
 
@@ -27,7 +26,7 @@ namespace cte {
         DocumentData();
         DocumentData(int site_id, const QUrl& sharing_link);
         DocumentData(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
-                     const QMultiHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
+                     const QHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
                      const QUrl& sharing_link);
         explicit DocumentData(const QJsonObject& json_object);
 
@@ -36,7 +35,7 @@ namespace cte {
         QList<Symbol> text() const;
         int site_id() const;
         QHash<int,Symbol> cursors() const;
-        QMultiHash<int,QString> site_ids() const;
+        QHash<int,QString> site_ids() const;
         QHash<QString,Profile> profiles() const;
         QUrl sharing_link() const;
 

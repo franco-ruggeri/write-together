@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include "include/OpenDocument.h"
+#include <OpenDocument.h>
 #include <cte/crdt/Lseq.h>
 
 OpenDocument::OpenDocument() :
@@ -64,7 +64,7 @@ QList<cte::Symbol> OpenDocument::text() const {
     return local_editor_->text();
 }
 
-QMultiHash<int,QString> OpenDocument::site_ids() const {
+QHash<int,QString> OpenDocument::site_ids() const {
     return site_ids_;
 }
 

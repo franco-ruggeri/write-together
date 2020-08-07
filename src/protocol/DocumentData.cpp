@@ -13,7 +13,7 @@ namespace cte {
         site_id_(site_id_user), sharing_link_(sharing_link) {}
 
     DocumentData::DocumentData(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
-                               const QMultiHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
+                               const QHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
                                const QUrl& sharing_link) :
         text_(text), site_id_(site_id), cursors_(cursors), site_ids_(site_ids), profiles_(profiles),
         sharing_link_(sharing_link) {}
@@ -130,7 +130,7 @@ namespace cte {
         return cursors_;
     }
 
-    QMultiHash<int,QString> DocumentData::site_ids() const {
+    QHash<int,QString> DocumentData::site_ids() const {
         return site_ids_;
     }
 

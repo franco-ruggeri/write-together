@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include "OpenDocument.h"
+#include <OpenDocument.h>
+#include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QSet>
@@ -20,7 +21,9 @@
 #include <cte/protocol/DocumentData.h>
 #include <cte/protocol/Profile.h>
 
-class DocumentManager {
+class DocumentManager : public QObject {
+    Q_OBJECT
+
     QHash<cte::Document,OpenDocument> open_documents_;
     QHash<int,QHash<cte::Document,int>> site_ids_;          // session_id -> {document -> site_id}
     mutable QMutex mutex_;
@@ -31,14 +34,19 @@ class DocumentManager {
 
 public:
     DocumentManager();
+
     std::optional<cte::DocumentData> create_document(int session_id, const cte::Document& document);
     std::optional<cte::DocumentData> open_document(int session_id, const cte::Document& document, const QString& username);
     void close_document(int session_id, const cte::Document& document);
     void close_documents(int session_id);
+
     void insert_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
     void erase_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
     void move_cursor(int session_id, const cte::Document& document, const cte::Symbol& symbol);
+
     QSet<cte::Document> documents(int session_id, const QString& username) const;   // those that can still be opened
     cte::Document document(const QUrl& sharing_link) const;
-    void save() const;
+
+public slots:
+    void save();
 };

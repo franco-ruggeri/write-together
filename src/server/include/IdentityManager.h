@@ -20,6 +20,7 @@ class IdentityManager {
 
 public:
     IdentityManager();
+
     bool signup(int session_id, const cte::Profile& profile, const QString& password);
     std::optional<cte::Profile> login(int session_id, const QString& username, const QString& password);
     void logout(int session_id);

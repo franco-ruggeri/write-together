@@ -205,6 +205,41 @@ QSet<cte::Document> DocumentManager::documents(int session_id, const QString& us
     return documents;
 }
 
-void DocumentManager::save() const {
-    // TODO
+void DocumentManager::save() {
+     // copy (so that we do not lock for the entire (slow) saving on the DB) and remove closed documents
+    QMutexLocker ml(&mutex_);
+    QHash<cte::Document,OpenDocument> open_documents_copy = open_documents_;
+    std::remove_if(open_documents_.begin(), open_documents_.end(),
+                   [](const OpenDocument& od) { return od.reference_count() == 0; });
+    ml.unlock();
+
+    // save documents
+    for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++) {
+        QString owner = it.key().owner();
+        QString name = it.key().name();
+
+        // delete
+        QString query_string = "DELETE FROM character WHERE document_owner=:document_owner AND document_name=:document_name";
+        QSqlQuery query;
+        query.prepare(query_string);
+        query.bindValue(":document_owner", owner);
+        query.bindValue(":document_name", name);
+        query.exec();
+
+        // insert
+        QList<cte::Symbol> text = it->text();
+        QHash<int,QString> site_ids = it->site_ids();
+        for (unsigned int i=0; i<text.size(); i++) {
+            QString query_string = "INSERT INTO character (document_owner, document_name, index, author, value "
+                                   "VALUES (:document_owner, :document_name, :index, :author, :value";
+            QSqlQuery query;
+            query.prepare(query_string);
+            query.bindValue(":document_owner", owner);
+            query.bindValue(":document_name", name);
+            query.bindValue(":index", i);
+            query.bindValue(":author", site_ids[text[i].site_id()]);
+            query.bindValue(":value", text[i].value());
+            query.exec();
+        }
+    }
 }

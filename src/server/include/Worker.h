@@ -16,6 +16,8 @@
 #include <cte/network/TcpSocket.h>
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Document.h>
+#include <IdentityManager.h>
+#include <DocumentManager.h>
 
 class Worker : public QObject {
     Q_OBJECT

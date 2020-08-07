@@ -39,6 +39,6 @@ public:
 
     QList<cte::Symbol> text() const;
     QHash<int,cte::Symbol> cursors() const;
-    QMultiHash<int,QString> site_ids() const;
+    QHash<int,QString> site_ids() const;
     int reference_count() const;
 };

@@ -3,7 +3,7 @@
  */
 
 #include "include/IdentityManager.h"
-#include "../database/include/db_utility_secret.h"
+#include <db_utility_secret.h>
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
 #include <QtSql/QSqlDatabase>

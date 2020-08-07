@@ -2,14 +2,19 @@
  * Author: Franco Ruggeri
  */
 
-#include "include/Server.h"
+#include <Server.h>
+#include <IdentityManager.h>
+#include <DocumentManager.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QThread>
 #include <algorithm>
 
-Server::Server(unsigned int port, unsigned int n_threads) {
-    // launch thread pool
-    for (int i=0; i<n_threads; i++) {
+IdentityManager identity_manager;
+DocumentManager document_manager;
+
+Server::Server(int port, int n_workers, int saving_interval_ms) {
+    // launch thread pool for workers
+    for (int i=0; i < n_workers; i++) {
         auto *thread = new QThread(this);
         thread->start();
 
@@ -22,6 +27,12 @@ Server::Server(unsigned int port, unsigned int n_threads) {
             connect(workers_[j].get(), &Worker::new_message, workers_[i].get(), &Worker::dispatch_message);
         }
     }
+
+    // launch thread for saver
+    auto *thread = new QThread(this);
+    thread->start();
+    saver_ = QSharedPointer<Saver>::create(saving_interval_ms);
+    saver_->moveToThread(thread);
 
     // listen
     if (listen(QHostAddress::Any, port)) {
