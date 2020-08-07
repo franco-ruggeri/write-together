@@ -13,8 +13,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install dependencies
-        run: sudo apt update && sudo apt install -yq qt5-default libboost-all-dev
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+      - name: Install Boost
+        run: sudo apt update && sudo apt install -yq libboost-all-dev
       - name: Build
         run: |
           cmake .
