@@ -2,48 +2,52 @@
  * Author: Franco Ruggeri
  */
 
-#include "DocumentManager.h"
-#include <database/db_utility_secret.h>
+#include <DocumentManager.h>
+#include <db_utility_secret.h>
 #include <QtCore/QVariant>
-#include <QtCore/QDebug>
+#include <QtCore/QSet>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
-#include <QtSql/QSqlError>
 #include <cte/crdt/SharedEditor.h>
 #include <cte/database/DatabaseGuard.h>
 #include <cte/database/db_utility.h>
+
+DocumentManager::DocumentManager() : mutex_(QMutex::Recursive) {}
 
 std::optional<cte::DocumentData> DocumentManager::create_document(int session_id,
                                                                   const cte::Document& document) {
     // check inputs
     if (document.name().isEmpty()) throw std::logic_error("document creation failed: invalid document name");
 
-    // open connection
+    // open connection and start transaction
     QSqlDatabase database = connect_to_database();
     cte::DatabaseGuard dg(database);
-
-    // start transaction
     database.transaction();
     QSqlQuery query(database);
 
     // check if the document already exists
-    query = query_select_document(database, document);
+    query = query_select_document_for_update(database, document);
     cte::execute_query(query);
 
     // create document
     std::optional<cte::DocumentData> document_data;
     if (query.size() == 0) {
-        document_data = cte::DocumentData(cte::SharedEditor::starting_site_id, document.generate_sharing_link());
+        QString owner = document.owner();
+        QUrl sharing_link = cte::Document::generate_sharing_link(document);
 
-        // insert in DB
-        query = query_insert_document(database, document, document_data->sharing_link());
+        // insert new document
+        query = query_insert_document(database, document, sharing_link);
+        cte::execute_query(query);
+        query = query_insert_sharing(database, document, owner);
         cte::execute_query(query);
 
-        // insert in memory
+        // open document
+        OpenDocument od;
+        int site_id = od.open(owner);
         QMutexLocker ml(&mutex_);
-        auto local_copy = QSharedPointer<cte::SafeSharedEditor>::create(cte::SharedEditor::invalid_site_id);
-        open_documents_.insert(document, {local_copy, 1});
-        site_ids_[session_id].insert(document, document_data->site_id_user());
+        open_documents_.insert(document, od);
+        site_ids_[session_id].insert(document, document_data->site_id());
+        document_data = cte::DocumentData(site_id, sharing_link);
     }
 
     // commit transaction
@@ -52,97 +56,107 @@ std::optional<cte::DocumentData> DocumentManager::create_document(int session_id
     return document_data;
 }
 
-std::optional<cte::DocumentData> DocumentManager::open_document(int session_id, const QString &username,
-                                                                const cte::Document &document) {
-//    // check inputs
-//    if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
-//    if (document_name.isEmpty()) throw std::logic_error("document creation failed: invalid document name");
-//    QString document_owner = identity_manager.username(session_id);
-//    cte::Document document(document_owner, document_name);
-//
-//    // open connection
-//    QSqlDatabase database = connect_to_database();
-//    cte::DatabaseGuard dg(database);
-//
-//    // start transaction
-//    database.transaction();
-//    QSqlQuery query(database);
-//
-//    // check if the document already exists
-//    query.prepare("SELECT * FROM document WHERE owner=:owner AND name=:name FOR UPDATE");
-//    query.bindValue(":owner", QVariant(document_owner));
-//    query.bindValue(":name", QVariant(document_name));
-//    cte::execute_query(query);
-//
-//    // create document
-//    std::optional<cte::DocumentData> document_data;
-//    if (query.size() == 0) {
-//        document_data = cte::DocumentData(cte::SharedEditor::starting_site_id,
-//                                             cte::SharedEditor::starting_site_counter);
-//
-//        // insert document in DB
-//        query.prepare("INSERT INTO document (owner, name, sharing_link) "
-//                      "VALUES (:owner, :name, :sharing_link)");
-//        query.bindValue(":owner", QVariant(document_owner));
-//        query.bindValue(":name", QVariant(document_name));
-//        query.bindValue(":sharing_link", document_data->sharing_link());
-//        cte::execute_query(query);
-//
-//        // insert sharing in DB
-//        query.prepare("INSERT INTO sharing (sharing_user, document_owner, document_name, site_id, site_counter"
-//                      ":sharing_user, :document_owner, :document_name, :site_id, :site_counter");
-//        query.bindValue(":sharing_user", document_owner);
-//        query.bindValue(":document_owner", document_owner);
-//        query.bindValue("document_name", document_name);
-//        query.bindValue("site_id", document_data->site_id_user());
-//        query.bindValue("site_counter", document_data->site_counter_user());
-//
-//        // insert in memory
-//        QMutexLocker ml(&mutex_);
-//        auto local_copy = QSharedPointer<cte::SafeSharedEditor>::create(cte::SharedEditor::server_site_id,
-//                                                                           cte::SharedEditor::invalid_site_counter);
-//        local_copies_.insert(document, local_copy);
-//        open_documents_[session_id].insert(document);
-//    }
-//
-//    // commit transaction
-//    database.commit();
-//
-//    return document_data;
-    return std::nullopt;
+std::optional<cte::DocumentData> DocumentManager::open_document(int session_id, const cte::Document& document,
+                                                                const QString& username) {
+    // check inputs
+    if (opened(session_id, document)) throw std::logic_error("document already opened");
+
+    // open connection and start transaction
+    QSqlDatabase database = connect_to_database();
+    cte::DatabaseGuard dg(database);
+    database.transaction();
+    QSqlQuery query(database);
+
+    // check if the document is accessible by the user (selecting also sharing link)
+    query = query_select_shared_document(database, document, username);
+    cte::execute_query(query);
+
+    // open document
+    std::optional<cte::DocumentData> document_data;
+    if (query.next()) {
+        // load sharing link
+        QString sharing_link = query.value("sharing_link").toString();
+
+        // load profiles
+        query = query_select_document_profiles(database, document);
+        QHash<QString,cte::Profile> profiles;
+        while (query.next()) {
+            QString username = query.value("username").toString();
+            cte::Profile profile(username, query.value("name").toString(),
+                                 query.value("surname").toString(),
+                                 query.value("icon").value<QImage>());
+            profiles.insert(username, profile);
+        }
+
+        // open document
+        QMutexLocker ml(&mutex_);
+        if (!open_documents_.contains(document)) {
+            // not in main memory... load text
+            query = query_select_document_text(database, document);
+            cte::execute_query(query);
+            QVector<OpenDocument::character_t> text;
+            while (query.next()) {
+                text.push_back({
+                    query.value("index").value<qint32>(),
+                    query.value("value").toString().at(0),
+                    query.value("author").toString()
+                });
+            }
+            open_documents_.insert(document, OpenDocument(text));
+        }
+        OpenDocument& od = open_documents_[document];
+        int site_id = od.open(username);
+        site_ids_[session_id].insert(document, document_data->site_id());
+        document_data = cte::DocumentData(od.text(), site_id, od.cursors(), od.site_ids(), profiles, sharing_link);
+    }
+
+    // commit transaction
+    database.commit();
+
+    return document_data;
 }
 
-QSharedPointer<cte::SafeSharedEditor> DocumentManager::local_copy(const cte::Document& document) {
-    QMutexLocker ml(&mutex_);
+OpenDocument& DocumentManager::get_open_document(const cte::Document& document) {
     auto it = open_documents_.find(document);
-    if (it == open_documents_.end()) throw std::logic_error("file not opened");
-    return it->local_copy;
+    if (it == open_documents_.end()) throw std::logic_error("document not opened");
+    return *it;
+}
+
+bool DocumentManager::opened(int session_id, const cte::Document& document) const {
+    QMutexLocker ml(&mutex_);
+    auto it = site_ids_.find(session_id);
+    return it != site_ids_.end() && it->contains(document);
 }
 
 bool DocumentManager::site_id_spoofing(int session_id, const cte::Document& document,
-                                       const cte::Symbol& symbol) {
-    // find session site_ids
-    auto it_session_site_ids = site_ids_.find(session_id);
-    if (it_session_site_ids == site_ids_.end()) throw std::logic_error("file not opened");
-    QHash<cte::Document,int>& session_site_ids = *it_session_site_ids;
-
-    // find document site_id
-    auto it_site_id = session_site_ids.find(document);
-    if (it_site_id == session_site_ids.end()) throw std::logic_error("file not opened");
-    int& site_id = *it_site_id;
-
-    return site_id != symbol.site_id();
+                                       const cte::Symbol& symbol) const {
+    QMutexLocker ml(&mutex_);
+    return opened(session_id, document) && site_ids_[session_id][document] == symbol.site_id();
 }
 
 void DocumentManager::insert_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol) {
+    QMutexLocker ml(&mutex_);
     if (site_id_spoofing(session_id, document, symbol)) throw std::logic_error("site_id spoofing");
-    local_copy(document)->remote_insert(symbol);
+    get_open_document(document).insert_symbol(symbol);
 }
 
 void DocumentManager::erase_symbol(const cte::Document& document, const cte::Symbol& symbol) {
-    local_copy(document)->remote_erase(symbol);
+    QMutexLocker ml(&mutex_);
+    get_open_document(document).erase_symbol(symbol);
 }
 
-void DocumentManager::save() {
+void DocumentManager::save() const {
     // TODO
+}
+
+cte::Document DocumentManager::document(const QUrl &sharing_link) const {
+    // open connection
+    QSqlDatabase database = connect_to_database();
+    cte::DatabaseGuard dg(database);
+    QSqlQuery query(database);
+
+    // load document
+    query = query_select_document(database, sharing_link);
+    if (!query.next()) throw std::logic_error("invalid sharing link");
+    return cte::Document(query.value("owner").toString(), query.value("name").toString());
 }

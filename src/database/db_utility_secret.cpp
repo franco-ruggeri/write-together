@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include "db_utility_secret.h"
+#include <db_utility_secret.h>
 #include <QtCore/QVariant>
 #include <cte/database/db_utility.h>
 
@@ -72,14 +72,14 @@ QSqlQuery query_select_document_for_update(const QSqlDatabase& database, const c
 }
 
 QSqlQuery query_insert_document(const QSqlDatabase& database, const cte::Document& document,
-                                const QString& sharing_link) {
+                                const QUrl& sharing_link) {
     QString query_string = "INSERT INTO document (owner, name, sharing_link) "
                            "VALUES (:owner, :name, :sharing_link)";
     QSqlQuery query(database);
     query.prepare(query_string);
     query.bindValue(":owner", document.owner());
     query.bindValue(":name", document.name());
-    query.bindValue(":sharing_link", sharing_link);
+    query.bindValue(":sharing_link", sharing_link.toString());
     return query;
 }
 
@@ -129,5 +129,15 @@ QSqlQuery query_select_document_text(const QSqlDatabase& database, const cte::Do
     query.prepare(query_string);
     query.bindValue(":document_owner", document.owner());
     query.bindValue(":document_name", document.name());
+    return query;
+}
+
+QSqlQuery query_select_document(const QSqlDatabase& database, const QUrl& sharing_link) {
+    QString query_string = "SELECT * "
+                           "FROM document "
+                           "WHERE sharing_link=:sharing_link";
+    QSqlQuery query(database);
+    query.prepare(query_string);
+    query.bindValue(":sharing_link", sharing_link.toString());
     return query;
 }

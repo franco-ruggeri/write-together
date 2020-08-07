@@ -13,7 +13,8 @@
 namespace cte {
     class Symbol {
         QChar value_;
-        int site_id_, site_counter_;
+        int site_id_;
+        int site_counter_;
         QVector<int> position_;
 
     public:
@@ -26,7 +27,6 @@ namespace cte {
 
         QChar value() const;
         int site_id() const;
-        int site_counter() const;
         QVector<int> position() const;
 
         QJsonObject json() const;

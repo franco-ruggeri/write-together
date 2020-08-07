@@ -17,7 +17,7 @@ namespace cte {
     SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text, const Lseq& pos_allocator) :
         site_id_(site_id), site_counter_(starting_site_counter), text_(text), pos_allocator_(pos_allocator) {}
 
-    Symbol SharedEditor::local_insert(int index, QChar value) {
+    Symbol SharedEditor::local_insert(unsigned int index, QChar value) {
         // allocate position
         QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
         QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
@@ -29,7 +29,7 @@ namespace cte {
         return symbol;
     }
 
-    Symbol SharedEditor::local_erase(int index) {
+    Symbol SharedEditor::local_erase(unsigned int index) {
         Symbol symbol = text_.at(index);
         text_.erase(text_.begin() + index);
         return symbol;
@@ -53,10 +53,6 @@ namespace cte {
 
     int SharedEditor::site_id() const {
         return site_id_;
-    }
-
-    int SharedEditor::site_counter() const {
-        return site_counter_;
     }
 
     QList<Symbol> SharedEditor::text() const {

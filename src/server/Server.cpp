@@ -2,7 +2,7 @@
  * Author: Franco Ruggeri
  */
 
-#include "Server.h"
+#include "include/Server.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QThread>
 #include <algorithm>

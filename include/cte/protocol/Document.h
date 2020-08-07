@@ -1,10 +1,13 @@
 /*
+ * Identifier of a document.
+ *
  * Author: Franco Ruggeri
  */
 
 #pragma once
 
 #include <QtCore/QString>
+#include <QtCore/QUrl>
 #include <QtCore/QJsonObject>
 
 namespace cte {
@@ -26,6 +29,6 @@ namespace cte {
         QString full_name() const;
         QJsonObject json() const;
 
-        QString generate_sharing_link() const;
+        static QUrl generate_sharing_link(const Document& document);
     };
 }

@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS `character`
 (
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
-	`index` BIGINT NOT NULL,
-	`author` VARCHAR(100) NOT NULL,
+	`index` INT NOT NULL,
 	`value` CHAR(1) NOT NULL,
+    `author` VARCHAR(100) NOT NULL,
 	PRIMARY KEY (`document_owner`, `document_name`, `index`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`),
 	FOREIGN KEY (`author`) REFERENCES user(`username`)

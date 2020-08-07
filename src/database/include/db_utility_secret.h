@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <QtCore/QString>
+#include <QtCore/QUrl>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtGui/QImage>
@@ -24,8 +26,9 @@ QSqlQuery query_update_profile(const QSqlDatabase& database, const QString& old_
 // document management queries
 QSqlQuery query_select_document_for_update(const QSqlDatabase& database, const cte::Document& document);
 QSqlQuery query_insert_document(const QSqlDatabase& database, const cte::Document& document,
-                                const QString& sharing_link);
+                                const QUrl& sharing_link);
 QSqlQuery query_insert_sharing(const QSqlDatabase& database, const cte::Document& document, const QString& username);
 QSqlQuery query_select_shared_document(const QSqlDatabase& database, const cte::Document& document, const QString& username);
 QSqlQuery query_select_document_profiles(const QSqlDatabase& database, const cte::Document& document);
 QSqlQuery query_select_document_text(const QSqlDatabase& database, const cte::Document& document);
+QSqlQuery query_select_document(const QSqlDatabase& database, const QUrl& sharing_link);

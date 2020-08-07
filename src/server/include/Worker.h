@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <functional>
 #include <QtCore/QObject>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
@@ -32,13 +31,10 @@ class Worker : public QObject {
 
     // document management
     void create_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
-//    void open_document(User& user, const QSharedPointer<Message>& message);
+    void open_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
 //    void close_document(User& user, const QSharedPointer<Message>& message);
-//
+
     // document editing
-//    void edit_document(const User &user, const Document &document, const Symbol &symbol,
-//                       const QSharedPointer<Message> &message_to_dispatch,
-//                       const std::function<void(const QSharedPointer<SafeSharedEditor> &, const Symbol &)> &edit);
     void insert_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
     void erase_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
 //    void move_cursor(const User& user, const QSharedPointer<Message>& message);

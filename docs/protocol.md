@@ -28,7 +28,7 @@ Further details:
 - *\<document_data>* contains:
 	+ *text* (array of symbols)
 	+ *site_id* and *site_counter* assigned to the client opening the document
-	+ map *username* -> *profile* for all the users with access to the document (including who is opening/creating)
-	+ map *username* -> *symbol* (cursors) for all the online users editing the document
-	+ map *username* -> list of *site_ids* for all the users with access to the document (including who is opening/creating)
+	+ map *site_id* -> *symbol* (cursors) for all the online users editing the document
+	+ map *site_id* -> *username* for all the users with access to the document and at least one character in the text
+	+ map *username* -> *profile* for all the users with access to the document and at least one character in the text
 	+ *sharing_link*

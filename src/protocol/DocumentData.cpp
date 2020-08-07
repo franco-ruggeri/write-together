@@ -7,17 +7,16 @@
 #include <QtCore/QJsonArray>
 
 namespace cte {
-    DocumentData::DocumentData() :
-            site_id_(SharedEditor::invalid_site_id) {}
+    DocumentData::DocumentData() : site_id_(SharedEditor::invalid_site_id) {}
 
-    DocumentData::DocumentData(int site_id_user, const QString& sharing_link) :
-            site_id_(site_id_user), sharing_link_(sharing_link) {}
+    DocumentData::DocumentData(int site_id_user, const QUrl& sharing_link) :
+        site_id_(site_id_user), sharing_link_(sharing_link) {}
 
-    DocumentData::DocumentData(const QList<Symbol>& text, int site_id,
-                               const QHash<QString,Profile>& profiles, const QHash<QString,Symbol>& cursors,
-                               const QMultiHash<QString,int>& site_ids, const QString& sharing_link) :
-            text_(text), site_id_(site_id), profiles_(profiles), cursors_(cursors), site_ids_(site_ids),
-            sharing_link_(sharing_link) {}
+    DocumentData::DocumentData(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
+                               const QMultiHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
+                               const QUrl& sharing_link) :
+        text_(text), site_id_(site_id), cursors_(cursors), site_ids_(site_ids), profiles_(profiles),
+        sharing_link_(sharing_link) {}
 
    DocumentData::DocumentData(const QJsonObject& json_object) {
        auto end_iterator = json_object.end();
@@ -36,10 +35,11 @@ namespace cte {
            throw std::logic_error("invalid message: invalid fields");
 
        site_id_ = site_id_iterator->toInt(SharedEditor::invalid_site_id);
-       sharing_link_ = sharing_link_iterator->toString();
+       QString sl = sharing_link_iterator->toString();
 
-       if (site_id_ == SharedEditor::invalid_site_id || sharing_link_.isNull())
+       if (site_id_ == SharedEditor::invalid_site_id || sl.isNull())
            throw std::logic_error("invalid message: invalid fields");
+       sharing_link_ = QUrl(sl);
 
        // text
        QJsonArray json_array = text_iterator->toArray();
@@ -47,6 +47,45 @@ namespace cte {
            if (!s_json.isObject()) throw std::logic_error("invalid message: invalid fields");
            Symbol s(s_json.toObject());
            text_.push_back(s);
+       }
+
+       // cursors
+       json_array = cursors_iterator->toArray();
+       for (const auto &c_json : json_array) {
+           if (!c_json.isObject()) throw std::logic_error("invalid message: invalid fields");
+           QJsonObject c_json_object = c_json.toObject();
+
+           auto end_iterator = c_json_object.end();
+           auto site_id_iterator = c_json_object.find("site_id");
+           auto symbol_iterator = c_json_object.find("symbol");
+           if (site_id_iterator == end_iterator || symbol_iterator == end_iterator || !symbol_iterator->isObject())
+               throw std::logic_error("invalid message: invalid fields");
+
+           int site_id = site_id_iterator->toInt(SharedEditor::invalid_site_id);
+           Symbol symbol(symbol_iterator->toObject());
+           if (site_id == SharedEditor::invalid_site_id) throw std::logic_error("invalid message: invalid fields");
+
+           cursors_.insert(site_id, symbol);
+       }
+
+       // site_ids
+       json_array = site_ids_iterator->toArray();
+       for (const auto &u_json : json_array) {
+           if (!u_json.isObject()) throw std::logic_error("invalid message: invalid fields");
+           QJsonObject u_json_object = u_json.toObject();
+
+           auto end_iterator = u_json_object.end();
+           auto site_id_iterator = u_json_object.find("site_id");
+           auto username_iterator = u_json_object.find("username");
+           if (site_id_iterator == end_iterator || username_iterator == end_iterator)
+               throw std::logic_error("invalid message: invalid fields");
+
+           int site_id = site_id_iterator->toInt(SharedEditor::invalid_site_id);
+           QString username = username_iterator->toString();
+           if (username.isNull() || site_id == SharedEditor::invalid_site_id)
+               throw std::logic_error("invalid message: invalid fields");
+
+           site_ids_.insert(site_id, username);
        }
 
        // profiles
@@ -67,51 +106,12 @@ namespace cte {
 
            profiles_.insert(username, profile);
        }
-
-       // cursors
-       json_array = cursors_iterator->toArray();
-       for (const auto &c_json : json_array) {
-           if (!c_json.isObject()) throw std::logic_error("invalid message: invalid fields");
-           QJsonObject c_json_object = c_json.toObject();
-
-           auto end_iterator = c_json_object.end();
-           auto username_iterator = c_json_object.find("username");
-           auto symbol_iterator = c_json_object.find("symbol");
-           if (username_iterator == end_iterator || symbol_iterator == end_iterator || !symbol_iterator->isObject())
-               throw std::logic_error("invalid message: invalid fields");
-
-           QString username = username_iterator->toString();
-           Symbol symbol(symbol_iterator->toObject());
-           if (username.isNull()) throw std::logic_error("invalid message: invalid fields");
-
-           cursors_.insert(username, symbol);
-       }
-
-       // site_ids
-       json_array = site_ids_iterator->toArray();
-       for (const auto &u_json : json_array) {
-           if (!u_json.isObject()) throw std::logic_error("invalid message: invalid fields");
-           QJsonObject u_json_object = u_json.toObject();
-
-           auto end_iterator = u_json_object.end();
-           auto username_iterator = u_json_object.find("username");
-           auto site_id_iterator = u_json_object.find("site_id");
-           if (username_iterator == end_iterator || site_id_iterator == end_iterator)
-               throw std::logic_error("invalid message: invalid fields");
-
-           QString username = username_iterator->toString();
-           int site_id = site_id_iterator->toInt(SharedEditor::invalid_site_id);
-           if (username.isNull() || site_id == SharedEditor::invalid_site_id)
-               throw std::logic_error("invalid message: invalid fields");
-
-           site_ids_.insert(username, site_id);
-       }
    }
 
    bool DocumentData::operator==(const DocumentData& other) const {
        return this->text_ == other.text_ && this->site_id_ == other.site_id_ &&
-              this->site_ids_ == other.site_ids_ && this->profiles_ == other.profiles_ &&
-              this->cursors_ == other.cursors_ && this->sharing_link_ == other.sharing_link_;
+              this->site_ids_ == other.site_ids_ && this->cursors_ == other.cursors_ &&
+              this->profiles_ == other.profiles_ && this->sharing_link_ == other.sharing_link_;
     }
 
    QList<Symbol> DocumentData::text() const {
@@ -126,22 +126,22 @@ namespace cte {
         return profiles_;
     }
 
-    QHash<QString,Symbol> DocumentData::cursors() const {
+    QHash<int,Symbol> DocumentData::cursors() const {
         return cursors_;
     }
 
-    QMultiHash<QString,int> DocumentData::site_ids() const {
+    QMultiHash<int,QString> DocumentData::site_ids() const {
         return site_ids_;
     }
 
-    QString DocumentData::sharing_link() const {
+    QUrl DocumentData::sharing_link() const {
         return sharing_link_;
     }
 
     QJsonObject DocumentData::json() const {
         QJsonObject json_object;
 
-        json_object["sharing_link"] = sharing_link_;
+        json_object["sharing_link"] = sharing_link().toString();
         json_object["site_id"] = site_id_;
 
         // text
@@ -149,6 +149,26 @@ namespace cte {
         for (const auto& s : text_)
             json_array.push_back(s.json());
         json_object["text"] = json_array;
+
+        // cursors
+        json_array = QJsonArray{};
+        for (auto it=cursors_.begin(); it!=cursors_.end(); it++) {
+            QJsonObject c_json;
+            c_json["site_id"] = it.key();
+            c_json["symbol"] = it.value().json();
+            json_array.push_back(c_json);
+        }
+        json_object["cursors"] = json_array;
+
+        // site_ids
+        json_array = QJsonArray{};
+        for (auto it=site_ids_.begin(); it!=site_ids_.end(); it++) {
+            QJsonObject u_json;
+            u_json["site_id"] = it.key();
+            u_json["username"] = it.value();
+            json_array.push_back(u_json);
+        }
+        json_object["site_ids"] = json_array;
 
         // profiles
         json_array = QJsonArray{};
@@ -159,26 +179,6 @@ namespace cte {
             json_array.push_back(c_json);
         }
         json_object["profiles"] = json_array;
-
-        // cursors
-        json_array = QJsonArray{};
-        for (auto it=cursors_.begin(); it!=cursors_.end(); it++) {
-            QJsonObject c_json;
-            c_json["username"] = it.key();
-            c_json["symbol"] = it.value().json();
-            json_array.push_back(c_json);
-        }
-        json_object["cursors"] = json_array;
-
-        // site_ids
-        json_array = QJsonArray{};
-        for (auto it=site_ids_.begin(); it!=site_ids_.end(); it++) {
-            QJsonObject u_json;
-            u_json["username"] = it.key();
-            u_json["site_id"] = it.value();
-            json_array.push_back(u_json);
-        }
-        json_object["site_ids"] = json_array;
 
         return json_object;
     }

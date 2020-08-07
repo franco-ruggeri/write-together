@@ -15,37 +15,37 @@
 int main() {
     const cte::Document document("test owner", "test name");
     const QString text_string("test text");
-    const int site_id(cte::SharedEditor::starting_site_id), site_counter(cte::SharedEditor::starting_site_counter);
-    const QString sharing_link("fnsc:test_uri");
+    const QString sharing_link("cte:test_uri");
     const QString username1("test username 1"), username2("test username 2");
 
     // text
-    cte::SharedEditor editor(site_id);
+    cte::SharedEditor editor(0);
     for (int i=0; i<text_string.size(); i++)
         editor.local_insert(i, text_string[i]);
     QList<cte::Symbol> text = editor.text();
 
-    // site_id_others
-    const QMultiHash<QString,int> site_ids{
-            {username1, 1},
-            {username2, 2},
-            {username1, 3}
+    // cursors
+    const QHash<int,cte::Symbol> cursors{
+            {1, text[0]},
+            {2, text[1]},
+            {3, text[2]}
     };
 
-    // profile_others
+    // site_ids
+    const QMultiHash<int,QString> site_ids{
+            {1, username1},
+            {2, username2},
+            {3, username1}
+    };
+
+    // profiles
     const QHash<QString,cte::Profile> profiles{
             {username1, cte::Profile(username1, "test name 1", "test surname 1", QImage{})},
             {username2, cte::Profile(username2, "test name 2", "test surname 2", QImage{})}
     };
 
-    // cursors
-    const QHash<QString,cte::Symbol> cursors{
-            {username1, text[0]},
-            {username2, text[1]}
-    };
-
     // serialization
-    cte::DocumentData document_data(text, editor.site_id(), profiles, cursors, site_ids, sharing_link);
+    cte::DocumentData document_data(text, editor.site_id(), cursors, site_ids, profiles, sharing_link);
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::DocumentMessage>::create(document, document_data);
     QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);

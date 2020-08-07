@@ -49,8 +49,8 @@ namespace cte {
         return json_object;
     }
 
-    QString Document::generate_sharing_link() const {
-        return "cte:" + full_name();    // TODO: add ?random_string
+    QUrl Document::generate_sharing_link(const Document& document) {
+        return "cte:" + document.full_name();    // TODO: add ?random_string
     }
 
     uint qHash(const Document &key, uint seed) {

@@ -2,8 +2,8 @@
  * Author: Franco Ruggeri
  */
 
-#include "IdentityManager.h"
-#include <database/db_utility_secret.h>
+#include "include/IdentityManager.h"
+#include "../database/include/db_utility_secret.h"
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
 #include <QtSql/QSqlDatabase>
@@ -21,16 +21,14 @@ bool IdentityManager::signup(int session_id, const cte::Profile& profile, const 
     if (authenticated(session_id)) throw std::logic_error("session already authenticated");
     if (username.isEmpty() || password.isEmpty()) throw std::logic_error("signup failed: invalid credentials");
 
-    // open connection
+    // open connection and start transaction
     QSqlDatabase database = connect_to_database();
     cte::DatabaseGuard dg(database);
-
-    // start transaction
     database.transaction();
     QSqlQuery query(database);
 
     // check if the username is already used
-    query = query_select_profile(database, username);
+    query = query_select_profile_for_update(database, username);
     cte::execute_query(query);
 
     // signup
@@ -81,6 +79,7 @@ std::optional<cte::Profile> IdentityManager::login(int session_id, const QString
 }
 
 void IdentityManager::logout(int session_id) {
+    // remove session from authenticated ones
     QMutexLocker ml(&m_sessions_);
     if (!authenticated(session_id)) throw std::logic_error("session not authenticated");
     sessions_.remove(session_id);
@@ -93,16 +92,14 @@ bool IdentityManager::update_profile(int session_id, const cte::Profile& new_pro
     QString new_username = new_profile.username();
     if (new_username.isEmpty() || (!new_password.isNull() && new_password.isEmpty())) return false;
 
-    // open connection
+    // open connection and start transaction
     QSqlDatabase database = connect_to_database();
     cte::DatabaseGuard dg(database);
-
-    // start transaction
     database.transaction();
     QSqlQuery query(database);
 
     // check if the new username is already used
-    query = query_select_profile(database, new_username);
+    query = query_select_profile_for_update(database, new_username);
     cte::execute_query(query);
 
     // update profile

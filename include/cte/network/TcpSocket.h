@@ -10,6 +10,8 @@
 
 namespace cte {
     class TcpSocket : public QTcpSocket {
+        Q_OBJECT
+
     public:
         explicit TcpSocket(int socket_fd);
         QSharedPointer<Message> read_message();
