@@ -116,6 +116,22 @@ std::optional<cte::DocumentData> DocumentManager::open_document(int session_id, 
     return document_data;
 }
 
+void DocumentManager::close_document(int session_id, const cte::Document& document) {
+    QMutexLocker ml(&mutex_);
+    if (!opened(session_id, document)) throw std::logic_error("document not opened");
+    int site_id = site_ids_[session_id].take(document);
+    get_open_document(document).close(site_id);
+}
+
+void DocumentManager::close_documents(int session_id) {
+    auto it_sessions = site_ids_.find(session_id);
+    if (it_sessions == site_ids_.end()) return;  // no documents opened
+    QHash<cte::Document,int> session_site_ids = *it_sessions;
+    for (auto it=session_site_ids.begin(); it != session_site_ids.end(); it++)
+        open_documents_[it.key()].close(it.value());
+    site_ids_.remove(session_id);
+}
+
 OpenDocument& DocumentManager::get_open_document(const cte::Document& document) {
     auto it = open_documents_.find(document);
     if (it == open_documents_.end()) throw std::logic_error("document not opened");
@@ -128,21 +144,28 @@ bool DocumentManager::opened(int session_id, const cte::Document& document) cons
     return it != site_ids_.end() && it->contains(document);
 }
 
-bool DocumentManager::site_id_spoofing(int session_id, const cte::Document& document,
-                                       const cte::Symbol& symbol) const {
+bool DocumentManager::site_id_spoofing(int session_id, const cte::Document& document, const cte::Symbol& symbol) const {
     QMutexLocker ml(&mutex_);
     return opened(session_id, document) && site_ids_[session_id][document] == symbol.site_id();
 }
 
 void DocumentManager::insert_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol) {
     QMutexLocker ml(&mutex_);
+    if (!opened(session_id, document)) throw std::logic_error("document not opened");
     if (site_id_spoofing(session_id, document, symbol)) throw std::logic_error("site_id spoofing");
     get_open_document(document).insert_symbol(symbol);
 }
 
-void DocumentManager::erase_symbol(const cte::Document& document, const cte::Symbol& symbol) {
+void DocumentManager::erase_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol) {
     QMutexLocker ml(&mutex_);
+    if (!opened(session_id, document)) throw std::logic_error("document not opened");
     get_open_document(document).erase_symbol(symbol);
+}
+
+void DocumentManager::move_cursor(int session_id, const cte::Document& document, const cte::Symbol& symbol) {
+    QMutexLocker ml(&mutex_);
+    if (!opened(session_id, document)) throw std::logic_error("document not opened");
+    get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
 }
 
 void DocumentManager::save() const {

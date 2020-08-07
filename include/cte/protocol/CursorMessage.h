@@ -27,5 +27,6 @@ namespace cte {
         Document document() const;
         Symbol symbol() const;
         std::optional<QString> username() const;
+        void set_username(const QString& username);
     };
 }

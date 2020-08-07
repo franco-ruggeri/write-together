@@ -43,12 +43,21 @@ int OpenDocument::open(const QString& username) {
     return site_id;
 }
 
+void OpenDocument::close(int site_id) {
+    cursors_.remove(site_id);
+    reference_count_--;
+}
+
 void OpenDocument::insert_symbol(const cte::Symbol& symbol) {
     local_editor_->remote_insert(symbol);
 }
 
 void OpenDocument::erase_symbol(const cte::Symbol& symbol) {
     local_editor_->remote_erase(symbol);
+}
+
+void OpenDocument::move_cursor(int site_id, const cte::Symbol& symbol) {
+    cursors_[site_id] = symbol;
 }
 
 QList<cte::Symbol> OpenDocument::text() const {

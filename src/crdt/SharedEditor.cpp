@@ -45,10 +45,10 @@ namespace cte {
         if (it != text_.end() && *it == symbol) text_.erase(it);
     }
 
-    int SharedEditor::find(const Symbol& symbol) {
+    int SharedEditor::find(const Symbol& symbol) const {
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
-        if (it != text_.end() || *it == symbol) return std::distance(text_.begin(), it);
-        else throw std::logic_error("symbol not found");
+        if (it != text_.end()) return std::distance(text_.begin(), it);
+        return text_.size();    // after last character
     }
 
     int SharedEditor::site_id() const {

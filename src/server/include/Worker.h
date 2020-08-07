@@ -10,6 +10,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
+#include <QtCore/QSet>
 #include <QtCore/QString>
 #include <QtCore/QMutex>
 #include <cte/network/TcpSocket.h>
@@ -19,7 +20,7 @@
 class Worker : public QObject {
     Q_OBJECT
 
-    QHash<cte::Document,QVector<cte::TcpSocket*>> editing_clients;     // for dispatching
+    QHash<cte::Document,QSet<cte::TcpSocket*>> editing_clients;     // for dispatching
     int number_of_connections_;
     mutable QMutex m_number_of_connections_;
 
@@ -32,12 +33,12 @@ class Worker : public QObject {
     // document management
     void create_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
     void open_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
-//    void close_document(User& user, const QSharedPointer<Message>& message);
+    void close_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
 
     // document editing
     void insert_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
     void erase_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
-//    void move_cursor(const User& user, const QSharedPointer<Message>& message);
+    void move_cursor(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message);
 
 signals:
     void new_connection(int socket_fd);

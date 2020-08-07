@@ -11,7 +11,6 @@
 #include <cte/protocol/SignupMessage.h>
 #include <cte/protocol/SignupOkMessage.h>
 #include <cte/protocol/LoginMessage.h>
-#include <cte/protocol/LogoutMessage.h>
 #include <cte/protocol/ProfileMessage.h>
 #include <cte/protocol/ProfileOkMessage.h>
 #include <cte/protocol/DocumentsMessage.h>
@@ -73,7 +72,7 @@ void Worker::start_session(int socket_fd) {
 }
 
 void Worker::close_session(int session_id, cte::TcpSocket *socket) {
-    // logout if authenticated
+    // logout
     if (identity_manager.authenticated(session_id))
         logout(session_id);
 
@@ -160,18 +159,18 @@ void Worker::serve_request(int session_id, cte::TcpSocket *socket) {
             case cte::MessageType::open:
                 open_document(session_id, socket, message);
                 break;
-//            case MessageType::close:
-//                close_document(user, message);
-//                break;
+            case cte::MessageType::close:
+                close_document(session_id, socket, message);
+                break;
             case cte::MessageType::insert:
                 insert_symbol(session_id, socket, message);
                 break;
             case cte::MessageType::erase:
                 erase_symbol(session_id, socket, message);
                 break;
-//            case MessageType::cursor:
-//                move_cursor(user, message);
-//                break;
+            case cte::MessageType::cursor:
+                move_cursor(session_id, socket, message);
+                break;
             default:    // should never happen, since the message is generated through Message::deserialize
                 throw std::logic_error("invalid message: invalid type");
         }
@@ -235,9 +234,9 @@ void Worker::logout(int session_id) {
     // save username (just for final print)
     std::optional<QString> username = identity_manager.username(session_id);
 
-    // logout
+    // close open documents and logout
+    document_manager.close_documents(session_id);
     identity_manager.logout(session_id);
-    // TODO: close open documents
 
     qDebug() << "logout by:" << *username;
 }
@@ -283,7 +282,7 @@ void Worker::create_document(int session_id, cte::TcpSocket *socket, const QShar
     }
 
     // register for dispatching
-    editing_clients.insert(document, QVector{socket});;
+    editing_clients.insert(document, QSet{socket});;
 
     // send document data
     QSharedPointer<cte::Message> response = QSharedPointer<cte::DocumentMessage>::create(document, *document_data);
@@ -316,7 +315,7 @@ void Worker::open_document(int session_id, cte::TcpSocket *socket, const QShared
     }
 
     // register for dispatching
-    editing_clients[*document].push_back(socket);
+    editing_clients[*document].insert(socket);
 
     // send document data
     QSharedPointer<cte::Message> response = QSharedPointer<cte::DocumentMessage>::create(*document, *document_data);
@@ -330,25 +329,27 @@ void Worker::open_document(int session_id, cte::TcpSocket *socket, const QShared
     qDebug() << "document opened: { document:" << document->full_name() << ", user:" << username << "}";
 }
 
-//void Worker::close_document(User& user, const QSharedPointer<Message>& message) {
-////    // unpack message
-////    QSharedPointer<CloseMessage> m = message.staticCast<CloseMessage>();
-////    QString document = m->document();
-////    QString username = m->username();
-////
-////    // check protocol errors
-////    if (!user.authenticated()) throw std::logic_error("user not authenticated");
-////    if (!user.is_open(document)) throw std::logic_error("document not opened");
-////
-////    // unregister globally
-////    QMutexLocker ml(&m_documents);
-////    if (--reference_count[document] <= 0) open_documents.remove(document);
-////    else emit new_message(message);
-////    ml.unlock();
-////
-////    // unregister locally
-////    user.close_document(document);
-//}
+void Worker::close_document(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
+    // check authentication
+    if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
+
+    // unpack message
+    QSharedPointer<cte::CloseMessage> close_message = message.staticCast<cte::CloseMessage>();
+    cte::Document document = close_message->document();
+
+    // close document
+    document_manager.close_document(session_id, document);
+
+    // unregister for dispatching
+    editing_clients[document].remove(socket);
+
+    // dispatch message
+    QString username = *identity_manager.username(session_id);
+    close_message->set_username(username);
+    emit new_message(socket->socketDescriptor(), close_message);
+
+    qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
+}
 
 void Worker::insert_symbol(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
     // check authentication
@@ -379,8 +380,8 @@ void Worker::erase_symbol(int session_id, cte::TcpSocket *socket, const QSharedP
     cte::Document document = erase_message->document();
     cte::Symbol symbol = erase_message->symbol();
 
-    // insert symbol
-    document_manager.erase_symbol(document, symbol);
+    // erase symbol
+    document_manager.erase_symbol(session_id, document, symbol);
 
     // dispatch message
     emit new_message(socket->socketDescriptor(), erase_message);
@@ -390,20 +391,24 @@ void Worker::erase_symbol(int session_id, cte::TcpSocket *socket, const QSharedP
              << ", character:" << symbol.value() << "}";
 }
 
-//void Worker::move_cursor(const User& user, const QSharedPointer<Message>& message) {
-//    QSharedPointer<CursorMessage> m = message.staticCast<CursorMessage>();
-//    Document& document = m->document();
-//    Symbol& symbol = m->symbol();
-//    std::optional<QString>& u = m->username();
-//
-//    QString username = user.profile()->username();
-//    if (u && *u != username)
-//        throw std::logic_error("attempt of source username spoofing");
-//    QSharedPointer<Message> message_to_dispatch = QSharedPointer<CursorMessage>::create(document, symbol, username);
-//
-//    edit_document(user, document, symbol, message_to_dispatch,
-//                  // dummy edit, nothing to do in local copy
-//                  [](const QSharedPointer<SafeSharedcte> &sse, const Symbol &s) {});
-//
-//    qDebug() << "cursor moved by:" << username;
-//}
+void Worker::move_cursor(int session_id, cte::TcpSocket *socket, const QSharedPointer<cte::Message>& message) {
+    // check authentication
+    if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
+
+    // unpack message
+    QSharedPointer<cte::CursorMessage> cursor_message = message.staticCast<cte::CursorMessage>();
+    cte::Document document = cursor_message->document();
+    cte::Symbol symbol = cursor_message->symbol();
+
+    // move cursor
+    document_manager.move_cursor(session_id, document, symbol);
+
+    // dispatch message
+    QString username = *identity_manager.username(session_id);
+    cursor_message->set_username(username);
+    emit new_message(socket->socketDescriptor(), cursor_message);
+
+    qDebug() << "move cursor: { document:" << document.full_name()
+             << ", user:" << *identity_manager.username(session_id)
+             << ", character:" << symbol.value() << "}";
+}

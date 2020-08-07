@@ -32,8 +32,11 @@ public:
     DocumentManager();
     std::optional<cte::DocumentData> create_document(int session_id, const cte::Document& document);
     std::optional<cte::DocumentData> open_document(int session_id, const cte::Document& document, const QString& username);
+    void close_document(int session_id, const cte::Document& document);
+    void close_documents(int session_id);
     void insert_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
-    void erase_symbol(const cte::Document& document, const cte::Symbol& symbol);
+    void erase_symbol(int session_id, const cte::Document& document, const cte::Symbol& symbol);
+    void move_cursor(int session_id, const cte::Document& document, const cte::Symbol& symbol);
 
     void save() const;
     cte::Document document(const QUrl& sharing_link) const;
