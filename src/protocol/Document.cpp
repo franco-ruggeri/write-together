@@ -50,7 +50,16 @@ namespace cte {
     }
 
     QUrl Document::generate_sharing_link(const Document& document) {
-        return "cte:" + document.full_name();    // TODO: add ?random_string
+        static QString alphanum = "0123456789"
+                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                  "abcdefghijklmnopqrstuvwxyz";
+        static int size = alphanum.size();
+
+        QString random;
+        for (int i=0; i<50; i++)
+            random.push_back(alphanum[rand() % size]);
+
+        return "cte:" + document.full_name() + "?" + random;
     }
 
     uint qHash(const Document &key, uint seed) {
