@@ -2,25 +2,25 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CloseMessage.h>
-#include <iostream>
-#include <memory>
+#include <cte/protocol/CloseMessage.h>
+#include <cte/protocol/Document.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+int main() {
+    const cte::Document document("test owner", "test name");
+    const QString username("test username");
 
-int main(int argc, char **argv) {
-    std::shared_ptr<Message> message1, message2;
+    QSharedPointer<cte::Message> message1, message2;
 
-    if (argc < 3) {
-        std::cerr << "usage: " << argv[0] << " document username" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+    // with optional argument
+    message1 = QSharedPointer<cte::CloseMessage>::create(document, username);
+    message2 = cte::Message::deserialize(message1->serialize());
+    assert(*message1 == *message2);
 
-    // original message
-    message1 = std::make_shared<CloseMessage>(argv[1], argv[2]);
-
-    // serialize -> deserialize
-    message2 = Message::deserialize(message1->serialize());
+    // without optional argument
+    message1 = QSharedPointer<cte::CloseMessage>::create(document);
+    message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);
 
     return 0;

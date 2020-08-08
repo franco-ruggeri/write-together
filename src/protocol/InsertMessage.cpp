@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/InsertMessage.h>
+#include <cte/protocol/InsertMessage.h>
 
-namespace editor {
+namespace cte {
     InsertMessage::InsertMessage(const Document& document, const Symbol& symbol) :
         Message(MessageType::insert), document_(document), symbol_(symbol) {}
 

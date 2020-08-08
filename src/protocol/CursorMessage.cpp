@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CursorMessage.h>
+#include <cte/protocol/CursorMessage.h>
 
-namespace editor {
+namespace cte {
     CursorMessage::CursorMessage(const Document &document, const Symbol &symbol) :
         Message(MessageType::cursor), document_(document), symbol_(symbol) {}
 
@@ -47,6 +47,10 @@ namespace editor {
 
     std::optional<QString> CursorMessage::username() const {
         return username_;
+    }
+
+    void CursorMessage::set_username(const QString& username) {
+        username_ = username;
     }
 
     QJsonObject CursorMessage::json() const {

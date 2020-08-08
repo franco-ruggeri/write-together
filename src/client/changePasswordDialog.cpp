@@ -3,9 +3,9 @@
  */
 
 #include <QStackedWidget>
-#include <client/myClient.h>
+#include <cte/client/myClient.h>
 #include <QMessageBox>
-#include "client/changePasswordDialog.h"
+#include <cte/client/changePasswordDialog.h>
 #include "ui_changePasswordDialog.h"
 
 changePasswordDialog::changePasswordDialog(QWidget *parent, QSharedPointer<myClient> client):

@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.15)
-#include_directories("C:\\Program Files (x86)\\boost_1_73_0")
 add_subdirectory(crdt)
 add_subdirectory(protocol)
+add_subdirectory(network)
+add_subdirectory(database)
 add_subdirectory(server)
 add_subdirectory(client)

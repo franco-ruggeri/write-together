@@ -1,32 +1,29 @@
-cmake_minimum_required(VERSION 3.15)
-set(CMAKE_PREFIX_PATH "C:\\Qt\\5.14.1\\msvc2017")
+find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 
-set(CMAKE_CXX_STANDARD 20)
-
-
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-
-add_library(protocol
+list(APPEND SRC
         Message.cpp
+        Profile.cpp
+        Document.cpp
+        DocumentData.cpp
         ErrorMessage.cpp
-        SignUpMessage.cpp
+        SignupMessage.cpp
+        SignupOkMessage.cpp
         LoginMessage.cpp
         LogoutMessage.cpp
+        ProfileMessage.cpp
+        ProfileOkMessage.cpp
         DocumentsMessage.cpp
         CreateMessage.cpp
         OpenMessage.cpp
+        CloseMessage.cpp
+        DocumentMessage.cpp
         InsertMessage.cpp
         EraseMessage.cpp
-        CursorMessage.cpp
-        CloseMessage.cpp
-        ProfileMessage.cpp
-        ProfileOkMessage.cpp
-        Profile.cpp
-        Document.cpp
-        DocumentMessage.cpp
-        DocumentData.cpp
-        SignupOkMessage.cpp
-        )
+        CursorMessage.cpp)
 
-target_link_libraries(protocol crdt Qt5::Core Qt5::Gui )
+list(APPEND LIB Qt5::Core Qt5::Gui crdt)
+list(APPEND INCLUDE)
+
+add_library(protocol STATIC ${SRC})
+target_link_libraries(protocol ${LIB})
+target_include_directories(protocol PUBLIC ${INCLUDE})

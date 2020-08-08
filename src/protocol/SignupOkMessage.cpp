@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/SignupOkMessage.h>
+#include <cte/protocol/SignupOkMessage.h>
 
-namespace editor {
+namespace cte {
     SignupOkMessage::SignupOkMessage() : Message(MessageType::signup_ok) {}
 
     SignupOkMessage::SignupOkMessage(const QJsonObject &json_object) : Message(MessageType::signup_ok) {}

@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/ProfileMessage.h>
+#include <cte/protocol/ProfileMessage.h>
 
-namespace editor {
+namespace cte {
     ProfileMessage::ProfileMessage(const Profile& profile) :
             Message(MessageType::profile), profile_(profile) {}
 

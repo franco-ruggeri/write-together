@@ -1,69 +1,34 @@
-cmake_minimum_required(VERSION 3.15)
-#project(collaborative_text_editor)
-
-#set(CMAKE_PREFIX_PATH "C:\\Qt\\5.14.1\\msvc2017")
-
-set(CMAKE_CXX_STANDARD 20)
-
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/client)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Concurrent REQUIRED)
-find_package(Qt5PrintSupport REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui Network Concurrent PrintSupport REQUIRED)
 
-
-set(SOURCE_FILES client.cpp)
-
-add_executable(collaborative_text_editor
+list(APPEND SRC
         client.cpp
         loginTextEditor.cpp
         utility.cpp
         newFileDialog.cpp
         changePasswordDialog.cpp
         texteditor.cpp
-        resource.qrc
-        ../../include/client/loginTextEditor.h
-        ../../include/client/newFileDialog.h
-        ../../include/client/changePasswordDialog.h
-        ../../include/client/changeUsernameDialog.h
-        ../../include/client/utility.h
-        ../../include/client/texteditor.h
         myClient.cpp
-        ../../include/client/myClient.h
-        ../../include/client/fileInfo.h
-        ../protocol/Message.cpp
-        ../protocol/LoginMessage.cpp
-        ../protocol/SignUpMessage.cpp
-        ../protocol/LogoutMessage.cpp
-        ../protocol/InsertMessage.cpp
-        ../protocol/CreateMessage.cpp
-        ../protocol/EraseMessage.cpp
-        ../protocol/ErrorMessage.cpp
-        ../protocol/Profile.cpp
-        ../protocol/CursorMessage.cpp
-        ../protocol/CloseMessage.cpp
-        ../protocol/ProfileMessage.cpp
-        ../protocol/ProfileOkMessage.cpp
-        ../protocol/OpenMessage.cpp
-        ../protocol/DocumentsMessage.cpp
-        ../protocol/DocumentMessage.cpp
-        ../protocol/Document.cpp
-        ../crdt/SharedEditor.cpp
-        ../crdt/Symbol.cpp
-        ../crdt/LSEQ.cpp
         fileInfo.cpp
-        changeUsernameDialog.cpp
-        ../protocol/DocumentData.cpp
-        ../protocol/SignupOkMessage.cpp
+        changeUsernameDialog.cpp)
 
-        )
+list(APPEND QOBJ_HEADERS
+        ${QOBJ_DIR}/changePasswordDialog.h
+        ${QOBJ_DIR}/changeUsernameDialog.h
+        ${QOBJ_DIR}/loginTextEditor.h
+        ${QOBJ_DIR}/myClient.h
+        ${QOBJ_DIR}/newFileDialog.h
+        ${QOBJ_DIR}/texteditor.h)
 
-target_link_libraries(collaborative_text_editor Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Concurrent Qt5::PrintSupport)
+list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network Qt5::Concurrent Qt5::PrintSupport protocol crdt)
+list(APPEND INCLUDE ${QOBJ_DIR})
 
+add_executable(client ${SRC} ${QOBJ_HEADERS} resource.qrc)
+target_link_libraries(client ${LIB})
+target_include_directories(client PUBLIC ${INCLUDE})
+install(TARGETS client DESTINATION ${PROJECT_SOURCE_DIR}/bin)

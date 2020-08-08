@@ -31,15 +31,15 @@
 #include <QScrollBar>
 #include <QDesktopWidget>
 #include <QMainWindow>
-#include "client/texteditor.h"
+#include <cte/client/texteditor.h>
 #include <QDesktopWidget>
-#include "client/myClient.h"
+#include <cte/client/myClient.h>
 #include <iostream>
 #include <utility>
-#include <protocol/InsertMessage.h>
-#include <client/loginTextEditor.h>
-#include <protocol/EraseMessage.h>
-#include <protocol/CursorMessage.h>
+#include <cte/protocol/InsertMessage.h>
+#include <cte/client/loginTextEditor.h>
+#include <cte/protocol/EraseMessage.h>
+#include <cte/protocol/CursorMessage.h>
 
 const QString imgPath = ":/images";
 
@@ -59,7 +59,8 @@ file(file){
     this->client = client;
     change_from_server = false;
     editor->setFontPointSize(12);
-    shared_editor = QSharedPointer<SharedEditor>::create(site_id(), counter_id(),file.getFileContent());
+//    shared_editor = QSharedPointer<SharedEditor>::create(site_id(), counter_id(),file.getFileContent());
+    shared_editor = QSharedPointer<SharedEditor>::create(site_id(), file.getFileContent());
     setCentralWidget(editor.get());
     connected_client = QSharedPointer<QDockWidget>();
     connected_client->setObjectName("Peers");
@@ -85,15 +86,15 @@ file(file){
 }
 
 void texteditor::init_cursors(){
-    qDebug() << "inizializzazione cursori";
-
-    for( auto user : file.users()){
-        if(file.connected_user().count(user.username())) {
-            map_username_to_User.insert(user.username(),user);
-            int cursor_pos = shared_editor->find(connected_user[user.username()]);
-            user.init_cursor(editor.get(), cursor_pos);
-        }
-    }
+//    qDebug() << "inizializzazione cursori";
+//
+//    for( auto user : file.users()){
+//        if(file.connected_user().count(user.username())) {
+//            map_username_to_User.insert(user.username(),user);
+//            int cursor_pos = shared_editor->find(connected_user[user.username()]);
+////            user.init_cursor(editor.get(), cursor_pos);
+//        }
+//    }
 
 }
 
@@ -236,7 +237,7 @@ void texteditor::readyRead(){
             change_from_server = true;
             auto cursor_message = m.staticCast<CursorMessage>();
             int position = shared_editor->find(cursor_message->symbol());
-            map_username_to_User[*cursor_message->username()].change_cursor_position(editor.get(),position);
+//            map_username_to_User[*cursor_message->username()].change_cursor_position(editor.get(),position);
 
         }
     }

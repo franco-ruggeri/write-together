@@ -2,10 +2,10 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/OpenMessage.h>
-#include <crdt/SharedEditor.h>
+#include <cte/protocol/OpenMessage.h>
+#include <cte/crdt/SharedEditor.h>
 
-namespace editor {
+namespace cte {
     OpenMessage::OpenMessage(const Document& document) : Message(MessageType::open), document_(document) {}
 
     OpenMessage::OpenMessage(const Document &document, int site_id, const Profile &profile) :
@@ -70,6 +70,14 @@ namespace editor {
 
     std::optional<Profile> OpenMessage::profile() const {
         return profile_;
+    }
+
+    void OpenMessage::set_site_id(int site_id) {
+        site_id_ = site_id;
+    }
+
+    void OpenMessage::set_profile(const Profile &profile) {
+        profile_ = profile;
     }
 
     QJsonObject OpenMessage::json() const {

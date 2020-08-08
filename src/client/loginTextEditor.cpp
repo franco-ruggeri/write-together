@@ -4,13 +4,13 @@
 
 #include <QMessageBox>
 #include <QPixmap>
-#include <client/changeUsernameDialog.h>
-#include "client/loginTextEditor.h"
+#include <cte/client/changeUsernameDialog.h>
+#include <cte/client/loginTextEditor.h>
 #include "ui_loginTextEditor.h"
-#include "client/utility.h"
-#include "client/fileInfo.h"
+#include <cte/client/utility.h>
+#include <cte/client/fileInfo.h>
 #include <QClipboard>
-#include <protocol/Document.h>
+#include <cte/protocol/Document.h>
 
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
@@ -102,7 +102,7 @@ void loginTextEditor::init_user_page() {
     QStringList file_list;
     for(const auto& d : documents) {
         file_list.push_back(d.full_name());
-        client->user.filename_to_owner_map.insert(d.full_name(),d);
+//        client->user.filename_to_owner_map.insert(d.full_name(),d);
     }
     ui->user_file_listWidget->addItems(file_list);
     ui->user_file_listWidget->setCurrentRow( 0 );

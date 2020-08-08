@@ -3,11 +3,11 @@
  */
 
 #include <QStackedWidget>
-#include "client/newFileDialog.h"
+#include <cte/client/newFileDialog.h>
 #include "ui_newFileDialog.h"
 #include <QMessageBox>
 #include <QtWidgets/QWidget>
-#include <client/loginTextEditor.h>
+#include <cte/client/loginTextEditor.h>
 
 newFileDialog::newFileDialog(QWidget *parent,QSharedPointer<myClient> client, QSharedPointer<texteditor> editor):
     QDialog(parent),ui(new Ui::newFileDialog),client(client),editor(editor) {

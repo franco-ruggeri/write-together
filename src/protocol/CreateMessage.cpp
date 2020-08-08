@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CreateMessage.h>
+#include <cte/protocol/CreateMessage.h>
 
-namespace editor {
+namespace cte {
     CreateMessage::CreateMessage(const QString& document_name) :
         Message(MessageType::create), document_name_(document_name) {}
 

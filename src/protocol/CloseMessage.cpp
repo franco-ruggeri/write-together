@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/CloseMessage.h>
+#include <cte/protocol/CloseMessage.h>
 
-namespace editor {
+namespace cte {
     CloseMessage::CloseMessage(const Document& document) : Message(MessageType::close), document_(document) {}
 
     CloseMessage::CloseMessage(const Document& document, const QString& username) :
@@ -38,6 +38,10 @@ namespace editor {
 
     std::optional<QString> CloseMessage::username() const {
         return username_;
+    }
+
+    void CloseMessage::set_username(const QString& username) {
+        username_ = username;
     }
 
     QJsonObject CloseMessage::json() const {

@@ -2,7 +2,7 @@
  * Author: Antonino Musmeci
  */
 
-#include "client/loginTextEditor.h"
+#include <cte/client/loginTextEditor.h>
 #include <QApplication>
 
 int main(int argc, char *argv[]) {

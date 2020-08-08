@@ -1,28 +1,23 @@
 /*
- * Test the idempotency property required by a collaborative text editor and obtained by means of CRDT.
+ * Test the idempotency property required by a collaborative text cte and obtained by means of CRDT.
  *
  * Author: Franco Ruggeri
  */
 
-#include <crdt/SharedEditor.h>
-#include <QString>
-#include <iostream>
+#include <cte/crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
+#include <QtCore/QString>
 
-using namespace collaborative_text_editor;
+int main() {
+    QString text = "HAT";
+    const int index = 0;
 
-int main(int argc, char **argv) {
-    if (argc < 3) {
-        std::cerr << "usage: " << argv[0] << " text index" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    SharedEditor editor1(1);
-    SharedEditor editor2(2);
+    cte::SharedEditor editor1(cte::SharedEditor::starting_site_id);
+    cte::SharedEditor editor2(cte::SharedEditor::starting_site_id + 1);
 
     // initial text
-    QString text(argv[1]);
     for (int i=0; i<text.size(); i++) {
-        Symbol s = editor1.local_insert(i, text[i]);
+        cte::Symbol s = editor1.local_insert(i, text[i]);
         editor2.remote_insert(s);
     }
 
@@ -30,9 +25,8 @@ int main(int argc, char **argv) {
     assert(editor2.to_string() == text);
 
     // insert and delete (must commute)
-    int index = std::stoi(argv[2]);
-    Symbol symbol1 = editor1.local_erase(index);
-    Symbol symbol2 = editor2.local_erase(index);
+    cte::Symbol symbol1 = editor1.local_erase(index);
+    cte::Symbol symbol2 = editor2.local_erase(index);
     editor2.remote_erase(symbol1);
     editor1.remote_erase(symbol2);
 

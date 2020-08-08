@@ -2,15 +2,15 @@
  * Author: Franco Ruggeri
  */
 
-#include <protocol/Profile.h>
+#include <cte/protocol/Profile.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
 
-namespace editor {
+namespace cte {
     Profile::Profile() {}
 
-    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage &icon) :
-            username_(username), name_(name), surname_(surname), icon_(icon) {}
+    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage& icon) :
+        username_(username), name_(name), surname_(surname), icon_(icon) {}
 
     Profile::Profile(const QJsonObject &json_object) {
         auto end_iterator = json_object.end();
@@ -35,7 +35,7 @@ namespace editor {
         icon_.loadFromData(bytes, "PNG");
     }
 
-    bool Profile::operator==(const Profile &other) const {
+    bool Profile::operator==(const Profile& other) const {
         return this->username_ == other.username_ && this->name_ == other.name_ && this->surname_ == other.surname_ &&
                this->icon_ == other.icon_;
     }
@@ -71,34 +71,5 @@ namespace editor {
         json_object["icon"] = QLatin1String(bytes.toBase64());
 
         return json_object;
-    }
-
-
-
-
-    //cursors
-
-    void Profile::init_cursor(QTextEdit *editor, int newCursorPosition) {
-        cursor_ = new QTextCursor(editor->document());
-        newCursorPosition = qMin(newCursorPosition, editor->toPlainText().size());
-        cursor_->setPosition(newCursorPosition);
-        cursor_label_ = new QLabel(editor);
-        QPixmap pix(3, 24);
-        pix.fill(Qt::yellow);
-        cursor_label_->setPixmap(pix);
-
-        const QRect qRect = editor->cursorRect(*cursor_);
-        cursor_label_->move(qRect.left(), qRect.top());
-        cursor_label_->show();
-    }
-
-
-    void Profile::change_cursor_position(QTextEdit *editor, int new_position) {
-        new_position = qMin(new_position, editor->toPlainText().size());
-        cursor_->setPosition(new_position);
-        const QRect qRect = editor->cursorRect(*cursor_);
-        cursor_label_->move(qRect.left(), qRect.top());
-        cursor_label_->show();
-
     }
 }

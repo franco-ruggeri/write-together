@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <crdt/Symbol.h>
-#include <crdt/SharedEditor.h>
+#include <cte/crdt/Symbol.h>
+#include <cte/crdt/SharedEditor.h>
 #include <QtCore/QJsonArray>
 
-namespace editor {
+namespace cte {
     Symbol::Symbol() :
         value_('\0'), site_id_(SharedEditor::invalid_site_id), site_counter_(SharedEditor::invalid_site_counter) {}
 
@@ -44,13 +44,17 @@ namespace editor {
     }
 
     bool Symbol::operator<(const Symbol& other) const {
-        return this->position_ < other.position_ ||
-            (this->position_ == other.position_ && this->site_id_ < other.site_id_);
+        if (this->position_ < other.position_) return true;
+        if (this->position_ == other.position_) {
+            if (this->site_id_ < other.site_id_) return true;
+            if (this->site_id_ == other.site_id_ && this->site_counter_ < other.site_counter_) return true;
+        }
+        return false;
     }
 
     bool Symbol::operator==(const Symbol &other) const {
-        return this->site_id_ == other.site_id_ && this->site_counter_ == other.site_counter_ &&
-               this->position_ == other.position_;
+        return this->value_ == other.value_ && this->site_id_ == other.site_id_ &&
+                this->site_counter_ == other.site_counter_ && this->position_ == other.position_;
     }
 
     QChar Symbol::value() const {
@@ -59,10 +63,6 @@ namespace editor {
 
     int Symbol::site_id() const {
         return site_id_;
-    }
-
-    int Symbol::site_counter() const {
-        return site_counter_;
     }
 
     QVector<int> Symbol::position() const {

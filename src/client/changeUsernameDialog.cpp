@@ -3,9 +3,9 @@
  */
 
 #include <QStackedWidget>
-#include <client/myClient.h>
+#include <cte/client/myClient.h>
 #include <QMessageBox>
-#include "client/changeUsernameDialog.h"
+#include <cte/client/changeUsernameDialog.h>
 #include "ui_changeUsernameDialog.h"
 
 changeUsernameDialog::changeUsernameDialog(QWidget *parent, QSharedPointer<myClient> client):

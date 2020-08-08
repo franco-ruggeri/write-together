@@ -3,26 +3,26 @@
  */
 //TODO: add user name
 
-#include "client/myClient.h"
+#include <cte/client/myClient.h>
 #include <QPixmap>
 #include <QJsonDocument>
-#include <protocol/OpenMessage.h>
-#include <protocol/ProfileMessage.h>
-#include <client/fileInfo.h>
-#include <protocol/CloseMessage.h>
-#include <protocol/CursorMessage.h>
-#include <protocol/DocumentMessage.h>
-#include "protocol/SignupMessage.h"
-#include "protocol/LogoutMessage.h"
-#include "protocol/InsertMessage.h"
-#include "protocol/CreateMessage.h"
-#include "protocol/EraseMessage.h"
-#include "protocol/LoginMessage.h"
-#include "protocol/ErrorMessage.h"
-#include "protocol/DocumentsMessage.h"
+#include <cte/protocol/OpenMessage.h>
+#include <cte/protocol/ProfileMessage.h>
+#include <cte/client/fileInfo.h>
+#include <cte/protocol/CloseMessage.h>
+#include <cte/protocol/CursorMessage.h>
+#include <cte/protocol/DocumentMessage.h>
+#include <cte/protocol/SignupMessage.h>
+#include <cte/protocol/LogoutMessage.h>
+#include <cte/protocol/InsertMessage.h>
+#include <cte/protocol/CreateMessage.h>
+#include <cte/protocol/EraseMessage.h>
+#include <cte/protocol/LoginMessage.h>
+#include <cte/protocol/ErrorMessage.h>
+#include <cte/protocol/DocumentsMessage.h>
 
 
-using namespace editor;
+using namespace cte;
 myClient::myClient(QObject *parent) : QObject(parent) {
     socket = new QTcpSocket(this);
 }
