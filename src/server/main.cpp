@@ -13,19 +13,18 @@ int parse_int(const char *arg, const QString& error) {
         result = std::stoi(arg);
     } catch (const std::invalid_argument& e) {
         qDebug() << error;
-        QCoreApplication::exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
     return result;
 }
 
 int main(int argc, char **argv) {
     const QString& usage = QString("usage ") + argv[0] + " port saving_period_ms";
-    QCoreApplication app(argc, argv);
 
     // check number of arguments
     if (argc < 3) {
         qDebug() << usage;
-        QCoreApplication::exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 
     // parse arguments
@@ -33,6 +32,7 @@ int main(int argc, char **argv) {
     int saving_period = parse_int(argv[2], "invalid saving period");
 
     // launch server
+    QCoreApplication app(argc, argv);
     cte::Server server(port, QThread::idealThreadCount(), saving_period);
     return app.exec();
 }
