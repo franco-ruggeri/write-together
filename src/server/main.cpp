@@ -3,42 +3,34 @@
  */
 
 #include <QtCore/QCoreApplication>
+#include <QtCore/QString>
 #include <QtCore/QThread>
 #include <cte/server/Server.h>
 
-int main(int argc, char **argv) {
-    const QString& usage = QString("usage ") + argv[0] + " port milliseconds";
+int parse_int(const char *arg, const QString& error) {
+    try {
+        return std::stoi(arg);
+    } catch (const std::invalid_argument& e) {
+        qDebug() << error;
+        QCoreApplication::exit(EXIT_FAILURE);
+    }
+}
 
+int main(int argc, char **argv) {
+    const QString& usage = QString("usage ") + argv[0] + " port saving_period_ms";
     QCoreApplication app(argc, argv);
 
-    // check arguments
+    // check number of arguments
     if (argc < 3) {
         qDebug() << usage;
         QCoreApplication::exit(EXIT_FAILURE);
     }
 
-    // parse port
-    int port;
-    try {
-        port = std::stoi(argv[1]);
-    } catch (const std::invalid_argument& e) {
-        qDebug() << "invalid port";
-        qDebug() << usage;
-        QCoreApplication::exit(EXIT_FAILURE);
-    }
-
-    // parse port
-    int saving_interval_ms;
-    try {
-        saving_interval_ms = std::stoi(argv[2]);
-    } catch (const std::invalid_argument& e) {
-        qDebug() << "invalid saving interval";
-        qDebug() << usage;
-        QCoreApplication::exit(EXIT_FAILURE);
-    }
+    // parse arguments
+    int port = parse_int(argv[1], "invalid port");
+    int saving_period = parse_int(argv[2], "invalid saving period");
 
     // launch server
-    cte::Server server(port, QThread::idealThreadCount(), saving_interval_ms);
-
+    cte::Server server(port, QThread::idealThreadCount(), saving_period);
     return app.exec();
 }

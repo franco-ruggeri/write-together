@@ -9,11 +9,14 @@
 
 namespace cte {
     class Saver : public QObject {
-    Q_OBJECT
+        Q_OBJECT
 
         QTimer timer_;
 
+    private slots:
+        void save();
+
     public:
-        Saver(int interval_ms);
+        Saver(int period);  // in milliseconds
     };
 }
