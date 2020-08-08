@@ -2,15 +2,20 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/network/TcpSocket.h>
+#include <cte/network/Socket.h>
 
 namespace cte {
-    TcpSocket::TcpSocket(int socket_fd) {
+    Socket::Socket(int socket_fd) {
         if (!setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");
+        connect(this, &Socket::readyRead, this, &Socket::check_message_ready);
     }
 
-    QSharedPointer<Message> TcpSocket::read_message() {
+    void Socket::check_message_ready() {
+        if (canReadLine()) emit ready_message();
+    }
+
+    QSharedPointer<Message> Socket::read_message() {
         QByteArray bytes = readLine();
 
         // check result
@@ -25,7 +30,7 @@ namespace cte {
         return Message::deserialize(bytes);
     }
 
-    void TcpSocket::write_message(const QSharedPointer<Message>& message) {
+    void Socket::write_message(const QSharedPointer<Message>& message) {
         QByteArray bytes = message->serialize();
         bytes.push_back('\n');
 

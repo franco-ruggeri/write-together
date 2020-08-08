@@ -45,18 +45,18 @@ namespace cte {
 
     void Worker::start_session(int socket_fd) {
         // create socket
-        TcpSocket *socket;
+        Socket *socket;
         try {
-            socket = new TcpSocket(socket_fd);
+            socket = new Socket(socket_fd);
         } catch (const std::exception &e) {
             qDebug() << e.what();
             return; // this socket could not be created correctly, but the worker can continue to serve the other clients
         }
 
         // connect signals and slots (use socket_fd as session_id)
-        connect(socket, &TcpSocket::readyRead,
+        connect(socket, &Socket::ready_message,
                 [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
-        connect(socket, &TcpSocket::disconnected,
+        connect(socket, &Socket::disconnected,
                 [this, socket_fd, socket]() { close_session(socket_fd, socket); });
 
         // increment number of sessions
@@ -68,7 +68,7 @@ namespace cte {
                  << ", thread: " << QThread::currentThreadId() << "}";
     }
 
-    void Worker::close_session(int session_id, TcpSocket *socket) {
+    void Worker::close_session(int session_id, Socket *socket) {
         // logout
         if (identity_manager.authenticated(session_id))
             logout(session_id);
@@ -110,7 +110,7 @@ namespace cte {
         // dispatch to clients editing the document
         auto it = editing_clients.find(document);
         if (it == editing_clients.end()) return;    // no editing clients
-        for (TcpSocket *socket : *it) {
+        for (Socket *socket : *it) {
             if (socket->socketDescriptor() == source_socket_fd) continue;
             try {
                 socket->write_message(message);
@@ -122,12 +122,12 @@ namespace cte {
         }
     }
 
-    static void send_error(TcpSocket *socket, const QString& reason) {
+    static void send_error(Socket *socket, const QString& reason) {
         QSharedPointer<Message> message = QSharedPointer<ErrorMessage>::create(reason);
         socket->write_message(message);
     }
 
-    void Worker::serve_request(int session_id, TcpSocket *socket) {
+    void Worker::serve_request(int session_id, Socket *socket) {
         // not a whole message => wait next signal
         if (!socket->canReadLine()) return;
 
@@ -188,7 +188,7 @@ namespace cte {
         }
     }
 
-    void Worker::signup(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::signup(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // unpack message
         QSharedPointer<SignupMessage> signup_message = message.staticCast<SignupMessage>();
         Profile profile = signup_message->profile();
@@ -207,7 +207,7 @@ namespace cte {
         qDebug() << "signup by:" << profile.username();
     }
 
-    void Worker::login(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::login(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // unpack message
         QSharedPointer<LoginMessage> login_message = message.staticCast<LoginMessage>();
         QString username = login_message->username();
@@ -238,7 +238,7 @@ namespace cte {
         qDebug() << "logout by:" << *username;
     }
 
-    void Worker::update_profile(int session_id, TcpSocket *socket, const QSharedPointer<Message> &message) {
+    void Worker::update_profile(int session_id, Socket *socket, const QSharedPointer<Message> &message) {
         // unpack message
         QSharedPointer<ProfileMessage> profile_message = message.staticCast<ProfileMessage>();
         Profile profile = profile_message->profile();
@@ -260,7 +260,7 @@ namespace cte {
         qDebug() << "profile update by:" << profile.username() << "(" + *old_username + ")";
     }
 
-    void Worker::create_document(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // get user
         std::optional<QString> opt = identity_manager.username(session_id);
         if (!opt) throw std::logic_error("session not authenticated");
@@ -288,7 +288,7 @@ namespace cte {
         qDebug() << "document created:" << document.full_name();
     }
 
-    void Worker::open_document(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::open_document(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // get user
         std::optional<QString> opt = identity_manager.username(session_id);
         if (!opt) throw std::logic_error("session not authenticated");
@@ -324,7 +324,7 @@ namespace cte {
         qDebug() << "document opened: { document:" << document->full_name() << ", user:" << username << "}";
     }
 
-    void Worker::close_document(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::close_document(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // check authentication
         if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
 
@@ -346,7 +346,7 @@ namespace cte {
         qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
     }
 
-    void Worker::accessible_documents(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::accessible_documents(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // get user
         std::optional<QString> opt = identity_manager.username(session_id);
         if (!opt) throw std::logic_error("session not authenticated");
@@ -360,7 +360,7 @@ namespace cte {
         socket->write_message(response);
     }
 
-    void Worker::insert_symbol(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::insert_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // check authentication
         if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
 
@@ -380,7 +380,7 @@ namespace cte {
                  << ", character:" << symbol.value() << "}";
     }
 
-    void Worker::erase_symbol(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::erase_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // check authentication
         if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
 
@@ -400,7 +400,7 @@ namespace cte {
                  << ", character:" << symbol.value() << "}";
     }
 
-    void Worker::move_cursor(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message) {
+    void Worker::move_cursor(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // check authentication
         if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
 

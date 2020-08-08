@@ -13,7 +13,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QString>
 #include <QtCore/QMutex>
-#include <cte/network/TcpSocket.h>
+#include <cte/network/Socket.h>
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Document.h>
 #include <cte/server/IdentityManager.h>
@@ -23,26 +23,26 @@ namespace cte {
     class Worker : public QObject {
     Q_OBJECT
 
-        QHash<Document,QSet<TcpSocket*>> editing_clients;     // for dispatching
+        QHash<Document,QSet<Socket*>> editing_clients;     // for dispatching
         int number_of_connections_;
         mutable QMutex m_number_of_connections_;
 
         // identity management
-        void signup(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
-        void login(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
+        void signup(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void login(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void logout(int session_id);
-        void update_profile(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
+        void update_profile(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
         // document management
-        void create_document(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
-        void open_document(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
-        void close_document(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
-        void accessible_documents(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
+        void create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void open_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void close_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void accessible_documents(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
         // document editing
-        void insert_symbol(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
-        void erase_symbol(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
-        void move_cursor(int session_id, TcpSocket *socket, const QSharedPointer<Message>& message);
+        void insert_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void erase_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void move_cursor(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
     signals:
         void new_connection(int socket_fd);
@@ -50,8 +50,8 @@ namespace cte {
 
     private slots:
         void start_session(int socket_fd);
-        void close_session(int session_id, TcpSocket *socket);
-        void serve_request(int session_id, TcpSocket *socket);
+        void close_session(int session_id, Socket *socket);
+        void serve_request(int session_id, Socket *socket);
 
     public slots:
         void dispatch_message(int source_socket_fd, QSharedPointer<Message> message);

@@ -5,15 +5,21 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
-#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QSslSocket>
 #include <cte/protocol/Message.h>
 
 namespace cte {
-    class TcpSocket : public QTcpSocket {
+    class Socket : public QSslSocket {
         Q_OBJECT
 
+    private slots:
+        void check_message_ready();
+
+    signals:
+        void ready_message();
+
     public:
-        explicit TcpSocket(int socket_fd);
+        explicit Socket(int socket_fd);
         QSharedPointer<Message> read_message();
         void write_message(const QSharedPointer<Message>& message);
     };
