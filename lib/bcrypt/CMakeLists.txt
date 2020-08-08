@@ -22,17 +22,6 @@ set(MYLIB_VERSION_MINOR 0)
 set(MYLIB_VERSION_PATCH 0)
 set(MYLIB_VERSION_STRING ${MYLIB_VERSION_MAJOR}.${MYLIB_VERSION_MINOR}.${MYLIB_VERSION_PATCH})
 
-# just doing cmake . will build a shared or static lib and honor existing environment setting
-# to force build static, cmake . -DBUILD_SHARED_LIBS=Off
-# to force build shared, cmake . -DBUILD_SHARED_LIBS=On
-
-if (NOT BUILD_SHARED_LIBS)
-	message ("Building a static library")
-else ()
-	message ("Building a shared library")
-endif ()
-
-
 set( CMAKE_COLOR_MAKEFILE ON )
 
 set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall --std=c++11 -O3" )
@@ -65,21 +54,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/bcrypt/BC
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
-
-#add_executable( ${PROJECT_NAME}_test ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
-#
-#target_link_libraries( ${PROJECT_NAME}_test ${PROJECT_NAME})
-#
-#include(GNUInstallDirs)
-#
-#install(TARGETS ${PROJECT_NAME}
-#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/bcrypt)
-#
-#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-#	FILES_MATCHING PATTERN "*.h")
 
 SET(CPACK_GENERATOR "DEB")
 SET(CPACK_SET_DESTDIR ON)

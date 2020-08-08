@@ -8,12 +8,14 @@
 #include <cte/server/Server.h>
 
 int parse_int(const char *arg, const QString& error) {
+    int result;
     try {
-        return std::stoi(arg);
+        result = std::stoi(arg);
     } catch (const std::invalid_argument& e) {
         qDebug() << error;
         QCoreApplication::exit(EXIT_FAILURE);
     }
+    return result;
 }
 
 int main(int argc, char **argv) {

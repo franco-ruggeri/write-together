@@ -29,7 +29,7 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the username is already used
-        query = query_select_profile_for_update(database, username);
+        query = query_select_profile(database, username, true);
         execute_query(query);
 
         // signup
@@ -100,7 +100,7 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the new username is already used
-        query = query_select_profile_for_update(database, new_username);
+        query = query_select_profile(database, new_username, true);
         execute_query(query);
 
         // update profile

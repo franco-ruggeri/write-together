@@ -36,17 +36,18 @@ namespace cte {
     public:
         DocumentManager();
 
+        // document management
         std::optional<DocumentData> create_document(int session_id, const Document& document);
         std::optional<DocumentData> open_document(int session_id, const Document& document, const QString& username);
+        std::optional<DocumentData> open_document(int session_id, const QUrl& sharing_link, const QString& username);
         void close_document(int session_id, const Document& document);
         void close_documents(int session_id);
+        QSet<Document> documents(int session_id, const QString& username) const;   // those that can still be opened
 
+        // document editing
         void insert_symbol(int session_id, const Document& document, const Symbol& symbol);
         void erase_symbol(int session_id, const Document& document, const Symbol& symbol);
         void move_cursor(int session_id, const Document& document, const Symbol& symbol);
-
-        QSet<Document> documents(int session_id, const QString& username) const;   // those that can still be opened
-        Document document(const QUrl& sharing_link) const;
 
     public slots:
         void save();

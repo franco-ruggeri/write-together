@@ -26,7 +26,7 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the document already exists
-        query = query_select_document_for_update(database, document);
+        query = query_select_document(database, document, true);
         execute_query(query);
 
         // create document
@@ -68,7 +68,7 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the document is accessible by the user (selecting also sharing link)
-        query = query_select_shared_document(database, document, username);
+        query = query_select_document(database, document, username);
         execute_query(query);
 
         // open document
@@ -114,6 +114,35 @@ namespace cte {
         database.commit();
 
         return document_data;
+    }
+
+    std::optional<DocumentData> DocumentManager::open_document(int session_id, const QUrl& sharing_link,
+                                                               const QString& username) {
+        // open connection and start transaction
+        QSqlDatabase database = connect_to_database();
+        DatabaseGuard dg(database);
+        database.transaction();
+        QSqlQuery query(database);
+
+        // load document
+        query = query_select_document(database, sharing_link);
+        execute_query(query);
+        if (!query.next()) throw std::logic_error("invalid sharing link");
+        Document document(query.value("owner").toString(), query.value("name").toString());
+
+        // add sharing if not present
+        query = query_select_document(database, document, username);
+        execute_query(query);
+        if (query.size() == 0) {
+            query = query_insert_sharing(database, document, username);
+            execute_query(query);
+        }
+
+        // commit transaction
+        database.commit();
+
+        // open document
+        return open_document(session_id, document, username);
     }
 
     void DocumentManager::close_document(int session_id, const Document& document) {
@@ -169,18 +198,6 @@ namespace cte {
         get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
     }
 
-    Document DocumentManager::document(const QUrl &sharing_link) const {
-        // open connection
-        QSqlDatabase database = connect_to_database();
-        DatabaseGuard dg(database);
-        QSqlQuery query(database);
-
-        // load document
-        query = query_select_document(database, sharing_link);
-        if (!query.next()) throw std::logic_error("invalid sharing link");
-        return Document(query.value("owner").toString(), query.value("name").toString());
-    }
-
     QSet<Document> DocumentManager::documents(int session_id, const QString& username) const {
         // open connection
         QSqlDatabase database = connect_to_database();
@@ -188,7 +205,7 @@ namespace cte {
         QSqlQuery query(database);
 
         // load accessible documents
-        query = query_select_shared_documents(database, username);
+        query = query_select_documents(database, username);
         QSet<Document> documents;
         while (query.next()) {
             Document document(query.value("document_owner").toString(), query.value("document_name").toString());

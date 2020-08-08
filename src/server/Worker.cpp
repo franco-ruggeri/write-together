@@ -297,15 +297,13 @@ namespace cte {
         // unpack message
         QSharedPointer<OpenMessage> open_message = message.staticCast<OpenMessage>();
         std::optional<Document> document = open_message->document();
-        if (!document) {
-            std::optional<QUrl> sharing_link = open_message->sharing_link();
-            if (!sharing_link) throw std::logic_error("invalid message: open with neither document nor sharing link");
-            document = document_manager.document(*sharing_link);
-        }
+        std::optional<QUrl> sharing_link = open_message->sharing_link();
 
         // open document
         std::optional<DocumentData> document_data;
-        document_data = document_manager.open_document(session_id, *document, username);
+        if (document) document_data = document_manager.open_document(session_id, *document, username);
+        else if (sharing_link) document_data = document_manager.open_document(session_id, *sharing_link, username);
+        else throw std::logic_error("invalid message: open with neither document nor sharing link");
         if (!document_data) {
             send_error(socket, "document open failed: document not existing or not accessible");
             return;

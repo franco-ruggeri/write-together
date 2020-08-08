@@ -19,16 +19,10 @@ namespace cte {
         return connect_to_database(driver_type, database_name, hostname, username, password);
     }
 
-    QSqlQuery query_select_profile(const QSqlDatabase& database, const QString& username) {
-        QString query_string = "SELECT * FROM user WHERE username=:username";
-        QSqlQuery query(database);
-        query.prepare(query_string);
-        query.bindValue(":username", username);
-        return query;
-    }
-
-    QSqlQuery query_select_profile_for_update(const QSqlDatabase& database, const QString& username) {
-        QString query_string = "SELECT * FROM user WHERE username=:username FOR UPDATE";
+    QSqlQuery query_select_profile(const QSqlDatabase& database, const QString& username, bool for_update) {
+        QString query_string = QString{} +
+                "SELECT * FROM user WHERE username=:username" +
+                (for_update ? " FOR UPDATE" : "");
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":username", username);
@@ -51,9 +45,10 @@ namespace cte {
     QSqlQuery query_update_profile(const QSqlDatabase& database, const QString& old_username,
                                    const Profile& new_profile, const QString& new_password) {
         bool update_password = new_password.isNull();
-        QString query_string = QString{} + "UPDATE user SET username=:username, " +
-                               (update_password ? "password=:password, " : "") +
-                               "name=:name, surname=:surname, icon=:icon WHERE username=:old_username";
+        QString query_string = QString{} +
+                "UPDATE user SET username=:username, " +
+                (update_password ? "password=:password, " : "") +
+                "name=:name, surname=:surname, icon=:icon WHERE username=:old_username";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":old_username", old_username);
@@ -65,8 +60,10 @@ namespace cte {
         return query;
     }
 
-    QSqlQuery query_select_document_for_update(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "SELECT * FROM document WHERE owner=:owner AND name=:name FOR UPDATE";
+    QSqlQuery query_select_document(const QSqlDatabase& database, const Document& document, bool for_update) {
+        QString query_string = QString{} +
+                "SELECT * FROM document WHERE owner=:owner AND name=:name" +
+                (for_update ? " FOR UPDATE" : "");
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":owner", document.owner());
@@ -74,35 +71,14 @@ namespace cte {
         return query;
     }
 
-    QSqlQuery query_insert_document(const QSqlDatabase& database, const Document& document,
-                                    const QUrl& sharing_link) {
-        QString query_string = "INSERT INTO document (owner, name, sharing_link) "
-                               "VALUES (:owner, :name, :sharing_link)";
-        QSqlQuery query(database);
-        query.prepare(query_string);
-        query.bindValue(":owner", document.owner());
-        query.bindValue(":name", document.name());
-        query.bindValue(":sharing_link", sharing_link.toString());
-        return query;
-    }
-
-    QSqlQuery query_insert_sharing(const QSqlDatabase& database, const Document& document, const QString& username) {
-        QString query_string = "INSERT INTO sharing (sharing_user, document_owner, document_name) "
-                               "VALUES (:username, :document_owner, :document_name)";
-        QSqlQuery query(database);
-        query.prepare(query_string);
-        query.bindValue(":document_owner", document.owner());
-        query.bindValue(":document_name", document.name());
-        query.bindValue(":username", username);
-        return query;
-    }
-
-    QSqlQuery query_select_shared_document(const QSqlDatabase& database, const Document& document,
-                                           const QString& username) {
-        QString query_string = "SELECT * "
+    QSqlQuery query_select_document(const QSqlDatabase& database, const Document& document, const QString& username,
+                                    bool for_update) {
+        QString query_string = QString{} +
+                               "SELECT * "
                                "FROM sharing s, document d "
                                "WHERE s.document_owner=d.owner AND s.document_name=d.name AND "
-                               "      d.owner=:document_owner AND d.name=:document_name AND s.sharing_user=:username";
+                               "      d.owner=:document_owner AND d.name=:document_name AND s.sharing_user=:username" +
+                               (for_update ? " FOR UPDATE" : "");
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());
@@ -111,13 +87,13 @@ namespace cte {
         return query;
     }
 
-    QSqlQuery query_select_shared_documents(const QSqlDatabase& database, const QString& username) {
+    QSqlQuery query_select_document(const QSqlDatabase& database, const QUrl& sharing_link) {
         QString query_string = "SELECT * "
-                               "FROM sharing "
-                               "WHERE sharing_user=:username";
+                               "FROM document "
+                               "WHERE sharing_link=:sharing_link";
         QSqlQuery query(database);
         query.prepare(query_string);
-        query.bindValue(":username", username);
+        query.bindValue(":sharing_link", sharing_link.toString());
         return query;
     }
 
@@ -145,6 +121,39 @@ namespace cte {
         return query;
     }
 
+    QSqlQuery query_select_documents(const QSqlDatabase& database, const QString& username) {
+        QString query_string = "SELECT * "
+                               "FROM sharing "
+                               "WHERE sharing_user=:username";
+        QSqlQuery query(database);
+        query.prepare(query_string);
+        query.bindValue(":username", username);
+        return query;
+    }
+
+    QSqlQuery query_insert_document(const QSqlDatabase& database, const Document& document,
+                                    const QUrl& sharing_link) {
+        QString query_string = "INSERT INTO document (owner, name, sharing_link) "
+                               "VALUES (:owner, :name, :sharing_link)";
+        QSqlQuery query(database);
+        query.prepare(query_string);
+        query.bindValue(":owner", document.owner());
+        query.bindValue(":name", document.name());
+        query.bindValue(":sharing_link", sharing_link.toString());
+        return query;
+    }
+
+    QSqlQuery query_insert_sharing(const QSqlDatabase& database, const Document& document, const QString& username) {
+        QString query_string = "INSERT INTO sharing (sharing_user, document_owner, document_name) "
+                               "VALUES (:username, :document_owner, :document_name)";
+        QSqlQuery query(database);
+        query.prepare(query_string);
+        query.bindValue(":document_owner", document.owner());
+        query.bindValue(":document_name", document.name());
+        query.bindValue(":username", username);
+        return query;
+    }
+
     QSqlQuery query_delete_document_text(const QSqlDatabase& database, const Document& document) {
         QString query_string = "DELETE FROM character "
                                "WHERE document_owner=:document_owner AND document_name=:document_name";
@@ -152,16 +161,6 @@ namespace cte {
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());
         query.bindValue(":document_name", document.name());
-        return query;
-    }
-
-    QSqlQuery query_select_document(const QSqlDatabase& database, const QUrl& sharing_link) {
-        QString query_string = "SELECT * "
-                               "FROM document "
-                               "WHERE sharing_link=:sharing_link";
-        QSqlQuery query(database);
-        query.prepare(query_string);
-        query.bindValue(":sharing_link", sharing_link.toString());
         return query;
     }
 
