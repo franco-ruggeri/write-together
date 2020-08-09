@@ -206,6 +206,7 @@ namespace cte {
 
         // load accessible documents
         query = query_select_documents(database, username);
+        execute_query(query);
         QSet<Document> documents;
         while (query.next()) {
             Document document(query.value("document_owner").toString(), query.value("document_name").toString());

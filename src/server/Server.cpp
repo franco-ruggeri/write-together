@@ -22,6 +22,8 @@ namespace cte {
             workers_.push_back(QSharedPointer<Worker>::create());
             workers_[i]->moveToThread(thread);
 
+            qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
+            // connect workers
             // connect workers
             for (int j=0; j<i; j++) {
                 connect(workers_[i].get(), &Worker::new_message, workers_[j].get(), &Worker::dispatch_message);

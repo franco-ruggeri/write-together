@@ -61,12 +61,11 @@ namespace cte {
 
         return "cte:" + document.full_name() + "?" + random;
     }
-
-    uint qHash(const Document &key, uint seed) {
-        //TODO sistemare la conversione da QString a std::String
-        size_t s = static_cast<size_t>(seed);
-        boost::hash_combine(s, key.owner_.toUtf8().data());
-        boost::hash_combine(s, key.name_.toUtf8().data());
-        return s;
-    }
+// this doesn't work
+//    std::size_t qHash(const Document &key, uint seed) {
+//        std::size_t s = static_cast<size_t>(seed);
+//        boost::hash_combine(s, key.owner_.toUtf8().data());
+//        boost::hash_combine(s, key.name_.toUtf8().data());
+//        return s;
+//    }
 }

@@ -12,7 +12,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
-
+#include <optional>
 namespace cte {
     IdentityManager::IdentityManager() : m_sessions_(QMutex::Recursive) {}
 

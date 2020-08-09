@@ -26,8 +26,6 @@
 
 using namespace cte;
 myClient::myClient(QObject *parent) : QObject(parent) {
-
-
     try {
         socket = new Socket();
     } catch (const std::exception &e) {
