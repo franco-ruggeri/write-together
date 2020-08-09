@@ -19,6 +19,7 @@ namespace cte {
         void ready_message();
 
     public:
+        Socket();
         explicit Socket(int socket_fd);
         QSharedPointer<Message> read_message();
         void write_message(const QSharedPointer<Message>& message);

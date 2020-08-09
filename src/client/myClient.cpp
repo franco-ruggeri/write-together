@@ -26,7 +26,14 @@
 
 using namespace cte;
 myClient::myClient(QObject *parent) : QObject(parent) {
-    socket = new QTcpSocket(this);
+
+
+    try {
+        socket = new Socket();
+    } catch (const std::exception &e) {
+        qDebug() << e.what();
+        return;
+    }
 }
 
 bool myClient::connect(QString ip_address) {
@@ -36,11 +43,9 @@ bool myClient::connect(QString ip_address) {
 
 QSharedPointer<Message> myClient::send_message(const QSharedPointer<Message>& request) {
     QSharedPointer<Message> m;
-    socket->write(request->serialize() + '\n');
+    socket->write_message(request);
     if(socket->waitForReadyRead(1000)) {
-        QByteArray response = socket->readLine();
-        m = Message::deserialize(response);
-        return m;
+        return socket->read_message();
     }
     return QSharedPointer<ErrorMessage>::create("TIME_OUT");
 }
@@ -49,6 +54,7 @@ std::tuple<bool,QString> myClient::login(QString& email, QString& password) {
     QString result = "ERROR!";
     QSharedPointer<Message> login_message = QSharedPointer<LoginMessage>::create(email, password);
     QSharedPointer<Message> response = send_message(login_message);
+
     if(response ->type() == MessageType::profile){
         QSharedPointer<ProfileMessage> profile = response.staticCast<ProfileMessage>();
         user = UserInfo(profile->profile());

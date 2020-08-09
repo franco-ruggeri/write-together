@@ -5,6 +5,9 @@
 #include <cte/network/Socket.h>
 
 namespace cte {
+    Socket::Socket(){
+        connect(this, &Socket::readyRead, this, &Socket::check_message_ready);
+    }
     Socket::Socket(int socket_fd) {
         if (!setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");

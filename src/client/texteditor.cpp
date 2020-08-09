@@ -259,6 +259,6 @@ void texteditor::textChange() {
 
 void texteditor::cursorPositionChanged() {
     QTextCursor cursor = editor->textCursor();
-    this->client->send_cursor(this->file.document(), this->shared_editor->local_insert(cursor.position(),QChar()));
+//    this->client->send_cursor(this->file.document(), this->shared_editor->local_insert(cursor.position(),QChar()));
 
 }
