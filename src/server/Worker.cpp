@@ -22,12 +22,22 @@
 #include <cte/protocol/EraseMessage.h>
 #include <cte/protocol/CursorMessage.h>
 
+typedef QSharedPointer<cte::Message> CteMessagePointer;
+Q_DECLARE_METATYPE(CteMessagePointer);
+
 namespace cte {
     extern IdentityManager identity_manager;
     extern DocumentManager document_manager;
 
     Worker::Worker() {
-        connect(this, &Worker::new_connection, this, &Worker::start_session);
+        qRegisterMetaType<CteMessagePointer>("CteMessagePointer");
+        QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
+        QObject::connect(this, &Worker::new_message, this, &Worker::dispatch_message);
+    }
+
+    void Worker::connect(const Worker &worker1, const Worker &worker2) {
+        QObject::connect(&worker1, &Worker::new_message, &worker2, &Worker::dispatch_message);
+        QObject::connect(&worker2, &Worker::new_message, &worker1, &Worker::dispatch_message);
     }
 
     void Worker::assign_connection(int socket_fd) {
@@ -54,9 +64,9 @@ namespace cte {
         }
 
         // connect signals and slots (use socket_fd as session_id)
-        connect(socket, &Socket::ready_message,
+        QObject::connect(socket, &Socket::ready_message,
                 [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
-        connect(socket, &Socket::disconnected,
+        QObject::connect(socket, &Socket::disconnected,
                 [this, socket_fd, socket]() { close_session(socket_fd, socket); });
 
         // increment number of sessions
@@ -84,10 +94,16 @@ namespace cte {
                  << ", port:" << socket->peerPort() << "}";
     }
 
-    void Worker::dispatch_message(int source_socket_fd, QSharedPointer<Message> message) {
+    void Worker::dispatch_message(int source_socket_fd, const QSharedPointer<Message>& message) {
         // get document
         Document document;
         switch (message->type()) {
+            case MessageType::open:
+                document = message.staticCast<CursorMessage>()->document();
+                break;
+            case MessageType::close:
+                document = message.staticCast<CloseMessage>()->document();
+                break;
             case MessageType::insert:
                 document = message.staticCast<InsertMessage>()->document();
                 break;
@@ -96,12 +112,6 @@ namespace cte {
                 break;
             case MessageType::cursor:
                 document = message.staticCast<CursorMessage>()->document();
-                break;
-            case MessageType::open:
-                document = message.staticCast<CursorMessage>()->document();
-                break;
-            case MessageType::close:
-                document = message.staticCast<CloseMessage>()->document();
                 break;
             default:
                 throw std::logic_error("invalid message: invalid type to dispatch");
@@ -297,9 +307,15 @@ namespace cte {
 
         // open document
         std::optional<DocumentData> document_data;
-        if (document) document_data = document_manager.open_document(session_id, *document, username);
-        else if (sharing_link) document_data = document_manager.open_document(session_id, *sharing_link, username);
-        else throw std::logic_error("invalid message: open with neither document nor sharing link");
+        if (document) {
+            document_data = document_manager.open_document(session_id, *document, username);
+        } else if (sharing_link) {
+            auto result = document_manager.open_document(session_id, *sharing_link, username);
+            document = result.first;
+            document_data = result.second;
+        } else {
+            throw std::logic_error("invalid message: open with neither document nor sharing link");
+        }
         if (!document_data) {
             send_error(socket, "document open failed: document not existing or not accessible");
             return;

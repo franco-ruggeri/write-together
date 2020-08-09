@@ -11,17 +11,14 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
 #include <QtCore/QSet>
-#include <QtCore/QString>
 #include <QtCore/QMutex>
 #include <cte/network/Socket.h>
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Document.h>
-#include <cte/server/IdentityManager.h>
-#include <cte/server/DocumentManager.h>
 
 namespace cte {
     class Worker : public QObject {
-    Q_OBJECT
+        Q_OBJECT
 
         QHash<Document,QSet<Socket*>> editing_clients;     // for dispatching
         int number_of_connections_;
@@ -46,19 +43,19 @@ namespace cte {
 
     signals:
         void new_connection(int socket_fd);
-        void new_message(int source_socket_fd, QSharedPointer<Message> message);
+        void new_message(int source_socket_fd, const QSharedPointer<Message>& message);
 
     private slots:
         void start_session(int socket_fd);
         void close_session(int session_id, Socket *socket);
         void serve_request(int session_id, Socket *socket);
-
-    public slots:
-        void dispatch_message(int source_socket_fd, QSharedPointer<Message> message);
+        void dispatch_message(int source_socket_fd, const QSharedPointer<Message>& message);
 
     public:
         Worker();
         void assign_connection(int socket_fd);
         unsigned int number_of_connections() const;
+
+        static void connect(const Worker& worker1, const Worker& worker2);
     };
 }

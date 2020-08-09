@@ -17,7 +17,6 @@ list(APPEND SRC
 list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/Server.h
         ${QOBJ_DIR}/Worker.h
-        ${QOBJ_DIR}/DocumentManager.h
         ${QOBJ_DIR}/Saver.h)
 
 list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database bcrypt)

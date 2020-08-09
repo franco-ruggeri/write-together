@@ -14,7 +14,7 @@
 
 namespace cte {
     class Server : public QTcpServer {
-    Q_OBJECT
+        Q_OBJECT
 
         QVector<QSharedPointer<Worker>> workers_;
         QSharedPointer<Saver> saver_;

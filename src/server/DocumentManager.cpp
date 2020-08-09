@@ -79,6 +79,7 @@ namespace cte {
 
             // load profiles
             query = query_select_document_profiles(database, document);
+            execute_query(query);
             QHash<QString,Profile> profiles;
             while (query.next()) {
                 QString username = query.value("username").toString();
@@ -116,8 +117,9 @@ namespace cte {
         return document_data;
     }
 
-    std::optional<DocumentData> DocumentManager::open_document(int session_id, const QUrl& sharing_link,
-                                                               const QString& username) {
+    std::pair<Document,std::optional<DocumentData>> DocumentManager::open_document(int session_id,
+                                                                                   const QUrl& sharing_link,
+                                                                                   const QString& username) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -142,7 +144,7 @@ namespace cte {
         database.commit();
 
         // open document
-        return open_document(session_id, document, username);
+        return {document, open_document(session_id, document, username)};
     }
 
     void DocumentManager::close_document(int session_id, const Document& document) {

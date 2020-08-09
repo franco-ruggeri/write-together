@@ -21,7 +21,7 @@ namespace cte {
 
     QSqlQuery query_select_profile(const QSqlDatabase& database, const QString& username, bool for_update) {
         QString query_string = QString{} +
-                "SELECT * FROM user WHERE username=:username" +
+                "SELECT * FROM `user` WHERE username=:username" +
                 (for_update ? " FOR UPDATE" : "");
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -30,7 +30,7 @@ namespace cte {
     }
 
     QSqlQuery query_insert_profile(const QSqlDatabase& database, const Profile& profile, const QString& password) {
-        QString query_string = "INSERT INTO user (username, password, name, surname, icon) "
+        QString query_string = "INSERT INTO `user` (username, password, name, surname, icon) "
                                "VALUES (:username, :password, :name, :surname, :icon)";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -46,7 +46,7 @@ namespace cte {
                                    const Profile& new_profile, const QString& new_password) {
         bool update_password = new_password.isNull();
         QString query_string = QString{} +
-                "UPDATE user SET username=:username, " +
+                "UPDATE `user` SET username=:username, " +
                 (update_password ? "password=:password, " : "") +
                 "name=:name, surname=:surname, icon=:icon WHERE username=:old_username";
         QSqlQuery query(database);
@@ -62,7 +62,7 @@ namespace cte {
 
     QSqlQuery query_select_document(const QSqlDatabase& database, const Document& document, bool for_update) {
         QString query_string = QString{} +
-                "SELECT * FROM document WHERE owner=:owner AND name=:name" +
+                "SELECT * FROM `document` WHERE owner=:owner AND name=:name" +
                 (for_update ? " FOR UPDATE" : "");
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -74,8 +74,8 @@ namespace cte {
     QSqlQuery query_select_document(const QSqlDatabase& database, const Document& document, const QString& username,
                                     bool for_update) {
         QString query_string = QString{} +
-                               "SELECT * "
-                               "FROM sharing s, document d "
+                               "SELECT d.owner, d.name, d.sharing_link "
+                               "FROM `sharing` s, `document` d "
                                "WHERE s.document_owner=d.owner AND s.document_name=d.name AND "
                                "      d.owner=:document_owner AND d.name=:document_name AND s.sharing_user=:username" +
                                (for_update ? " FOR UPDATE" : "");
@@ -89,7 +89,7 @@ namespace cte {
 
     QSqlQuery query_select_document(const QSqlDatabase& database, const QUrl& sharing_link) {
         QString query_string = "SELECT * "
-                               "FROM document "
+                               "FROM `document` "
                                "WHERE sharing_link=:sharing_link";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -98,9 +98,10 @@ namespace cte {
     }
 
     QSqlQuery query_select_document_profiles(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "SELECT username, name, surname, icon "
-                               "FROM user u, sharing s, document d "
-                               "WHERE u.username=s.sharing_user AND s.document_owner=d.owner AND s.document_name=d.name AND"
+        QString query_string = "SELECT u.username, u.name, u.surname, u.icon "
+                               "FROM `user` u, `sharing` s, `document` d "
+                               "WHERE u.username=s.sharing_user AND "
+                               "      s.document_owner=d.owner AND s.document_name=d.name AND "
                                "      d.owner=:document_owner AND d.name=:document_name";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -110,10 +111,10 @@ namespace cte {
     }
 
     QSqlQuery query_select_document_text(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "SELECT index, value, author "
-                               "FROM character "
-                               "WHERE document_owner=:document_owner AND document_name=:document_name "
-                               "SORT BY index";
+        QString query_string = "SELECT c.index, c.value, c.author "
+                               "FROM `character` c "
+                               "WHERE c.document_owner=:document_owner AND c.document_name=:document_name "
+                               "ORDER BY `index`";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());
@@ -123,8 +124,8 @@ namespace cte {
 
     QSqlQuery query_select_documents(const QSqlDatabase& database, const QString& username) {
         QString query_string = "SELECT * "
-                               "FROM sharing "
-                               "WHERE sharing_user=:username";
+                               "FROM `sharing` s "
+                               "WHERE s.sharing_user=:username";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":username", username);
@@ -133,7 +134,7 @@ namespace cte {
 
     QSqlQuery query_insert_document(const QSqlDatabase& database, const Document& document,
                                     const QUrl& sharing_link) {
-        QString query_string = "INSERT INTO document (owner, name, sharing_link) "
+        QString query_string = "INSERT INTO `document` (owner, name, sharing_link) "
                                "VALUES (:owner, :name, :sharing_link)";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -144,7 +145,7 @@ namespace cte {
     }
 
     QSqlQuery query_insert_sharing(const QSqlDatabase& database, const Document& document, const QString& username) {
-        QString query_string = "INSERT INTO sharing (sharing_user, document_owner, document_name) "
+        QString query_string = "INSERT INTO `sharing` (sharing_user, document_owner, document_name) "
                                "VALUES (:username, :document_owner, :document_name)";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -155,7 +156,7 @@ namespace cte {
     }
 
     QSqlQuery query_delete_document_text(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "DELETE FROM character "
+        QString query_string = "DELETE FROM `character` "
                                "WHERE document_owner=:document_owner AND document_name=:document_name";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -165,8 +166,8 @@ namespace cte {
     }
 
     QSqlQuery prepare_query_insert_character(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "INSERT INTO character (document_owner, document_name, index, author, value "
-                               "VALUES (:document_owner, :document_name, :index, :author, :value";
+        QString query_string = "INSERT INTO `character` (document_owner, document_name, index, author, value "
+                               "VALUES (:document_owner, :document_name, :index, :author, :value)";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());
