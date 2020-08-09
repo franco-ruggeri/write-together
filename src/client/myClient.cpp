@@ -22,6 +22,7 @@
 #include <cte/protocol/LoginMessage.h>
 #include <cte/protocol/ErrorMessage.h>
 #include <cte/protocol/DocumentsMessage.h>
+#include <iostream>
 
 
 using namespace cte;
@@ -42,7 +43,7 @@ bool myClient::connect(QString ip_address) {
 QSharedPointer<Message> myClient::send_message(const QSharedPointer<Message>& request) {
     QSharedPointer<Message> m;
     socket->write_message(request);
-    if(socket->waitForReadyRead(1000)) {
+    if(socket->waitForReadyRead(10000)) {
         return socket->read_message();
     }
     return QSharedPointer<ErrorMessage>::create("TIME_OUT");
@@ -119,6 +120,7 @@ fileInfo myClient::open_file(const QString& filename){
     qDebug() << doc.full_name();
     QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(doc);
     QSharedPointer<Message> response = send_message(open_message);
+    auto t = response->type();
     if(response ->type() == MessageType::document) {
         QSharedPointer<DocumentMessage> document_info = response.staticCast<DocumentMessage>();
         fileInfo file(document_info->document(), document_info->document_data());
