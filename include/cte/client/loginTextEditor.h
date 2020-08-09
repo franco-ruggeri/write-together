@@ -8,7 +8,7 @@
 
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QListWidgetItem>
-#include <cte/client/newFileDialog.h>
+#include <cte/client/NewFileDialog.h>
 #include <cte/client/myClient.h>
 #include <cte/client/changePasswordDialog.h>
 #include <cte/client/changeUsernameDialog.h>
@@ -27,7 +27,7 @@ public:
 private:
     QSharedPointer<myClient> client;
     Ui::loginTextEditor *ui;
-    QSharedPointer< newFileDialog> file_dialog;
+    QSharedPointer<NewFileDialog> file_dialog;
     QSharedPointer<changeUsernameDialog> changeuser_dialog;
     QSharedPointer<changePasswordDialog> changepass_dialog;
     QSharedPointer<texteditor>  editor;

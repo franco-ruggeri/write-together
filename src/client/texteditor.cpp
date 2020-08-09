@@ -62,11 +62,11 @@ file(file){
 //    shared_editor = QSharedPointer<SharedEditor>::create(site_id(), counter_id(),file.getFileContent());
     shared_editor = QSharedPointer<SharedEditor>::create(site_id(), file.getFileContent());
     setCentralWidget(editor.get());
-    connected_client = QSharedPointer<QDockWidget>();
+    connected_client = QSharedPointer<QDockWidget>::create();
     connected_client->setObjectName("Peers");
     connected_client->setWindowTitle("Peers");
     editor->setText(shared_editor->to_string());
-    list_user = QSharedPointer<QListWidget>();
+    list_user = QSharedPointer<QListWidget>::create();
     connected_client->setWidget(list_user.get());
     QIcon userIcon = QIcon(QPixmap::fromImage(client->user.icon()));
     list_user->addItem(new QListWidgetItem(userIcon,client->user.username() + " (you)"));

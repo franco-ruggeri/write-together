@@ -9,17 +9,17 @@
 #include <cte/client/texteditor.h>
 
 namespace Ui {
-    class newFileDialog;
+    class NewFileDialog;
 }
 
-class newFileDialog:public QDialog {
+class NewFileDialog:public QDialog {
     Q_OBJECT
 
 
 public:
 
-    Ui::newFileDialog *ui;
-    newFileDialog(QWidget *parent, QSharedPointer<myClient> client, QSharedPointer<texteditor> editor);
+    Ui::NewFileDialog *ui;
+    NewFileDialog(QWidget *parent, QSharedPointer<myClient> client, QSharedPointer<texteditor> editor);
 
 private:
     QSharedPointer<texteditor> editor;

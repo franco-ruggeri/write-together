@@ -46,7 +46,7 @@ void loginTextEditor::on_login_signin_pushButton_clicked() {
     QString password = ui->login_password_lineEdit->text();
     if(username.isEmpty() || password.isEmpty())
         return;
-    /*** to do login function **/
+
     std::tuple valid = client->login(username,password);
     if(std::get<0>(valid)) {
         init_user_page();
@@ -102,7 +102,7 @@ void loginTextEditor::init_user_page() {
     QStringList file_list;
     for(const auto& d : documents) {
         file_list.push_back(d.full_name());
-//        client->user.filename_to_owner_map.insert(d.full_name(),d);
+        client->user.filename_to_owner_map.insert(d.full_name(),d);
     }
     ui->user_file_listWidget->addItems(file_list);
     ui->user_file_listWidget->setCurrentRow( 0 );
@@ -110,8 +110,8 @@ void loginTextEditor::init_user_page() {
 }
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
     if(file_dialog == nullptr) {
-        file_dialog = QSharedPointer<newFileDialog>::create(this, client, editor);
-        connect(file_dialog.get(), &newFileDialog::open_editor, this, &loginTextEditor::open_editor);
+        file_dialog = QSharedPointer<NewFileDialog>::create(this, client, editor);
+        connect(file_dialog.get(), &NewFileDialog::open_editor, this, &loginTextEditor::open_editor);
     }
     file_dialog->setModal(true);
     file_dialog->show();

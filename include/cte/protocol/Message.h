@@ -17,6 +17,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QByteArray>
 #include <cte/protocol/MessageType.h>
+#include <optional>
 
 namespace cte {
     class Message {

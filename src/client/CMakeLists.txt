@@ -10,12 +10,13 @@ list(APPEND SRC
         client.cpp
         loginTextEditor.cpp
         utility.cpp
-        newFileDialog.cpp
+        NewFileDialog.cpp
         changePasswordDialog.cpp
         texteditor.cpp
         myClient.cpp
         fileInfo.cpp
-        changeUsernameDialog.cpp)
+        changeUsernameDialog.cpp
+        UserInfo.cpp)
 
 list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/changePasswordDialog.h
@@ -23,7 +24,8 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/loginTextEditor.h
         ${QOBJ_DIR}/myClient.h
         ${QOBJ_DIR}/newFileDialog.h
-        ${QOBJ_DIR}/texteditor.h)
+        ${QOBJ_DIR}/texteditor.h
+        ${QOBJ_DIR}/UserInfo.h)
 
 list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network Qt5::Concurrent Qt5::PrintSupport protocol crdt)
 list(APPEND INCLUDE ${QOBJ_DIR})

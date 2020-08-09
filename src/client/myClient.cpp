@@ -2,7 +2,9 @@
  * Author: Antonino Musmeci
  */
 //TODO: add user name
-
+//TODO add error message
+//TODO add cursor message
+//TODO add insert icon
 #include <cte/client/myClient.h>
 #include <QPixmap>
 #include <QJsonDocument>
@@ -49,9 +51,7 @@ std::tuple<bool,QString> myClient::login(QString& email, QString& password) {
     QSharedPointer<Message> response = send_message(login_message);
     if(response ->type() == MessageType::profile){
         QSharedPointer<ProfileMessage> profile = response.staticCast<ProfileMessage>();
-        user = profile->profile();
-        //TODO: add user name
-
+        user = UserInfo(profile->profile());
         return std::make_tuple(true,"OK");
     }
     if(response ->type() == MessageType::error){
@@ -86,6 +86,8 @@ std::tuple<bool,QString> myClient::signup(QString& username, QString& email, QSt
 }
 
 void myClient::sendInsert(const Document& document,const Symbol& s){
+    qDebug() << document.name();
+    qDebug() << document.full_name();
     QSharedPointer<Message> insert_message = QSharedPointer<InsertMessage>::create(document,s);
     socket->write(insert_message->serialize() + '\n');
 }
@@ -108,13 +110,17 @@ std::optional<fileInfo> myClient::new_file(const QString& filename){
 
 fileInfo myClient::open_file(const QString& filename){
 
-    QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(filename);
+    qDebug() << filename;
+    Document doc = user.filename_to_owner_map[filename];
+    qDebug() << doc.full_name();
+    QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(doc);
     QSharedPointer<Message> response = send_message(open_message);
-    QSharedPointer<DocumentMessage>document_info = response.staticCast<DocumentMessage>();
-
-
-    return fileInfo(document_info->document(),document_info->document_data());
-
+    if(response ->type() == MessageType::document) {
+        QSharedPointer<DocumentMessage> document_info = response.staticCast<DocumentMessage>();
+        fileInfo file(document_info->document(), document_info->document_data());
+        return file;
+    }
+    //TODO add error message
 }
 
 bool myClient::change_password(const QString& new_password) {
@@ -156,5 +162,5 @@ QSet<Document> myClient::get_documents_form_server() {
 void myClient::send_cursor(Document document, Symbol cursor_position){
 //    QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, user.username(), cursor_position);
 //    socket->write(cursor_message->serialize() + '\n');
-
+    //TODO add cursor message
 }

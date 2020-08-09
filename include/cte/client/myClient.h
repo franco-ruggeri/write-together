@@ -15,16 +15,18 @@
 #include <cte/crdt/Symbol.h>
 #include <cte/client/utility.h>
 #include <cte/client/fileInfo.h>
-
+#include <cte/client/UserInfo.h>
 #define PORT 1111
 
 using namespace cte;
+
 class myClient : public QObject {
 
 public:
     QTcpSocket *socket;
 
-    Profile user;
+//    Profile user;
+    UserInfo user;
 
     myClient(QObject *parent = nullptr);
 

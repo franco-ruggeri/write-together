@@ -1,7 +1,7 @@
 /*
  * Author: Franco Ruggeri
  */
-
+//TODO sistemare la conversione da QString a std::String
 #include <cte/protocol/Document.h>
 #include <boost/functional/hash.hpp>
 
@@ -63,9 +63,10 @@ namespace cte {
     }
 
     uint qHash(const Document &key, uint seed) {
+        //TODO sistemare la conversione da QString a std::String
         size_t s = static_cast<size_t>(seed);
-        boost::hash_combine(s, key.owner_.toStdString());
-        boost::hash_combine(s, key.name_.toStdString());
+        boost::hash_combine(s, key.owner_.toUtf8().data());
+        boost::hash_combine(s, key.name_.toUtf8().data());
         return s;
     }
 }
