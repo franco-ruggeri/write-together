@@ -128,10 +128,6 @@ namespace cte {
     }
 
     void Worker::serve_request(int session_id, Socket *socket) {
-        // not a whole message => wait next signal
-        if (!socket->canReadLine()) return;
-
-        // process message
         try {
             QSharedPointer<Message> message = socket->read_message();
             switch (message->type()) {
