@@ -40,10 +40,6 @@ namespace cte {
         return username_;
     }
 
-    void CloseMessage::set_username(const QString& username) {
-        username_ = username;
-    }
-
     QJsonObject CloseMessage::json() const {
         QJsonObject json_object = Message::json();
         json_object["document"] = document_.json();

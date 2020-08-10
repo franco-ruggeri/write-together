@@ -27,7 +27,7 @@ namespace cte {
         // identity management
         void signup(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void login(int session_id, Socket *socket, const QSharedPointer<Message>& message);
-        void logout(int session_id);
+        void logout(int session_id, Socket *socket);
         void update_profile(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
         // document management
@@ -55,7 +55,6 @@ namespace cte {
         Worker();
         void assign_connection(int socket_fd);
         unsigned int number_of_connections() const;
-
         static void connect(const Worker& worker1, const Worker& worker2);
     };
 }

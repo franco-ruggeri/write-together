@@ -40,8 +40,8 @@ namespace cte {
         std::pair<Document,std::optional<DocumentData>> open_document(int session_id, const QUrl& sharing_link,
                                                                       const QString& username);
         void close_document(int session_id, const Document& document);
-        void close_documents(int session_id);
-        QSet<Document> documents(int session_id, const QString& username) const;   // those that can still be opened
+        QSet<Document> get_documents(int session_id, const QString& username) const;   // those that can still be opened
+        QList<Document> get_open_documents(int session_id) const;
 
         // document editing
         void insert_symbol(int session_id, const Document& document, const Symbol& symbol);

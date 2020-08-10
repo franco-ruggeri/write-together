@@ -29,7 +29,9 @@ namespace cte {
         Symbol local_erase(unsigned int index);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
+
         int find(const Symbol& symbol) const;   // returns lower bound index, non-existing symbol is ok
+        Symbol at(int index) const;
 
         int site_id() const;
         QList<Symbol> text() const;

@@ -18,6 +18,8 @@ namespace cte {
         site_id_(site_id), site_counter_(starting_site_counter), text_(text), pos_allocator_(pos_allocator) {}
 
     Symbol SharedEditor::local_insert(unsigned int index, QChar value) {
+        if (value.isNull()) throw std::logic_error("trying to insert null character");
+
         // allocate position
         QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
         QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
@@ -36,6 +38,7 @@ namespace cte {
     }
 
     void SharedEditor::remote_insert(const Symbol& symbol) {
+        if (symbol.value().isNull()) throw std::logic_error("trying to insert null character");
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
         text_.insert(it, symbol);
     }
@@ -49,6 +52,10 @@ namespace cte {
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
         if (it != text_.end()) return std::distance(text_.begin(), it);
         return text_.size();    // after last character
+    }
+
+    Symbol SharedEditor::at(int index) const {
+        return text_.at(index);
     }
 
     int SharedEditor::site_id() const {

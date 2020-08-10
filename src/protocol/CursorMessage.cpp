@@ -49,10 +49,6 @@ namespace cte {
         return username_;
     }
 
-    void CursorMessage::set_username(const QString& username) {
-        username_ = username;
-    }
-
     QJsonObject CursorMessage::json() const {
         QJsonObject json_object = Message::json();
         json_object["document"] = document_.json();

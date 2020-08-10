@@ -23,7 +23,7 @@ namespace cte {
             }
             std::pair<int,int> author = authors[c.author];
 
-            QVector<int> prev_pos = c.index == 0 ? pos_allocator.begin() : symbols.last().position();
+            QVector<int> prev_pos = (c.index == 0 || symbols.empty()) ? pos_allocator.begin() : symbols.last().position();
             QVector<int> next_pos = pos_allocator.end();
             QVector<int> between_pos = pos_allocator.between(prev_pos, next_pos);
 

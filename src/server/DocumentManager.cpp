@@ -117,9 +117,8 @@ namespace cte {
         return document_data;
     }
 
-    std::pair<Document,std::optional<DocumentData>> DocumentManager::open_document(int session_id,
-                                                                                   const QUrl& sharing_link,
-                                                                                   const QString& username) {
+    std::pair<Document,std::optional<DocumentData>>
+    DocumentManager::open_document(int session_id, const QUrl& sharing_link, const QString& username) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -154,16 +153,6 @@ namespace cte {
         get_open_document(document).close(site_id);
     }
 
-    void DocumentManager::close_documents(int session_id) {
-        QMutexLocker ml(&mutex_);
-        auto it_sessions = site_ids_.find(session_id);
-        if (it_sessions == site_ids_.end()) return;  // no documents opened
-        QHash<Document,int> session_site_ids = *it_sessions;
-        for (auto it=session_site_ids.begin(); it != session_site_ids.end(); it++)
-            open_documents_[it.key()].close(it.value());
-        site_ids_.remove(session_id);
-    }
-
     OpenDocument& DocumentManager::get_open_document(const Document& document) {
         auto it = open_documents_.find(document);
         if (it == open_documents_.end()) throw std::logic_error("document not opened");
@@ -178,7 +167,7 @@ namespace cte {
 
     bool DocumentManager::site_id_spoofing(int session_id, const Document& document, const Symbol& symbol) const {
         QMutexLocker ml(&mutex_);
-        return opened(session_id, document) && site_ids_[session_id][document] == symbol.site_id();
+        return opened(session_id, document) && site_ids_[session_id][document] != symbol.site_id();
     }
 
     void DocumentManager::insert_symbol(int session_id, const Document& document, const Symbol& symbol) {
@@ -200,7 +189,7 @@ namespace cte {
         get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
     }
 
-    QSet<Document> DocumentManager::documents(int session_id, const QString& username) const {
+    QSet<Document> DocumentManager::get_documents(int session_id, const QString& username) const {
         // open connection
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -208,6 +197,7 @@ namespace cte {
 
         // load accessible documents
         query = query_select_documents(database, username);
+        execute_query(query);
         QSet<Document> documents;
         while (query.next()) {
             Document document(query.value("document_owner").toString(), query.value("document_name").toString());
@@ -222,6 +212,13 @@ namespace cte {
                 documents.remove(document);
 
         return documents;
+    }
+
+    QList<Document> DocumentManager::get_open_documents(int session_id) const {
+        QMutexLocker ml(&mutex_);
+        auto it = site_ids_.find(session_id);
+        if (it == site_ids_.end()) return QList<Document>{};
+        return it->keys();
     }
 
     void DocumentManager::save() {

@@ -22,15 +22,12 @@
 #include <cte/protocol/EraseMessage.h>
 #include <cte/protocol/CursorMessage.h>
 
-typedef QSharedPointer<cte::Message> CteMessagePointer;
-Q_DECLARE_METATYPE(CteMessagePointer);
-
 namespace cte {
     extern IdentityManager identity_manager;
     extern DocumentManager document_manager;
 
     Worker::Worker() {
-        qRegisterMetaType<CteMessagePointer>("CteMessagePointer");
+        qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
         QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
         QObject::connect(this, &Worker::new_message, this, &Worker::dispatch_message);
     }
@@ -81,7 +78,7 @@ namespace cte {
     void Worker::close_session(int session_id, Socket *socket) {
         // logout
         if (identity_manager.authenticated(session_id))
-            logout(session_id);
+            logout(session_id, socket);
 
         // delete socket and session
         socket->deleteLater();
@@ -99,7 +96,7 @@ namespace cte {
         Document document;
         switch (message->type()) {
             case MessageType::open:
-                document = message.staticCast<CursorMessage>()->document();
+                document = *message.staticCast<OpenMessage>()->document();
                 break;
             case MessageType::close:
                 document = message.staticCast<CloseMessage>()->document();
@@ -148,7 +145,7 @@ namespace cte {
                     login(session_id, socket, message);
                     break;
                 case MessageType::logout:
-                    logout(session_id);
+                    logout(session_id, socket);
                     break;
                 case MessageType::profile:
                     update_profile(session_id, socket, message);
@@ -233,12 +230,17 @@ namespace cte {
         qDebug() << "login by:" << username;
     }
 
-    void Worker::logout(int session_id) {
+    void Worker::logout(int session_id, Socket *socket) {
         // save username (just for final print)
         std::optional<QString> username = identity_manager.username(session_id);
 
-        // close open documents and logout
-        document_manager.close_documents(session_id);
+        // close open documents and unregister for dispatching
+        for (const auto& document : document_manager.get_open_documents(session_id)) {
+            document_manager.close_document(session_id, document);
+            editing_clients[document].remove(socket);
+        }
+
+        // logout
         identity_manager.logout(session_id);
 
         qDebug() << "logout by:" << *username;
@@ -329,8 +331,9 @@ namespace cte {
         socket->write_message(response);
 
         // dispatch message
-        open_message->set_site_id(document_data->site_id());
-        open_message->set_profile(*document_data->profiles().find(username));
+        int site_id = document_data->site_id();
+        Profile& profile = *document_data->profiles().find(username);
+        open_message = QSharedPointer<OpenMessage>::create(*document, site_id, profile);
         emit new_message(socket->socketDescriptor(), open_message);
 
         qDebug() << "document opened: { document:" << document->full_name() << ", user:" << username << "}";
@@ -352,7 +355,7 @@ namespace cte {
 
         // dispatch message
         QString username = *identity_manager.username(session_id);
-        close_message->set_username(username);
+        close_message = QSharedPointer<CloseMessage>::create(document, username);
         emit new_message(socket->socketDescriptor(), close_message);
 
         qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
@@ -365,7 +368,7 @@ namespace cte {
         QString username = *opt;
 
         // get documents
-        QSet<Document> documents = document_manager.documents(session_id, username);
+        QSet<Document> documents = document_manager.get_documents(session_id, username);
 
         // send documents
         QSharedPointer<Message> response = QSharedPointer<DocumentsMessage>::create(documents);
@@ -426,7 +429,7 @@ namespace cte {
 
         // dispatch message
         QString username = *identity_manager.username(session_id);
-        cursor_message->set_username(username);
+        cursor_message = QSharedPointer<CursorMessage>::create(document, symbol, username);
         emit new_message(socket->socketDescriptor(), cursor_message);
 
         qDebug() << "move cursor: { document:" << document.full_name()

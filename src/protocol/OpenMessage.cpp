@@ -9,7 +9,7 @@ namespace cte {
     OpenMessage::OpenMessage(const Document& document) : Message(MessageType::open), document_(document) {}
 
     OpenMessage::OpenMessage(const Document &document, int site_id, const Profile &profile) :
-            Message(MessageType::open), document_(document), site_id_(site_id), profile_(profile) {}
+        Message(MessageType::open), document_(document), site_id_(site_id), profile_(profile) {}
 
     OpenMessage::OpenMessage(const QString &sharing_link) : Message(MessageType::open), sharing_link_(sharing_link) {}
 
@@ -70,14 +70,6 @@ namespace cte {
 
     std::optional<Profile> OpenMessage::profile() const {
         return profile_;
-    }
-
-    void OpenMessage::set_site_id(int site_id) {
-        site_id_ = site_id;
-    }
-
-    void OpenMessage::set_profile(const Profile &profile) {
-        profile_ = profile;
     }
 
     QJsonObject OpenMessage::json() const {

@@ -37,12 +37,10 @@ namespace cte {
         }
 
         // listen
-        if (listen(QHostAddress::Any, port)) {
+        if (listen(QHostAddress::Any, port))
             qDebug() << "listening on port" << this->serverPort();
-        } else {
-            qDebug() << "listen() failed";
-            QCoreApplication::exit(EXIT_FAILURE);
-        }
+        else
+            throw std::runtime_error("listen() failed");
     }
 
     void Server::incomingConnection(qintptr socket_fd) {

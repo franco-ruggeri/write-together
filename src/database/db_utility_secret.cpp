@@ -30,7 +30,7 @@ namespace cte {
     }
 
     QSqlQuery query_insert_profile(const QSqlDatabase& database, const Profile& profile, const QString& password) {
-        QString query_string = "INSERT INTO `user` (username, password, name, surname, icon) "
+        QString query_string = "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `icon`) "
                                "VALUES (:username, :password, :name, :surname, :icon)";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -134,7 +134,7 @@ namespace cte {
 
     QSqlQuery query_insert_document(const QSqlDatabase& database, const Document& document,
                                     const QUrl& sharing_link) {
-        QString query_string = "INSERT INTO `document` (owner, name, sharing_link) "
+        QString query_string = "INSERT INTO `document` (`owner`, `name`, `sharing_link`) "
                                "VALUES (:owner, :name, :sharing_link)";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -145,7 +145,7 @@ namespace cte {
     }
 
     QSqlQuery query_insert_sharing(const QSqlDatabase& database, const Document& document, const QString& username) {
-        QString query_string = "INSERT INTO `sharing` (sharing_user, document_owner, document_name) "
+        QString query_string = "INSERT INTO `sharing` (`sharing_user`, `document_owner`, `document_name`) "
                                "VALUES (:username, :document_owner, :document_name)";
         QSqlQuery query(database);
         query.prepare(query_string);
@@ -166,7 +166,7 @@ namespace cte {
     }
 
     QSqlQuery prepare_query_insert_character(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "INSERT INTO `character` (document_owner, document_name, index, author, value "
+        QString query_string = "INSERT INTO `character` (`document_owner`, `document_name`, `index`, `author`, `value`) "
                                "VALUES (:document_owner, :document_name, :index, :author, :value)";
         QSqlQuery query(database);
         query.prepare(query_string);
