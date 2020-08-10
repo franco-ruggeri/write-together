@@ -97,11 +97,8 @@ namespace cte {
                 execute_query(query);
                 QVector<OpenDocument::character_t> text;
                 while (query.next()) {
-                    text.push_back({
-                                           query.value("index").value<qint32>(),
-                                           query.value("value").toString().at(0),
-                                           query.value("author").toString()
-                                   });
+                    text.push_back({ query.value("index").value<qint32>(), query.value("value").toString().at(0),
+                                     query.value("author").toString() });
                 }
                 open_documents_.insert(document, OpenDocument(text));
             }
@@ -254,5 +251,8 @@ namespace cte {
                 execute_query(query);
             }
         }
+
+        // commit transaction
+        database.commit();
     }
 }

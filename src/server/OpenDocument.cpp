@@ -26,8 +26,8 @@ namespace cte {
             QVector<int> prev_pos = (c.index == 0 || symbols.empty()) ? pos_allocator.begin() : symbols.last().position();
             QVector<int> next_pos = pos_allocator.end();
             QVector<int> between_pos = pos_allocator.between(prev_pos, next_pos);
-
-            Symbol symbol(c.value, author.first, author.second++, between_pos);
+            
+            symbols.push_back(Symbol(c.value, author.first, author.second++, between_pos));
         }
 
         local_editor_ = QSharedPointer<SharedEditor>::create(SharedEditor::invalid_site_id, symbols, pos_allocator);
