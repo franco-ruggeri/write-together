@@ -1,5 +1,5 @@
 -- configurations
-SET storage_engine = InnoDB;
+SET default_storage_engine = InnoDB;
 
 -- create DB
 CREATE DATABASE IF NOT EXISTS collaborative_text_editor CHARACTER SET utf16;

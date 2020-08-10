@@ -8,6 +8,7 @@
 #include <QtCore/QJsonObject>
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Document.h>
+#include <optional>
 
 namespace cte {
     class DocumentsMessage : public Message {

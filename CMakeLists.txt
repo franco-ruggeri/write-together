@@ -6,9 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 include_directories(lib/bcrypt/include)
+include_directories(${BOOST_ROOT})
 
 add_subdirectory(src)
-add_subdirectory(lib)
+#add_subdirectory(lib)
 
 enable_testing()
 add_subdirectory(test)

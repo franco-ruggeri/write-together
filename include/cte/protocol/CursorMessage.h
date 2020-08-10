@@ -9,6 +9,7 @@
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Document.h>
 #include <cte/crdt/Symbol.h>
+#include <optional>
 
 namespace cte {
     class CursorMessage : public Message {
