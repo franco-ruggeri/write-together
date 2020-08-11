@@ -265,7 +265,7 @@ namespace cte {
         QSharedPointer<Message> response = QSharedPointer<ProfileOkMessage>::create();
         socket->write_message(response);
 
-        qDebug() << "profile update by:" << profile.username() << "(" + *old_username + ")";
+        qDebug() << "profile update by:" << profile.username() << "(old:" << *old_username << ")";
     }
 
     void Worker::create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message) {

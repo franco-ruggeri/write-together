@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `document`
 	`name` VARCHAR(100) NOT NULL,
 	`sharing_link` VARCHAR(200) UNIQUE NOT NULL,
 	PRIMARY KEY (`owner`, `name`),
-	FOREIGN KEY (`owner`) REFERENCES user(`username`)
+	FOREIGN KEY (`owner`) REFERENCES user(`username`) ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `character`
@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS `character`
 	`value` CHAR(1) NOT NULL,
     `author` VARCHAR(100) NOT NULL,
 	PRIMARY KEY (`document_owner`, `document_name`, `index`),
-	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`),
-	FOREIGN KEY (`author`) REFERENCES user(`username`)
+	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`) ON UPDATE CASCADE,
+	FOREIGN KEY (`author`) REFERENCES user(`username`) ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS sharing
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS sharing
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
 	PRIMARY KEY (`sharing_user`, `document_owner`, `document_name`),
-	FOREIGN KEY (`sharing_user`) REFERENCES user(`username`),
-	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`)
+	FOREIGN KEY (`sharing_user`) REFERENCES user(`username`) ON UPDATE CASCADE,
+	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`) ON UPDATE CASCADE
 );
 
 
