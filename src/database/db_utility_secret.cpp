@@ -44,7 +44,7 @@ namespace cte {
 
     QSqlQuery query_update_profile(const QSqlDatabase& database, const QString& old_username,
                                    const Profile& new_profile, const QString& new_password) {
-        bool update_password = new_password.isNull();
+        bool update_password = !new_password.isNull();
         QString query_string = QString{} +
                 "UPDATE `user` SET username=:username, " +
                 (update_password ? "password=:password, " : "") +
