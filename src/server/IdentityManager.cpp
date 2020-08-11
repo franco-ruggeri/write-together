@@ -102,19 +102,23 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the new username is already used
-        query = query_select_profile(database, new_username, true);
-        execute_query(query);
+        bool username_ok = true;
+        if (old_username != new_username) {
+            query = query_select_profile(database, new_username, true);
+            execute_query(query);
+            if (query.size() > 0)
+                username_ok = false;
+        }
 
         // update profile
         bool updated = false;
-        if (query.size() == 0) {
+        if (username_ok) {
             // update profile
             if (new_password.isNull())
                 query = query_update_profile(database, old_username, new_profile);
             else {
-                QString new_hash1 = QString::fromStdString(PasswordManager::generate_password(new_password.toStdString()));
-                // QString new_hash = QString::fromStdString(BCrypt::generateHash(new_password.toStdString()));
-                query = query_update_profile(database, old_username, new_profile, new_hash1);
+                QString new_hash = QString::fromStdString(PasswordManager::generate_password(new_password.toStdString()));
+                query = query_update_profile(database, old_username, new_profile, new_hash);
             }
             execute_query(query);
 

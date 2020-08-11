@@ -2,8 +2,7 @@
 // Author: Stefano Di Blasio
 //
 
-#include "PasswordManager.h"
-
+#include <cte/server/PasswordManager.h>
 #include <secblock.h>
 #include <scrypt.h>
 #include <osrng.h>

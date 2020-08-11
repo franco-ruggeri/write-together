@@ -3,6 +3,8 @@ set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/server)
 set(DB_SRC_DIR ${PROJECT_SOURCE_DIR}/src/database)
 
 find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
+find_path(CRYPTOPP_H cryptlib.h REQUIRED)
+find_library(CRYPTOPP_LIB cryptlib.lib REQUIRED)
 
 list(APPEND SRC
         main.cpp
@@ -19,10 +21,6 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/Server.h
         ${QOBJ_DIR}/Worker.h
         ${QOBJ_DIR}/Saver.h)
-
-
-find_path(CRYPTOPP_H cryptlib.h REQUIRED)
-find_library(CRYPTOPP_LIB cryptlib.lib REQUIRED)
 
 list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database bcrypt ${CRYPTOPP_LIB})
 list(APPEND INCLUDE ${QOBJ_DIR} ${DB_SRC_DIR} ${CRYPTOPP_H})
