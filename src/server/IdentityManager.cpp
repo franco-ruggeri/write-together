@@ -12,6 +12,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
+#include "PasswordManager.h"
 
 namespace cte {
     IdentityManager::IdentityManager() : m_sessions_(QMutex::Recursive) {}
@@ -36,8 +37,9 @@ namespace cte {
         bool signed_up = false;
         if (query.size() == 0) {
             // insert profile
-            QString hash = QString::fromStdString(BCrypt::generateHash(password.toStdString()));
-            query = query_insert_profile(database, profile, hash);
+            QString hash1 = QString::fromStdString(PasswordManager::generate_password(password.toStdString()));
+            // QString hash = QString::fromStdString(BCrypt::generateHash(password.toStdString()));
+            query = query_insert_profile(database, profile, hash1);
             execute_query(query);
 
             // authenticate session
@@ -68,7 +70,7 @@ namespace cte {
 
         // check password
         QString hash = query.value("password").toString();
-        if (!BCrypt::validatePassword(password.toStdString(), hash.toStdString()))
+        if (!PasswordManager::verify_password(password.toStdString(), hash.toStdString()))
             return std::nullopt;    // wrong password
 
         // authenticate session
@@ -110,8 +112,9 @@ namespace cte {
             if (new_password.isNull())
                 query = query_update_profile(database, old_username, new_profile);
             else {
-                QString new_hash = QString::fromStdString(BCrypt::generateHash(new_password.toStdString()));
-                query = query_update_profile(database, old_username, new_profile, new_hash);
+                QString new_hash1 = QString::fromStdString(PasswordManager::generate_password(new_password.toStdString()));
+                // QString new_hash = QString::fromStdString(BCrypt::generateHash(new_password.toStdString()));
+                query = query_update_profile(database, old_username, new_profile, new_hash1);
             }
             execute_query(query);
 

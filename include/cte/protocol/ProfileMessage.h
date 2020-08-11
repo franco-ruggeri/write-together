@@ -9,6 +9,7 @@
 #include <QtGui/QImage>
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Profile.h>
+#include <optional>
 
 namespace cte {
     class ProfileMessage : public Message {

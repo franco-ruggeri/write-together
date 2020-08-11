@@ -35,7 +35,7 @@ bool myClient::connect(QString ip_address) {
 QSharedPointer<Message> myClient::send_message(const QSharedPointer<Message>& request) {
     QSharedPointer<Message> m;
     socket->write(request->serialize() + '\n');
-    if(socket->waitForReadyRead(1000)) {
+    if(socket->waitForReadyRead(10000)) {
         QByteArray response = socket->readLine();
         m = Message::deserialize(response);
         return m;

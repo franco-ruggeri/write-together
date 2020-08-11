@@ -13,6 +13,7 @@
 #include <QtCore/QString>
 #include <QtCore/QMutex>
 #include <cte/protocol/Profile.h>
+#include <optional>
 
 namespace cte {
     class IdentityManager {

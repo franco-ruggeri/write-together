@@ -8,6 +8,7 @@
 #include <cte/protocol/Message.h>
 #include <cte/protocol/Document.h>
 #include <cte/protocol/Profile.h>
+#include <optional>
 
 namespace cte {
     class OpenMessage : public Message {
