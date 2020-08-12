@@ -31,27 +31,27 @@ const QList<Symbol> fileInfo::getFileContent() const {
     return documentData_.text();
 }
 
-const Document fileInfo::document() const {
+Document fileInfo::document() const {
     return document_;
 }
 
-const QHash<QString,Profile> fileInfo::users() const {
+QHash<QString,Profile> fileInfo::users() const {
     return documentData_.profiles();
 }
 
-const QHash<int,Symbol> fileInfo::connected_user() const {
-    return documentData_.cursors();
+QHash<int,QString> fileInfo::connected_user() const {
+    return documentData_.site_ids();
 }
 
-const QUrl &fileInfo::sharing_link() const {
+QUrl fileInfo::sharing_link() const {
     return documentData_.sharing_link();
 }
 int fileInfo::site_id() {
     return documentData_.site_id();
 }
-//
-//int fileInfo::site_counter() {
-//    return site_counter_;
-//}
+
+QHash<int,Symbol> fileInfo::cursors() const {
+    return documentData_.cursors();
+}
 
 

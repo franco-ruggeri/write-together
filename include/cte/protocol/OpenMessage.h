@@ -31,7 +31,5 @@ namespace cte {
         std::optional<QString> sharing_link() const;
         std::optional<int> site_id() const;
         std::optional<Profile> profile() const;
-        void set_site_id(int site_id);
-        void set_profile(const Profile& profile);
     };
 }

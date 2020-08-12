@@ -55,7 +55,7 @@ namespace cte {
                this->document_ == o->document_ && this->sharing_link_ == o->sharing_link_ &&
                this->site_id_ == o->site_id_ && this->profile_ == o->profile_;
     }
-    
+
     std::optional<Document> OpenMessage::document() const {
         return document_;
     }
@@ -70,14 +70,6 @@ namespace cte {
 
     std::optional<Profile> OpenMessage::profile() const {
         return profile_;
-    }
-
-    void OpenMessage::set_site_id(int site_id) {
-        site_id_ = site_id;
-    }
-
-    void OpenMessage::set_profile(const Profile &profile) {
-        profile_ = profile;
     }
 
     QJsonObject OpenMessage::json() const {

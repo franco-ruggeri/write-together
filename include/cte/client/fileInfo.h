@@ -34,16 +34,16 @@ public:
 
     const QList<Symbol> getFileContent() const;
 
-    const Document document() const;
+    Document document() const;
 
-    const QHash<QString,Profile> users() const;
-    const QHash<int,Symbol> connected_user() const;
-    const QUrl &sharing_link() const;
+    QHash<QString,Profile> users() const;
+    QHash<int,QString> connected_user() const;
+    QUrl sharing_link() const;
     int site_id();
-    int site_counter();
-
-    int site_counter() const;
-
+//    int site_counter();
+//
+//    int site_counter() const;
+    QHash<int,Symbol> cursors() const;
     fileInfo(const Document &document, const DocumentData data);
 };
 

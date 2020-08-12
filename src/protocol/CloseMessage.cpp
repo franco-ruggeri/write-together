@@ -1,14 +1,13 @@
 /*
  * Author: Franco Ruggeri
  */
-
 #include <cte/protocol/CloseMessage.h>
 
 namespace cte {
     CloseMessage::CloseMessage(const Document& document) : Message(MessageType::close), document_(document) {}
 
     CloseMessage::CloseMessage(const Document& document, const QString& username) :
-        Message(MessageType::close), document_(document), username_(username) {}
+            Message(MessageType::close), document_(document), username_(username) {}
 
     CloseMessage::CloseMessage(const QJsonObject &json_object) : Message(MessageType::close) {
         auto end_iterator = json_object.end();
@@ -29,7 +28,7 @@ namespace cte {
     bool CloseMessage::operator==(const Message& other) const {
         const CloseMessage *o = dynamic_cast<const CloseMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
-            this->document_ == o->document_ && this->username_ == o->username_;
+               this->document_ == o->document_ && this->username_ == o->username_;
     }
 
     Document CloseMessage::document() const {
@@ -38,10 +37,6 @@ namespace cte {
 
     std::optional<QString> CloseMessage::username() const {
         return username_;
-    }
-
-    void CloseMessage::set_username(const QString& username) {
-        username_ = username;
     }
 
     QJsonObject CloseMessage::json() const {

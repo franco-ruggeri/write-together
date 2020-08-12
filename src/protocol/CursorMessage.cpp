@@ -6,10 +6,10 @@
 
 namespace cte {
     CursorMessage::CursorMessage(const Document &document, const Symbol &symbol) :
-        Message(MessageType::cursor), document_(document), symbol_(symbol) {}
+            Message(MessageType::cursor), document_(document), symbol_(symbol) {}
 
     CursorMessage::CursorMessage(const Document &document, const Symbol &symbol, const QString& username) :
-        Message(MessageType::cursor), document_(document), symbol_(symbol), username_(username) {}
+            Message(MessageType::cursor), document_(document), symbol_(symbol), username_(username) {}
 
     CursorMessage::CursorMessage(const QJsonObject &json_object) : Message(MessageType::cursor) {
         auto end_iterator = json_object.end();
@@ -47,10 +47,6 @@ namespace cte {
 
     std::optional<QString> CursorMessage::username() const {
         return username_;
-    }
-
-    void CursorMessage::set_username(const QString& username) {
-        username_ = username;
     }
 
     QJsonObject CursorMessage::json() const {

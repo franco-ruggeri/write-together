@@ -42,10 +42,12 @@ private slots:
 
     void setupEditActions();
     void setupUserActions();
+    void setupPeers();
     void readyRead();
     void contentsChange(int position, int charsRemoved, int charsAdded);
     void cursorPositionChanged();
     void textChange();
+
 private:
     QSharedPointer<QDockWidget>connected_client ;
     QSharedPointer<QTextEdit> editor;
@@ -56,14 +58,17 @@ private:
     QAction *show_peers;
     fileInfo file;
     QSharedPointer<QListWidget>list_user;
-    QMap<QString, Profile> map_username_to_User;
-    QHash<QString,Symbol> connected_user;
-
+    QMap<QString, UserInfo> map_username_to_User;
+//    QHash<QString,Symbol> connected_user;
+    QHash<int,UserInfo> site_id_to_user;
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;
     QAction *actionCopy;
     QAction *actionPaste;
 #endif
+
+
+
 
 };
 

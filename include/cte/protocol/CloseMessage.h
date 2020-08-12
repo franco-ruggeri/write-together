@@ -24,6 +24,5 @@ namespace cte {
         bool operator==(const Message& other) const override;
         Document document() const;
         std::optional<QString> username() const;
-        void set_username(const QString& username);
     };
 }

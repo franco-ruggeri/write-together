@@ -91,15 +91,13 @@ std::tuple<bool,QString> myClient::signup(QString& username, QString& email, QSt
 }
 
 void myClient::sendInsert(const Document& document,const Symbol& s){
-    qDebug() << document.name();
-    qDebug() << document.full_name();
     QSharedPointer<Message> insert_message = QSharedPointer<InsertMessage>::create(document,s);
-    socket->write(insert_message->serialize() + '\n');
+    socket->write_message(insert_message);
 }
 
 void myClient::sendErase(const Document& document, const Symbol& s){
     QSharedPointer<Message> erase_message = QSharedPointer<EraseMessage>::create(document,s);
-    socket->write(erase_message->serialize() + '\n');
+    socket->write_message(erase_message);
 }
 
 
@@ -166,7 +164,6 @@ QSet<Document> myClient::get_documents_form_server() {
 
 
 void myClient::send_cursor(Document document, Symbol cursor_position){
-//    QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, user.username(), cursor_position);
-//    socket->write(cursor_message->serialize() + '\n');
-    //TODO add cursor message
+    QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, cursor_position);
+    socket->write_message(cursor_message);
 }
