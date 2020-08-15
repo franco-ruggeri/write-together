@@ -2,18 +2,19 @@
 // Author: Stefano Di Blasio
 //
 
-#include <cte/server/PasswordManager.h>
-#include <secblock.h>
+#include <cte/server/password_utility.h>
 #include <scrypt.h>
 #include <osrng.h>
 #include <hex.h>
 #include <base64.h>
 
 namespace cte {
+    static const size_t digest_size = 64;
+    static const size_t salt_size = 16;
     static CryptoPP::byte default_salt[] = "KClO3";
 
-    std::string generate_password(std::string &&password, bool random_salt, CryptoPP::word64 interactions,
-                                       CryptoPP::word64 block_size, CryptoPP::word64 parallelism) {
+    std::string generate_password(secure_string &&password, bool random_salt, CryptoPP::word64 interactions,
+                                  CryptoPP::word64 block_size, CryptoPP::word64 parallelism) {
         CryptoPP::SecByteBlock derived(digest_size);
         CryptoPP::SecByteBlock pass(reinterpret_cast<const CryptoPP::byte *>(&password[0]), password.size());
         CryptoPP::SecByteBlock salt(default_salt, 5);
@@ -38,7 +39,7 @@ namespace cte {
         return digest;
     }
 
-    bool verify_password(std::string &&password, const std::string &hash) {
+    bool verify_password(secure_string &&password, const std::string &hash) {
         CryptoPP::SecByteBlock derived(digest_size);
         CryptoPP::SecByteBlock pass(reinterpret_cast<const CryptoPP::byte *>(&password[0]), password.size());
         CryptoPP::SecByteBlock salt;

@@ -202,6 +202,8 @@ namespace cte {
             send_error(socket, "signup failed: username already used");
             return;
         }
+        password.fill(0);
+        password.clear();
 
         // send acknowledgement
         QSharedPointer<Message> response = QSharedPointer<SignupOkMessage>::create();
@@ -218,6 +220,8 @@ namespace cte {
 
         // login
         std::optional<Profile> profile = identity_manager.login(session_id, username, password);
+        password.fill(0);
+        password.clear();
         if (!profile) {
             send_error(socket, "login failed: wrong credentials");
             return;
@@ -259,6 +263,10 @@ namespace cte {
         if (!identity_manager.update_profile(session_id, profile, password.value_or(QString{}))) {
             send_error(socket, "profile update failed: username already used");
             return;
+        }
+        if (password.has_value()) {
+            password.value().fill(0);
+            password.value().clear();
         }
 
         // send acknowledgement

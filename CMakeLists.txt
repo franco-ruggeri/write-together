@@ -9,7 +9,6 @@ include_directories(lib/bcrypt/include)
 include_directories(${BOOST_ROOT})
 
 add_subdirectory(src)
-#add_subdirectory(lib)
 
 enable_testing()
 add_subdirectory(test)
