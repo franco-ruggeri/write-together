@@ -1,6 +1,6 @@
 # Crypto++ Library Setup
 
-###Windows
+### Windows
 Download the official source library from [here](https://cryptopp.com/cryptopp820.zip)  
 Decompress it anywhere in an empty folder, hereinafter referred to as _%CRYTPO_ROOT%_.
 
@@ -12,10 +12,10 @@ On the _C/C++ | Code generation_ tab, set the _Runtime Library_ to _Multi-thread
 On the _Linker | Debugging_ tab, set the _General Debug Info_ to _/DEBUG_.  
 Build the cryptlib project.
 
-####IDE configuration
+#### IDE configuration
 Be sure that the following CMAKE variables contain the reported paths.  
-- CMAKE_PREFIX_PATH :
-   - %CRYPTO_ROOT%
-   - %CRYPTO_ROOT%\Win32\Output\Debug
-- CMAKE_LIBRARY_PATH :
-   - %CRYPTO_ROOT%\Win32\Output\Debug
+1. CMAKE_PREFIX_PATH :
+   1. %CRYPTO_ROOT%
+   2. %CRYPTO_ROOT%\Win32\Output\Debug
+2. CMAKE_LIBRARY_PATH :
+   1. %CRYPTO_ROOT%\Win32\Output\Debug
