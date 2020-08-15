@@ -2,7 +2,6 @@
  * Author: Antonino Musmeci
  */
 
-#include <qdebug>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>

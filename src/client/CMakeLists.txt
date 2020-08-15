@@ -10,7 +10,7 @@ list(APPEND SRC
         client.cpp
         loginTextEditor.cpp
         utility.cpp
-        NewFileDialog.cpp
+        newFileDialog.cpp
         changePasswordDialog.cpp
         texteditor.cpp
         myClient.cpp

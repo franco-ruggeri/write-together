@@ -3,7 +3,7 @@
  */
 
 #include <QStackedWidget>
-#include <cte/client/NewFileDialog.h>
+#include <cte/client/newFileDialog.h>
 #include "ui_newFileDialog.h"
 #include <QMessageBox>
 #include <QtWidgets/QWidget>

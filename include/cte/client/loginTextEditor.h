@@ -8,7 +8,7 @@
 
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QListWidgetItem>
-#include <cte/client/NewFileDialog.h>
+#include <cte/client/newFileDialog.h>
 #include <cte/client/myClient.h>
 #include <cte/client/changePasswordDialog.h>
 #include <cte/client/changeUsernameDialog.h>
