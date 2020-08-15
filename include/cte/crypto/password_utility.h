@@ -14,7 +14,8 @@ namespace cte{
 
     typedef std::basic_string<char, std::char_traits<char>, CryptoPP::AllocatorWithCleanup<char>> secure_string;
 
-    std::string generate_password(secure_string &&password, bool random_salt = true, CryptoPP::word64 interactions = N,
-                                  CryptoPP::word64 block_size = r, CryptoPP::word64 parallelism = p);
-    bool verify_password(secure_string &&password, const std::string& hash);
+    std::string generate_password(secure_string &&password, bool random_salt=true, CryptoPP::word64 interactions=N,
+                                  CryptoPP::word64 block_size=r, CryptoPP::word64 parallelism=p);
+
+    bool verify_password(secure_string&& password, const std::string& hash);
 }

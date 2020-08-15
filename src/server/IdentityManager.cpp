@@ -115,7 +115,7 @@ namespace cte {
             if (new_password.isNull())
                 query = query_update_profile(database, old_username, new_profile);
             else {
-                QString new_hash = QString::fromStdString(generate_password(static_cast<secure_string>(new_password.toStdString()),true));
+                QString new_hash = QString::fromStdString(generate_password(static_cast<secure_string>(new_password.toStdString())));
                 query = query_update_profile(database, old_username, new_profile, new_hash);
             }
             execute_query(query);
