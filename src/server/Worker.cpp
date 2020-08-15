@@ -151,7 +151,7 @@ namespace cte {
                     update_profile(session_id, socket, message);
                     break;
                 case MessageType::documents:
-                    accessible_documents(session_id, socket, message);
+                    get_document_list(session_id, socket, message);
                     break;
                 case MessageType::create:
                     create_document(session_id, socket, message);
@@ -361,18 +361,20 @@ namespace cte {
         qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
     }
 
-    void Worker::accessible_documents(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
+    void Worker::get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // get user
         std::optional<QString> opt = identity_manager.username(session_id);
         if (!opt) throw std::logic_error("session not authenticated");
         QString username = *opt;
 
         // get documents
-        QSet<Document> documents = document_manager.get_documents(session_id, username);
+        QSet<Document> documents = document_manager.get_document_list(session_id, username);
 
         // send documents
         QSharedPointer<Message> response = QSharedPointer<DocumentsMessage>::create(documents);
         socket->write_message(response);
+
+        qDebug() << "document list requested by:" << username;
     }
 
     void Worker::insert_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message) {

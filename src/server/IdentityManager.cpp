@@ -11,7 +11,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
-#include "PasswordManager.h"
+#include "cte/crypto/password_utility.h"
 
 namespace cte {
     IdentityManager::IdentityManager() : m_sessions_(QMutex::Recursive) {}
@@ -36,9 +36,8 @@ namespace cte {
         bool signed_up = false;
         if (query.size() == 0) {
             // insert profile
-            QString hash1 = QString::fromStdString(generate_password(std::move(password.toStdString())));
-            // QString hash = QString::fromStdString(BCrypt::generateHash(password.toStdString()));
-            query = query_insert_profile(database, profile, hash1);
+            QString hash = QString::fromStdString(generate_password(password.toStdString()));
+            query = query_insert_profile(database, profile, hash);
             execute_query(query);
 
             // authenticate session
@@ -69,7 +68,7 @@ namespace cte {
 
         // check password
         QString hash = query.value("password").toString();
-        if (!verify_password(std::move(password.toStdString()), hash.toStdString()))
+        if (!verify_password(password.toStdString(), hash.toStdString()))
             return std::nullopt;    // wrong password
 
         // authenticate session

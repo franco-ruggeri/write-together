@@ -41,7 +41,7 @@ namespace cte {
         std::pair<Document,std::optional<DocumentData>> open_document(int session_id, const QUrl& sharing_link,
                                                                       const QString& username);
         void close_document(int session_id, const Document& document);
-        QSet<Document> get_documents(int session_id, const QString& username) const;   // those that can still be opened
+        QSet<Document> get_document_list(int session_id, const QString& username) const;    // accessible but not opened
         QList<Document> get_open_documents(int session_id) const;
 
         // document editing

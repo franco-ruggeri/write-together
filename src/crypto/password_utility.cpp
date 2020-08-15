@@ -2,7 +2,7 @@
 // Author: Stefano Di Blasio
 //
 
-#include <cte/server/PasswordManager.h>
+#include <cte/crypto/password_utility.h>
 #include <secblock.h>
 #include <scrypt.h>
 #include <osrng.h>
@@ -10,7 +10,9 @@
 #include <base64.h>
 
 namespace cte {
-    static CryptoPP::byte default_salt[] = "KClO3";
+    static const CryptoPP::byte default_salt[] = "KClO3";
+    static const size_t digest_size = 64;
+    static const size_t salt_size = 16;
 
     std::string generate_password(std::string &&password, bool random_salt, CryptoPP::word64 interactions,
                                        CryptoPP::word64 block_size, CryptoPP::word64 parallelism) {

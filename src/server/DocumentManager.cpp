@@ -186,7 +186,7 @@ namespace cte {
         get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
     }
 
-    QSet<Document> DocumentManager::get_documents(int session_id, const QString& username) const {
+    QSet<Document> DocumentManager::get_document_list(int session_id, const QString& username) const {
         // open connection
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);

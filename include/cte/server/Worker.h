@@ -34,7 +34,7 @@ namespace cte {
         void create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void open_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void close_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
-        void accessible_documents(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
         // document editing
         void insert_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message);
