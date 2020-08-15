@@ -17,13 +17,16 @@ list(APPEND SRC
 list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/Server.h
         ${QOBJ_DIR}/Worker.h
-        ${QOBJ_DIR}/DocumentManager.h
         ${QOBJ_DIR}/Saver.h)
 
-list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database bcrypt)
+list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database crypto)
 list(APPEND INCLUDE ${QOBJ_DIR} ${DB_SRC_DIR})
 
 add_executable(server ${SRC} ${QOBJ_HEADERS})
 target_link_libraries(server ${LIB})
 target_include_directories(server PUBLIC ${INCLUDE})
 install(TARGETS server DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+
+if(WIN32)
+    set_property(TARGET server PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif()

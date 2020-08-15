@@ -5,8 +5,8 @@
 #include <cte/server/IdentityManager.h>
 #include <cte/database/DatabaseGuard.h>
 #include <cte/database/db_utility.h>
+#include <cte/crypto/password_utility.h>
 #include <db_utility_secret.h>
-#include <bcrypt/BCrypt.hpp>
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
 #include <QtSql/QSqlDatabase>
@@ -36,7 +36,7 @@ namespace cte {
         bool signed_up = false;
         if (query.size() == 0) {
             // insert profile
-            QString hash = QString::fromStdString(BCrypt::generateHash(password.toStdString()));
+            QString hash = QString::fromStdString(generate_password(static_cast<secure_string>(password.toStdString())));
             query = query_insert_profile(database, profile, hash);
             execute_query(query);
 
@@ -68,7 +68,7 @@ namespace cte {
 
         // check password
         QString hash = query.value("password").toString();
-        if (!BCrypt::validatePassword(password.toStdString(), hash.toStdString()))
+        if (!verify_password(static_cast<secure_string>(password.toStdString()), hash.toStdString()))
             return std::nullopt;    // wrong password
 
         // authenticate session
@@ -100,17 +100,22 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the new username is already used
-        query = query_select_profile(database, new_username, true);
-        execute_query(query);
+        bool username_ok = true;
+        if (old_username != new_username) {
+            query = query_select_profile(database, new_username, true);
+            execute_query(query);
+            if (query.size() > 0)
+                username_ok = false;
+        }
 
         // update profile
         bool updated = false;
-        if (query.size() == 0) {
+        if (username_ok) {
             // update profile
             if (new_password.isNull())
                 query = query_update_profile(database, old_username, new_profile);
             else {
-                QString new_hash = QString::fromStdString(BCrypt::generateHash(new_password.toStdString()));
+                QString new_hash = QString::fromStdString(generate_password(static_cast<secure_string>(new_password.toStdString())));
                 query = query_update_profile(database, old_username, new_profile, new_hash);
             }
             execute_query(query);

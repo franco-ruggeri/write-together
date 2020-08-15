@@ -79,6 +79,7 @@ namespace cte {
 
             // load profiles
             query = query_select_document_profiles(database, document);
+            execute_query(query);
             QHash<QString,Profile> profiles;
             while (query.next()) {
                 QString username = query.value("username").toString();
@@ -96,11 +97,8 @@ namespace cte {
                 execute_query(query);
                 QVector<OpenDocument::character_t> text;
                 while (query.next()) {
-                    text.push_back({
-                                           query.value("index").value<qint32>(),
-                                           query.value("value").toString().at(0),
-                                           query.value("author").toString()
-                                   });
+                    text.push_back({ query.value("index").value<qint32>(), query.value("value").toString().at(0),
+                                     query.value("author").toString() });
                 }
                 open_documents_.insert(document, OpenDocument(text));
             }
@@ -116,8 +114,8 @@ namespace cte {
         return document_data;
     }
 
-    std::optional<DocumentData> DocumentManager::open_document(int session_id, const QUrl& sharing_link,
-                                                               const QString& username) {
+    std::pair<Document,std::optional<DocumentData>>
+    DocumentManager::open_document(int session_id, const QUrl& sharing_link, const QString& username) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -142,7 +140,7 @@ namespace cte {
         database.commit();
 
         // open document
-        return open_document(session_id, document, username);
+        return {document, open_document(session_id, document, username)};
     }
 
     void DocumentManager::close_document(int session_id, const Document& document) {
@@ -150,16 +148,6 @@ namespace cte {
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         int site_id = site_ids_[session_id].take(document);
         get_open_document(document).close(site_id);
-    }
-
-    void DocumentManager::close_documents(int session_id) {
-        QMutexLocker ml(&mutex_);
-        auto it_sessions = site_ids_.find(session_id);
-        if (it_sessions == site_ids_.end()) return;  // no documents opened
-        QHash<Document,int> session_site_ids = *it_sessions;
-        for (auto it=session_site_ids.begin(); it != session_site_ids.end(); it++)
-            open_documents_[it.key()].close(it.value());
-        site_ids_.remove(session_id);
     }
 
     OpenDocument& DocumentManager::get_open_document(const Document& document) {
@@ -176,7 +164,7 @@ namespace cte {
 
     bool DocumentManager::site_id_spoofing(int session_id, const Document& document, const Symbol& symbol) const {
         QMutexLocker ml(&mutex_);
-        return opened(session_id, document) && site_ids_[session_id][document] == symbol.site_id();
+        return opened(session_id, document) && site_ids_[session_id][document] != symbol.site_id();
     }
 
     void DocumentManager::insert_symbol(int session_id, const Document& document, const Symbol& symbol) {
@@ -198,7 +186,7 @@ namespace cte {
         get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
     }
 
-    QSet<Document> DocumentManager::documents(int session_id, const QString& username) const {
+    QSet<Document> DocumentManager::get_document_list(int session_id, const QString& username) const {
         // open connection
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -221,6 +209,13 @@ namespace cte {
                 documents.remove(document);
 
         return documents;
+    }
+
+    QList<Document> DocumentManager::get_open_documents(int session_id) const {
+        QMutexLocker ml(&mutex_);
+        auto it = site_ids_.find(session_id);
+        if (it == site_ids_.end()) return QList<Document>{};
+        return it->keys();
     }
 
     void DocumentManager::save() {
@@ -256,5 +251,8 @@ namespace cte {
                 execute_query(query);
             }
         }
+
+        // commit transaction
+        database.commit();
     }
 }

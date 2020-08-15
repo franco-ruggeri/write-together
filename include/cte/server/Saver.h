@@ -13,7 +13,7 @@ namespace cte {
 
         QTimer timer_;
 
-    private slots:
+    public slots:
         void save();
 
     public:

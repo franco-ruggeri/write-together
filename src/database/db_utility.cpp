@@ -12,8 +12,7 @@ namespace cte {
                                      const QString& username, const QString& password) {
         // different connections for different threads, to exploit multiple cores
         QString connection_name;
-        QDebug stream(&connection_name);
-        stream << QThread::currentThreadId();
+        QDebug(&connection_name).nospace() << QThread::currentThreadId();
         QSqlDatabase database = QSqlDatabase::database(connection_name);
 
         // first time

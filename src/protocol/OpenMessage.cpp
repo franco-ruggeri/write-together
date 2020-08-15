@@ -9,7 +9,7 @@ namespace cte {
     OpenMessage::OpenMessage(const Document& document) : Message(MessageType::open), document_(document) {}
 
     OpenMessage::OpenMessage(const Document &document, int site_id, const Profile &profile) :
-            Message(MessageType::open), document_(document), site_id_(site_id), profile_(profile) {}
+        Message(MessageType::open), document_(document), site_id_(site_id), profile_(profile) {}
 
     OpenMessage::OpenMessage(const QString &sharing_link) : Message(MessageType::open), sharing_link_(sharing_link) {}
 

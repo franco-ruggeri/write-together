@@ -27,7 +27,14 @@ namespace cte {
     extern DocumentManager document_manager;
 
     Worker::Worker() {
-        connect(this, &Worker::new_connection, this, &Worker::start_session);
+        qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
+        QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
+        QObject::connect(this, &Worker::new_message, this, &Worker::dispatch_message);
+    }
+
+    void Worker::connect(const Worker &worker1, const Worker &worker2) {
+        QObject::connect(&worker1, &Worker::new_message, &worker2, &Worker::dispatch_message);
+        QObject::connect(&worker2, &Worker::new_message, &worker1, &Worker::dispatch_message);
     }
 
     void Worker::assign_connection(int socket_fd) {
@@ -54,9 +61,9 @@ namespace cte {
         }
 
         // connect signals and slots (use socket_fd as session_id)
-        connect(socket, &Socket::ready_message,
+        QObject::connect(socket, &Socket::ready_message,
                 [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
-        connect(socket, &Socket::disconnected,
+        QObject::connect(socket, &Socket::disconnected,
                 [this, socket_fd, socket]() { close_session(socket_fd, socket); });
 
         // increment number of sessions
@@ -71,7 +78,7 @@ namespace cte {
     void Worker::close_session(int session_id, Socket *socket) {
         // logout
         if (identity_manager.authenticated(session_id))
-            logout(session_id);
+            logout(session_id, socket);
 
         // delete socket and session
         socket->deleteLater();
@@ -84,10 +91,16 @@ namespace cte {
                  << ", port:" << socket->peerPort() << "}";
     }
 
-    void Worker::dispatch_message(int source_socket_fd, QSharedPointer<Message> message) {
+    void Worker::dispatch_message(int source_socket_fd, const QSharedPointer<Message>& message) {
         // get document
         Document document;
         switch (message->type()) {
+            case MessageType::open:
+                document = *message.staticCast<OpenMessage>()->document();
+                break;
+            case MessageType::close:
+                document = message.staticCast<CloseMessage>()->document();
+                break;
             case MessageType::insert:
                 document = message.staticCast<InsertMessage>()->document();
                 break;
@@ -96,12 +109,6 @@ namespace cte {
                 break;
             case MessageType::cursor:
                 document = message.staticCast<CursorMessage>()->document();
-                break;
-            case MessageType::open:
-                document = message.staticCast<CursorMessage>()->document();
-                break;
-            case MessageType::close:
-                document = message.staticCast<CloseMessage>()->document();
                 break;
             default:
                 throw std::logic_error("invalid message: invalid type to dispatch");
@@ -138,13 +145,13 @@ namespace cte {
                     login(session_id, socket, message);
                     break;
                 case MessageType::logout:
-                    logout(session_id);
+                    logout(session_id, socket);
                     break;
                 case MessageType::profile:
                     update_profile(session_id, socket, message);
                     break;
                 case MessageType::documents:
-                    accessible_documents(session_id, socket, message);
+                    get_document_list(session_id, socket, message);
                     break;
                 case MessageType::create:
                     create_document(session_id, socket, message);
@@ -195,6 +202,8 @@ namespace cte {
             send_error(socket, "signup failed: username already used");
             return;
         }
+        password.fill(0);
+        password.clear();
 
         // send acknowledgement
         QSharedPointer<Message> response = QSharedPointer<SignupOkMessage>::create();
@@ -211,6 +220,8 @@ namespace cte {
 
         // login
         std::optional<Profile> profile = identity_manager.login(session_id, username, password);
+        password.fill(0);
+        password.clear();
         if (!profile) {
             send_error(socket, "login failed: wrong credentials");
             return;
@@ -223,12 +234,17 @@ namespace cte {
         qDebug() << "login by:" << username;
     }
 
-    void Worker::logout(int session_id) {
+    void Worker::logout(int session_id, Socket *socket) {
         // save username (just for final print)
         std::optional<QString> username = identity_manager.username(session_id);
 
-        // close open documents and logout
-        document_manager.close_documents(session_id);
+        // close open documents and unregister for dispatching
+        for (const auto& document : document_manager.get_open_documents(session_id)) {
+            document_manager.close_document(session_id, document);
+            editing_clients[document].remove(socket);
+        }
+
+        // logout
         identity_manager.logout(session_id);
 
         qDebug() << "logout by:" << *username;
@@ -248,12 +264,16 @@ namespace cte {
             send_error(socket, "profile update failed: username already used");
             return;
         }
+        if (password.has_value()) {
+            password.value().fill(0);
+            password.value().clear();
+        }
 
         // send acknowledgement
         QSharedPointer<Message> response = QSharedPointer<ProfileOkMessage>::create();
         socket->write_message(response);
 
-        qDebug() << "profile update by:" << profile.username() << "(" + *old_username + ")";
+        qDebug() << "profile update by:" << profile.username() << "(old:" << *old_username << ")";
     }
 
     void Worker::create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
@@ -297,9 +317,15 @@ namespace cte {
 
         // open document
         std::optional<DocumentData> document_data;
-        if (document) document_data = document_manager.open_document(session_id, *document, username);
-        else if (sharing_link) document_data = document_manager.open_document(session_id, *sharing_link, username);
-        else throw std::logic_error("invalid message: open with neither document nor sharing link");
+        if (document) {
+            document_data = document_manager.open_document(session_id, *document, username);
+        } else if (sharing_link) {
+            auto result = document_manager.open_document(session_id, *sharing_link, username);
+            document = result.first;
+            document_data = result.second;
+        } else {
+            throw std::logic_error("invalid message: open with neither document nor sharing link");
+        }
         if (!document_data) {
             send_error(socket, "document open failed: document not existing or not accessible");
             return;
@@ -313,8 +339,9 @@ namespace cte {
         socket->write_message(response);
 
         // dispatch message
-        open_message->set_site_id(document_data->site_id());
-        open_message->set_profile(*document_data->profiles().find(username));
+        int site_id = document_data->site_id();
+        Profile& profile = *document_data->profiles().find(username);
+        open_message = QSharedPointer<OpenMessage>::create(*document, site_id, profile);
         emit new_message(socket->socketDescriptor(), open_message);
 
         qDebug() << "document opened: { document:" << document->full_name() << ", user:" << username << "}";
@@ -336,24 +363,26 @@ namespace cte {
 
         // dispatch message
         QString username = *identity_manager.username(session_id);
-        close_message->set_username(username);
+        close_message = QSharedPointer<CloseMessage>::create(document, username);
         emit new_message(socket->socketDescriptor(), close_message);
 
         qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
     }
 
-    void Worker::accessible_documents(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
+    void Worker::get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // get user
         std::optional<QString> opt = identity_manager.username(session_id);
         if (!opt) throw std::logic_error("session not authenticated");
         QString username = *opt;
 
         // get documents
-        QSet<Document> documents = document_manager.documents(session_id, username);
+        QSet<Document> documents = document_manager.get_document_list(session_id, username);
 
         // send documents
         QSharedPointer<Message> response = QSharedPointer<DocumentsMessage>::create(documents);
         socket->write_message(response);
+
+        qDebug() << "document list requested by:" << username;
     }
 
     void Worker::insert_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
@@ -410,7 +439,7 @@ namespace cte {
 
         // dispatch message
         QString username = *identity_manager.username(session_id);
-        cursor_message->set_username(username);
+        cursor_message = QSharedPointer<CursorMessage>::create(document, symbol, username);
         emit new_message(socket->socketDescriptor(), cursor_message);
 
         qDebug() << "move cursor: { document:" << document.full_name()
