@@ -4,6 +4,7 @@
 
 #include <QMessageBox>
 #include <QPixmap>
+#include <QtCore/QDebug>
 #include <cte/client/changeUsernameDialog.h>
 #include <cte/client/loginTextEditor.h>
 #include "ui_loginTextEditor.h"
@@ -20,7 +21,22 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     client = QSharedPointer<myClient>::create();
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
     ui->login_password_lineEdit->setEchoMode(QLineEdit::Password);
-   
+    connect(client.get(), &myClient::generic_error, this, &loginTextEditor::handle_generic_error);
+    connect(client.get(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
+    connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
+}
+
+void loginTextEditor::handle_generic_error(const QString &error) {
+    QMessageBox::critical(this, tr("Fatal"), tr("This is a generic error report, mainly due to bug/unexpected control flow.\n\n") + error);
+}
+
+void loginTextEditor::account_log_result(bool logged, const QString &error_message) {
+    if (logged) {
+        init_user_page();
+    } else {
+        QMessageBox::critical(this, tr("Attention"), error_message);
+    }
+    return;
 }
 
 /**************home-page function***************/
@@ -47,13 +63,7 @@ void loginTextEditor::on_login_signin_pushButton_clicked() {
     if(username.isEmpty() || password.isEmpty())
         return;
 
-    std::tuple valid = client->login(username,password);
-    if(std::get<0>(valid)) {
-        init_user_page();
-    }
-    else
-        QMessageBox::warning(this, "WARNING",
-                             std::get<1>(valid));
+    client->login(username,password);
 }
 
 /**************register page function***************/
@@ -84,34 +94,31 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
     QString name = ui->signup_name_lineEdit->text();
     QString surname = ui->signup_surname_lineEdit->text();
 
-    std::tuple valid = client->signup(username, email,password , name, surname);
-    if(std::get<0>(valid)) {
-       init_user_page();
-    }
-    else
-        QMessageBox::warning(this, "WARNING",
-                             std::get<1>(valid));
-
+    client->signup(username, email,password , name, surname);
 }
 
 /********** user page function *******************/
 
 void loginTextEditor::init_user_page() {
-    QSet<Document> documents = client->get_documents_form_server();
     ui->user_file_listWidget->clear();
+    this->setCurrentIndex(0); // 0 -> user page
+    client->get_documents_form_server();
+}
+
+void loginTextEditor::display_documents(const QSet<Document> &documents) {
     QStringList file_list;
-    for(const auto& d : documents) {
+    for (const auto& d: documents) {
         file_list.push_back(d.full_name());
-        client->user.filename_to_owner_map.insert(d.full_name(),d);
+        client->user.filename_to_owner_map.insert(d.full_name(), d);
     }
     ui->user_file_listWidget->addItems(file_list);
-    ui->user_file_listWidget->setCurrentRow( 0 );
-    this->setCurrentIndex(0); // 0 -> user page
+    ui->user_file_listWidget->setCurrentRow(0);
 }
+
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
     if(file_dialog == nullptr) {
         file_dialog = QSharedPointer<NewFileDialog>::create(this, client, editor);
-        connect(file_dialog.get(), &NewFileDialog::open_editor, this, &loginTextEditor::open_editor);
+        connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
     }
     file_dialog->setModal(true);
     file_dialog->show();
@@ -124,8 +131,7 @@ void loginTextEditor::on_user_logout_pushButton_clicked() {
 }
 
 void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item) {
-    fileInfo file =  client->open_file(item->text());
-    open_editor(file);
+    client->open_file(item->text());
 }
 
 void loginTextEditor::on_user_change_password_pushButton_clicked() {
@@ -145,7 +151,8 @@ void loginTextEditor::on_user_change_username_pushButton_clicked() {
 
 
 void loginTextEditor::open_editor(fileInfo file){
-
+    if (file_dialog->isVisible())
+        file_dialog->hide();
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
     connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::show);

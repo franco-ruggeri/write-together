@@ -3,7 +3,7 @@
  */
 //TODO sistemare la conversione da QString a std::String
 #include <cte/protocol/Document.h>
-#include <boost/functional/hash.hpp>
+//#include <boost/functional/hash.hpp>
 
 namespace cte {
     Document::Document() {}

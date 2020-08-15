@@ -22,7 +22,6 @@ Q_OBJECT
 
 public:
     explicit loginTextEditor(QWidget *parent = nullptr);
-    void open_editor(fileInfo file);
 
 private:
     QSharedPointer<myClient> client;
@@ -46,8 +45,11 @@ private slots:
     void on_user_change_username_pushButton_clicked();
 //    void on_user_share_pushButton_clicked();
     void share_file(const QString& filename);
-
+    void account_log_result(bool logged, const QString& error_message = QString(""));
+    void handle_generic_error(const QString& error);
     void init_user_page();
+    void display_documents(const QSet<Document>& documents);
+    void open_editor(fileInfo file);
 };
 
 
