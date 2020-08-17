@@ -24,7 +24,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     connect(client.get(), &myClient::generic_error, this, &loginTextEditor::handle_generic_error);
     connect(client.get(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
     connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
-
+    connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
 
     //Clear button enabled
     ui->login_email_lineEdit->setClearButtonEnabled(true);
@@ -257,7 +257,7 @@ void loginTextEditor::display_documents(const QSet<Document> &documents) {
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
     if(file_dialog == nullptr) {
         file_dialog = QSharedPointer<NewFileDialog>::create(this, client, editor);
-        connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
+
     }
     file_dialog->setModal(true);
     file_dialog->show();
@@ -290,7 +290,7 @@ void loginTextEditor::on_user_change_username_pushButton_clicked() {
 
 
 void loginTextEditor::open_editor(fileInfo file){
-    if (file_dialog->isVisible())
+    if (file_dialog != nullptr && file_dialog->isVisible())
         file_dialog->hide();
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
