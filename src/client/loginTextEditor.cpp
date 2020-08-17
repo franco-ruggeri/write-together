@@ -24,6 +24,113 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     connect(client.get(), &myClient::generic_error, this, &loginTextEditor::handle_generic_error);
     connect(client.get(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
     connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
+
+
+    //Clear button enabled
+    ui->login_email_lineEdit->setClearButtonEnabled(true);
+    ui->login_password_lineEdit->setClearButtonEnabled(true);
+    ui->signup_name_lineEdit->setClearButtonEnabled(true);
+    ui->signup_surname_lineEdit->setClearButtonEnabled(true);
+    ui->signup_email_lineEdit->setClearButtonEnabled(true);
+    ui->signup_username_lineEdit->setClearButtonEnabled(true);
+    ui->signup_password_lineEdit->setClearButtonEnabled(true);
+
+    //Image login
+    QPixmap login_image(":/images/collaboration.png");
+    ui->label_image_login->setPixmap(login_image);
+
+    //Icon QLineEdit
+    QIcon user_icon(":/images/user.png");
+    QIcon pass_icon(":/images/password.png");
+    QIcon mail_icon(":/images/mail.png");
+
+    //Login
+    ui->login_email_lineEdit->addAction(user_icon, QLineEdit::LeadingPosition);
+    ui->login_password_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
+
+    //Signup
+    ui->signup_email_lineEdit->addAction(mail_icon, QLineEdit::LeadingPosition);
+    ui->signup_username_lineEdit->addAction(user_icon, QLineEdit::LeadingPosition);
+    ui->signup_password_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
+
+    const QString btnStylesheet =
+            "QPushButton{"
+            "border-radius: 2px;"
+            "margin-top: 5px;"
+            "outline: none;"
+            "background-color:  #00ABE7;"
+            "}"
+            "QPushButton:hover{"
+            "background-color: #1C4073;"
+            "}"
+            "QPushButton:hover:pressed{"
+            "background-color: #1C4073;"
+            "border-radius: 15px;"
+            "}"
+            "QPushButton:focus{"
+            "outline: none;"
+            "}";
+
+    const QString btnEditProfileStylesheet =
+            "QPushButton {"
+            "margin-top: 5px;\n"
+            "color: white;\n"
+            "border: 1px solid white;\n"
+            "background-color:  transparent;"
+            "}"
+            "QPushButton:hover {"
+            "color: #C4C4C4;\n"
+            "border: 1px solid white;\n"
+            "background-color:  white;"
+            "}"
+            "QPushButton:focus{"
+            "outline: none;"
+            "}";
+    const QString btnLogOutStylesheet =
+            "QPushButton{"
+            "margin-top: 5px;\n"
+            "color: white;\n"
+            "border: 1px solid red;\n"
+            "background-color:  red;"
+            "}"
+            "QPushButton:hover{"
+            "color: white;\n"
+            "border: 1px solid #C0180C;\n"
+            "background-color:  #C0180C;"
+            "}"
+            "QPushButton:focus{"
+            "outline: none;"
+            "}";
+
+    const QString btnRedirectStylesheet =
+            "QPushButton{"
+            "background: transparent;"
+            "color:  #00ABE7;"
+            "}"
+            "QPushButton:hover{"
+            "color: #1C4073;"
+            "}"
+            "QPushButton:hover:pressed{"
+            "color: #1C4073;"
+            "}"
+            "QPushButton:focus{"
+            "outline: none;"
+            "}"
+    ;
+    //buttons hover feedback
+    //connect
+    ui->connect_pushButton->setStyleSheet(btnStylesheet);
+    //login
+    ui->login_signup_pushButton->setStyleSheet(btnRedirectStylesheet);
+    ui->login_signin_pushButton->setStyleSheet(btnStylesheet);
+    //signup
+    ui->singup_register_pushButton->setStyleSheet(btnStylesheet);
+    ui->signup_login_pushButton->setStyleSheet(btnRedirectStylesheet);
+    //user_page
+    ui->user_edit_profile->setStyleSheet(btnEditProfileStylesheet);
+    ui->user_logout_pushButton->setStyleSheet(btnLogOutStylesheet);
+    ui->user_add_pushButton->setStyleSheet(btnStylesheet);
+    //ui->user_create_file_pushButton->setStyleSheet(btnStylesheet);
 }
 
 void loginTextEditor::handle_generic_error(const QString &error) {
@@ -101,18 +208,50 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
 
 void loginTextEditor::init_user_page() {
     ui->user_file_listWidget->clear();
+    const QString list_stylesheet =
+            "QListView { "
+            "outline: none;"
+            "font-size: 14pt;"
+            "border: 0px;"
+            "padding-left: 10px;"
+            "padding-right: 20px;"
+            "background-color: transparent; }"
+            "QListView::item { "
+            "border-bottom: 1px solid #F2F2F2;"
+            "color: #102E4A;"
+            "margin-left: 5px;"
+            "margin-right: 5px;"
+            "padding: 15px;"
+            "background-color: white; }"
+            "QListView::item:hover { "
+            "color: white;"
+            "border: 2px solid white;"
+            "background-color: #DEE3E0; }"
+            "QListView::item:hover:active { "
+            "color: white;"
+            "border: 2px solid white;"
+            "background-color: #DEE3E0; }";
+    ui->user_file_listWidget->setStyleSheet(list_stylesheet);
+    ui->label_username_user_page->setFont(QFont("Roboto Thin", 20, 1, true));
+    ui->label_username_user_page->setText(QString(client->user.username()));
     this->setCurrentIndex(0); // 0 -> user page
     client->get_documents_form_server();
 }
 
 void loginTextEditor::display_documents(const QSet<Document> &documents) {
     QStringList file_list;
-    for (const auto& d: documents) {
-        file_list.push_back(d.full_name());
-        client->user.filename_to_owner_map.insert(d.full_name(), d);
+    if (documents.empty()){
+        ui->label_list_items->setText(QString("No documents available."));
     }
-    ui->user_file_listWidget->addItems(file_list);
-    ui->user_file_listWidget->setCurrentRow(0);
+    else {
+        ui->label_list_items->setText(QString("Documents list."));
+        for (const auto& d: documents) {
+            file_list.push_back(d.full_name());
+            client->user.filename_to_owner_map.insert(d.full_name(), d);
+        }
+        ui->user_file_listWidget->addItems(file_list);
+        ui->user_file_listWidget->setCurrentRow(0);
+    }
 }
 
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
