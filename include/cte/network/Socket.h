@@ -5,6 +5,7 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
+#include <QtCore/QQueue>
 #include <QtNetwork/QSslSocket>
 #include <cte/protocol/Message.h>
 
@@ -12,8 +13,10 @@ namespace cte {
     class Socket : public QSslSocket {
         Q_OBJECT
 
+        QQueue<QSharedPointer<Message>> messages_;
+
     private slots:
-        void check_message_ready();
+        void prepare_messages();
 
     signals:
         void ready_message();
