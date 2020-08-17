@@ -159,7 +159,6 @@ void loginTextEditor::open_editor(fileInfo file){
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
     editor->show();
     editor->init_cursors();
-
 }
 
 void loginTextEditor::cleanAll(){
@@ -174,7 +173,6 @@ void loginTextEditor::cleanAll(){
 }
 
 void loginTextEditor::share_file(const QString& shared_link){
-//    std::optional<QString> response = client->get_uri(filename);
     QMessageBox msgBox;
     QClipboard *cb = QApplication::clipboard();
     msgBox.setText(" URI: " + shared_link);

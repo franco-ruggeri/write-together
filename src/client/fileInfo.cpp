@@ -39,7 +39,7 @@ QHash<QString,Profile> fileInfo::users() const {
     return documentData_.profiles();
 }
 
-QHash<int,QString> fileInfo::connected_user() const {
+QHash<int,QString> fileInfo::site_ids() const {
     return documentData_.site_ids();
 }
 

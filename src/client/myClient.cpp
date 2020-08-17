@@ -159,6 +159,7 @@ void myClient::process_response() {
             } else {
                 emit generic_error(tr("Received an error message instead of document data.\n") + response.staticCast<ErrorMessage>()->reason());
             }
+            break;
         default:
             // we may reach this point if disconnection from this slot and connection to the new one was later than new data coming from server
             qDebug() << "Message sent type " << static_cast<int>(message_to_send_->type()) << "not implemented now";

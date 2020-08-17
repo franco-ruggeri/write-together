@@ -39,13 +39,11 @@
 #include <cte/client/loginTextEditor.h>
 #include <cte/protocol/EraseMessage.h>
 #include <cte/protocol/CursorMessage.h>
+#include <cte/protocol/OpenMessage.h>
+#include <QPushButton>
+#include <QtWidgets/QHBoxLayout>
 
 const QString imgPath = ":/images";
-
-
-int counter_id(){
-    return 0;
-}
 
 
 texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file): QMainWindow(parent),
@@ -62,208 +60,258 @@ file(file){
 
     editor->setText(shared_editor->to_string()); // set the text content
 
-
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupPeers();
     setupFileActions();
     setupEditActions();
     setupUserActions();
 
-    connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+//    connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
     connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
     connect(editor.get(), &QTextEdit::cursorPositionChanged, this, &texteditor::cursorPositionChanged);
-
 
 }
 
 
 void texteditor::setupPeers(){
 
+    h =  floor(rand());
     auto ids = file.cursors().keys();
+
     list_user = QSharedPointer<QListWidget>::create();
-    QIcon userIcon = QIcon(QPixmap::fromImage(client->user.icon()));
+    list_user->setObjectName("list_user");
 
-    for(const auto& user: file.users()){
-        list_user->addItem(new QListWidgetItem(userIcon, user.username()));
+    for(const auto & profile: file.users()){
+        UserInfo user(profile,generate_color());
+        username_to_user.insert(profile.username(),user);
+        QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
+        auto* widget = new QListWidgetItem(user_icon, user.username());
+        widget->setBackground(user.color());
+        list_user->addItem(widget);
     }
 
-    for(const auto& id : ids) {
-        UserInfo user(file.users().find(file.connected_user().find(id).value()).value());
-        site_id_to_user.insert(id,user);
-    }
-
-    qDebug() << file.connected_user().size();
+    list_user->setSelectionMode(QAbstractItemView::NoSelection);
     connected_client = QSharedPointer<QDockWidget>::create(); // widget to show the peers
     connected_client->setObjectName("Peers");
     connected_client->setWindowTitle("Peers");
     connected_client->setWidget(list_user.get()); // add other user to the dock
     addDockWidget(Qt::RightDockWidgetArea,connected_client.get());
+    connect(list_user.get(), SIGNAL(itemClicked(QListWidgetItem*)),
+            this, SLOT(on_list_user_itemClicked(QListWidgetItem*)));
+
+}
+
+
+void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
+    QString username = item->text();
+    auto user = username_to_user.find(username);
+
+    int i = 0;
+    disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
+    for(auto const &s : shared_editor->text()){
+
+        if(file.site_ids()[s.site_id()] == username){
+           user->draw_background_char(editor.get(),i,i+1);
+        }
+        i++;
+    }
+    connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
+
+    user->selected = !user->selected;
+    editor->currentCharFormat().setBackground(Qt::transparent);
 }
 
 void texteditor::init_cursors(){
-    qDebug() << "inizializzazione cursori";
-    for( const auto& symbol : file.cursors()) {
-        int cursor_pos = shared_editor->find(symbol);
-        site_id_to_user[symbol.site_id()].init_cursor(editor.get(), cursor_pos);
+    auto ids = file.cursors().keys();
+    for( const auto& id : ids) {
+        QString username = file.site_ids().find(id).value();
+
+        if(id != file.site_id()) {
+            Symbol symbol = file.cursors().find(id).value();
+            int cursor_pos = shared_editor->find(file.cursors().find(id).value());
+            username_to_user.find(username)->add_cursor(editor.get(),cursor_pos,id);
+        }
+
     }
+
+
+
 }
 
 
-void texteditor::setupFileActions()
-{
-    QToolBar *tb = addToolBar(tr("File Actions"));
-    QMenu *menu = menuBar()->addMenu(tr("&File"));
-    QAction *a;
-    a = menu->addAction(QIcon::fromTheme("document-share", QIcon(imgPath + "/filesave.png")),
-                                 tr("&Share Document"),this, &texteditor::file_share);
+void texteditor::setupFileActions(){
+   QToolBar *tb = addToolBar(tr("File Actions"));
+   QMenu *menu = menuBar()->addMenu(tr("&File"));
+   QAction *a;
+   a = menu->addAction(QIcon::fromTheme("document-share", QIcon(imgPath + "/filesave.png")),
+                                tr("&Share Document"),this, &texteditor::file_share);
 
-    tb->addAction(a);
-    a = menu->addAction(QIcon::fromTheme("exportpdf", QIcon(imgPath + "/exportpdf.png")),
-                    tr("&Export PDF"), this, &texteditor::file_to_pdf);
-    a->setPriority(QAction::LowPriority);
-    a->setShortcut(Qt::CTRL + Qt::Key_D);
+   tb->addAction(a);
+   a = menu->addAction(QIcon::fromTheme("exportpdf", QIcon(imgPath + "/exportpdf.png")),
+                   tr("&Export PDF"), this, &texteditor::file_to_pdf);
+   a->setPriority(QAction::LowPriority);
+   a->setShortcut(Qt::CTRL + Qt::Key_D);
 
-    tb->addAction(a);
-    menu->addSeparator();
-    a = menu->addAction(QIcon::fromTheme("document-close", QIcon(imgPath + "/fileopen.png")),
-                    tr("&Close"), this, &texteditor::file_close);
+   tb->addAction(a);
+   menu->addSeparator();
+   a = menu->addAction(QIcon::fromTheme("document-close", QIcon(imgPath + "/fileopen.png")),
+                   tr("&Close"), this, &texteditor::file_close);
 
-    tb->addAction(a);
-    menu->addSeparator();
+   tb->addAction(a);
+   menu->addSeparator();
 }
 
 void texteditor::setupUserActions(){
-    QToolBar *tb = addToolBar(tr("User Actions"));
-    QMenu *menu = menuBar()->addMenu(tr("&User"));
-    const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_icon.png"));
-    show_peers = menu->addAction(showPeersIcon, tr("&Show"), connected_client.get(),&QDockWidget::show);
-    tb->addAction(show_peers);
+   qDebug() << "INIT_USER_ACTION";
+   QToolBar *tb = addToolBar(tr("User Actions"));
+   QMenu *menu = menuBar()->addMenu(tr("&User"));
+   const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_icon.png"));
+   show_peers = menu->addAction(showPeersIcon, tr("&Show"), connected_client.get(),&QDockWidget::show);
+   tb->addAction(show_peers);
 }
 
 void texteditor::setupEditActions() {
-    QToolBar *tb = addToolBar(tr("Edit Actions"));
-    QMenu *menu = menuBar()->addMenu(tr("&Edit"));
-    const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
-    actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor.get(), &QTextEdit::undo);
-    actionUndo->setShortcut(QKeySequence::Undo);
-    tb->addAction(actionUndo);
+   qDebug() << "INIT_SETUP_ACTION";
+   QToolBar *tb = addToolBar(tr("Edit Actions"));
+   QMenu *menu = menuBar()->addMenu(tr("&Edit"));
+   const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
+   actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor.get(), &QTextEdit::undo);
+   actionUndo->setShortcut(QKeySequence::Undo);
+   tb->addAction(actionUndo);
 
-    const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(imgPath + "/editredo.png"));
-    actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor.get(), &QTextEdit::redo);
-    actionRedo->setPriority(QAction::LowPriority);
-    actionRedo->setShortcut(QKeySequence::Redo);
-    tb->addAction(actionRedo);
-    menu->addSeparator();
+   const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(imgPath + "/editredo.png"));
+   actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor.get(), &QTextEdit::redo);
+   actionRedo->setPriority(QAction::LowPriority);
+   actionRedo->setShortcut(QKeySequence::Redo);
+   tb->addAction(actionRedo);
+   menu->addSeparator();
 
 #ifndef QT_NO_CLIPBOARD
-    const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(imgPath + "/editcut.png"));
-    actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor.get(), &QTextEdit::cut);
-    actionCut->setPriority(QAction::LowPriority);
-    actionCut->setShortcut(QKeySequence::Cut);
-    tb->addAction(actionCut);
+   const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(imgPath + "/editcut.png"));
+   actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor.get(), &QTextEdit::cut);
+   actionCut->setPriority(QAction::LowPriority);
+   actionCut->setShortcut(QKeySequence::Cut);
+   tb->addAction(actionCut);
 
-    const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(imgPath + "/editcopy.png"));
-    actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor.get(), &QTextEdit::copy);
-    actionCopy->setPriority(QAction::LowPriority);
-    actionCopy->setShortcut(QKeySequence::Copy);
-    tb->addAction(actionCopy);
+   const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(imgPath + "/editcopy.png"));
+   actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor.get(), &QTextEdit::copy);
+   actionCopy->setPriority(QAction::LowPriority);
+   actionCopy->setShortcut(QKeySequence::Copy);
+   tb->addAction(actionCopy);
 
-    const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(imgPath + "/editpaste.png"));
-    actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor.get(), &QTextEdit::paste);
-    actionPaste->setPriority(QAction::LowPriority);
-    actionPaste->setShortcut(QKeySequence::Paste);
-    tb->addAction(actionPaste);
-    if (const QMimeData *md = QApplication::clipboard()->mimeData())
-        actionPaste->setEnabled(md->hasText());
+   const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(imgPath + "/editpaste.png"));
+   actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor.get(), &QTextEdit::paste);
+   actionPaste->setPriority(QAction::LowPriority);
+   actionPaste->setShortcut(QKeySequence::Paste);
+   tb->addAction(actionPaste);
+   if (const QMimeData *md = QApplication::clipboard()->mimeData())
+       actionPaste->setEnabled(md->hasText());
 #endif
 }
 
-
 void texteditor::file_to_pdf() {
-    QFileDialog fileDialog(this, tr("Export PDF"));
-    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog.setMimeTypeFilters(QStringList("application/pdf"));
-    fileDialog.setDefaultSuffix("pdf");
-    if (fileDialog.exec() != QDialog::Accepted)
-        return;
-    QString fileName = fileDialog.selectedFiles().first();
-    QPrinter printer(QPrinter::HighResolution);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName(fileName);
-    editor->document()->print(&printer);
-    statusBar()->showMessage(tr("Exported \"%1\"")
-                                     .arg(QDir::toNativeSeparators(fileName)));
-
+   QFileDialog fileDialog(this, tr("Export PDF"));
+   fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+   fileDialog.setMimeTypeFilters(QStringList("application/pdf"));
+   fileDialog.setDefaultSuffix("pdf");
+   if (fileDialog.exec() != QDialog::Accepted)
+       return;
+   QString fileName = fileDialog.selectedFiles().first();
+   QPrinter printer(QPrinter::HighResolution);
+   printer.setOutputFormat(QPrinter::PdfFormat);
+   printer.setOutputFileName(fileName);
+   editor->document()->print(&printer);
+   statusBar()->showMessage(tr("Exported \"%1\"")
+                                    .arg(QDir::toNativeSeparators(fileName)));
 }
 
 void texteditor::file_close() {
-    this->client->file_close(this->file);
-    disconnect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-    this->deleteLater();
-    emit show_user_page();
+   this->client->file_close(this->file);
+   disconnect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+   this->deleteLater();
+   emit show_user_page();
 }
 
 void texteditor::file_share(){
-    emit share_file(file.sharing_link().toString());
+   emit share_file(file.sharing_link().toString());
 }
 
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
-    if(change_from_server) return;
-    for(int i = 0 ; i < charsAdded; i++) {
-        client->sendInsert(file.document(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
-    }
-    for(int i = 0 ; i < charsRemoved; i++) {
-        client->sendErase(file.document(),shared_editor->local_erase(position));
-    }
+   if(change_from_server) return;
+   for(int i = 0 ; i < charsAdded; i++) {
+       client->sendInsert(file.document(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
+   }
+   for(int i = 0 ; i < charsRemoved; i++) {
+       client->sendErase(file.document(),shared_editor->local_erase(position));
+   }
+}
+
+void  texteditor::remote_insert(const Symbol& symbol){
+    change_from_server = true;
+    shared_editor->remote_insert(symbol);
+    this->editor->setText(shared_editor->to_string());
 }
 
 
-void texteditor::readyRead(){
-    while(client->socket->canReadLine()) {
-        QByteArray request = this->client->socket->readLine();
-        QSharedPointer<Message> m = Message::deserialize(request);
+void  texteditor::remote_erase(const Symbol& symbol){
 
-        if (m->type() == MessageType::insert) {
-            qDebug() << "remote Insert";
-            change_from_server = true;
-            shared_editor->remote_insert(m.staticCast<InsertMessage>()->symbol());
-            this->editor->setText(shared_editor->to_string());
-        }
-        if (m->type() == MessageType::erase) {
-            change_from_server = true;
-            shared_editor->remote_erase(m.staticCast<EraseMessage>()->symbol());
-            this->editor->setText(shared_editor->to_string());
-        }
-        if (m->type() == MessageType::cursor) {
-            qDebug() <<"remote cursor";
-            change_from_server = true;
-            auto cursor_message = m.staticCast<CursorMessage>();
-            int position = shared_editor->find(cursor_message->symbol());
-            site_id_to_user.find(cursor_message->symbol().site_id())->change_cursor_position(editor.get(),position);
-        }
-    }
+    change_from_server = true;
+    shared_editor->remote_erase(symbol);
+    this->editor->setText(shared_editor->to_string());
 }
+
+void texteditor::remote_cursor(const Symbol& symbol, const QString & username){
+    change_from_server = true;
+    int position = shared_editor->find(symbol);
+    username_to_user.find(username)->change_cursor_position(editor.get(),position,symbol.site_id());
+}
+
+void texteditor::remote_open(const Profile &profile, int site_id){
+
+    if(!username_to_user.count(profile.username())){
+        UserInfo user(profile,generate_color());
+        username_to_user.insert(user.username(),user);
+        QIcon user_icon = QIcon(QPixmap::fromImage(profile.icon()));
+        QListWidgetItem* widget = new QListWidgetItem(user_icon,profile.username());
+        widget->setBackground(generate_color());
+        list_user->addItem(widget);
+    }
+    username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
+}
+
+
 
 void texteditor::closeEvent(QCloseEvent *event){
     file_close();
     event->accept();
 }
 
-
 void texteditor::textChange() {
     editor->setFontPointSize(14);
     if(change_from_server) {
+        current_position = editor->textCursor().position();
         change_from_server  = false;
         return;
     }
 }
 
-
 void texteditor::cursorPositionChanged() {
-    if(change_from_server) return;
     QTextCursor cursor = editor->textCursor();
-    qDebug() << "cursor position:" << cursor.position();
-    this->client->send_cursor(this->file.document(), this->shared_editor->insert_cursor(cursor.position(),QChar()));
+    if(cursor.position() != current_position) {
+        current_position = cursor.position();
+        qDebug() << "cursor position:" << cursor.position();
+        this->client->send_cursor(this->file.document(),
+                                  this->shared_editor->insert_cursor(cursor.position(), QChar()));
+    }
+}
+
+QColor texteditor::generate_color(){
+    QColor color;
+    double golden_ratio_conjugate = 0.618033988749895;
+    h += golden_ratio_conjugate;
+    h = h - (int)h;
+    color.setHsvF(h, 0.5, 0.95);
+    return color;
 }

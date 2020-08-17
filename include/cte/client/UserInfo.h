@@ -13,34 +13,44 @@
 
 using namespace cte;
 class UserInfo {
+
     QString username_, name_, surname_;
     QImage icon_;
 
 
 //cursor
     QTextCursor *cursor_;
-    QLabel* cursor_label_;
     Symbol cursor_position_;
+    QColor color_;
+
 
 public:
     UserInfo();
-    UserInfo(Profile profile);
-//    Profile(const QString& username, const QString& name, const QString& surname, const QImage& icon);
-//    Profile(const QJsonObject& json_object);
 
-//    bool operator==(const Profile& other) const;
 
     QString username() const;
     QString name() const;
     QString surname() const;
     QImage icon() const;
+    bool selected;
 
-
-    //cursors
+    //cursor
 
     void setIcon(const QImage &icon);
     QMap<QString,cte::Document> filename_to_owner_map;
-    void init_cursor(QTextEdit *editor, int newCursorPosition);
-    void change_cursor_position(QTextEdit *editor, int new_position);
+    QHash<int,QLabel*> site_id_to_cursor;
+
+    void add_cursor(int id);
+    void draw_background_char(QTextEdit *editor, int start, int end);
+
+    UserInfo(Profile profile, QColor color);
+
+    UserInfo(Profile profile);
+
+    const QColor color();
+
+    void add_cursor(QTextEdit *editor, int newCursorPosition, int id);
+
+    void change_cursor_position(QTextEdit *editor, int new_position, int id);
 };
 
