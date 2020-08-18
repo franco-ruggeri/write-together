@@ -23,6 +23,10 @@
         <file>images/password.png</file>
         <file>images/mail.png</file>
         <file>images/collaboration_white.png</file>
-
+        <file>images/all_files.png</file>
+        <file>images/own_files.png</file>
+        <file>images/shared_files.png</file>
+        <file>images/new_doc.png</file>
+        <file>images/shared_doc.png</file>
     </qresource>
 </RCC>

@@ -30,7 +30,7 @@ list(APPEND QOBJ_HEADERS
 list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network Qt5::Concurrent Qt5::PrintSupport protocol crdt network)
 list(APPEND INCLUDE ${QOBJ_DIR})
 
-add_executable(client ${SRC} ${QOBJ_HEADERS} resource.qrc)
+add_executable(client ${SRC} ${QOBJ_HEADERS} resource.qrc ../../include/cte/client/QTStylesheet.h QTStylesheet.cpp editProfileDialog.cpp)
 target_link_libraries(client ${LIB})
 target_include_directories(client PUBLIC ${INCLUDE})
 install(TARGETS client DESTINATION ${PROJECT_SOURCE_DIR}/bin)

@@ -13,11 +13,28 @@
     <height>641</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1188</width>
+    <height>641</height>
+   </size>
+  </property>
   <property name="maximumSize">
    <size>
-    <width>16777215</width>
-    <height>16777215</height>
+    <width>1188</width>
+    <height>641</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Roboto Light</family>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Real-Time Collaborative Text Editor</string>
@@ -27,7 +44,7 @@
     <normaloff>:/images/collaboration.png</normaloff>:/images/collaboration.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">*{background-color:#455265;
+   <string notr="true">*{background-color:#F2F2F2;
 	}
 QFrame{background-color: white;}
 QPushButton {
@@ -63,17 +80,27 @@ QMessageBox  QIcon {
 }</string>
   </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>4</number>
   </property>
   <widget class="QWidget" name="user_page">
+   <property name="font">
+    <font>
+     <family>Roboto Light</family>
+    </font>
+   </property>
    <widget class="QFrame" name="frame_3">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1191</width>
+      <width>1188</width>
       <height>641</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto Light</family>
+     </font>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: #F2F2F2;</string>
@@ -131,6 +158,9 @@ QMessageBox  QIcon {
         <width>61</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 4px;</string>
       </property>
       <property name="text">
        <string/>
@@ -195,7 +225,7 @@ background-color:  transparent;
        <string>LOGOUT</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="user_edit_profile">
+     <widget class="QPushButton" name="user_edit_profile_pushButton">
       <property name="geometry">
        <rect>
         <x>970</x>
@@ -246,7 +276,7 @@ background-color:  transparent;
      </property>
      <property name="styleSheet">
       <string notr="true">color:  #102E4A;
-margin-left: 10px;</string>
+margin-left: 15px;</string>
      </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -256,13 +286,14 @@ margin-left: 10px;</string>
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>60</y>
-       <width>321</width>
+       <y>61</y>
+       <width>320</width>
        <height>581</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: #DEE3E0;</string>
+      <string notr="true">background-color: #DEE3E0;
+border: 0px solid transparent;</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -273,9 +304,9 @@ margin-left: 10px;</string>
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>0</x>
         <y>20</y>
-        <width>271</width>
+        <width>321</width>
         <height>50</height>
        </rect>
       </property>
@@ -289,7 +320,7 @@ margin-left: 10px;</string>
       </property>
       <property name="styleSheet">
        <string notr="true">color:  #102E4A;
-margin-left: 10px;</string>
+margin-left: 15px;</string>
       </property>
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;Welcome back,&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -298,9 +329,9 @@ margin-left: 10px;</string>
      <widget class="QLabel" name="label_username_user_page">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>0</x>
         <y>70</y>
-        <width>271</width>
+        <width>321</width>
         <height>31</height>
        </rect>
       </property>
@@ -312,7 +343,7 @@ margin-left: 10px;</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">margin-left: 10px;
+       <string notr="true">margin-left: 15px;
 color:  #102E4A;</string>
       </property>
       <property name="text">
@@ -322,20 +353,25 @@ color:  #102E4A;</string>
      <widget class="QPushButton" name="user_create_file_pushButton">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>160</y>
-        <width>211</width>
-        <height>50</height>
+        <x>38</x>
+        <y>120</y>
+        <width>281</width>
+        <height>38</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Roboto Light</family>
+        <pointsize>8</pointsize>
+        <weight>87</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">border-radius: 2px;
-margin-top: 5px;
-background-color:  #00ABE7;
-</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>CREATE NEW FILE</string>
@@ -344,67 +380,219 @@ background-color:  #00ABE7;
      <widget class="QPushButton" name="user_add_pushButton">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>220</y>
-        <width>211</width>
-        <height>50</height>
+        <x>38</x>
+        <y>160</y>
+        <width>281</width>
+        <height>38</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Roboto Light</family>
+        <pointsize>8</pointsize>
+        <weight>87</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">border-radius: 2px;
-margin-top: 5px;
-background-color:  #00ABE7;
-</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>ADD FILE FROM URL</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="user_change_username_pushButton">
+     <widget class="QPushButton" name="user_all_documents_pushButton">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>430</y>
-        <width>250</width>
-        <height>50</height>
+        <x>38</x>
+        <y>200</y>
+        <width>281</width>
+        <height>38</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Roboto Light</family>
+        <pointsize>8</pointsize>
+        <weight>87</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">border-radius: 2px;
-margin-top: 5px;
-background-color:  #00ABE7;
-</string>
+       <string notr="true"/>
       </property>
       <property name="text">
-       <string>CHANGE USERNAME</string>
+       <string>ALL DOCUMENTS</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="user_change_password_pushButton">
+     <widget class="QPushButton" name="user_own_documents_pushButton">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>490</y>
-        <width>250</width>
-        <height>50</height>
+        <x>38</x>
+        <y>240</y>
+        <width>281</width>
+        <height>38</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Roboto Light</family>
+        <pointsize>8</pointsize>
+        <weight>87</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">border-radius: 2px;
-margin-top: 5px;
-background-color:  #00ABE7;
-</string>
+       <string notr="true"/>
       </property>
       <property name="text">
-       <string>CHANGE PASSWORD</string>
+       <string>YOUR DOCUMENTS</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="user_shared_documents_pushButton">
+      <property name="geometry">
+       <rect>
+        <x>38</x>
+        <y>280</y>
+        <width>281</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Roboto Light</family>
+        <pointsize>8</pointsize>
+        <weight>87</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>SHARED WITH YOU</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>120</y>
+        <width>38</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 4px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resource.qrc">:/images/new_doc.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>160</y>
+        <width>38</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 4px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resource.qrc">:/images/shared_doc.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>200</y>
+        <width>38</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 4px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resource.qrc">:/images/all_files.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>240</y>
+        <width>38</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 6px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resource.qrc">:/images/own_files.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>280</y>
+        <width>38</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 4px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resource.qrc">:/images/shared_files.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -413,8 +601,8 @@ background-color:  #00ABE7;
   <widget class="QWidget" name="signup_page">
    <property name="maximumSize">
     <size>
-     <width>1191</width>
-     <height>641</height>
+     <width>16777215</width>
+     <height>16777215</height>
     </size>
    </property>
    <property name="font">
@@ -422,366 +610,373 @@ background-color:  #00ABE7;
      <family>Roboto Light</family>
     </font>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_3">
-    <item>
-     <widget class="QFrame" name="frame">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <family>Roboto Light</family>
-       </font>
-      </property>
-      <property name="cursor">
-       <cursorShape>ArrowCursor</cursorShape>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: #F2f2f2;</string>
-      </property>
-      <widget class="QPushButton" name="singup_register_pushButton">
-       <property name="geometry">
-        <rect>
-         <x>440</x>
-         <y>440</y>
-         <width>221</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>930</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Roboto Light</family>
-         <weight>87</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 2px;
+   <widget class="QFrame" name="frame_7">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1188</width>
+      <height>641</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto Light</family>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: #F2f2f2;</string>
+    </property>
+    <widget class="QPushButton" name="singup_register_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>440</y>
+       <width>221</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>930</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Roboto Light</family>
+       <weight>87</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-radius: 2px;
 margin-top: 5px;
 background-color:  #00ABE7;
 </string>
-       </property>
-       <property name="text">
-        <string>SIGN UP</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="signup_login_pushButton">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>520</y>
-         <width>781</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Roboto Light</family>
-         <weight>87</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background: transparent;
+     </property>
+     <property name="text">
+      <string>SIGN UP</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="signup_login_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>520</y>
+       <width>781</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Roboto Light</family>
+       <weight>87</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;
 color:  #00ABE7;
 </string>
-       </property>
-       <property name="text">
-        <string>Already a member? Click here to login</string>
-       </property>
-      </widget>
-      <widget class="QFrame" name="gridFrame">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>379</x>
-         <y>195</y>
-         <width>371</width>
-         <height>221</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <layout class="QFormLayout" name="formLayout">
-        <property name="leftMargin">
-         <number>2</number>
+     </property>
+     <property name="text">
+      <string>Already a member? Click here to login</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="gridFrame_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>379</x>
+       <y>195</y>
+       <width>371</width>
+       <height>221</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <property name="leftMargin">
+       <number>2</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="signup_name_lineEdit">
+        <property name="minimumSize">
+         <size>
+          <width>180</width>
+          <height>0</height>
+         </size>
         </property>
-        <item row="0" column="0">
-         <widget class="QLineEdit" name="signup_name_lineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Roboto Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:  #102E4A; border-radius: 2px;
+        <property name="font">
+         <font>
+          <family>Roboto Light</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:  #102E4A; border-radius: 2px;
 background-color: rgb(238, 238, 236);</string>
-          </property>
-          <property name="inputMask">
-           <string/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>Name</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="signup_surname_lineEdit">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font>
-            <family>Roboto Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:  #102E4A; border-radius: 2px;
-background-color: rgb(238, 238, 236);</string>
-          </property>
-          <property name="inputMask">
-           <string/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>Surname</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QLineEdit" name="signup_email_lineEdit">
-          <property name="font">
-           <font>
-            <family>Roboto Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:  #102E4A; border-radius: 2px;
-background-color: rgb(238, 238, 236);</string>
-          </property>
-          <property name="inputMask">
-           <string/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>Email</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QLineEdit" name="signup_username_lineEdit">
-          <property name="font">
-           <font>
-            <family>Roboto Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:  #102E4A; border-radius: 2px;
-
-background-color: rgb(238, 238, 236);</string>
-          </property>
-          <property name="inputMask">
-           <string/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>Username</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" colspan="2">
-         <widget class="QLineEdit" name="signup_password_lineEdit">
-          <property name="font">
-           <font>
-            <family>Roboto Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"> border-radius: 2px;
-color:  #102E4A;
-background-color: rgb(238, 238, 236);</string>
-          </property>
-          <property name="inputMask">
-           <string/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>Password</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QLabel" name="signup_label_2">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>125</y>
-         <width>781</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Roboto Light</family>
-         <weight>75</weight>
-         <italic>false</italic>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:  #102E4A;</string>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-style:italic;&quot;&gt;Fill in this form to create an account.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="signup_label">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>80</y>
-         <width>781</width>
-         <height>61</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Roboto Light</family>
-         <weight>75</weight>
-         <italic>false</italic>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:  #102E4A;</string>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Sign Up&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-      <widget class="QFrame" name="header_user_page_4">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>1191</width>
-         <height>61</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: #1C4073;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QLabel" name="header_image_user_page_4">
-        <property name="geometry">
-         <rect>
-          <x>6</x>
-          <y>6</y>
-          <width>61</width>
-          <height>51</height>
-         </rect>
+        </property>
+        <property name="inputMask">
+         <string/>
         </property>
         <property name="text">
          <string/>
         </property>
-        <property name="pixmap">
-         <pixmap resource="resource.qrc">:/images/collaboration_white.png</pixmap>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
+        <property name="placeholderText">
+         <string>Name</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_7">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>10</y>
-          <width>381</width>
-          <height>41</height>
-         </rect>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="signup_surname_lineEdit">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
         <property name="font">
          <font>
-          <family>Roboto</family>
+          <family>Roboto Light</family>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: #f2f2f2;</string>
+         <string notr="true">color:  #102E4A; border-radius: 2px;
+background-color: rgb(238, 238, 236);</string>
+        </property>
+        <property name="inputMask">
+         <string/>
         </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;Real-Time Collaborative Text Editor&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>Surname</string>
         </property>
        </widget>
-      </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLineEdit" name="signup_email_lineEdit">
+        <property name="font">
+         <font>
+          <family>Roboto Light</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:  #102E4A; border-radius: 2px;
+background-color: rgb(238, 238, 236);</string>
+        </property>
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>Email</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLineEdit" name="signup_username_lineEdit">
+        <property name="font">
+         <font>
+          <family>Roboto Light</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:  #102E4A; border-radius: 2px;
+
+background-color: rgb(238, 238, 236);</string>
+        </property>
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>Username</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QLineEdit" name="signup_password_lineEdit">
+        <property name="font">
+         <font>
+          <family>Roboto Light</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"> border-radius: 2px;
+color:  #102E4A;
+background-color: rgb(238, 238, 236);</string>
+        </property>
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>Password</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="signup_label">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>125</y>
+       <width>781</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Roboto Light</family>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-style:italic;&quot;&gt;Fill in this form to create an account.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="signup_label_2">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>80</y>
+       <width>781</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Roboto Light</family>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Sign Up&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="header_user_page_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1191</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #1C4073;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="header_image_user_page_4">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>6</y>
+        <width>61</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">padding: 4px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resource.qrc">:/images/collaboration_white.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
      </widget>
-    </item>
-   </layout>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>10</y>
+        <width>381</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Roboto</family>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #f2f2f2;</string>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;Real-Time Collaborative Text Editor&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
   </widget>
   <widget class="QWidget" name="login_page">
    <property name="font">
     <font>
-     <family>Roboto</family>
+     <family>Roboto Light</family>
     </font>
    </property>
    <widget class="QFrame" name="frame_2">
@@ -987,6 +1182,9 @@ color:  #102E4A;</string>
        <height>51</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">padding: 4px;</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -1021,6 +1219,11 @@ color:  #102E4A;</string>
    </widget>
   </widget>
   <widget class="QWidget" name="connect_page">
+   <property name="font">
+    <font>
+     <family>Roboto Light</family>
+    </font>
+   </property>
    <widget class="QFrame" name="frame_4">
     <property name="geometry">
      <rect>
@@ -1112,6 +1315,12 @@ background-color:  #00ABE7;</string>
       <height>61</height>
      </rect>
     </property>
+    <property name="sizeIncrement">
+     <size>
+      <width>10</width>
+      <height>0</height>
+     </size>
+    </property>
     <property name="styleSheet">
      <string notr="true">background-color: #1C4073;</string>
     </property>
@@ -1129,6 +1338,9 @@ background-color:  #00ABE7;</string>
        <width>61</width>
        <height>51</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">padding: 4px;</string>
      </property>
      <property name="text">
       <string/>
@@ -1163,83 +1375,61 @@ background-color:  #00ABE7;</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QWidget" name="page">
-   <widget class="QFrame" name="frame_5">
+  <widget class="QWidget" name="cestino">
+   <property name="font">
+    <font>
+     <family>Roboto Light</family>
+    </font>
+   </property>
+   <widget class="QPushButton" name="user_change_password_pushButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>9</y>
-      <width>574</width>
-      <height>529</height>
+      <x>480</x>
+      <y>220</y>
+      <width>250</width>
+      <height>50</height>
      </rect>
     </property>
-    <property name="maximumSize">
-     <size>
-      <width>578</width>
-      <height>534</height>
-     </size>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #F2F2F2;</string>
+     <string notr="true">border-radius: 2px;
+margin-top: 5px;
+background-color:  #00ABE7;
+</string>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
+    <property name="text">
+     <string>CHANGE PASSWORD</string>
     </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
+   </widget>
+   <widget class="QPushButton" name="user_change_username_pushButton">
+    <property name="enabled">
+     <bool>false</bool>
     </property>
-    <widget class="QLabel" name="label_4">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>30</y>
-       <width>441</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Insert a valid IP address &lt;br&gt; to connect to a server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QRadioButton" name="radioButton">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>240</y>
-       <width>112</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>RadioButton</string>
-     </property>
-    </widget>
-    <widget class="QRadioButton" name="radioButton_2">
-     <property name="geometry">
-      <rect>
-       <x>310</x>
-       <y>240</y>
-       <width>112</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>RadioButton</string>
-     </property>
-    </widget>
-    <widget class="QRadioButton" name="radioButton_3">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>470</y>
-       <width>112</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>RadioButton</string>
-     </property>
-    </widget>
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>160</y>
+      <width>250</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 2px;
+margin-top: 5px;
+background-color:  #00ABE7;
+</string>
+    </property>
+    <property name="text">
+     <string>CHANGE USERNAME</string>
+    </property>
    </widget>
   </widget>
  </widget>
