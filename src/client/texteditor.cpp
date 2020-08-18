@@ -48,7 +48,7 @@ const QString imgPath = ":/images";
 
 
 texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file): QMainWindow(parent),
-file(file){
+file(file), user_row_(0){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION);
     editor = QSharedPointer<QTextEdit>::create(this);
@@ -72,6 +72,11 @@ file(file){
     connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
     connect(editor.get(), &QTextEdit::cursorPositionChanged, this, &texteditor::cursorPositionChanged);
 
+    connect(client.get(), &myClient::user_added, this, &texteditor::remote_open);
+    connect(client.get(), &myClient::user_removed, this, &texteditor::remote_close);
+    connect(client.get(), &myClient::char_inserted, this, &texteditor::remote_insert);
+    connect(client.get(), &myClient::char_removed, this, &texteditor::remote_erase);
+    connect(client.get(), &myClient::cursor, this, &texteditor::remote_cursor);
 }
 
 
@@ -89,7 +94,9 @@ void texteditor::setupPeers(){
         QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
         auto* widget = new QListWidgetItem(user_icon, user.username());
         widget->setBackground(user.color());
-        list_user->addItem(widget);
+        username_to_row.insert(profile.username(), user_row_);
+        list_user->insertItem(user_row_, widget);
+        user_row_++;
     }
 
     list_user->setSelectionMode(QAbstractItemView::NoSelection);
@@ -229,7 +236,6 @@ void texteditor::file_to_pdf() {
 
 void texteditor::file_close() {
    this->client->file_close(this->file);
-   disconnect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
    this->deleteLater();
    emit show_user_page();
 }
@@ -242,10 +248,12 @@ void texteditor::file_share(){
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    if(change_from_server) return;
    for(int i = 0 ; i < charsAdded; i++) {
-       client->sendInsert(file.document(),shared_editor->local_insert(position, editor->toPlainText()[position + i]));
+       Symbol s = shared_editor->local_insert(position, editor->toPlainText()[position + i]);
+       client->sendInsert(file.document(),s);
    }
    for(int i = 0 ; i < charsRemoved; i++) {
-       client->sendErase(file.document(),shared_editor->local_erase(position));
+       Symbol s = shared_editor->local_erase(position);
+       client->sendErase(file.document(), s);
    }
 }
 
@@ -277,12 +285,19 @@ void texteditor::remote_open(const Profile &profile, int site_id){
         QIcon user_icon = QIcon(QPixmap::fromImage(profile.icon()));
         QListWidgetItem* widget = new QListWidgetItem(user_icon,profile.username());
         widget->setBackground(generate_color());
-        list_user->addItem(widget);
+        username_to_row.insert(user.username(), user_row_);
+        list_user->insertItem(user_row_, widget);
+        user_row_++;
     }
     username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
 }
 
-
+void texteditor::remote_close(const QString &username) {
+    int row = username_to_row.value(username);
+    username_to_user.remove(username);
+    auto widget = list_user->takeItem(row);
+    delete widget;
+}
 
 void texteditor::closeEvent(QCloseEvent *event){
     file_close();

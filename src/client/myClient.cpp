@@ -62,17 +62,32 @@ void myClient::attempt_timeout() {
     connection_attempts_--;
     if (connection_attempts_ > 0) {
         wait_on_connection_->start();
-        socket->write_message(message_to_send_);
     } else {
+        QString type;
         // TODO: differentiate all different signals to emit for different use cases
         switch (message_to_send_->type()) {
             case MessageType::login:
+                type = tr("login");
+                break;
             case MessageType::signup:
-                emit authentication_result(false, tr("Failing in contacting the server in order to verify user data"));
+                type = tr("signup");
+                break;
+            case MessageType::profile:
+                type = tr("profile update");
+                break;
+            case MessageType::documents:
+                type = tr("list of your documents");
+                break;
+            case MessageType::open:
+                type = tr("open file");
+                break;
+            case MessageType::create:
+                type = tr("create file");
                 break;
             default:
-                emit generic_error(tr("Error management in timeout for message type ") + QString::number(static_cast<int>(message_to_send_->type())));
+                qWarning() << "A timeout should never fire for messages sent of type " << static_cast<int>(message_to_send_->type());
         }
+        emit timeout_expired(type);
     }
     return;
 }
@@ -168,30 +183,57 @@ void myClient::process_response() {
     }
 }
 
-// TODO: implement possible cases
 void myClient::process_data_from_server() {
+    Profile other;
+    QString username;
+    QSharedPointer<OpenMessage> opened;
+    QSharedPointer<CloseMessage> closed;
+    QSharedPointer<InsertMessage> inserted;
+    QSharedPointer<EraseMessage> erased;
+    QSharedPointer<CursorMessage> cursor_update;
+    int site_id;
+    Symbol symbol;
     QSharedPointer<Message> response = socket->read_message();
     switch (response->type()) {
         case MessageType::error :
             emit generic_error(tr("The server returned the following error message.\n") + response.staticCast<ErrorMessage>()->reason());
             break;
         case MessageType::profile_ok :
-            // update editor UI with new user data (maybe only password changed
+            // update editor UI with new user data (maybe only password changed)
+            user = new_user;
+            emit profile_update_result(true, tr("Ok"));
             break;
         case MessageType::open :
             // add the user to user list
+            opened = response.staticCast<OpenMessage>();
+            other = opened->profile().value();
+            site_id = opened->site_id().value();
+            emit user_added(other, site_id);
             break;
         case MessageType::close :
             // remove user from user list
+            closed = response.staticCast<CloseMessage>();
+            username= closed->username().value();
+            emit user_removed(username);
             break;
         case MessageType::insert :
             // perform remote insert
+            inserted = response.staticCast<InsertMessage>();
+            symbol = inserted->symbol();
+            emit char_inserted(symbol);
             break;
         case MessageType::erase :
             // perform remote erase
+            erased = response.staticCast<EraseMessage>();
+            symbol = erased->symbol();
+            emit char_removed(symbol);
             break;
         case MessageType::cursor :
             // update the position of the cursor
+            cursor_update = response.staticCast<CursorMessage>();
+            symbol = cursor_update->symbol();
+            username = cursor_update->username().value();
+            emit cursor(symbol, username);
             break;
         default:
             qWarning() << "'Control' messages are not allowed while editing";
@@ -237,10 +279,9 @@ void myClient::new_file(const QString& filename){
 }
 
 void myClient::open_file(const QString& filename){
-// TODO: fix open message, which makes server crash
-    qDebug() << filename;
+    // qDebug() << filename;
     Document doc = user.filename_to_owner_map[filename];
-    qDebug() << doc.full_name();
+    // qDebug() << doc.full_name();
     QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(doc);
     send_message(open_message);
 }
@@ -256,6 +297,7 @@ bool myClient::change_password(const QString& new_password) {
 void myClient::file_close(const fileInfo& file){
     QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(file.document(), user.username());
     send_message(close_message);
+    disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
 }
 
 

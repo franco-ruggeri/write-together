@@ -46,6 +46,7 @@ private slots:
     void textChange();
     void on_list_user_itemClicked(QListWidgetItem *item);
     void remote_open(const Profile &profile, int site_id);
+    void remote_close(const QString &username);
     void remote_cursor(const Symbol &symbol, const QString &username);
     void remote_erase(const Symbol &symbol);
     void remote_insert(const Symbol& symbol);
@@ -64,6 +65,8 @@ private:
     int current_position;
     QSharedPointer<QListWidget>list_user;
     QHash<QString,UserInfo> username_to_user;
+    QHash<QString,int> username_to_row;
+    int user_row_;
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;
     QAction *actionCopy;

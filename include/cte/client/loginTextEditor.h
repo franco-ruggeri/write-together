@@ -48,6 +48,7 @@ private slots:
     void share_file(const QString& filename);
     void account_log_result(bool logged, const QString& error_message = QString(""));
     void handle_generic_error(const QString& error);
+    void handle_timeout(const QString& type_request);
     void init_user_page();
     void display_documents(const QSet<Document>& documents);
     void open_editor(fileInfo file);

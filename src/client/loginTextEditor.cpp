@@ -24,6 +24,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
     ui->login_password_lineEdit->setEchoMode(QLineEdit::Password);
     connect(client.get(), &myClient::generic_error, this, &loginTextEditor::handle_generic_error);
+    connect(client.get(), &myClient::timeout_expired, this, &loginTextEditor::handle_timeout);
     connect(client.get(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
     connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
     connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
@@ -80,11 +81,21 @@ void loginTextEditor::handle_generic_error(const QString &error) {
     QMessageBox::critical(this, tr("Fatal"), tr("This is a generic error report, mainly due to bug/unexpected control flow.\n\n") + error);
 }
 
+void loginTextEditor::handle_timeout(const QString &message_request) {
+    QMessageBox timeout_box; // evaluate if store it as a member property, to dismiss it if response arrives
+    timeout_box.setWindowTitle(tr("Attention"));
+    timeout_box.setText(tr("The processing of your ") + message_request + tr("request is taking more than expected on the server.\nPlease wait it"));
+    auto dismiss_button = timeout_box.addButton(QMessageBox::Ok); // this may be useful for "remote" dismissing
+    timeout_box.setDefaultButton(dismiss_button);
+    timeout_box.setEscapeButton(dismiss_button);
+    timeout_box.exec();
+}
+
 void loginTextEditor::account_log_result(bool logged, const QString &error_message) {
     if (logged) {
         init_user_page();
     } else {
-        QMessageBox::critical(this, tr("Attention"), error_message);
+        QMessageBox::warning(this, tr("Attention"), error_message);
     }
     return;
 }
@@ -222,7 +233,7 @@ void loginTextEditor::open_editor(fileInfo file){
         file_dialog->hide();
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
-    connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::show);
+    connect(editor.get(), &texteditor::show_user_page, this, &QWidget::show);
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
     editor->show();
     editor->init_cursors();

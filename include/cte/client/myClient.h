@@ -82,10 +82,17 @@ private slots:
 
 signals:
     void generic_error(const QString& error);
+    void timeout_expired(const QString& message_type);
     void authentication_result(bool authenticated, const QString& error_message);
     void profile_update_result(bool authenticated, const QString& error_message);
     void user_documents(const QSet<Document>& documents);
     void document(fileInfo& file);
+
+    void user_added(const Profile& user_profile, int site_id);
+    void user_removed(const QString& username);
+    void char_inserted(const Symbol& symbol);
+    void char_removed(const Symbol& symbol);
+    void cursor(const Symbol& symbol, const QString& username);
 };
 
 
