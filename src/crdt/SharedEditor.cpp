@@ -32,7 +32,7 @@ namespace cte {
     }
 
     Symbol SharedEditor::insert_cursor(unsigned int index, QChar value) {
-        /** ho aggiunto questo solo per provare i cursori, è da sistemare **/
+        /** TODO: ho aggiunto questo solo per provare i cursori, è da sistemare **/
         QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
         QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
         QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);

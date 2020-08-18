@@ -31,7 +31,6 @@ namespace cte {
 
         static QUrl generate_sharing_link(const Document& document);
     };
-    inline uint qHash(const Document &key, uint seed){
-        return qHash(key.owner(), seed) ^ qHash(key.name(), seed);
-    }
+
+    uint qHash(const Document &key, uint seed);
 }
