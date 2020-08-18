@@ -5,16 +5,17 @@
 #include <cte/network/Socket.h>
 
 namespace cte {
-    Socket::Socket(){
-        connect(this, &Socket::readyRead, this, &Socket::read_line);
-    }
-    Socket::Socket(int socket_fd) {
-        if (!setSocketDescriptor(socket_fd))
-            throw std::runtime_error("setSocketDescriptor() failed");
-        connect(this, &Socket::readyRead, this, &Socket::read_line);
+    Socket::Socket() {
+        connect(this, &Socket::readyRead, this, &Socket::read_lines);
     }
 
-    void Socket::read_line() {
+    Socket::Socket(int socket_fd) : Socket() {
+        if (!setSocketDescriptor(socket_fd))
+            throw std::runtime_error("setSocketDescriptor() failed");
+    }
+
+    void Socket::read_lines() {
+        // buffer lines
         while (canReadLine()) {
             // read line
             QByteArray bytes = readLine();

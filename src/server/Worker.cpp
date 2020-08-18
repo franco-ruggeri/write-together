@@ -26,6 +26,16 @@ namespace cte {
     extern IdentityManager identity_manager;
     extern DocumentManager document_manager;
 
+    static void send_error(Socket *socket, const QString& reason) {
+        QSharedPointer<Message> message = QSharedPointer<ErrorMessage>::create(reason);
+        try {
+            socket->write_message(message);
+        } catch (const std::exception& e) {
+            // just log, nothing to do, the client will not receive the error, but the server must continue (robust)
+            qDebug() << e.what();
+        }
+    }
+
     Worker::Worker() {
         qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
         QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
@@ -55,16 +65,20 @@ namespace cte {
         Socket *socket;
         try {
             socket = new Socket(socket_fd);
-        } catch (const std::exception &e) {
+        } catch (const std::bad_alloc& e) {
             qDebug() << e.what();
-            return; // this socket could not be created correctly, but the worker can continue to serve the other clients
+            return;
+        } catch (const std::exception& e) {
+            qDebug() << e.what();
+            delete socket;
+            return;
         }
 
         // connect signals and slots (use socket_fd as session_id)
         QObject::connect(socket, &Socket::ready_message,
-                [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
+                         [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
         QObject::connect(socket, &Socket::disconnected,
-                [this, socket_fd, socket]() { close_session(socket_fd, socket); });
+                         [this, socket_fd, socket]() { close_session(socket_fd, socket); });
 
         // increment number of sessions
         QMutexLocker ml(&m_number_of_connections_);
@@ -89,49 +103,6 @@ namespace cte {
 
         qDebug() << "connection closed: { address:" << socket->peerAddress().toString()
                  << ", port:" << socket->peerPort() << "}";
-    }
-
-    void Worker::dispatch_message(int source_socket_fd, const QSharedPointer<Message>& message) {
-        // get document
-        Document document;
-        switch (message->type()) {
-            case MessageType::open:
-                document = *message.staticCast<OpenMessage>()->document();
-                break;
-            case MessageType::close:
-                document = message.staticCast<CloseMessage>()->document();
-                break;
-            case MessageType::insert:
-                document = message.staticCast<InsertMessage>()->document();
-                break;
-            case MessageType::erase:
-                document = message.staticCast<EraseMessage>()->document();
-                break;
-            case MessageType::cursor:
-                document = message.staticCast<CursorMessage>()->document();
-                break;
-            default:
-                throw std::logic_error("invalid message: invalid type to dispatch");
-        }
-
-        // dispatch to clients editing the document
-        auto it = editing_clients.find(document);
-        if (it == editing_clients.end()) return;    // no editing clients
-        for (Socket *socket : *it) {
-            if (socket->socketDescriptor() == source_socket_fd) continue;
-            try {
-                socket->write_message(message);
-            } catch (const std::exception &e) {
-                // session compromised, the shared cte is not correct anymore
-                qDebug() << "error -" << e.what();
-                socket->disconnectFromHost();
-            }
-        }
-    }
-
-    static void send_error(Socket *socket, const QString& reason) {
-        QSharedPointer<Message> message = QSharedPointer<ErrorMessage>::create(reason);
-        socket->write_message(message);
     }
 
     void Worker::serve_request(int session_id, Socket *socket) {
@@ -174,20 +145,47 @@ namespace cte {
                 default:    // should never happen, since the message is generated through Message::deserialize
                     throw std::logic_error("invalid message: invalid type");
             }
-        } catch (const std::exception &e) {
-            // log exception
+        } catch (const std::exception& e) {
             qDebug() << "error -" << e.what();
+            send_error(socket, e.what());
+            socket->disconnectFromHost();   // bad client
+        }
+    }
 
-            // send error to client
+    void Worker::dispatch_message(int source_socket_fd, const QSharedPointer<Message>& message) {
+        // get document
+        Document document;
+        switch (message->type()) {
+            case MessageType::open:
+                document = *message.staticCast<OpenMessage>()->document();
+                break;
+            case MessageType::close:
+                document = message.staticCast<CloseMessage>()->document();
+                break;
+            case MessageType::insert:
+                document = message.staticCast<InsertMessage>()->document();
+                break;
+            case MessageType::erase:
+                document = message.staticCast<EraseMessage>()->document();
+                break;
+            case MessageType::cursor:
+                document = message.staticCast<CursorMessage>()->document();
+                break;
+            default:
+                throw std::logic_error("invalid message: invalid type to dispatch");
+        }
+
+        // dispatch to clients editing the document
+        auto it = editing_clients.find(document);
+        if (it == editing_clients.end()) return;    // no editing clients
+        for (Socket *socket : *it) {
+            if (socket->socketDescriptor() == source_socket_fd) continue;
             try {
-                send_error(socket, e.what());
+                socket->write_message(message);
             } catch (const std::exception& e) {
-                // just log, nothing to do, the client will not receive the error, but the server must continue (robust)
-                qDebug() << e.what();
+                qDebug() << "error -" << e.what();
+                socket->disconnectFromHost();       // session compromised (the shared editor is not correct anymore)
             }
-
-            // close connection (network problem or bad client)
-            socket->disconnectFromHost();
         }
     }
 
@@ -340,7 +338,7 @@ namespace cte {
 
         // dispatch message
         int site_id = document_data->site_id();
-        Profile& profile = *document_data->profiles().find(username);
+        Profile profile = document_data->profiles().find(username).value();
         open_message = QSharedPointer<OpenMessage>::create(*document, site_id, profile);
         emit new_message(socket->socketDescriptor(), open_message);
 
