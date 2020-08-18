@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Claudio Nuzzo
  */
 
 #include <QStackedWidget>
@@ -7,12 +7,38 @@
 #include <QMessageBox>
 #include <cte/client/changePasswordDialog.h>
 #include "ui_changePasswordDialog.h"
+#include <QTStylesheet.h>
 
 changePasswordDialog::changePasswordDialog(QWidget *parent, QSharedPointer<myClient> client):
         QDialog(parent),ui(new Ui::changePasswordDialog), client(client){
     ui->setupUi(this);
+
+    //set password mode for line edits
     ui->changepass_confirmpass_lineEdit->setEchoMode(QLineEdit::Password);
     ui->changepass_newpass_lineEdit->setEchoMode(QLineEdit::Password);
+
+    //button stylesheet
+    ui->change_icon_pushButton->setStyleSheet(btnStylesheet);
+    ui->changepass_change_pushButton->setStyleSheet(btnStylesheet);
+    ui->changepass_cancel_pushButton->setStyleSheet(btnCancelStylesheet);
+
+    //set username label
+    ui->changeuser_username_label->setText(QString(client->user.username()));
+
+    //set clearable fields
+    ui->changeuser_newuser_lineEdit->setClearButtonEnabled(true);
+    ui->changepass_newpass_lineEdit->setClearButtonEnabled(true);
+    ui->changepass_confirmpass_lineEdit->setClearButtonEnabled(true);
+
+    //Icon QLineEdit
+    QIcon user_icon(":/images/user.png");
+    QIcon pass_icon(":/images/password.png");
+
+    //Login
+    ui->changeuser_newuser_lineEdit->addAction(user_icon, QLineEdit::LeadingPosition);
+    ui->changepass_newpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
+    ui->changepass_confirmpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
+
 
 }
 

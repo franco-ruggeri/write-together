@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Claudio Nuzzo
  */
 
 
@@ -39,11 +39,12 @@ private slots:
     void on_login_signin_pushButton_clicked();
     void on_singup_register_pushButton_clicked();
     void on_user_create_file_pushButton_clicked();
-    void on_user_change_password_pushButton_clicked();
+    //void on_user_change_password_pushButton_clicked();
+    void on_user_edit_profile_pushButton_clicked();
     void on_user_logout_pushButton_clicked();
     void on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item);
-    void on_user_change_username_pushButton_clicked();
-//    void on_user_share_pushButton_clicked();
+    //void on_user_change_username_pushButton_clicked();
+    //void on_user_share_pushButton_clicked();
     void share_file(const QString& filename);
     void account_log_result(bool logged, const QString& error_message = QString(""));
     void handle_generic_error(const QString& error);
