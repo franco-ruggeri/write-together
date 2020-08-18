@@ -2,7 +2,7 @@
 // Created by Claudio on 18/08/20.
 //
 
-#include <QTStylesheet.h>
+#include <cte/client/QTStylesheet.h>
 #include <QString>
 
 const QString list_stylesheet =
