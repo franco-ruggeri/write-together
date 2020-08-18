@@ -17,4 +17,5 @@ extern const QString btnFilterDocumentsStylesheet;
 extern const QString btnCancelStylesheet;
 
 
+
 #endif //COLLABORATIVE_TEXT_EDITOR_QTSTYLESHEET_H

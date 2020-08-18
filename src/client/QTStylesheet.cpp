@@ -62,6 +62,7 @@ const QString btnRedirectStylesheet =
         "outline: none;"
         "}";
 
+
 const QString btnLogOutStylesheet =
         "QPushButton{"
         "margin-top: 5px;\n"
