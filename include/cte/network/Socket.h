@@ -16,7 +16,7 @@ namespace cte {
         QQueue<QByteArray> lines_;
 
     private slots:
-        void read_line();
+        void read_lines();
 
     signals:
         void ready_message();

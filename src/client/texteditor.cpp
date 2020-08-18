@@ -42,6 +42,7 @@
 #include <cte/protocol/OpenMessage.h>
 #include <QPushButton>
 #include <QtWidgets/QHBoxLayout>
+#include <cmath>
 
 const QString imgPath = ":/images";
 
@@ -76,7 +77,7 @@ file(file){
 
 void texteditor::setupPeers(){
 
-    h =  floor(rand());
+    h =  std::floor(rand());
     auto ids = file.cursors().keys();
 
     list_user = QSharedPointer<QListWidget>::create();
