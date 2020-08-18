@@ -7,8 +7,8 @@
 #include <cte/database/DatabaseGuard.h>
 #include <cte/database/db_utility.h>
 #include <db_utility_secret.h>
-#include <QtCore/QVariant>
 #include <QtCore/QSet>
+#include <QtCore/QDebug>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 
@@ -104,7 +104,7 @@ namespace cte {
             }
             OpenDocument& od = open_documents_[document];
             int site_id = od.open(username);
-            site_ids_[session_id].insert(document, document_data->site_id());
+            site_ids_[session_id].insert(document, site_id);
             document_data = DocumentData(od.text(), site_id, od.cursors(), od.site_ids(), profiles, sharing_link);
         }
 
@@ -222,8 +222,9 @@ namespace cte {
         // copy (so that we do not lock for the entire (slow) saving on the DB) and remove closed documents
         QMutexLocker ml(&mutex_);
         QHash<Document,OpenDocument> open_documents_copy = open_documents_;
-        std::remove_if(open_documents_.begin(), open_documents_.end(),
-                       [](const OpenDocument& od) { return od.reference_count() == 0; });
+        for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++)
+            if (it->reference_count() == 0)
+                open_documents_.remove(it.key());
         ml.unlock();
 
         // open connection and start transaction
@@ -250,6 +251,8 @@ namespace cte {
                 bind_query_insert_character(query, i, site_ids[text[i].site_id()], text[i].value());
                 execute_query(query);
             }
+
+            qDebug() << "document saved:" << document.full_name();
         }
 
         // commit transaction

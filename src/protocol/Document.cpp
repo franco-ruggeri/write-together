@@ -1,9 +1,8 @@
 /*
  * Author: Franco Ruggeri
  */
-//TODO sistemare la conversione da QString a std::String
+
 #include <cte/protocol/Document.h>
-//#include <boost/functional/hash.hpp>
 
 namespace cte {
     Document::Document() {}
@@ -61,11 +60,8 @@ namespace cte {
 
         return "cte:" + document.full_name() + "?" + random;
     }
-// this doesn't work
-//    std::size_t qHash(const Document &key, uint seed) {
-//        std::size_t s = static_cast<size_t>(seed);
-//        boost::hash_combine(s, key.owner_.toUtf8().data());
-//        boost::hash_combine(s, key.name_.toUtf8().data());
-//        return s;
-//    }
+
+    uint qHash(const Document& key, uint seed) {
+        return qHash(key.owner(), seed) ^ qHash(key.name(), seed);
+    }
 }

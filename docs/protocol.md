@@ -27,7 +27,7 @@ Further details:
 - *\<profile>* contains: *username*, *name*, *surname*, and *icon*.
 - *\<document_data>* contains:
 	+ *text* (array of symbols)
-	+ *site_id* and *site_counter* assigned to the client opening the document
+	+ *site_id* assigned to the client opening the document
 	+ map *site_id* -> *symbol* (cursors) for all the online users editing the document
 	+ map *site_id* -> *username* for all the users with access to the document and at least one character in the text
 	+ map *username* -> *profile* for all the users with access to the document and at least one character in the text
