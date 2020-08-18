@@ -6,15 +6,15 @@
 
 namespace cte {
     Socket::Socket(){
-        connect(this, &Socket::readyRead, this, &Socket::prepare_messages);
+        connect(this, &Socket::readyRead, this, &Socket::read_line);
     }
     Socket::Socket(int socket_fd) {
         if (!setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");
-        connect(this, &Socket::readyRead, this, &Socket::prepare_messages);
+        connect(this, &Socket::readyRead, this, &Socket::read_line);
     }
 
-    void Socket::prepare_messages() {
+    void Socket::read_line() {
         while (canReadLine()) {
             // read line
             QByteArray bytes = readLine();
@@ -26,14 +26,14 @@ namespace cte {
             if (bytes.at(bytes.size()-1) == '\r')
                 bytes.remove(bytes.size()-1, 1);
 
-            // add message to buffer
-            messages_.enqueue(Message::deserialize(bytes));
+            // buffer line
+            lines_.enqueue(bytes);
             emit ready_message();
         }
     }
 
     QSharedPointer<Message> Socket::read_message() {
-        return messages_.dequeue();
+        return Message::deserialize(lines_.dequeue());
     }
 
     void Socket::write_message(const QSharedPointer<Message>& message) {

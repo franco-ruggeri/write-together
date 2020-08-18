@@ -13,10 +13,10 @@ namespace cte {
     class Socket : public QSslSocket {
         Q_OBJECT
 
-        QQueue<QSharedPointer<Message>> messages_;
+        QQueue<QByteArray> lines_;
 
     private slots:
-        void prepare_messages();
+        void read_line();
 
     signals:
         void ready_message();
