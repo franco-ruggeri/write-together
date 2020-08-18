@@ -338,7 +338,7 @@ namespace cte {
 
         // dispatch message
         int site_id = document_data->site_id();
-        Profile& profile = *document_data->profiles().find(username);
+        Profile profile = document_data->profiles().find(username).value();
         open_message = QSharedPointer<OpenMessage>::create(*document, site_id, profile);
         emit new_message(socket->socketDescriptor(), open_message);
 
