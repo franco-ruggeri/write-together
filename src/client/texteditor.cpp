@@ -161,7 +161,7 @@ void texteditor::setupFileActions(){
    tb->addAction(a);
    menu->addSeparator();
    a = menu->addAction(QIcon::fromTheme("document-close", QIcon(imgPath + "/fileopen.png")),
-                   tr("&Close"), this, &texteditor::file_close);
+                   tr("&Close"), this, &texteditor::close);
 
    tb->addAction(a);
    menu->addSeparator();
@@ -233,8 +233,9 @@ void texteditor::file_to_pdf() {
 
 void texteditor::file_close() {
    this->client->file_close(this->file);
-//   this->deleteLater();
+   //editor->deleteLater();
    emit show_user_page();
+
 }
 
 void texteditor::file_share(){
