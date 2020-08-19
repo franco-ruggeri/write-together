@@ -89,7 +89,7 @@ signals:
     void document(fileInfo& file);
 
     void user_added(const Profile& user_profile, int site_id);
-    void user_removed(const QString& username);
+    void user_removed(const QString& username, int site_id);
     void char_inserted(const Symbol& symbol);
     void char_removed(const Symbol& symbol);
     void cursor(const Symbol& symbol, const QString& username);

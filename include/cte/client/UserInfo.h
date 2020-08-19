@@ -56,5 +56,7 @@ public:
     void change_cursor_position(QTextEdit *editor, int new_position, int id);
 
     QColor color_;
+
+    void remove_cursors(int id);
 };
 

@@ -214,7 +214,7 @@ void myClient::process_data_from_server() {
             // remove user from user list
             closed = response.staticCast<CloseMessage>();
             username= closed->username().value();
-            emit user_removed(username);
+            emit user_removed(username,0); // site_id from close message
             break;
         case MessageType::insert :
             // perform remote insert
@@ -298,6 +298,8 @@ void myClient::file_close(const fileInfo& file){
     QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(file.document(), user.username());
     send_message(close_message);
     disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
+    QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
+
 }
 
 
@@ -309,12 +311,10 @@ bool myClient::change_username(const QString& new_username){
     return false;
 }
 
-
 void myClient::get_documents_form_server() {
     QSharedPointer<Message> documents_message = QSharedPointer<DocumentsMessage>::create();
     send_message(documents_message);
 }
-
 
 void myClient::send_cursor(Document document, Symbol cursor_position){
     QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, cursor_position);

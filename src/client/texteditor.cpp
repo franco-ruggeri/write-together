@@ -100,11 +100,11 @@ void texteditor::setupPeers(){
     }
 
     list_user->setSelectionMode(QAbstractItemView::NoSelection);
-    connected_client = QSharedPointer<QDockWidget>::create(); // widget to show the peers
-    connected_client->setObjectName("Peers");
-    connected_client->setWindowTitle("Peers");
-    connected_client->setWidget(list_user.get()); // add other user to the dock
-    addDockWidget(Qt::RightDockWidgetArea,connected_client.get());
+    peers = QSharedPointer<QDockWidget>::create(); // widget to show the peers
+    peers->setObjectName("Peers");
+    peers->setWindowTitle("Peers");
+    peers->setWidget(list_user.get()); // add other user to the dock
+    addDockWidget(Qt::RightDockWidgetArea,peers.get());
     connect(list_user.get(), SIGNAL(itemClicked(QListWidgetItem*)),
             this, SLOT(on_list_user_itemClicked(QListWidgetItem*)));
 
@@ -172,7 +172,7 @@ void texteditor::setupUserActions(){
    QToolBar *tb = addToolBar(tr("User Actions"));
    QMenu *menu = menuBar()->addMenu(tr("&User"));
    const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_icon.png"));
-   show_peers = menu->addAction(showPeersIcon, tr("&Show"), connected_client.get(),&QDockWidget::show);
+   show_peers = menu->addAction(showPeersIcon, tr("&Show"), peers.get(),&QDockWidget::show);
    tb->addAction(show_peers);
 }
 
@@ -233,7 +233,7 @@ void texteditor::file_to_pdf() {
 
 void texteditor::file_close() {
    this->client->file_close(this->file);
-   this->deleteLater();
+//   this->deleteLater();
    emit show_user_page();
 }
 
@@ -270,7 +270,7 @@ void  texteditor::remote_erase(const Symbol& symbol){
 }
 
 void texteditor::remote_cursor(const Symbol& symbol, const QString & username){
-    
+
     int position = shared_editor->find(symbol);
     username_to_user.find(username)->change_cursor_position(editor.get(),position,symbol.site_id());
 }
@@ -290,11 +290,12 @@ void texteditor::remote_open(const Profile &profile, int site_id){
     username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
 }
 
-void texteditor::remote_close(const QString &username) {
-    int row = username_to_row.value(username);
-    username_to_user.remove(username);
-    auto widget = list_user->takeItem(row);
-    delete widget;
+void texteditor::remote_close(const QString &username, int site_id) {
+    username_to_user.find(username)->remove_cursors(site_id);
+//    int row = username_to_row.value(username);
+//    username_to_user.remove(username);
+//    auto widget = list_user->takeItem(row);
+//    delete widget;
 }
 
 void texteditor::closeEvent(QCloseEvent *event){

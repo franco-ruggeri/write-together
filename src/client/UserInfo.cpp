@@ -90,8 +90,6 @@ void UserInfo::add_cursor(QTextEdit *editor, int newCursorPosition, int id){
 
 
 void UserInfo::change_cursor_position(QTextEdit *editor, int new_position, int id) {
-    qDebug() << username();
-    qDebug() << new_position;
     new_position = qMin(new_position, editor->toPlainText().size());
     cursor_->setPosition(new_position);
     const QRect qRect = editor->cursorRect(*cursor_);
@@ -109,4 +107,14 @@ void UserInfo::change_cursor_position(QTextEdit *editor, int new_position, int i
     vertical_label->setText(username_);
     vertical_label->show();
 
+}
+
+void UserInfo::remove_cursors(int id){
+    QLabel* horizontal_cursor= site_id_to_cursor.find(id).value()->cursor_label;
+    QLabel* vertical_cursor= site_id_to_cursor.find(id).value()->vertical_cursor;
+    horizontal_cursor->hide();
+    vertical_cursor->hide();
+    delete horizontal_cursor;
+    delete vertical_cursor;
+    site_id_to_cursor.remove(id);
 }

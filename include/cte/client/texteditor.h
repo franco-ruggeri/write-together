@@ -46,14 +46,15 @@ private slots:
     void textChange();
     void on_list_user_itemClicked(QListWidgetItem *item);
     void remote_open(const Profile &profile, int site_id);
-    void remote_close(const QString &username);
+//    void remote_close(const QString &username);
+    void remote_close(const QString &username, int site_id);
     void remote_cursor(const Symbol &symbol, const QString &username);
     void remote_erase(const Symbol &symbol);
     void remote_insert(const Symbol& symbol);
     QColor generate_color();
 
 private:
-    QSharedPointer<QDockWidget>connected_client ;
+    QSharedPointer<QDockWidget>peers;
     QSharedPointer<QTextEdit> editor;
     QSharedPointer<myClient> client;
     QSharedPointer<SharedEditor> shared_editor;
@@ -72,8 +73,6 @@ private:
     QAction *actionCopy;
     QAction *actionPaste;
 #endif
-
-
 
 
 
