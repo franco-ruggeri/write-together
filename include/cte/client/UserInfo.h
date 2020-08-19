@@ -21,7 +21,6 @@ class UserInfo {
 //cursor
     QTextCursor *cursor_;
     Symbol cursor_position_;
-    QColor color_;
 
 
 public:
@@ -35,10 +34,13 @@ public:
     bool selected;
 
     //cursor
-
+    struct cursor{
+        QLabel *cursor_label;
+        QLabel *vertical_cursor;
+    };
     void setIcon(const QImage &icon);
     QMap<QString,cte::Document> filename_to_owner_map;
-    QHash<int,QLabel*> site_id_to_cursor;
+    QHash<int,cursor*> site_id_to_cursor;
 
     void add_cursor(int id);
     void draw_background_char(QTextEdit *editor, int start, int end);
@@ -52,5 +54,7 @@ public:
     void add_cursor(QTextEdit *editor, int newCursorPosition, int id);
 
     void change_cursor_position(QTextEdit *editor, int new_position, int id);
+
+    QColor color_;
 };
 

@@ -142,9 +142,6 @@ void texteditor::init_cursors(){
         }
 
     }
-
-
-
 }
 
 
@@ -259,6 +256,7 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
 void  texteditor::remote_insert(const Symbol& symbol){
     change_from_server = true;
+    qDebug() << "remote_insert" << " char: " << symbol.value();
     shared_editor->remote_insert(symbol);
     this->editor->setText(shared_editor->to_string());
 }
@@ -272,7 +270,7 @@ void  texteditor::remote_erase(const Symbol& symbol){
 }
 
 void texteditor::remote_cursor(const Symbol& symbol, const QString & username){
-    change_from_server = true;
+    
     int position = shared_editor->find(symbol);
     username_to_user.find(username)->change_cursor_position(editor.get(),position,symbol.site_id());
 }

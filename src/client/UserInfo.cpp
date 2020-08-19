@@ -7,6 +7,8 @@
 #include <QtCore/QIODevice>
 #include <QDebug>
 
+
+
     UserInfo::UserInfo(){}
 UserInfo::UserInfo(Profile profile): username_(profile.username()), name_(profile.name()),surname_(profile.surname()),icon_(profile.icon()){}
 
@@ -60,17 +62,30 @@ const QColor UserInfo::color() {
 
 
 void UserInfo::add_cursor(QTextEdit *editor, int newCursorPosition, int id){
-    QLabel* cursor_label_= new QLabel(editor);
+
+    auto c = new cursor;
+    c->cursor_label = new QLabel(editor);
     cursor_ = new QTextCursor(editor->document());
     newCursorPosition = qMin(newCursorPosition, editor->toPlainText().size());
     cursor_->setPosition(newCursorPosition);
-    QPixmap pix(3, 24);
+    QPixmap pix(2, 24);
     pix.fill(color_);
-    cursor_label_->setPixmap(pix);
+    c->cursor_label->setPixmap(pix);
     const QRect qRect = editor->cursorRect(*cursor_);
-    cursor_label_->move(qRect.left(), qRect.top());
-    site_id_to_cursor.insert(id,cursor_label_);
-    cursor_label_->show();
+    c->cursor_label->move(qRect.left(), qRect.top());
+    c->cursor_label->show();
+    c->vertical_cursor = new QLabel(editor);
+    int x_pos = qRect.center().x();
+    int y_pos = qRect.topRight().y() -4;
+    QFontMetrics fm(editor->font());
+    QRect bounds = fm.boundingRect(username_);
+    c->vertical_cursor->move(x_pos,y_pos);
+    c->vertical_cursor->setAutoFillBackground(true);
+    c->vertical_cursor->setPalette(color_);
+    c->vertical_cursor->setText(username_);
+    site_id_to_cursor.insert(id,c);
+    c->vertical_cursor->show();
+
 }
 
 
@@ -80,8 +95,18 @@ void UserInfo::change_cursor_position(QTextEdit *editor, int new_position, int i
     new_position = qMin(new_position, editor->toPlainText().size());
     cursor_->setPosition(new_position);
     const QRect qRect = editor->cursorRect(*cursor_);
-    QLabel *cursor_label_ = site_id_to_cursor.find(id).value();
+    QLabel *cursor_label_ = site_id_to_cursor.find(id).value()->cursor_label;
     cursor_label_->move(qRect.left(), qRect.top());
     cursor_label_->show();
+    auto* vertical_label = site_id_to_cursor.find(id).value()->vertical_cursor;
+    int x_pos = qRect.center().x();
+    int y_pos = qRect.topRight().y() -4;
+    QFontMetrics fm(editor->font());
+    QRect bounds = fm.boundingRect(username_);
+    vertical_label->move(x_pos,y_pos);
+    vertical_label->setAutoFillBackground(true);
+    vertical_label->setPalette(color_);
+    vertical_label->setText(username_);
+    vertical_label->show();
 
 }
