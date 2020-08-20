@@ -183,11 +183,13 @@ void loginTextEditor::init_user_page() {
 
 void loginTextEditor::display_documents(const QSet<Document> &documents) {
     QStringList file_list;
+    ui->user_file_listWidget->clear();
+    ui->label_list_items->setStyleSheet(list_items_title);
     if (documents.empty()){
         ui->label_list_items->setText(QString("No documents available."));
     }
     else {
-        ui->label_list_items->setText(QString("Documents list."));
+        ui->label_list_items->setText(QString("Documents available."));
         for (const auto& d: documents) {
             file_list.push_back(d.full_name());
             client->user.filename_to_owner_map.insert(d.full_name(), d);
@@ -221,6 +223,65 @@ void loginTextEditor::on_user_edit_profile_pushButton_clicked(){
         changepass_dialog = QSharedPointer<changePasswordDialog>::create(this,this->client);
     changepass_dialog->setModal(true);
     changepass_dialog->show();
+}
+
+void loginTextEditor::on_user_all_documents_pushButton_clicked(){
+    QStringList file_list;
+    ui->user_file_listWidget->clear();
+    QList documents = client->user.filename_to_owner_map.values();
+    for (auto d:documents){
+        file_list.push_back(d.full_name());
+        client->user.filename_to_owner_map.insert(d.full_name(), d);
+    }
+    if (file_list.length() == 0){
+        ui->label_list_items->setText(QString("No documents available."));
+    }
+    else {
+        ui->label_list_items->setText(QString("Documents available."));
+        ui->user_file_listWidget->addItems(file_list);
+        ui->user_file_listWidget->setCurrentRow(0);
+    }
+}
+
+void loginTextEditor::on_user_own_documents_pushButton_clicked(){
+    QStringList file_list;
+    ui->user_file_listWidget->clear();
+    QList documents = client->user.filename_to_owner_map.values();
+    for (auto d:documents){
+        if(d.owner() == client->user.username()) {
+            file_list.push_back(d.full_name());
+            client->user.filename_to_owner_map.insert(d.full_name(), d);
+        }
+    }
+    if (file_list.length() == 0){
+        ui->label_list_items->setText(QString("You don't own any document."));
+    }
+    else {
+        ui->label_list_items->setText(QString("Documents you own."));
+        ui->user_file_listWidget->addItems(file_list);
+        ui->user_file_listWidget->setCurrentRow(0);
+    }
+}
+
+void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
+    QStringList file_list;
+    ui->user_file_listWidget->clear();
+    QList documents = client->user.filename_to_owner_map.values();
+    for (auto d:documents){
+        if(d.owner() != client->user.username()) {
+            file_list.push_back(d.full_name());
+            client->user.filename_to_owner_map.insert(d.full_name(), d);
+        }
+    }
+    if (file_list.length() == 0){
+        ui->label_list_items->setText(QString("No documents have been shared with you."));
+    }
+    else {
+        ui->label_list_items->setText(QString("Documents shared with you."));
+        ui->user_file_listWidget->addItems(file_list);
+        ui->user_file_listWidget->setCurrentRow(0);
+    }
+
 }
 
 /*

@@ -75,7 +75,7 @@ private:
 #endif
 
 
-
+    void draw_cursors();
 };
 
 

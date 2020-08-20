@@ -41,6 +41,9 @@ private slots:
     void on_user_create_file_pushButton_clicked();
     //void on_user_change_password_pushButton_clicked();
     void on_user_edit_profile_pushButton_clicked();
+    void on_user_all_documents_pushButton_clicked();
+    void on_user_own_documents_pushButton_clicked();
+    void on_user_shared_documents_pushButton_clicked();
     void on_user_logout_pushButton_clicked();
     void on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item);
     //void on_user_change_username_pushButton_clicked();

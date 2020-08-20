@@ -29,6 +29,15 @@ const QString list_stylesheet =
         "border: 2px solid white;"
         "background-color: transparent; }";
 
+const QString list_items_title =
+        "QLabel { "
+        "border-bottom: 1px solid #F2F2F2;"
+        "color: #102E4A;"
+        "margin-left: 5px;"
+        "margin-right: 5px;"
+        "padding: 15px;"
+        "background-color: transparent; }";
+
 const QString btnStylesheet =
         "QPushButton{"
         "border-radius: 2px;"
