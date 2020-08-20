@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Stefano Di Blasio
  */
 
 
@@ -29,6 +29,9 @@ class myClient : public QObject {
     int connection_attempts_;
     QSharedPointer<Message> message_to_send_;
     UserInfo new_user;
+    QString host_address_, fallback_host_address_, host_to_connect_;
+    quint16 port_;
+    bool ssl_handshake_failed_;
 
 public:
     Socket *socket;
@@ -38,7 +41,7 @@ public:
 
     myClient(QObject *parent = nullptr);
 
-    bool connect(QString ip_address);
+    void connect(const QString& ip_address = "localhost", quint16 ip_port = 1111);
 
     void login(QString &email, QString &password);
 
@@ -76,12 +79,16 @@ public:
     void signup(QString &username, QString &email, QString &password, QString name, QString surname);
 
 private slots:
+    void handle_connection_error(QAbstractSocket::SocketError error); // mainly for server unreachable
+    void handle_ssl_handshake(const QList<QSslError>& errors); // error in verifying the peer
+    void connection_enctypted(); // the connection is established and encrypted
     void attempt_timeout(); // to retry if less than maximum attempts or to signal timeout error
     void process_response(); // elaborate server message (response)
     void process_data_from_server(); // process any "interactive" message from the server
 
 signals:
     void generic_error(const QString& error);
+    void host_connected(bool result);
     void timeout_expired(const QString& message_type);
     void authentication_result(bool authenticated, const QString& error_message);
     void profile_update_result(bool authenticated, const QString& error_message);

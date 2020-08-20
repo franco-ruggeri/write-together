@@ -8,6 +8,7 @@
 #include <cte/client/myClient.h>
 #include <QPixmap>
 #include <QJsonDocument>
+#include <QtCore/QSettings>
 #include <cte/protocol/MessageType.h>
 #include <cte/protocol/OpenMessage.h>
 #include <cte/protocol/ProfileMessage.h>
@@ -33,18 +34,68 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         wait_on_connection_ = QSharedPointer<QTimer>::create();
         wait_on_connection_->setInterval(10000);
         wait_on_connection_->setSingleShot(true);
+        QSettings settings;
+        host_address_ = settings.value("client/hostname").toString();
+        fallback_host_address_ = settings.value("client/secondhostname", "localhost").toString();
+        port_ = settings.value("client/port").toUInt();
+        ssl_handshake_failed_ = false;
         QObject::connect(socket, &Socket::ready_message, wait_on_connection_.get(), &QTimer::stop);
         QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
         QObject::connect(wait_on_connection_.get(), &QTimer::timeout, this, &myClient::attempt_timeout);
+        // establish connection and handshake
+        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error);
+        QObject::connect(reinterpret_cast<QSslSocket*>(socket), SIGNAL(QSslSocket::sslErrors(QList<QSslError>&)), this, SLOT(handle_ssl_handshake(QList<QSslError>&))); // TODO: check if works well, problem on homonym method and signal
+        QObject::connect(socket, &QSslSocket::encrypted, this, &myClient::connection_enctypted);
+        // QObject::connect(socket, &QAbstractSocket::connected, this, [this](){ qDebug() << "Connection achieved to host " << this->host_to_connect_;}); // this is the right one
+        QObject::connect(socket, &QAbstractSocket::connected, this, &myClient::connection_enctypted); // this is only because encryption does not work at the moment
     } catch (const std::exception &e) {
         qDebug() << e.what();
         return;
     }
 }
 
-bool myClient::connect(QString ip_address) {
-    socket->connectToHost(ip_address, PORT);
-    return socket->waitForConnected(3000);
+void myClient::handle_connection_error(QAbstractSocket::SocketError error) {
+    qDebug() << "Verified connection error of type " << static_cast<int>(error) << " for host to connect to " << host_to_connect_;
+    if (error == QAbstractSocket::HostNotFoundError && host_to_connect_ == host_address_) {
+        host_to_connect_ = fallback_host_address_;
+        this->connect();
+        return;
+    } else if (error == QAbstractSocket::SslHandshakeFailedError) { // this should not happen if server is configured
+        ssl_handshake_failed_ = true;
+    } else if (error == QAbstractSocket::RemoteHostClosedError && ssl_handshake_failed_) { // fallback in case of previous condition
+        qWarning() << "Unable to connect to the server because of SSL handshake failed";
+    } else {
+        ssl_handshake_failed_ = false;
+        host_to_connect_ = "";
+    }
+    emit host_connected(false);
+}
+
+void myClient::handle_ssl_handshake(const QList<QSslError>& errors) {
+    qDebug() << "SSL ERRORS:";
+    for (int i = 0; i < errors.size(); ++i) {
+        qDebug() << "Error type: " << static_cast<int>(errors.at(i).error()) << "; error: " << errors.at(i).errorString();
+    }
+    socket->ignoreSslErrors();
+}
+
+void myClient::connection_enctypted() {
+    qDebug() << "Connection to host " << host_to_connect_ << " succeeded and encrypted";
+    emit host_connected(true);
+}
+
+void myClient::connect(const QString& ip_address, quint16 ip_port) {
+    if (ip_address != "localhost") { // user inserted ip and port manually
+        host_to_connect_ = ip_address;
+        port_ = ip_port;
+    } else {
+        if (host_to_connect_.isEmpty()) { // not set by any callback
+            host_to_connect_ = host_address_;
+        }
+        // otherwise set by the callback
+    }
+    socket->connectToHost(host_to_connect_, port_);
+    return;
 }
 
 void myClient::send_message(const QSharedPointer<Message>& request) {

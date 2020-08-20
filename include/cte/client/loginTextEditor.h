@@ -46,6 +46,7 @@ private slots:
     //void on_user_change_username_pushButton_clicked();
     //void on_user_share_pushButton_clicked();
     void share_file(const QString& filename);
+    void connection_to_server(bool connected);
     void account_log_result(bool logged, const QString& error_message = QString(""));
     void handle_generic_error(const QString& error);
     void handle_timeout(const QString& type_request);

@@ -28,6 +28,8 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     connect(client.get(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
     connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
     connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
+    connect(client.get(), &myClient::host_connected, this, &loginTextEditor::connection_to_server);
+    QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection); // TODO: check why myClient::connect does not exist
 
     //Clear button enabled
     ui->login_email_lineEdit->setClearButtonEnabled(true);
@@ -100,6 +102,18 @@ void loginTextEditor::account_log_result(bool logged, const QString &error_messa
     return;
 }
 
+void loginTextEditor::connection_to_server(bool connected) {
+    if (connected) {
+        this->setCurrentIndex(2);
+    } else { /*
+        if (ui->frame_init->isVisible()) {
+            ui->frame_init->hide();
+        } else { */
+            QMessageBox::warning(this, tr("ERROR"), tr("Error in establishing connection with the server"));
+        //}
+    }
+}
+
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
     QString ip_address = ui->connect_address_lineEdit_->text();
@@ -107,9 +121,7 @@ void loginTextEditor::on_connect_pushButton_clicked() {
         QMessageBox::warning(this, "WARNING", "Insert a valid IP address");
         return;
     }
-    bool connect = client->connect(ip_address);
-    if(connect) this->setCurrentIndex(2);
-    else QMessageBox::warning(this, "ERROR", "Unable To Reach the Server");
+    client->connect(ip_address); // TODO: add the port
 }
 
 /**************login page function***************/
