@@ -18,7 +18,7 @@
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
     ui->setupUi(this);
-    this->setCurrentIndex(3); // open widget 3 (connect page)
+    this->setCurrentIndex(4); // open widget 3 (connect page)
     this->show();
     client = QSharedPointer<myClient>::create();
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
@@ -105,13 +105,9 @@ void loginTextEditor::account_log_result(bool logged, const QString &error_messa
 void loginTextEditor::connection_to_server(bool connected) {
     if (connected) {
         this->setCurrentIndex(2);
-    } else { /*
-        if (ui->frame_init->isVisible()) {
-            ui->frame_init->hide();
-        } else { */
-            QMessageBox::warning(this, tr("ERROR"), tr("Error in establishing connection with the server"));
-        //}
-    }
+    } else {
+        this->setCurrentIndex(3);
+       }
 }
 
 /**************home-page function***************/
