@@ -66,6 +66,7 @@ file(file), user_row_(0){
     setupFileActions();
     setupEditActions();
     setupUserActions();
+    connect(this->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &texteditor::draw_cursors);
 
 //    connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
@@ -247,12 +248,12 @@ void texteditor::file_share(){
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    if(change_from_server) return;
    for(int i = 0 ; i < charsAdded; i++) {
-       Symbol s = shared_editor->local_insert(position, editor->toPlainText()[position + i]);
+       Symbol s = shared_editor->local_insert(position + i, editor->toPlainText()[position + i]);
        client->sendInsert(file.document(),s);
 
    }
    for(int i = 0 ; i < charsRemoved; i++) {
-       Symbol s = shared_editor->local_erase(position);
+       Symbol s = shared_editor->local_erase(position - 1);
        client->sendErase(file.document(), s);
    }
 }
@@ -267,6 +268,8 @@ void  texteditor::remote_insert(const Symbol& symbol){
     cursor.setPosition(pos);
     cursor.insertText(symbol.value());
 
+
+
  //   this->editor->setText(shared_editor->to_string());
 
 
@@ -276,10 +279,10 @@ void  texteditor::remote_insert(const Symbol& symbol){
 void  texteditor::remote_erase(const Symbol& symbol){
 
     change_from_server = true;
-    shared_editor->remote_erase(symbol);
     int pos = shared_editor->find(symbol);
+    shared_editor->remote_erase(symbol);
     QTextCursor cursor = editor->textCursor();
-    cursor.setPosition(pos);
+    cursor.setPosition(pos + 1);
     cursor.deleteChar();
 }
 
@@ -300,6 +303,7 @@ void texteditor::remote_open(const Profile &profile, int site_id){
         username_to_row.insert(user.username(), user_row_);
         list_user->insertItem(user_row_, widget);
         user_row_++;
+
     }
     username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
 }
