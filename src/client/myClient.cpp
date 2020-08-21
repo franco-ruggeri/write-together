@@ -43,7 +43,7 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
         QObject::connect(wait_on_connection_.get(), &QTimer::timeout, this, &myClient::attempt_timeout);
         // establish connection and handshake
-        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error);
+//        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error);
         QObject::connect(reinterpret_cast<QSslSocket*>(socket), SIGNAL(QSslSocket::sslErrors(QList<QSslError>&)), this, SLOT(handle_ssl_handshake(QList<QSslError>&))); // TODO: check if works well, problem on homonym method and signal
         QObject::connect(socket, &QSslSocket::encrypted, this, &myClient::connection_enctypted);
         // QObject::connect(socket, &QAbstractSocket::connected, this, [this](){ qDebug() << "Connection achieved to host " << this->host_to_connect_;}); // this is the right one
@@ -333,9 +333,7 @@ void myClient::new_file(const QString& filename){
 }
 
 void myClient::open_file(const QString& filename){
-    // qDebug() << filename;
     Document doc = user.filename_to_owner_map[filename];
-    // qDebug() << doc.full_name();
     QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(doc);
     send_message(open_message);
 }

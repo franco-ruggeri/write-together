@@ -171,6 +171,7 @@ void loginTextEditor::on_singup_register_pushButton_clicked() {
 void loginTextEditor::init_user_page() {
     ui->user_file_listWidget->clear();
     ui->user_file_listWidget->setStyleSheet(list_stylesheet);
+
     ui->label_username_user_page->setFont(QFont("Roboto Thin", 20, 1, true));
     ui->label_username_user_page->setText(QString(client->user.username()));
     this->setCurrentIndex(0); // 0 -> user page

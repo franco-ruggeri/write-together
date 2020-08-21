@@ -128,7 +128,7 @@ void UserInfo::remove_cursors(int id){
 void UserInfo::update_cursor(QTextEdit *editor){
 
     for(auto c : site_id_to_cursor){
-        if(c->current_position != c->cursor_->position()) {
+//        if(c->current_position != c->cursor_->position()) {
             c->current_position = c->cursor_->position();
             int pos = c->cursor_->position();
             const QRect qRect = editor->cursorRect(*c->cursor_);
@@ -138,6 +138,6 @@ void UserInfo::update_cursor(QTextEdit *editor){
             int y_pos = qRect.topRight().y() - 4;
             c->vertical_cursor->move(x_pos, y_pos);
             c->vertical_cursor->show();
-        }
+//        }
     }
 }
