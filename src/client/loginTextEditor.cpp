@@ -18,7 +18,7 @@
 loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(new Ui::loginTextEditor) {
     file_dialog = nullptr;
     ui->setupUi(this);
-    this->setCurrentIndex(3); // open widget 3 (connect page)
+    this->setCurrentIndex(4); // open widget 3 (connect page)
     this->show();
     client = QSharedPointer<myClient>::create();
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
@@ -29,7 +29,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
     connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
     connect(client.get(), &myClient::host_connected, this, &loginTextEditor::connection_to_server);
-    QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection); // TODO: check why myClient::connect does not exist
+    QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection);
 
     //Clear button enabled
     ui->login_email_lineEdit->setClearButtonEnabled(true);

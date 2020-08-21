@@ -46,7 +46,7 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         QObject::connect(wait_on_connection_.get(), &QTimer::timeout, this, &myClient::attempt_timeout);
         // establish connection and handshake
 //        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error); // supported as of qt 5.15
-        QObject::connect(socket, QOverload<const QList<QSslError> &>::of(&QSslSocket::sslErrors), this, &myClient::handle_ssl_handshake); // TODO: check if works well, problem on homonym method and signal
+        QObject::connect(socket, QOverload<const QList<QSslError> &>::of(&QSslSocket::sslErrors), this, &myClient::handle_ssl_handshake);
         QObject::connect(socket, &QSslSocket::encrypted, this, &myClient::connection_enctypted);
         // QObject::connect(socket, &QAbstractSocket::connected, this, [this](){ qDebug() << "Connection achieved to host " << this->host_to_connect_;}); // this is the right one
 //        QObject::connect(socket, &QAbstractSocket::connected, this, &myClient::connection_enctypted); // this is only because encryption does not work at the moment
