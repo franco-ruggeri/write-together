@@ -107,7 +107,7 @@ void loginTextEditor::connection_to_server(bool connected) {
         this->setCurrentIndex(2);
     } else {
         this->setCurrentIndex(3);
-       }
+    }
 }
 
 /**************home-page function***************/

@@ -34,6 +34,8 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         wait_on_connection_ = QSharedPointer<QTimer>::create();
         wait_on_connection_->setInterval(10000);
         wait_on_connection_->setSingleShot(true);
+        connecting_interrupt_ = QSharedPointer<QTimer>::create();
+        connecting_interrupt_->setSingleShot(true);
         QSettings settings;
         host_address_ = settings.value("client/hostname").toString();
         fallback_host_address_ = settings.value("client/secondhostname", "localhost").toString();
@@ -43,11 +45,15 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
         QObject::connect(wait_on_connection_.get(), &QTimer::timeout, this, &myClient::attempt_timeout);
         // establish connection and handshake
-//        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error);
-        QObject::connect(reinterpret_cast<QSslSocket*>(socket), SIGNAL(QSslSocket::sslErrors(QList<QSslError>&)), this, SLOT(handle_ssl_handshake(QList<QSslError>&))); // TODO: check if works well, problem on homonym method and signal
+//        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error); // supported as of qt 5.15
+        QObject::connect(socket, QOverload<const QList<QSslError> &>::of(&QSslSocket::sslErrors), this, &myClient::handle_ssl_handshake); // TODO: check if works well, problem on homonym method and signal
         QObject::connect(socket, &QSslSocket::encrypted, this, &myClient::connection_enctypted);
         // QObject::connect(socket, &QAbstractSocket::connected, this, [this](){ qDebug() << "Connection achieved to host " << this->host_to_connect_;}); // this is the right one
-        QObject::connect(socket, &QAbstractSocket::connected, this, &myClient::connection_enctypted); // this is only because encryption does not work at the moment
+//        QObject::connect(socket, &QAbstractSocket::connected, this, &myClient::connection_enctypted); // this is only because encryption does not work at the moment
+        // the latter is temporally substituted by qt backward compatible slot connected to state changes of socket
+        // the followings are for qt backward compatibility
+        QObject::connect(socket, &QAbstractSocket::stateChanged, this, &myClient::handle_changed_state);
+        QObject::connect(connecting_interrupt_.get(), &QTimer::timeout, this, &myClient::timeout_on_connection);
     } catch (const std::exception &e) {
         qDebug() << e.what();
         return;
@@ -68,6 +74,56 @@ void myClient::handle_connection_error(QAbstractSocket::SocketError error) {
         ssl_handshake_failed_ = false;
         host_to_connect_ = "";
     }
+    emit host_connected(false);
+}
+
+void myClient::handle_changed_state(QAbstractSocket::SocketState new_state) {
+    if (new_state == QAbstractSocket::HostLookupState) {
+        previous_state_ = QAbstractSocket::HostLookupState;
+        connecting_interrupt_->start(5000);
+    } else if (previous_state_ == QAbstractSocket::HostLookupState && new_state == QAbstractSocket::ConnectingState) {
+        previous_state_ = QAbstractSocket::ConnectingState;
+        connecting_interrupt_->start(10000);
+    } else if (previous_state_ == QAbstractSocket::ConnectingState && new_state == QAbstractSocket::ConnectedState) {
+        connecting_interrupt_->stop();
+        qDebug() << "The socket is connected to the server";
+//        qDebug() << "Starting SSL handshake";
+        emit host_connected(true); // only for connect without encryption
+    } else if (new_state == QAbstractSocket::ClosingState) {
+        qDebug() << "About to close the connection";
+        previous_state_ = QAbstractSocket::ClosingState;
+    } else if (new_state == QAbstractSocket::UnconnectedState) {
+        if (previous_state_ == QAbstractSocket::HostLookupState && host_to_connect_ == host_address_) { // primary address DNS not resolved
+            previous_state_ = QAbstractSocket::UnconnectedState;
+            host_to_connect_ = fallback_host_address_;
+            connecting_interrupt_->start(5000);
+            this->connect();
+        } else if (previous_state_ == QAbstractSocket::ClosingState) {
+            qDebug() << "Successfully closed the connection with host " << host_to_connect_ << ":" << port_;
+        } else { // the connection wasn't established
+            previous_state_ = QAbstractSocket::UnconnectedState;
+            qDebug() << "Connecting to host " << host_to_connect_ << ":" << port_ << " failed. Aborting.";
+            emit host_connected(false);
+        }
+    }
+}
+
+void myClient::timeout_on_connection() {
+    QString state;
+    switch (previous_state_) {
+        case QAbstractSocket::UnconnectedState:
+            state = "initializing the socket";
+            break;
+        case QAbstractSocket::HostLookupState:
+            state = "host lookup";
+            break;
+        case QAbstractSocket::ConnectingState:
+            state = "ip connection to server";
+            break;
+        default:
+            state = "unknown";
+    }
+    qWarning() << "Error occurred: " << state << " failed. Aborting connection";
     emit host_connected(false);
 }
 
@@ -94,6 +150,7 @@ void myClient::connect(const QString& ip_address, quint16 ip_port) {
         }
         // otherwise set by the callback
     }
+    connecting_interrupt_->start(5000);
     socket->connectToHost(host_to_connect_, port_);
     return;
 }
@@ -113,36 +170,30 @@ void myClient::send_message(const QSharedPointer<Message>& request) {
 }
 
 void myClient::attempt_timeout() {
-    connection_attempts_--;
-    if (connection_attempts_ > 0) {
-        wait_on_connection_->start();
-    } else {
-        QString type;
-        // TODO: differentiate all different signals to emit for different use cases
-        switch (message_to_send_->type()) {
-            case MessageType::login:
-                type = tr("login");
-                break;
-            case MessageType::signup:
-                type = tr("signup");
-                break;
-            case MessageType::profile:
-                type = tr("profile update");
-                break;
-            case MessageType::documents:
-                type = tr("list of your documents");
-                break;
-            case MessageType::open:
-                type = tr("open file");
-                break;
-            case MessageType::create:
-                type = tr("create file");
-                break;
-            default:
-                qWarning() << "A timeout should never fire for messages sent of type " << static_cast<int>(message_to_send_->type());
-        }
-        emit timeout_expired(type);
+    QString type;
+    switch (message_to_send_->type()) {
+        case MessageType::login:
+            type = tr("login");
+            break;
+        case MessageType::signup:
+            type = tr("signup");
+            break;
+        case MessageType::profile:
+            type = tr("profile update");
+            break;
+        case MessageType::documents:
+            type = tr("list of your documents");
+            break;
+        case MessageType::open:
+            type = tr("open file");
+            break;
+        case MessageType::create:
+            type = tr("create file");
+            break;
+        default:
+            qWarning() << "A timeout should never fire for messages sent of type " << static_cast<int>(message_to_send_->type());
     }
+    emit timeout_expired(type);
     return;
 }
 
