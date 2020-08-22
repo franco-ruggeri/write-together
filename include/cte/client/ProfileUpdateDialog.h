@@ -8,16 +8,16 @@
 #include <cte/client/myClient.h>
 
 namespace Ui {
-    class changePasswordDialog;
+    class ProfileUpdateDialog;
 }
 
-class changePasswordDialog :public QDialog {
+class ProfileUpdateDialog : public QDialog {
 Q_OBJECT
 
 public:
 
-    Ui::changePasswordDialog *ui;
-    changePasswordDialog(QWidget *parent, QSharedPointer<myClient> client);
+    Ui::ProfileUpdateDialog *ui;
+    ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClient> client);
 
 private:
     QSharedPointer<myClient> client;
@@ -27,7 +27,7 @@ private slots:
     void on_changepass_change_pushButton_clicked();
     void on_changepass_cancel_pushButton_clicked();
 
-
+    void update_profile_result(bool result, const QString& error_message);
     void accept() override;
 
 };

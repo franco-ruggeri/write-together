@@ -15,22 +15,41 @@ UserInfo::UserInfo(Profile profile): username_(profile.username()), name_(profil
     UserInfo::UserInfo(Profile profile, QColor color): username_(profile.username()), name_(profile.name()),surname_(profile.surname()),icon_(profile.icon()),
     color_(color),selected(false){}
 
+UserInfo& UserInfo::operator=(const Profile &other) {
+    username_ = other.username();
+    name_ = other.name();
+    surname_ = other.surname();
+    icon_ = other.icon();
+    return *this;
+}
 
-    QString UserInfo::username() const {
-        return username_;
-    }
+void UserInfo::clear_fields() {
+    surname_ = name_ = username_ = "";
+    icon_ = QImage();
+    filename_to_owner_map.clear();
+    site_id_to_cursor.clear();
+    // maybe other fields to clear
+}
 
-    QString UserInfo::name() const {
-        return name_;
-    }
+QString UserInfo::username() const {
+    return username_;
+}
 
-    QString UserInfo::surname() const {
-        return surname_;
-    }
+QString UserInfo::name() const {
+    return name_;
+}
 
-    QImage UserInfo::icon() const {
-        return icon_;
-    }
+QString UserInfo::surname() const {
+    return surname_;
+}
+
+QString UserInfo::email() const {
+    return email_;
+}
+
+QImage UserInfo::icon() const {
+    return icon_;
+}
 
 
     //cursors

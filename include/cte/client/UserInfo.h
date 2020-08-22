@@ -14,7 +14,7 @@
 using namespace cte;
 class UserInfo {
 
-    QString username_, name_, surname_;
+    QString username_, name_, surname_, email_;
     QImage icon_;
 public:
     UserInfo();
@@ -23,6 +23,7 @@ public:
     QString username() const;
     QString name() const;
     QString surname() const;
+    QString email() const;
     QImage icon() const;
     bool selected;
 
@@ -44,7 +45,7 @@ public:
     UserInfo(Profile profile, QColor color);
 
     UserInfo(Profile profile);
-
+    UserInfo& operator=(const Profile& other);
     const QColor color();
 
     void add_cursor(QTextEdit *editor, int newCursorPosition, int id);
@@ -54,8 +55,7 @@ public:
     QColor color_;
 
     void remove_cursors(int id);
-
-
     void update_cursor(QTextEdit *editor);
+    void clear_fields();
 };
 

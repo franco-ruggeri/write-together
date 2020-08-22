@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>changePasswordDialog</class>
- <widget class="QDialog" name="changePasswordDialog">
+ <class>ProfileUpdateDialog</class>
+ <widget class="QDialog" name="ProfileUpdateDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>552</width>
-    <height>650</height>
+    <height>771</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -95,8 +95,8 @@
     <rect>
      <x>0</x>
      <y>60</y>
-     <width>552</width>
-     <height>591</height>
+     <width>561</width>
+     <height>711</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -144,7 +144,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>480</y>
+      <y>630</y>
       <width>130</width>
       <height>40</height>
      </rect>
@@ -160,7 +160,7 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>480</y>
+      <y>630</y>
       <width>130</width>
       <height>40</height>
      </rect>
@@ -178,7 +178,7 @@
       <x>0</x>
       <y>230</y>
       <width>552</width>
-      <height>201</height>
+      <height>371</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -243,7 +243,7 @@ margin: 0px;</string>
     <widget class="QLineEdit" name="changeuser_newuser_lineEdit">
      <property name="geometry">
       <rect>
-       <x>229</x>
+       <x>230</x>
        <y>58</y>
        <width>251</width>
        <height>28</height>
@@ -269,7 +269,7 @@ margin: 0px;</string>
      <property name="geometry">
       <rect>
        <x>36</x>
-       <y>108</y>
+       <y>270</y>
        <width>151</width>
        <height>28</height>
       </rect>
@@ -285,7 +285,7 @@ margin: 0px;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>108</y>
+       <y>270</y>
        <width>250</width>
        <height>28</height>
       </rect>
@@ -310,7 +310,7 @@ margin: 0px;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>158</y>
+       <y>310</y>
        <width>250</width>
        <height>28</height>
       </rect>
@@ -334,7 +334,7 @@ margin: 0px;</string>
      <property name="geometry">
       <rect>
        <x>36</x>
-       <y>158</y>
+       <y>310</y>
        <width>175</width>
        <height>28</height>
       </rect>
@@ -346,9 +346,167 @@ margin: 0px;</string>
       <string>Confirm Password:</string>
      </property>
     </widget>
+    <widget class="QLabel" name="changeuser_newname_label">
+     <property name="geometry">
+      <rect>
+       <x>36</x>
+       <y>108</y>
+       <width>173</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;</string>
+     </property>
+     <property name="text">
+      <string>Name:    </string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="changeuser_newsurname_label">
+     <property name="geometry">
+      <rect>
+       <x>36</x>
+       <y>158</y>
+       <width>173</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;</string>
+     </property>
+     <property name="text">
+      <string>Surname:    </string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="changeuser_newemail_label">
+     <property name="geometry">
+      <rect>
+       <x>36</x>
+       <y>208</y>
+       <width>173</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;</string>
+     </property>
+     <property name="text">
+      <string>Email:    </string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="changeuser_newname_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>108</y>
+       <width>251</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;
+border-radius: 2px;
+background-color: rgb(238, 238, 236);
+margin: 0px;</string>
+     </property>
+     <property name="placeholderText">
+      <string>New name</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="changeuser_newsurname_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>158</y>
+       <width>251</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;
+border-radius: 2px;
+background-color: rgb(238, 238, 236);
+margin: 0px;</string>
+     </property>
+     <property name="placeholderText">
+      <string>New surname</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="changeuser_newemail_lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>208</y>
+       <width>251</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;
+border-radius: 2px;
+background-color: rgb(238, 238, 236);
+margin: 0px;</string>
+     </property>
+     <property name="placeholderText">
+      <string>New email</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="changeuser_username_label_2">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>340</y>
+       <width>250</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A;
+margin: 0px;
+font-size:8pt</string>
+     </property>
+     <property name="text">
+      <string>Leave password empty to keep current password</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::AutoText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>change_icon_pushButton</tabstop>
+  <tabstop>changeuser_newuser_lineEdit</tabstop>
+  <tabstop>changeuser_newname_lineEdit</tabstop>
+  <tabstop>changeuser_newsurname_lineEdit</tabstop>
+  <tabstop>changeuser_newemail_lineEdit</tabstop>
+  <tabstop>changepass_newpass_lineEdit</tabstop>
+  <tabstop>changepass_confirmpass_lineEdit</tabstop>
+  <tabstop>changepass_change_pushButton</tabstop>
+  <tabstop>changepass_cancel_pushButton</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

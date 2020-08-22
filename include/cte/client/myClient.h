@@ -28,12 +28,13 @@ class myClient : public QObject {
     QSharedPointer<QTimer> wait_on_connection_, connecting_interrupt_; // the second for qt backward compatibility
     int connection_attempts_;
     QSharedPointer<Message> message_to_send_;
-    UserInfo new_user;
+    Profile new_user;
     QString host_address_, fallback_host_address_, host_to_connect_;
     quint16 port_;
     bool ssl_handshake_failed_;
     // only for qt backward compatibility
     QAbstractSocket::SocketState previous_state_;
+    void send_message(const QSharedPointer<Message>& request);
 
 public:
     Socket *socket;
@@ -45,7 +46,6 @@ public:
 
     void login(QString &email, QString &password);
 
-    void send_message(const QSharedPointer<Message>& request);
 
 //    std::tuple<bool, QString> signup(QString& username, QString& email, QString& password);
 
@@ -54,17 +54,11 @@ public:
 
     void new_file(const QString& filename);
 
-    bool change_password(const QString& new_password);
-
     void sendErase(int pos);
 
     void open_file(const QString& filename);
-
-
     void file_close(const fileInfo& file);
 
-
-    bool change_username(const QString &new_username);
 
     std::optional<QString> get_uri(const QString &filename);
 
@@ -76,7 +70,8 @@ public:
 
     void send_cursor(Document document, Symbol cursor_position);
 
-    void signup(QString &username, QString &email, QString &password, QString name, QString surname);
+    void signup(QString &username, QString &email, QString &password, QString name, QString surname, QImage icon = QImage());
+    void update_profile(const QString& username, const QString& email, const QString& name, const QString& surname, const QImage& icon, QString& password);
 
 public slots:
     void connect(const QString& ip_address = "localhost", quint16 ip_port = 1111);

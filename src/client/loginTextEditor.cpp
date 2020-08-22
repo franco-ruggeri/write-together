@@ -5,7 +5,6 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QtCore/QDebug>
-#include <cte/client/changeUsernameDialog.h>
 #include <cte/client/loginTextEditor.h>
 #include "ui_loginTextEditor.h"
 #include <cte/client/utility.h>
@@ -86,7 +85,7 @@ void loginTextEditor::handle_generic_error(const QString &error) {
 void loginTextEditor::handle_timeout(const QString &message_request) {
     QMessageBox timeout_box; // evaluate if store it as a member property, to dismiss it if response arrives
     timeout_box.setWindowTitle(tr("Attention"));
-    timeout_box.setText(tr("The processing of your ") + message_request + tr("request is taking more than expected on the server.\nPlease wait it"));
+    timeout_box.setText(tr("The processing of your ") + message_request + tr(" request is taking more than expected on the server.\nPlease wait it"));
     auto dismiss_button = timeout_box.addButton(QMessageBox::Ok); // this may be useful for "remote" dismissing
     timeout_box.setDefaultButton(dismiss_button);
     timeout_box.setEscapeButton(dismiss_button);
@@ -218,7 +217,7 @@ void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem 
 
 void loginTextEditor::on_user_edit_profile_pushButton_clicked(){
     if(changepass_dialog == nullptr)
-        changepass_dialog = QSharedPointer<changePasswordDialog>::create(this,this->client);
+        changepass_dialog = QSharedPointer<ProfileUpdateDialog>::create(this, this->client);
     changepass_dialog->setModal(true);
     changepass_dialog->show();
 }
@@ -286,7 +285,7 @@ void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
 void loginTextEditor::on_user_change_password_pushButton_clicked() {
 
     if(changepass_dialog == nullptr)
-        changepass_dialog = QSharedPointer<changePasswordDialog>::create(this,this->client);
+        changepass_dialog = QSharedPointer<ProfileUpdateDialog>::create(this,this->client);
     changepass_dialog->setModal(true);
     changepass_dialog->show();
 }
@@ -305,6 +304,7 @@ void loginTextEditor::open_editor(fileInfo file){
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
     connect(editor.get(), &texteditor::show_user_page, this, &QWidget::show);
+    connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::init_user_page);
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
     editor->show();
     editor->init_cursors();

@@ -160,10 +160,9 @@ void myClient::send_message(const QSharedPointer<Message>& request) {
     MessageType request_type = message_to_send_->type();
     if (request_type == MessageType::signup || request_type == MessageType::login || request_type == MessageType::profile ||
         request_type == MessageType::documents || request_type == MessageType::create || request_type == MessageType::open) {
-        connection_attempts_ = 1; // in case of multiple attempts when timeout occurs
         wait_on_connection_->start();
     }
-    socket->write_message(request); // not message_to_send_, which may be deleted meanwhile
+    socket->write_message(request);
     if (request_type == MessageType::logout) {
         socket->disconnectFromHost();
     }
@@ -243,7 +242,7 @@ void myClient::process_response() {
                 break;
             }
             if (response->type() == MessageType::profile_ok) {
-                user = new_user; // better way to update only profile inside user
+                user = new_user;
                 emit profile_update_result(true, tr("Ok"));
                 // to be connected to the slot of the new user widget (to manage all profile data)
             } else {
@@ -347,34 +346,45 @@ void myClient::process_data_from_server() {
 }
 
 void myClient::login(QString& email, QString& password) {
-    QString result = "ERROR!";
     QSharedPointer<Message> login_message = QSharedPointer<LoginMessage>::create(email, password);
     send_message(login_message);
 }
 
 void myClient::logout() {
    QSharedPointer<Message> logout_message = QSharedPointer<LogoutMessage>::create();
-    send_message(logout_message);
+   user.clear_fields();
+   send_message(logout_message);
 }
 
-void myClient::signup(QString& username, QString& email, QString& password, QString name, QString surname) {
-    QString result;
+void myClient::signup(QString& username, QString& email, QString& password, QString name, QString surname, QImage icon) {
     //TODO: add icon on signup
-    QImage icon = QPixmap(1, 1).toImage();
     Profile profile(username,name,surname,icon);
     user = UserInfo(profile);
     QSharedPointer<Message> signup_message = QSharedPointer<SignupMessage>::create(profile,password);
-    send_message(signup_message );
+    send_message(signup_message);
+}
+
+void myClient::update_profile(const QString &username, const QString &email, const QString &name, const QString &surname, const QImage &icon, QString &password) {
+    new_user = Profile(username, name, surname, icon);
+    QSharedPointer<Message> profile_update_message;
+    if (password.isEmpty()) {
+        profile_update_message = QSharedPointer<ProfileMessage>::create(new_user);
+    } else {
+        profile_update_message = QSharedPointer<ProfileMessage>::create(new_user, password);
+    }
+    password.fill(0);
+    password.clear();
+    send_message(profile_update_message);
 }
 
 void myClient::sendInsert(const Document& document,const Symbol& s){
     QSharedPointer<Message> insert_message = QSharedPointer<InsertMessage>::create(document,s);
-    socket->write_message(insert_message);
+    send_message(insert_message);
 }
 
 void myClient::sendErase(const Document& document, const Symbol& s){
     QSharedPointer<Message> erase_message = QSharedPointer<EraseMessage>::create(document,s);
-    socket->write_message(erase_message);
+    send_message(erase_message);
 }
 
 
@@ -389,29 +399,12 @@ void myClient::open_file(const QString& filename){
     send_message(open_message);
 }
 
-bool myClient::change_password(const QString& new_password) {
-    Profile profile = Profile(user.username(),user.name(),user.surname(),user.icon());
-    new_user = UserInfo(profile);
-    QSharedPointer<Message> profile_message = QSharedPointer<ProfileMessage>::create(profile,new_password);
-    send_message(profile_message);
-    return false;
-}
-
 void myClient::file_close(const fileInfo& file){
     QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(file.document(), user.username());
     send_message(close_message);
     disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
     QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
 
-}
-
-
-bool myClient::change_username(const QString& new_username){
-    Profile profile = Profile(new_username,user.name(),user.username(),user.icon());
-    new_user = UserInfo(profile);
-    QSharedPointer<Message> profile_message = QSharedPointer<ProfileMessage>::create(profile);
-    send_message(profile_message);
-    return false;
 }
 
 void myClient::get_documents_form_server() {
@@ -421,5 +414,5 @@ void myClient::get_documents_form_server() {
 
 void myClient::send_cursor(Document document, Symbol cursor_position){
     QSharedPointer<Message> cursor_message = QSharedPointer<CursorMessage>::create(document, cursor_position);
-    socket->write_message(cursor_message);
+    send_message(cursor_message);
 }

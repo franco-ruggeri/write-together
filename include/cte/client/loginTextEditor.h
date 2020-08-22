@@ -10,8 +10,7 @@
 #include <QtWidgets/QListWidgetItem>
 #include <cte/client/newFileDialog.h>
 #include <cte/client/myClient.h>
-#include <cte/client/changePasswordDialog.h>
-#include <cte/client/changeUsernameDialog.h>
+#include <cte/client/ProfileUpdateDialog.h>
 
 namespace Ui {
     class loginTextEditor;
@@ -27,8 +26,7 @@ private:
     QSharedPointer<myClient> client;
     Ui::loginTextEditor *ui;
     QSharedPointer<NewFileDialog> file_dialog;
-    QSharedPointer<changeUsernameDialog> changeuser_dialog;
-    QSharedPointer<changePasswordDialog> changepass_dialog;
+    QSharedPointer<ProfileUpdateDialog> changepass_dialog;
     QSharedPointer<texteditor>  editor;
     void cleanAll();
 

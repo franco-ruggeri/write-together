@@ -11,18 +11,16 @@ list(APPEND SRC
         loginTextEditor.cpp
         utility.cpp
         newFileDialog.cpp
-        changePasswordDialog.cpp
+        ProfileUpdateDialog.cpp
         texteditor.cpp
         myClient.cpp
         fileInfo.cpp
-        changeUsernameDialog.cpp
         UserInfo.cpp
         QTStylesheet.cpp
         editProfileDialog.cpp)
 
 list(APPEND QOBJ_HEADERS
-        ${QOBJ_DIR}/changePasswordDialog.h
-        ${QOBJ_DIR}/changeUsernameDialog.h
+        ${QOBJ_DIR}/ProfileUpdateDialog.h
         ${QOBJ_DIR}/loginTextEditor.h
         ${QOBJ_DIR}/myClient.h
         ${QOBJ_DIR}/newFileDialog.h
