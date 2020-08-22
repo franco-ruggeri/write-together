@@ -10,7 +10,7 @@
 
 
 UserInfo::UserInfo(){}
-UserInfo::UserInfo(Profile profile): username_(profile.username()), name_(profile.name()),surname_(profile.surname()),icon_(profile.icon()){}
+UserInfo::UserInfo(Profile profile): username_(profile.username()), name_(profile.name()),surname_(profile.surname()),icon_(profile.icon()),selected(false){}
 
     UserInfo::UserInfo(Profile profile, QColor color): username_(profile.username()), name_(profile.name()),surname_(profile.surname()),icon_(profile.icon()),
     color_(color),selected(false){}

@@ -86,21 +86,36 @@ file(file), user_row_(0){
 void texteditor::setupPeers(){
 
     h =  std::floor(rand());
-    auto ids = file.cursors().keys();
+//    auto ids = file.cursors().keys();
 
     list_user = QSharedPointer<QListWidget>::create();
     list_user->setObjectName("list_user");
 
+    // current user
+    UserInfo user = client->user;
+    user.color_ = generate_color();
+    username_to_user.insert(user.username(),user);
+    QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
+    auto *widget = new QListWidgetItem(user_icon, user.username() + " (you)");
+    widget->setBackground(user.color());
+    list_user->insertItem(user_row_, widget);
+    if(!file.site_ids().count(file.site_id()))
+        file.insert_new_userId(file.site_id(),user.username());
+    // other users
     for(const auto & profile: file.users()){
-        UserInfo user(profile,generate_color());
-        username_to_user.insert(profile.username(),user);
-        QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
-        auto* widget = new QListWidgetItem(user_icon, user.username());
-        widget->setBackground(user.color());
-        username_to_row.insert(profile.username(), user_row_);
-        list_user->insertItem(user_row_, widget);
-        user_row_++;
+        if(!username_to_user.count(profile.username())) {
+            UserInfo user(profile, generate_color());
+            username_to_user.insert(profile.username(), user);
+            QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
+            auto *widget = new QListWidgetItem(user_icon, user.username());
+            widget->setBackground(user.color());
+            username_to_row.insert(profile.username(), user_row_);
+            list_user->insertItem(user_row_, widget);
+            user_row_++;
+        }
     }
+
+
 
     list_user->setSelectionMode(QAbstractItemView::NoSelection);
     peers = QSharedPointer<QDockWidget>::create(); // widget to show the peers
@@ -118,7 +133,7 @@ void texteditor::setupPeers(){
 
 void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
 
-    QString username = item->text();
+    QString username = item->text().split(' ')[0];
 
     auto user = username_to_user.find(username);
 
@@ -269,8 +284,9 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
    }
    for(int i = 0 ; i < charsRemoved; i++) {
-       Symbol s = shared_editor->local_erase(position - 1);
+       Symbol s = shared_editor->local_erase(position--);
        client->sendErase(file.document(), s);
+
    }
 }
 
