@@ -28,6 +28,7 @@
 #include <QStackedWidget>
 #include <QThread>
 #include <QScrollBar>
+#include <QWindow>
 #include <QDesktopWidget>
 #include <QMainWindow>
 #include <cte/client/texteditor.h>
@@ -43,6 +44,7 @@
 #include <QPushButton>
 #include <QtWidgets/QHBoxLayout>
 #include <cmath>
+#include <QAbstractTextDocumentLayout>
 
 const QString imgPath = ":/images";
 
@@ -53,10 +55,10 @@ file(file), user_row_(0){
     this->setWindowTitle(APPLICATION + client->user.username());
     editor = QSharedPointer<QTextEdit>::create(this);
     setCentralWidget(editor.get());
+
     this->client = client;
     change_from_server = false;
     editor->setFontPointSize(14);
-
     shared_editor = QSharedPointer<SharedEditor>::create(file.site_id(), file.getFileContent());
 
     editor->setText(shared_editor->to_string()); // set the text content
@@ -66,9 +68,8 @@ file(file), user_row_(0){
     setupFileActions();
     setupEditActions();
     setupUserActions();
-    connect(this->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &texteditor::draw_cursors);
-
-//    connect(this->client->socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+    connect(editor->document()->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged , this, &texteditor::draw_cursors);
+    connect(this->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &texteditor::draw_cursors);;
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
     connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
     connect(editor.get(), &QTextEdit::cursorPositionChanged, this, &texteditor::cursorPositionChanged);
@@ -78,6 +79,7 @@ file(file), user_row_(0){
     connect(client.get(), &myClient::char_inserted, this, &texteditor::remote_insert);
     connect(client.get(), &myClient::char_removed, this, &texteditor::remote_erase);
     connect(client.get(), &myClient::cursor, this, &texteditor::remote_cursor);
+
 }
 
 
@@ -112,23 +114,40 @@ void texteditor::setupPeers(){
 }
 
 
+
+
 void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
+
     QString username = item->text();
+
     auto user = username_to_user.find(username);
 
     int i = 0;
     disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-    for(auto const &s : shared_editor->text()){
+    disconnect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
 
-        if(file.site_ids()[s.site_id()] == username){
-           user->draw_background_char(editor.get(),i,i+1);
+    int start_pos = -1;
+    auto s = shared_editor->text();
+
+    for( i = 0; i <s.size(); i++){
+        if(file.site_ids()[s[i].site_id()] == username && start_pos == -1){
+            start_pos = i;
         }
-        i++;
+        if(file.site_ids()[s[i].site_id()]!= username  && start_pos != -1 ){
+            user->draw_background_char(editor.get(),start_pos,i);
+            start_pos = -1;
+        }
     }
+    if(start_pos != -1)
+        user->draw_background_char(editor.get(),start_pos,i );
+
+
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
+    connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
 
     user->selected = !user->selected;
-    editor->currentCharFormat().setBackground(Qt::transparent);
+    editor->setCurrentCharFormat(user->format);
+
 }
 
 void texteditor::init_cursors(){
@@ -141,9 +160,7 @@ void texteditor::init_cursors(){
             int cursor_pos = shared_editor->find(file.cursors().find(id).value());
             username_to_user.find(username)->add_cursor(editor.get(),cursor_pos,id);
         }
-
     }
-
 }
 
 
@@ -235,7 +252,6 @@ void texteditor::file_to_pdf() {
 
 void texteditor::file_close() {
    this->client->file_close(this->file);
-   //editor->deleteLater();
    emit show_user_page();
 
 }
@@ -259,6 +275,7 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 }
 
 void  texteditor::remote_insert(const Symbol& symbol){
+    QString username = file.site_ids().find(symbol.site_id()).value();
     change_from_server = true;
     qDebug() << "remote_insert" << " char: " << symbol.value();
     int pos = shared_editor->find(symbol);
@@ -266,18 +283,12 @@ void  texteditor::remote_insert(const Symbol& symbol){
     editor->toPlainText().insert(pos,symbol.value());
     QTextCursor cursor = editor->textCursor();
     cursor.setPosition(pos);
-    cursor.insertText(symbol.value());
-
-
-
- //   this->editor->setText(shared_editor->to_string());
-
+    cursor.insertText(symbol.value(),username_to_user.find(username)->format);
 
 }
 
 
 void  texteditor::remote_erase(const Symbol& symbol){
-
     change_from_server = true;
     int pos = shared_editor->find(symbol);
     shared_editor->remote_erase(symbol);
@@ -306,14 +317,12 @@ void texteditor::remote_open(const Profile &profile, int site_id){
 
     }
     username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
+    file.insert_new_userId(site_id,profile.username());
 }
 
 void texteditor::remote_close(const QString &username, int site_id) {
     username_to_user.find(username)->remove_cursors(site_id);
-//    int row = username_to_row.value(username);
-//    username_to_user.remove(username);
-//    auto widget = list_user->takeItem(row);
-//    delete widget;
+
 }
 
 void texteditor::closeEvent(QCloseEvent *event){
@@ -332,8 +341,12 @@ void texteditor::textChange() {
 }
 
 void texteditor::cursorPositionChanged() {
-
     QTextCursor cursor = editor->textCursor();
+
+    if(cursor.hasSelection())
+        return;
+    editor->setCurrentCharFormat(username_to_user.find(client->user.username())->format);
+
     if(cursor.position() != current_position) {
         current_position = cursor.position();
         this->client->send_cursor(this->file.document(),

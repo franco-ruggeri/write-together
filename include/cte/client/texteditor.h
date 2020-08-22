@@ -54,6 +54,7 @@ private slots:
     QColor generate_color();
 
 private:
+
     QSharedPointer<QDockWidget>peers;
     QSharedPointer<QTextEdit> editor;
     QSharedPointer<myClient> client;

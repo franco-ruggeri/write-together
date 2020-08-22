@@ -16,10 +16,6 @@ class UserInfo {
 
     QString username_, name_, surname_;
     QImage icon_;
-
-    Symbol cursor_position_;
-
-
 public:
     UserInfo();
 
@@ -30,10 +26,11 @@ public:
     QImage icon() const;
     bool selected;
 
+    QTextCharFormat format;
     //cursor
     struct cursor{
-        QLabel *cursor_label;
         QLabel *vertical_cursor;
+        QLabel *horizontal_cursor;
         QTextCursor *cursor_;
         int current_position;
     };

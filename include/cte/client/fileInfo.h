@@ -16,6 +16,7 @@ private:
 
     Document document_;
     DocumentData documentData_;
+    QHash<int,QString> site_ids_;
 
 public:
 
@@ -31,6 +32,8 @@ public:
 
     QHash<int,Symbol> cursors() const;
     fileInfo(const Document &document, const DocumentData data);
+
+    void insert_new_userId(int id, QString Username);
 };
 
 

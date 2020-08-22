@@ -38,12 +38,11 @@ UserInfo::UserInfo(Profile profile): username_(profile.username()), name_(profil
 
 void  UserInfo::draw_background_char(QTextEdit *editor,int start, int end) {
 
-    QTextCharFormat format;
+
     if(selected)
         format.setBackground(Qt::transparent);
     else
         format.setBackground(color_);
-
     format.setFontPointSize(14);
     QTextCursor cursor(editor->document());
     cursor.setPosition(start);
@@ -64,28 +63,30 @@ const QColor UserInfo::color() {
 void UserInfo::add_cursor(QTextEdit *editor, int new_position, int id){
 
     auto c = new cursor;
-    c->cursor_label = new QLabel(editor);
+    c->vertical_cursor = new QLabel(editor);
     c->cursor_ = new QTextCursor(editor->document());
     new_position = qMin( new_position, editor->toPlainText().size());
     c->cursor_->setPosition(new_position);
     c->current_position =  new_position;
     QPixmap pix(2, 24);
     pix.fill(color_);
-    c->cursor_label->setPixmap(pix);
+        c->vertical_cursor->setPixmap(pix);
     const QRect qRect = editor->cursorRect(*c->cursor_);
-    c->cursor_label->move(qRect.left(), qRect.top());
-    c->cursor_label->show();
-    c->vertical_cursor = new QLabel(editor);
+    c->vertical_cursor->move(qRect.left(), qRect.top());
+    c->vertical_cursor->show();
+
+    c->horizontal_cursor = new QLabel(editor);
     int x_pos = qRect.center().x();
     int y_pos = qRect.topRight().y() - 4;
     QFontMetrics fm(editor->font());
     QRect bounds = fm.boundingRect(username_);
-    c->vertical_cursor->move(x_pos,y_pos);
-    c->vertical_cursor->setAutoFillBackground(true);
-    c->vertical_cursor->setPalette(color_);
-    c->vertical_cursor->setText(username_);
+    c->horizontal_cursor->move(x_pos,y_pos);
+    c->horizontal_cursor->setAutoFillBackground(true);
+    c->horizontal_cursor->setPalette(color_);
+    c->horizontal_cursor->setText(username_);
     site_id_to_cursor.insert(id,c);
-    c->vertical_cursor->show();
+    c->horizontal_cursor->show();
+    format.setFontPointSize(14);
 
 }
 
@@ -97,27 +98,24 @@ void UserInfo::change_cursor_position(QTextEdit *editor, int new_position, int i
         c->cursor_->setPosition(new_position);
         c->current_position = new_position;
         const QRect qRect = editor->cursorRect(*c->cursor_);
-        QLabel *cursor_label_ = site_id_to_cursor.find(id).value()->cursor_label;
+        QLabel *cursor_label_ = site_id_to_cursor.find(id).value()->vertical_cursor;
         cursor_label_->move(qRect.left(), qRect.top());
         cursor_label_->show();
-        auto *vertical_label = site_id_to_cursor.find(id).value()->vertical_cursor;
+        auto *horizontal_label = site_id_to_cursor.find(id).value()->horizontal_cursor;
         int x_pos = qRect.center().x();
         int y_pos = qRect.topRight().y() - 4;
         QFontMetrics fm(editor->font());
         QRect bounds = fm.boundingRect(username_);
-        vertical_label->move(x_pos, y_pos);
-//        vertical_label->setAutoFillBackground(true);
-//        vertical_label->setPalette(color_);
-//        vertical_label->setText(username_);
-        vertical_label->show();
+        horizontal_label->move(x_pos, y_pos);
+        horizontal_label->show();
 
     }
 
 }
 
 void UserInfo::remove_cursors(int id){
-    QLabel* horizontal_cursor= site_id_to_cursor.find(id).value()->cursor_label;
     QLabel* vertical_cursor= site_id_to_cursor.find(id).value()->vertical_cursor;
+    QLabel* horizontal_cursor= site_id_to_cursor.find(id).value()->horizontal_cursor;
     horizontal_cursor->hide();
     vertical_cursor->hide();
     delete horizontal_cursor;
@@ -132,12 +130,12 @@ void UserInfo::update_cursor(QTextEdit *editor){
             c->current_position = c->cursor_->position();
             int pos = c->cursor_->position();
             const QRect qRect = editor->cursorRect(*c->cursor_);
-            c->cursor_label->move(qRect.left(), qRect.top());
-            c->cursor_label->show();
+            c->vertical_cursor->move(qRect.left(), qRect.top());
+            c->vertical_cursor->show();
             int x_pos = qRect.center().x();
             int y_pos = qRect.topRight().y() - 4;
-            c->vertical_cursor->move(x_pos, y_pos);
-            c->vertical_cursor->show();
+            c->horizontal_cursor->move(x_pos, y_pos);
+            c->horizontal_cursor->show();
 //        }
     }
 }
