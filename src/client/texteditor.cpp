@@ -60,7 +60,6 @@ file(file), user_row_(0){
     change_from_server = false;
     editor->setFontPointSize(14);
     shared_editor = QSharedPointer<SharedEditor>::create(file.site_id(), file.getFileContent());
-
     editor->setText(shared_editor->to_string()); // set the text content
 
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
@@ -161,7 +160,7 @@ void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
     connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
 
     user->selected = !user->selected;
-    editor->setCurrentCharFormat(user->format);
+   // editor->setCurrentCharFormat(user->format);
 
 }
 
@@ -278,22 +277,31 @@ void texteditor::file_share(){
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    if(change_from_server) return;
+
+    if(position == 0 && charsAdded > 1){
+        charsAdded  = charsAdded - charsRemoved;
+        charsRemoved = 0;
+    }
+
+    for(int i = 0 ; i < charsRemoved; i++) {
+
+
+        Symbol s = shared_editor->local_erase(position);
+        client->sendErase(file.document(), s);
+
+    }
+
    for(int i = 0 ; i < charsAdded; i++) {
        Symbol s = shared_editor->local_insert(position + i, editor->toPlainText()[position + i]);
        client->sendInsert(file.document(),s);
 
    }
-   for(int i = 0 ; i < charsRemoved; i++) {
-       Symbol s = shared_editor->local_erase(position--);
-       client->sendErase(file.document(), s);
 
-   }
 }
 
 void  texteditor::remote_insert(const Symbol& symbol){
     QString username = file.site_ids().find(symbol.site_id()).value();
     change_from_server = true;
-    qDebug() << "remote_insert" << " char: " << symbol.value();
     int pos = shared_editor->find(symbol);
     shared_editor->remote_insert(symbol);
     editor->toPlainText().insert(pos,symbol.value());
@@ -309,7 +317,7 @@ void  texteditor::remote_erase(const Symbol& symbol){
     int pos = shared_editor->find(symbol);
     shared_editor->remote_erase(symbol);
     QTextCursor cursor = editor->textCursor();
-    cursor.setPosition(pos + 1);
+    cursor.setPosition(pos );
     cursor.deleteChar();
 }
 
