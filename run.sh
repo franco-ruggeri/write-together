@@ -9,10 +9,10 @@ cd build
 cmake ..
 cmake --build .
 ctest .
+
+# install and run
 cmake --install .
 cd ../bin
-
-# run
 target=$1
 shift
 ./$target $*
