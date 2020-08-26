@@ -1,8 +1,11 @@
 /*
- * Author: Antonino Musmeci, Claudio Nuzzo
+ * Author: Antonino Musmeci, Claudio Nuzzo, Stefano Di Blasio
  */
 
 #include <QStackedWidget>
+#include <QtWidgets/QFileDialog>
+#include <QtCore/QStandardPaths>
+#include <QtCore/QFileInfo>
 #include <cte/client/myClient.h>
 #include <QMessageBox>
 #include <cte/client/ProfileUpdateDialog.h>
@@ -10,7 +13,7 @@
 #include <QTStylesheet.h>
 
 ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClient> client):
-        QDialog(parent), ui(new Ui::ProfileUpdateDialog), client(client){
+        QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint), ui(new Ui::ProfileUpdateDialog), client(client){
     ui->setupUi(this);
 
     //set password mode for line edits
@@ -22,9 +25,6 @@ ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClien
     ui->changepass_change_pushButton->setStyleSheet(btnStylesheet);
     ui->changepass_cancel_pushButton->setStyleSheet(btnCancelStylesheet);
 
-    //set username label
-    ui->changeuser_username_label->setText(QString(client->user.username()));
-
     //set clearable fields
     ui->changeuser_newuser_lineEdit->setClearButtonEnabled(true);
     ui->changepass_newpass_lineEdit->setClearButtonEnabled(true);
@@ -34,9 +34,11 @@ ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClien
     ui->changeuser_newemail_lineEdit->setClearButtonEnabled(true);
 
     // pre-fill fields
+    ui->changeuser_username_label->setText(QString(client->user.username()));
     ui->changeuser_newname_lineEdit->setText(client->user.name());
     ui->changeuser_newsurname_lineEdit->setText(client->user.surname());
     ui->changeuser_newemail_lineEdit->setText(client->user.email());
+    ui->profile_image->setPixmap(QPixmap::fromImage(client->user.icon()));
 
     //Icon QLineEdit
     QIcon user_icon(":/images/user.png");
@@ -50,13 +52,29 @@ ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClien
     connect(client.get(), &myClient::profile_update_result, this, &ProfileUpdateDialog::update_profile_result);
 }
 
+void ProfileUpdateDialog::on_change_icon_pushButton_clicked() {
+    QFileDialog take_picture(this);
+    take_picture.setFileMode(QFileDialog::ExistingFile);
+    take_picture.setNameFilter(tr("Images (*.png *.jpg *.jpeg *.xpm"));
+    take_picture.setDirectory(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).takeFirst());
+    QString image_file;
+    if (take_picture.exec())
+        image_file = take_picture.selectedFiles().takeFirst();
+    if (!image_file.isEmpty() && QFileInfo::exists(image_file) && QFileInfo(image_file).isFile()) {
+        QImage profile_image(image_file);
+        if (!profile_image.isNull()) {
+            ui->profile_image->setPixmap(QPixmap::fromImage(profile_image));
+        }
+    }
+}
+
 void ProfileUpdateDialog::on_changepass_change_pushButton_clicked() {
     qDebug("pressed");
     QString new_username = ui->changeuser_newuser_lineEdit->text();
     QString new_name = ui->changeuser_newname_lineEdit->text();
     QString new_surname = ui->changeuser_newsurname_lineEdit->text();
     QString new_email = ui->changeuser_newemail_lineEdit->text();
-    QImage new_icon; // to be added
+    QImage new_icon = ui->profile_image->pixmap()->toImage(); // to be added
     QString new_password = ui->changepass_newpass_lineEdit->text();
     QString new_passowrd_confirm = ui->changepass_confirmpass_lineEdit->text();
     if (new_username.isEmpty()) new_username = client->user.username();
@@ -101,7 +119,13 @@ void ProfileUpdateDialog::update_profile_result(bool result, const QString &erro
 }
 
 void ProfileUpdateDialog::on_changepass_cancel_pushButton_clicked(){
-    emit reject();
+    // reset fields
+    ui->changeuser_username_label->setText(QString(client->user.username()));
+    ui->changeuser_newname_lineEdit->setText(client->user.name());
+    ui->changeuser_newsurname_lineEdit->setText(client->user.surname());
+    ui->changeuser_newemail_lineEdit->setText(client->user.email());
+    ui->profile_image->setPixmap(QPixmap::fromImage(client->user.icon()));
+    reject(); // this is not a signal; check if control returns to loginTextEditor instead of texteditor
 }
 
 #include <iostream>

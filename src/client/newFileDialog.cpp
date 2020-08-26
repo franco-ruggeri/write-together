@@ -10,7 +10,7 @@
 #include <cte/client/loginTextEditor.h>
 
 NewFileDialog::NewFileDialog(QWidget *parent,QSharedPointer<myClient> client, QSharedPointer<texteditor> editor):
-        QDialog(parent), ui(new Ui::NewFileDialog), client(client), editor(editor) {
+        QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint), ui(new Ui::NewFileDialog), client(client), editor(editor) {
     ui->setupUi(this);
 }
 

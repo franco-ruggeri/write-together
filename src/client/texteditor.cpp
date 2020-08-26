@@ -201,16 +201,17 @@ void texteditor::setupFileActions(){
 }
 
 void texteditor::setupUserActions(){
-   qDebug() << "INIT_USER_ACTION";
    QToolBar *tb = addToolBar(tr("User Actions"));
    QMenu *menu = menuBar()->addMenu(tr("&User"));
-   const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_icon.png"));
+   const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_group.png"));
    show_peers = menu->addAction(showPeersIcon, tr("&Show"), peers.get(),&QDockWidget::show);
    tb->addAction(show_peers);
+   const QIcon peerProfile = QIcon::fromTheme("peer-profile", QIcon(imgPath + "/user_icon.png"));
+   peer_profile = menu->addAction(peerProfile, tr("&Profile"), this, &texteditor::show_user_details);
+   tb->addAction(peer_profile);
 }
 
 void texteditor::setupEditActions() {
-   qDebug() << "INIT_SETUP_ACTION";
    QToolBar *tb = addToolBar(tr("Edit Actions"));
    QMenu *menu = menuBar()->addMenu(tr("&Edit"));
    const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
@@ -274,6 +275,9 @@ void texteditor::file_share(){
    emit share_file(file.sharing_link().toString());
 }
 
+void texteditor::show_user_details() {
+    emit show_profile_update();
+}
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    if(change_from_server) return;

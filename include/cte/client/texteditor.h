@@ -31,10 +31,12 @@ public:
 
 signals:
     void show_user_page();
+    void show_profile_update();
     void share_file(const QString string);
 
 private slots:
 
+    void show_user_details();
     void file_to_pdf();
     void file_share();
     void file_close();
@@ -46,7 +48,6 @@ private slots:
     void textChange();
     void on_list_user_itemClicked(QListWidgetItem *item);
     void remote_open(const Profile &profile, int site_id);
-//    void remote_close(const QString &username);
     void remote_close(const QString &username, int site_id);
     void remote_cursor(const Symbol &symbol, const QString &username);
     void remote_erase(const Symbol &symbol);
@@ -62,6 +63,7 @@ private:
     QAction *actionUndo;
     QAction * actionRedo;
     QAction *show_peers;
+    QAction *peer_profile;
     fileInfo file;
     double h;
     int current_position;

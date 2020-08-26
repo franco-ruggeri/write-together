@@ -174,6 +174,10 @@ void loginTextEditor::init_user_page() {
 
     ui->label_username_user_page->setFont(QFont("Roboto Thin", 20, 1, true));
     ui->label_username_user_page->setText(QString(client->user.username()));
+    if (change_profile_dialog == nullptr) {
+        change_profile_dialog = QSharedPointer<ProfileUpdateDialog>::create(this, this->client);
+        change_profile_dialog->setWindowModality(Qt::WindowModal);
+    }
     this->setCurrentIndex(0); // 0 -> user page
     client->get_documents_form_server();
 }
@@ -215,11 +219,12 @@ void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem 
     client->open_file(item->text());
 }
 
+void loginTextEditor::open_profile_editor() {
+    change_profile_dialog->open();
+}
+
 void loginTextEditor::on_user_edit_profile_pushButton_clicked(){
-    if(changepass_dialog == nullptr)
-        changepass_dialog = QSharedPointer<ProfileUpdateDialog>::create(this, this->client);
-    changepass_dialog->setModal(true);
-    changepass_dialog->show();
+    change_profile_dialog->show();
 }
 
 void loginTextEditor::on_user_all_documents_pushButton_clicked(){
@@ -281,23 +286,6 @@ void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
 
 }
 
-/*
-void loginTextEditor::on_user_change_password_pushButton_clicked() {
-
-    if(changepass_dialog == nullptr)
-        changepass_dialog = QSharedPointer<ProfileUpdateDialog>::create(this,this->client);
-    changepass_dialog->setModal(true);
-    changepass_dialog->show();
-}
-
-void loginTextEditor::on_user_change_username_pushButton_clicked() {
-    if(changeuser_dialog == nullptr)
-        changeuser_dialog = QSharedPointer<changeUsernameDialog>::create(this,this->client);
-    changeuser_dialog->setModal(true);
-    changeuser_dialog->show();
-}
-*/
-
 void loginTextEditor::open_editor(fileInfo file){
     if (file_dialog != nullptr && file_dialog->isVisible())
         file_dialog->hide();
@@ -306,6 +294,7 @@ void loginTextEditor::open_editor(fileInfo file){
     connect(editor.get(), &texteditor::show_user_page, this, &QWidget::show);
     connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::init_user_page);
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
+    connect(editor.get(), &texteditor::show_profile_update, this, &loginTextEditor::open_profile_editor);
     editor->show();
     editor->init_cursors();
 }

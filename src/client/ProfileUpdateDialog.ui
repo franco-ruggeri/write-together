@@ -105,7 +105,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="profile_image">
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -137,7 +137,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
-     <string>Edit Icon</string>
+     <string>Edit &amp;Icon</string>
     </property>
    </widget>
    <widget class="QPushButton" name="changepass_change_pushButton">
@@ -153,7 +153,10 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
-     <string>Save</string>
+     <string>&amp;Save</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="changepass_cancel_pushButton">
@@ -169,7 +172,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
-     <string>Cancel</string>
+     <string>&amp;Cancel</string>
     </property>
    </widget>
    <widget class="QFrame" name="gridFrame">
@@ -237,7 +240,10 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>New Username :    </string>
+      <string>New &amp;Username :    </string>
+     </property>
+     <property name="buddy">
+      <cstring>changeuser_newuser_lineEdit</cstring>
      </property>
     </widget>
     <widget class="QLineEdit" name="changeuser_newuser_lineEdit">
@@ -278,7 +284,10 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>New Password:</string>
+      <string>New &amp;Password:</string>
+     </property>
+     <property name="buddy">
+      <cstring>changepass_newpass_lineEdit</cstring>
      </property>
     </widget>
     <widget class="QLineEdit" name="changepass_newpass_lineEdit">
@@ -343,7 +352,10 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Confirm Password:</string>
+      <string>Confirm Pass&amp;word:</string>
+     </property>
+     <property name="buddy">
+      <cstring>changepass_confirmpass_lineEdit</cstring>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_newname_label">
@@ -359,7 +371,10 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Name:    </string>
+      <string>&amp;Name:    </string>
+     </property>
+     <property name="buddy">
+      <cstring>changeuser_newname_lineEdit</cstring>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_newsurname_label">
@@ -375,7 +390,10 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Surname:    </string>
+      <string>Su&amp;rname:    </string>
+     </property>
+     <property name="buddy">
+      <cstring>changeuser_newsurname_lineEdit</cstring>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_newemail_label">
@@ -391,7 +409,10 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Email:    </string>
+      <string>&amp;Email:    </string>
+     </property>
+     <property name="buddy">
+      <cstring>changeuser_newemail_lineEdit</cstring>
      </property>
     </widget>
     <widget class="QLineEdit" name="changeuser_newname_lineEdit">

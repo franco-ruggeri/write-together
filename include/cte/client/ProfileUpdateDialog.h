@@ -24,6 +24,7 @@ private:
     bool itsOkToClose = true;
 private slots:
 
+    void on_change_icon_pushButton_clicked();
     void on_changepass_change_pushButton_clicked();
     void on_changepass_cancel_pushButton_clicked();
 

@@ -26,9 +26,12 @@ private:
     QSharedPointer<myClient> client;
     Ui::loginTextEditor *ui;
     QSharedPointer<NewFileDialog> file_dialog;
-    QSharedPointer<ProfileUpdateDialog> changepass_dialog;
+    QSharedPointer<ProfileUpdateDialog> change_profile_dialog;
     QSharedPointer<texteditor>  editor;
     void cleanAll();
+
+public slots:
+    void open_profile_editor();
 
 private slots:
     void on_connect_pushButton_clicked();
@@ -37,7 +40,6 @@ private slots:
     void on_login_signin_pushButton_clicked();
     void on_singup_register_pushButton_clicked();
     void on_user_create_file_pushButton_clicked();
-    //void on_user_change_password_pushButton_clicked();
     void on_user_edit_profile_pushButton_clicked();
     void on_user_all_documents_pushButton_clicked();
     void on_user_own_documents_pushButton_clicked();

@@ -80,7 +80,7 @@ QMessageBox  QIcon {
 }</string>
   </property>
   <property name="currentIndex">
-   <number>4</number>
+   <number>3</number>
   </property>
   <widget class="QWidget" name="user_page">
    <property name="font">
@@ -223,7 +223,7 @@ background-color:  transparent;
 </string>
              </property>
              <property name="text">
-              <string>EDIT PROFILE</string>
+              <string>&amp;EDIT PROFILE</string>
              </property>
             </widget>
            </item>
@@ -261,7 +261,7 @@ background-color:  transparent;
 </string>
              </property>
              <property name="text">
-              <string>LOGOUT</string>
+              <string>&amp;LOGOUT</string>
              </property>
             </widget>
            </item>
@@ -390,7 +390,7 @@ background-color: transparent;</string>
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>CREATE NEW FILE</string>
+              <string>&amp;NEW FILE</string>
              </property>
             </widget>
            </item>
@@ -456,7 +456,7 @@ background-color: transparent;</string>
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>ADD FILE FROM URL</string>
+              <string>&amp;ADD FILE FROM URL</string>
              </property>
             </widget>
            </item>
@@ -522,7 +522,7 @@ background-color: transparent;padding: 4px;</string>
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>ALL DOCUMENTS</string>
+              <string>ALL &amp;DOCUMENTS</string>
              </property>
             </widget>
            </item>
@@ -588,7 +588,7 @@ background-color: transparent;padding: 6px;</string>
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>YOUR DOCUMENTS</string>
+              <string>&amp;YOUR DOCUMENTS</string>
              </property>
             </widget>
            </item>
@@ -654,7 +654,7 @@ background-color: transparent;padding: 4px;</string>
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>SHARED WITH YOU</string>
+              <string>&amp;SHARED WITH YOU</string>
              </property>
             </widget>
            </item>
@@ -1140,6 +1140,9 @@ background-color:  #00ABE7;
                   <property name="text">
                    <string>SIGN UP</string>
                   </property>
+                  <property name="default">
+                   <bool>false</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -1181,7 +1184,7 @@ color:  #00ABE7;
 </string>
                 </property>
                 <property name="text">
-                 <string>Already a member? Click here to login</string>
+                 <string>Already a member? Click here to &amp;login</string>
                 </property>
                </widget>
               </item>
@@ -1475,7 +1478,7 @@ color:  #00ABE7;
 </string>
             </property>
             <property name="text">
-             <string>Need a new Account? Click here to register</string>
+             <string>Need a new Account? Click here to &amp;register</string>
             </property>
            </widget>
           </item>
@@ -1530,6 +1533,12 @@ background-color:  #00ABE7;
               </property>
               <property name="text">
                <string>SIGN IN</string>
+              </property>
+              <property name="autoDefault">
+               <bool>true</bool>
+              </property>
+              <property name="default">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -1745,6 +1754,12 @@ background-color:  #00ABE7;</string>
           </property>
           <property name="text">
            <string>CONNECT</string>
+          </property>
+          <property name="autoDefault">
+           <bool>true</bool>
+          </property>
+          <property name="default">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
