@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS sharing
 	`sharing_user` VARCHAR(100) NOT NULL,
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
-	PRIMARY KEY (`sharing_user`, `document_owner`, `document_name`),
 	FOREIGN KEY (`sharing_user`) REFERENCES user(`username`) ON UPDATE CASCADE,
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`) ON UPDATE CASCADE
 );
