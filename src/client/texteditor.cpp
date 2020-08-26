@@ -93,6 +93,7 @@ void texteditor::setupPeers(){
     // current user
     UserInfo user = client->user;
     user.color_ = generate_color();
+    user.format.setFontPointSize(14);
     username_to_user.insert(user.username(),user);
     QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
     auto *widget = new QListWidgetItem(user_icon, user.username() + " (you)");
@@ -287,18 +288,17 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
         charsRemoved = 0;
     }
 
-    for(int i = 0 ; i < charsRemoved; i++) {
-
-
+    for(int i = 0 ; i < charsRemoved && !editor->document()->isEmpty(); i++) {
         Symbol s = shared_editor->local_erase(position);
         client->sendErase(file.document(), s);
-
     }
 
    for(int i = 0 ; i < charsAdded; i++) {
-       Symbol s = shared_editor->local_insert(position + i, editor->toPlainText()[position + i]);
-       client->sendInsert(file.document(),s);
-
+       QChar c = editor->document()->characterAt(position + i );
+       if(!c.isNull()) {
+           Symbol s = shared_editor->local_insert(position + i, editor->toPlainText()[position + i]);
+           client->sendInsert(file.document(), s);
+       }
    }
 
 }
