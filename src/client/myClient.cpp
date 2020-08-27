@@ -273,6 +273,10 @@ void myClient::process_response() {
                 QObject::disconnect(socket, &Socket::ready_message, this, &myClient::process_response);
                 QObject::connect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
                 QSharedPointer<DocumentMessage> document_message = response.staticCast<DocumentMessage>();
+                QString document_name = document_message->document().full_name();
+                if (message_to_send_->type() == MessageType::create && !user.filename_to_owner_map.contains(document_name)) {
+                    user.filename_to_owner_map.insert(document_name, document_message->document());
+                }
                 fileInfo file(document_message->document(), document_message->document_data());
                 emit document(file);
             } else {
@@ -393,9 +397,14 @@ void myClient::new_file(const QString& filename){
     send_message(create_message);
 }
 
-void myClient::open_file(const QString& filename){
-    Document doc = user.filename_to_owner_map[filename];
-    QSharedPointer<Message> open_message = QSharedPointer<OpenMessage>::create(doc);
+void myClient::open_file(const QString& file, bool isFilename){
+    QSharedPointer<Message> open_message;
+    if (isFilename) {
+        Document doc = user.filename_to_owner_map[file];
+        open_message = QSharedPointer<OpenMessage>::create(doc);
+    } else { // sharing link
+        open_message = QSharedPointer<OpenMessage>::create(file);
+    }
     send_message(open_message);
 }
 

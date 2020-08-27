@@ -178,6 +178,10 @@ void loginTextEditor::init_user_page() {
         change_profile_dialog = QSharedPointer<ProfileUpdateDialog>::create(this, this->client);
         change_profile_dialog->setWindowModality(Qt::WindowModal);
     }
+    if (open_dialog_ == nullptr) {
+        open_dialog_ = QSharedPointer<OpenFileUrl>::create(this, this->client);
+        open_dialog_->setModal(true);
+    }
     this->setCurrentIndex(0); // 0 -> user page
     client->get_documents_form_server();
 }
@@ -201,12 +205,18 @@ void loginTextEditor::display_documents(const QSet<Document> &documents) {
 }
 
 void loginTextEditor::on_user_create_file_pushButton_clicked() {
+    file_open_request_ = OpenFileSource::create;
     if(file_dialog == nullptr) {
         file_dialog = QSharedPointer<NewFileDialog>::create(this, client, editor);
 
     }
     file_dialog->setModal(true);
     file_dialog->show();
+}
+
+void loginTextEditor::on_user_add_pushButton_clicked() {
+    file_open_request_ = OpenFileSource::open_from_link;
+    open_dialog_->show();
 }
 
 void loginTextEditor::on_user_logout_pushButton_clicked() {
@@ -216,11 +226,12 @@ void loginTextEditor::on_user_logout_pushButton_clicked() {
 }
 
 void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item) {
+    file_open_request_ = OpenFileSource::open_from_list;
     client->open_file(item->text());
 }
 
 void loginTextEditor::open_profile_editor() {
-    change_profile_dialog->open();
+    change_profile_dialog->show();
 }
 
 void loginTextEditor::on_user_edit_profile_pushButton_clicked(){
@@ -233,7 +244,6 @@ void loginTextEditor::on_user_all_documents_pushButton_clicked(){
     QList documents = client->user.filename_to_owner_map.values();
     for (auto d:documents){
         file_list.push_back(d.full_name());
-        client->user.filename_to_owner_map.insert(d.full_name(), d);
     }
     if (file_list.length() == 0){
         ui->label_list_items->setText(QString("No documents available."));
@@ -252,7 +262,6 @@ void loginTextEditor::on_user_own_documents_pushButton_clicked(){
     for (auto d:documents){
         if(d.owner() == client->user.username()) {
             file_list.push_back(d.full_name());
-            client->user.filename_to_owner_map.insert(d.full_name(), d);
         }
     }
     if (file_list.length() == 0){
@@ -272,7 +281,6 @@ void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
     for (auto d:documents){
         if(d.owner() != client->user.username()) {
             file_list.push_back(d.full_name());
-            client->user.filename_to_owner_map.insert(d.full_name(), d);
         }
     }
     if (file_list.length() == 0){
@@ -289,10 +297,13 @@ void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
 void loginTextEditor::open_editor(fileInfo file){
     if (file_dialog != nullptr && file_dialog->isVisible())
         file_dialog->hide();
+    if (file_open_request_ == OpenFileSource::open_from_link) {
+        open_dialog_->clear_content();
+    }
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
     connect(editor.get(), &texteditor::show_user_page, this, &QWidget::show);
-    connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::init_user_page);
+    // connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::init_user_page);
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
     connect(editor.get(), &texteditor::show_profile_update, this, &loginTextEditor::open_profile_editor);
     editor->show();

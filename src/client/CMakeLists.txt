@@ -11,6 +11,7 @@ list(APPEND SRC
         loginTextEditor.cpp
         utility.cpp
         newFileDialog.cpp
+        OpenFileUrl.cpp
         ProfileUpdateDialog.cpp
         texteditor.cpp
         myClient.cpp
@@ -21,6 +22,7 @@ list(APPEND SRC
 
 list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/ProfileUpdateDialog.h
+        ${QOBJ_DIR}/OpenFileUrl.h
         ${QOBJ_DIR}/loginTextEditor.h
         ${QOBJ_DIR}/myClient.h
         ${QOBJ_DIR}/newFileDialog.h

@@ -18,8 +18,6 @@
 #include <cte/client/fileInfo.h>
 #include <cte/client/UserInfo.h>
 #include <cte/network/Socket.h>
-#define PORT 1111
-
 
 using namespace cte;
 
@@ -56,7 +54,7 @@ public:
 
     void sendErase(int pos);
 
-    void open_file(const QString& filename);
+    void open_file(const QString& file, bool isFilename = true);
     void file_close(const fileInfo& file);
 
 
