@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci, Claudio Nuzzo
+ * Author: Antonino Musmeci, Claudio Nuzzo, Stefano Di Blasio
  */
 
 
@@ -38,7 +38,7 @@ private:
     QSharedPointer<ProfileUpdateDialog> change_profile_dialog;
     OpenFileSource file_open_request_;
     QSharedPointer<texteditor>  editor;
-    void cleanAll();
+    void clear_user_fields();
 
 public slots:
     void open_profile_editor();
@@ -60,6 +60,7 @@ private slots:
     //void on_user_share_pushButton_clicked();
     void share_file(const QString& filename);
     void connection_to_server(bool connected);
+    void handle_disconnection_server();
     void account_log_result(bool logged, const QString& error_message = QString(""));
     void handle_generic_error(const QString& error);
     void handle_timeout(const QString& type_request);

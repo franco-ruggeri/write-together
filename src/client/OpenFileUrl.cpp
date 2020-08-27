@@ -10,7 +10,7 @@
 
 namespace cte {
     OpenFileUrl::OpenFileUrl(QWidget *parent, QSharedPointer<myClient> client) :
-            QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint), ui(new Ui::OpenFileUrl), client_(client) {
+            QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint), ui(new Ui::OpenFileUrl), client_(client) {
         ui->setupUi(this);
     }
 
@@ -38,4 +38,12 @@ namespace cte {
         client_->open_file(file_url, false);
         accept();
     }
+
+/*
+    TODO: understand if correct to delete ui
+    OpenFileUrl::~OpenFileUrl() noexcept {
+        if (ui) delete ui;
+        QDialog::~QDialog();
+    }
+*/
 }

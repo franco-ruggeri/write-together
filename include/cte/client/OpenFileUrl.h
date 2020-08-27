@@ -20,6 +20,7 @@ namespace cte {
 
     public:
         OpenFileUrl(QWidget* parent, QSharedPointer<myClient> client);
+        // virtual ~OpenFileUrl() noexcept;
         void clear_content();
 
     private slots:

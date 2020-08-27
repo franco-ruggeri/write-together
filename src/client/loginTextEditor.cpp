@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Stefano Di Blasio
  */
 
 #include <QMessageBox>
@@ -28,6 +28,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
     connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
     connect(client.get(), &myClient::host_connected, this, &loginTextEditor::connection_to_server);
+    connect(client.get(), &myClient::server_disconnected, this, &loginTextEditor::handle_disconnection_server);
     QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection);
 
     //Clear button enabled
@@ -110,6 +111,28 @@ void loginTextEditor::connection_to_server(bool connected) {
     }
 }
 
+void loginTextEditor::handle_disconnection_server() {
+    // nothing should be done if already in connecting page
+    if (this->currentIndex() != 3 && this->currentIndex() != 4) {
+        this->clear_user_fields();
+        client->destroy_previous_connection();
+        if (editor && editor->isVisible()) {
+            editor->close();
+        }
+        if (file_dialog && file_dialog->isVisible()) {
+            file_dialog->close();
+        }
+        if (open_dialog_ && open_dialog_->isVisible()) {
+            open_dialog_->close();
+        }
+        if (change_profile_dialog && change_profile_dialog->isVisible()) {
+            change_profile_dialog->close();
+        }
+        this->setCurrentIndex(4);
+        QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection);
+    }
+}
+
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
     QString ip_address = ui->connect_address_lineEdit_->text();
@@ -187,6 +210,11 @@ void loginTextEditor::init_user_page() {
 }
 
 void loginTextEditor::display_documents(const QSet<Document> &documents) {
+    // just a try for ProfileUpdateDialog modality
+    if (change_profile_dialog && change_profile_dialog->isVisible()) {
+        change_profile_dialog->hide();
+        change_profile_dialog->show();
+    }
     QStringList file_list;
     ui->user_file_listWidget->clear();
     ui->label_list_items->setStyleSheet(list_items_title);
@@ -221,7 +249,7 @@ void loginTextEditor::on_user_add_pushButton_clicked() {
 
 void loginTextEditor::on_user_logout_pushButton_clicked() {
     client->logout();
-    cleanAll();
+    clear_user_fields();
     this->setCurrentIndex(3);
 }
 
@@ -303,22 +331,24 @@ void loginTextEditor::open_editor(fileInfo file){
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
     connect(editor.get(), &texteditor::show_user_page, this, &QWidget::show);
-    // connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::init_user_page);
+    connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::display_documents);
     connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
     connect(editor.get(), &texteditor::show_profile_update, this, &loginTextEditor::open_profile_editor);
     editor->show();
     editor->init_cursors();
 }
 
-void loginTextEditor::cleanAll(){
+void loginTextEditor::clear_user_fields(){
     ui->signup_password_lineEdit->clear();
     ui->signup_email_lineEdit->clear();
     ui->signup_username_lineEdit->clear();
     ui->signup_name_lineEdit->clear();
-    ui->signup_username_lineEdit->clear();
+    ui->signup_surname_lineEdit->clear();
     ui->login_password_lineEdit->clear();
     ui->login_email_lineEdit->clear();
+    ui->label_username_user_page->clear();
     ui->user_file_listWidget->clear();
+    if (open_dialog_) open_dialog_->clear_content();
 }
 
 void loginTextEditor::share_file(const QString& shared_link){

@@ -13,7 +13,7 @@
 #include <QTStylesheet.h>
 
 ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClient> client):
-        QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint), ui(new Ui::ProfileUpdateDialog), client(client){
+        QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint), ui(new Ui::ProfileUpdateDialog), client(client){
     ui->setupUi(this);
 
     //set password mode for line edits

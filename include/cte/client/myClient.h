@@ -24,7 +24,6 @@ using namespace cte;
 class myClient : public QObject {
     Q_OBJECT
     QSharedPointer<QTimer> wait_on_connection_, connecting_interrupt_; // the second for qt backward compatibility
-    int connection_attempts_;
     QSharedPointer<Message> message_to_send_;
     Profile new_user;
     QString host_address_, fallback_host_address_, host_to_connect_;
@@ -32,33 +31,28 @@ class myClient : public QObject {
     bool ssl_handshake_failed_;
     // only for qt backward compatibility
     QAbstractSocket::SocketState previous_state_;
+
     void send_message(const QSharedPointer<Message>& request);
 
 public:
     Socket *socket;
 
-//    Profile user;
     UserInfo user;
 
     myClient(QObject *parent = nullptr);
+    virtual ~myClient() noexcept;
+
+    void destroy_previous_connection(); // in case the server disconnects
 
     void login(QString &email, QString &password);
-
-
-//    std::tuple<bool, QString> signup(QString& username, QString& email, QString& password);
 
     void logout();
 
 
     void new_file(const QString& filename);
 
-    void sendErase(int pos);
-
     void open_file(const QString& file, bool isFilename = true);
     void file_close(const fileInfo& file);
-
-
-    std::optional<QString> get_uri(const QString &filename);
 
     void get_documents_form_server();
 
@@ -79,7 +73,7 @@ private slots:
     void handle_changed_state(QAbstractSocket::SocketState new_state);
     void timeout_on_connection();
     void handle_ssl_handshake(const QList<QSslError>& errors); // error in verifying the peer
-    void connection_enctypted(); // the connection is established and encrypted
+    void connection_encrypted(); // the connection is established and encrypted
     void attempt_timeout(); // to retry if less than maximum attempts or to signal timeout error
     void process_response(); // elaborate server message (response)
     void process_data_from_server(); // process any "interactive" message from the server
@@ -87,6 +81,7 @@ private slots:
 signals:
     void generic_error(const QString& error);
     void host_connected(bool result);
+    void server_disconnected();
     void timeout_expired(const QString& message_type);
     void authentication_result(bool authenticated, const QString& error_message);
     void profile_update_result(bool authenticated, const QString& error_message);

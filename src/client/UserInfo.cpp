@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Stefano Di Blasio
  */
 
 #include "UserInfo.h"

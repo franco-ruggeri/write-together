@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Stefano Di Blasio
  */
 
 #pragma once
@@ -30,7 +30,7 @@ public:
     void init_cursors();
 
 signals:
-    void show_user_page();
+    void show_user_page(const QSet<Document> &docs);
     void show_profile_update();
     void share_file(const QString string);
 

@@ -95,6 +95,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhUrlCharactersOnly</set>
+         </property>
+         <property name="placeholderText">
+          <string>cte:&lt;author&gt;/&lt;document_name&gt;?&lt;hash&gt;</string>
+         </property>
         </widget>
        </item>
       </layout>

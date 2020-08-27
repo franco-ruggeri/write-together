@@ -1,7 +1,8 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Stefano Di Blasio
  */
 
+#include <QtGlobal>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -268,8 +269,12 @@ void texteditor::file_to_pdf() {
 
 void texteditor::file_close() {
    this->client->file_close(this->file);
-   emit show_user_page();
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+   emit show_user_page(client->user.filename_to_owner_map.values().toSet());
+#else
+   QList<Document> docs = client->user.filename_to_owner_map.values();
+   emit show_user_page(QSet<Document>(docs.rbegin(), docs.rend()));
+#endif
 }
 
 void texteditor::file_share(){

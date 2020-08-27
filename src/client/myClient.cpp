@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Stefano Di Blasio
  */
 //TODO: add user name
 //TODO add error message
@@ -47,9 +47,9 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         // establish connection and handshake
 //        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error); // supported as of qt 5.15
         QObject::connect(socket, QOverload<const QList<QSslError> &>::of(&QSslSocket::sslErrors), this, &myClient::handle_ssl_handshake);
-        QObject::connect(socket, &QSslSocket::encrypted, this, &myClient::connection_enctypted);
+        QObject::connect(socket, &QSslSocket::encrypted, this, &myClient::connection_encrypted);
         // QObject::connect(socket, &QAbstractSocket::connected, this, [this](){ qDebug() << "Connection achieved to host " << this->host_to_connect_;}); // this is the right one
-//        QObject::connect(socket, &QAbstractSocket::connected, this, &myClient::connection_enctypted); // this is only because encryption does not work at the moment
+//        QObject::connect(socket, &QAbstractSocket::connected, this, &myClient::connection_encrypted); // this is only because encryption does not work at the moment
         // the latter is temporally substituted by qt backward compatible slot connected to state changes of socket
         // the followings are for qt backward compatibility
         QObject::connect(socket, &QAbstractSocket::stateChanged, this, &myClient::handle_changed_state);
@@ -58,6 +58,11 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         qDebug() << e.what();
         return;
     }
+}
+
+myClient::~myClient() noexcept {
+    if (socket) socket->deleteLater();
+    this->deleteLater();
 }
 
 void myClient::handle_connection_error(QAbstractSocket::SocketError error) {
@@ -100,6 +105,7 @@ void myClient::handle_changed_state(QAbstractSocket::SocketState new_state) {
             this->connect();
         } else if (previous_state_ == QAbstractSocket::ClosingState) {
             qDebug() << "Successfully closed the connection with host " << host_to_connect_ << ":" << port_;
+            emit server_disconnected();
         } else { // the connection wasn't established
             previous_state_ = QAbstractSocket::UnconnectedState;
             qDebug() << "Connecting to host " << host_to_connect_ << ":" << port_ << " failed. Aborting.";
@@ -135,7 +141,7 @@ void myClient::handle_ssl_handshake(const QList<QSslError>& errors) {
     socket->ignoreSslErrors();
 }
 
-void myClient::connection_enctypted() {
+void myClient::connection_encrypted() {
     qDebug() << "Connection to host " << host_to_connect_ << " succeeded and encrypted";
     emit host_connected(true);
 }
@@ -153,6 +159,11 @@ void myClient::connect(const QString& ip_address, quint16 ip_port) {
     connecting_interrupt_->start(5000);
     socket->connectToHost(host_to_connect_, port_);
     return;
+}
+
+void myClient::destroy_previous_connection() {
+    host_to_connect_ = "";
+    user.clear_fields();
 }
 
 void myClient::send_message(const QSharedPointer<Message>& request) {
@@ -274,7 +285,11 @@ void myClient::process_response() {
                 QObject::connect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
                 QSharedPointer<DocumentMessage> document_message = response.staticCast<DocumentMessage>();
                 QString document_name = document_message->document().full_name();
-                if (message_to_send_->type() == MessageType::create && !user.filename_to_owner_map.contains(document_name)) {
+                if ( ( (message_to_send_->type() == MessageType::create)  // file just created by user
+                    || (message_to_send_->type() == MessageType::open && static_cast<OpenMessage*>(message_to_send_.get())->sharing_link()
+                        && !(static_cast<OpenMessage*>(message_to_send_.get())->document()) ) // document opened by sharing link
+                    ) && !user.filename_to_owner_map.contains(document_name) // be sure the document is not yet in the list
+                    ) {
                     user.filename_to_owner_map.insert(document_name, document_message->document());
                 }
                 fileInfo file(document_message->document(), document_message->document_data());
