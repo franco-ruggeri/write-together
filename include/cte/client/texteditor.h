@@ -39,7 +39,7 @@ private slots:
     void show_user_details();
     void file_to_pdf();
     void file_share();
-    void file_close();
+    void file_close(bool spontaneous);
     void setupEditActions();
     void setupUserActions();
     void setupPeers();

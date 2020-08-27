@@ -130,7 +130,7 @@ void myClient::timeout_on_connection() {
             state = "unknown";
     }
     qWarning() << "Error occurred: " << state << " failed. Aborting connection";
-    emit host_connected(false);
+    // emit host_connected(false);
 }
 
 void myClient::handle_ssl_handshake(const QList<QSslError>& errors) {

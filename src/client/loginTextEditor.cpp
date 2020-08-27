@@ -107,6 +107,9 @@ void loginTextEditor::connection_to_server(bool connected) {
         this->setCurrentIndex(2);
         //this->setCurrentIndex(3);
     } else {
+        if (this->currentIndex() == 3) {
+            QMessageBox::warning(this, tr("Server unreachable"), tr("The server is not responding now. Please try later."));
+        }
         this->setCurrentIndex(3);
     }
 }

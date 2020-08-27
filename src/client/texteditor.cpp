@@ -267,13 +267,13 @@ void texteditor::file_to_pdf() {
                                     .arg(QDir::toNativeSeparators(fileName)));
 }
 
-void texteditor::file_close() {
-   this->client->file_close(this->file);
+void texteditor::file_close(bool spontaneous) {
+    if (spontaneous) this->client->file_close(this->file);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
-   emit show_user_page(client->user.filename_to_owner_map.values().toSet());
+    emit show_user_page(client->user.filename_to_owner_map.values().toSet());
 #else
-   QList<Document> docs = client->user.filename_to_owner_map.values();
-   emit show_user_page(QSet<Document>(docs.rbegin(), docs.rend()));
+    QList<Document> docs = client->user.filename_to_owner_map.values();
+    emit show_user_page(QSet<Document>(docs.rbegin(), docs.rend()));
 #endif
 }
 
@@ -359,7 +359,7 @@ void texteditor::remote_close(const QString &username, int site_id) {
 }
 
 void texteditor::closeEvent(QCloseEvent *event){
-    file_close();
+    file_close(event->spontaneous());
     event->accept();
 }
 
