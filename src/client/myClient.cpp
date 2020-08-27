@@ -164,6 +164,8 @@ void myClient::connect(const QString& ip_address, quint16 ip_port) {
 void myClient::destroy_previous_connection() {
     host_to_connect_ = "";
     user.clear_fields();
+    QObject::disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
+    QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
 }
 
 void myClient::send_message(const QSharedPointer<Message>& request) {
@@ -426,9 +428,8 @@ void myClient::open_file(const QString& file, bool isFilename){
 void myClient::file_close(const fileInfo& file){
     QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(file.document(), user.username());
     send_message(close_message);
-    disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
+    QObject::disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
     QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
-
 }
 
 void myClient::get_documents_form_server() {
