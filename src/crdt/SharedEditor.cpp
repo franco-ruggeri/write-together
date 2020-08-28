@@ -18,7 +18,7 @@ namespace cte {
             site_id_(site_id), site_counter_(starting_site_counter), text_(text), pos_allocator_(pos_allocator) {}
 
     Symbol SharedEditor::local_insert(unsigned int index, QChar value) {
-        if (value.isNull()) throw std::logic_error("trying to insert null character");
+       if (value.isNull()) throw std::logic_error("trying to insert null character");
 
         // allocate position
         QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();

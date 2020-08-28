@@ -196,7 +196,9 @@ void texteditor::setupFileActions(){
    tb->addAction(a);
    menu->addSeparator();
    a = menu->addAction(QIcon::fromTheme("document-close", QIcon(imgPath + "/fileopen.png")),
-                   tr("&Close"), this, &texteditor::close);
+                   tr("&Close"), this, [this](){
+      file_close(true);
+   });
 
    tb->addAction(a);
    menu->addSeparator();
@@ -275,6 +277,7 @@ void texteditor::file_close(bool spontaneous) {
     QList<Document> docs = client->user.filename_to_owner_map.values();
     emit show_user_page(QSet<Document>(docs.rbegin(), docs.rend()));
 #endif
+    this->close();
 }
 
 void texteditor::file_share(){
@@ -288,14 +291,15 @@ void texteditor::show_user_details() {
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    if(change_from_server) return;
 
-    if(position == 0 && charsAdded > 1){
+    if(position ==  0 && charsAdded > 1){
         charsAdded  = charsAdded - charsRemoved;
         charsRemoved = 0;
     }
 
-    for(int i = 0 ; i < charsRemoved && !editor->document()->isEmpty(); i++) {
+    for(int i = 0 ; i < charsRemoved && !shared_editor->text().empty(); i++) {
         Symbol s = shared_editor->local_erase(position);
         client->sendErase(file.document(), s);
+
     }
 
    for(int i = 0 ; i < charsAdded; i++) {
@@ -343,7 +347,7 @@ void texteditor::remote_open(const Profile &profile, int site_id){
         username_to_user.insert(user.username(),user);
         QIcon user_icon = QIcon(QPixmap::fromImage(profile.icon()));
         QListWidgetItem* widget = new QListWidgetItem(user_icon,profile.username());
-        widget->setBackground(generate_color());
+        widget->setBackground(user.color());
         username_to_row.insert(user.username(), user_row_);
         list_user->insertItem(user_row_, widget);
         user_row_++;
@@ -362,6 +366,9 @@ void texteditor::closeEvent(QCloseEvent *event){
     file_close(event->spontaneous());
     event->accept();
 }
+
+
+
 
 void texteditor::textChange() {
     draw_cursors();

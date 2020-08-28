@@ -27,6 +27,8 @@ public:
     bool change_from_server;
     void setupFileActions();
     void closeEvent(QCloseEvent *event) override;
+
+
     void init_cursors();
 
 signals:

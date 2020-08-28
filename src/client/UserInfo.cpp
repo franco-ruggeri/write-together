@@ -57,7 +57,6 @@ QImage UserInfo::icon() const {
 
 void  UserInfo::draw_background_char(QTextEdit *editor,int start, int end) {
 
-
     if(selected)
         format.setBackground(Qt::transparent);
     else
@@ -93,7 +92,6 @@ void UserInfo::add_cursor(QTextEdit *editor, int new_position, int id){
     const QRect qRect = editor->cursorRect(*c->cursor_);
     c->vertical_cursor->move(qRect.left(), qRect.top());
     c->vertical_cursor->show();
-
     c->horizontal_cursor = new QLabel(editor);
     int x_pos = qRect.center().x();
     int y_pos = qRect.topRight().y() - 4;
@@ -105,7 +103,8 @@ void UserInfo::add_cursor(QTextEdit *editor, int new_position, int id){
     c->horizontal_cursor->setText(username_);
     site_id_to_cursor.insert(id,c);
     c->horizontal_cursor->show();
-    format.setFontPointSize(14);
+    QTextCursor cursor(editor->document());
+
 
 }
 
@@ -127,6 +126,7 @@ void UserInfo::change_cursor_position(QTextEdit *editor, int new_position, int i
         QRect bounds = fm.boundingRect(username_);
         horizontal_label->move(x_pos, y_pos);
         horizontal_label->show();
+        format.setFontPointSize(14);
 
     }
 
@@ -155,6 +155,7 @@ void UserInfo::update_cursor(QTextEdit *editor){
             int y_pos = qRect.topRight().y() - 4;
             c->horizontal_cursor->move(x_pos, y_pos);
             c->horizontal_cursor->show();
+            format.setFontPointSize(14);
 //        }
     }
 }

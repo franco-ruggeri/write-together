@@ -120,6 +120,7 @@ void loginTextEditor::handle_disconnection_server() {
         this->clear_user_fields();
         client->destroy_previous_connection();
         if (editor && editor->isVisible()) {
+            client->connect_response();
             editor->close();
         }
         if (file_dialog && file_dialog->isVisible()) {

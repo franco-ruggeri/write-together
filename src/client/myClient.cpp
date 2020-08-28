@@ -164,6 +164,10 @@ void myClient::connect(const QString& ip_address, quint16 ip_port) {
 void myClient::destroy_previous_connection() {
     host_to_connect_ = "";
     user.clear_fields();
+//    QObject::disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
+//    QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
+}
+void myClient::connect_response(){
     QObject::disconnect(socket, &Socket::ready_message, this, &myClient::process_data_from_server);
     QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
 }

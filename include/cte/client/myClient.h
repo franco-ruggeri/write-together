@@ -64,7 +64,7 @@ public:
 
     void signup(QString &username, QString &email, QString &password, QString name, QString surname, QImage icon = QImage());
     void update_profile(const QString& username, const QString& email, const QString& name, const QString& surname, const QImage& icon, QString& password);
-
+    void connect_response();
 public slots:
     void connect(const QString& ip_address = "localhost", quint16 ip_port = 1111);
 
@@ -93,6 +93,8 @@ signals:
     void char_inserted(const Symbol& symbol);
     void char_removed(const Symbol& symbol);
     void cursor(const Symbol& symbol, const QString& username);
+
+
 };
 
 
