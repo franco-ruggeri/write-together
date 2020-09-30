@@ -1,5 +1,5 @@
 /*
- * Author: Antonino Musmeci
+ * Author: Antonino Musmeci, Claudio Nuzzo
  */
 
 #include <QStackedWidget>
@@ -7,11 +7,15 @@
 #include "ui_newFileDialog.h"
 #include <QMessageBox>
 #include <QtWidgets/QWidget>
+#include <QTStylesheet.h>
 #include <cte/client/loginTextEditor.h>
 
 NewFileDialog::NewFileDialog(QWidget *parent,QSharedPointer<myClient> client, QSharedPointer<texteditor> editor):
         QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint), ui(new Ui::NewFileDialog), client(client), editor(editor) {
     ui->setupUi(this);
+
+    ui->newfile_cancel_pushButton->setStyleSheet(btnCancelFileStylesheet);
+    ui->newfile_create_pushButton->setStyleSheet(btnCreateFileStylesheet);
 }
 
 

@@ -272,6 +272,9 @@ void loginTextEditor::on_user_edit_profile_pushButton_clicked(){
 
 void loginTextEditor::on_user_all_documents_pushButton_clicked(){
     QStringList file_list;
+    ui->user_all_documents_pushButton->setStyleSheet(btnSelectedFilterStylesheet);
+    ui->user_own_documents_pushButton->setStyleSheet(btnFilterDocumentsStylesheet);
+    ui->user_shared_documents_pushButton->setStyleSheet(btnFilterDocumentsStylesheet);
     ui->user_file_listWidget->clear();
     QList documents = client->user.filename_to_owner_map.values();
     for (auto d:documents){
@@ -289,6 +292,11 @@ void loginTextEditor::on_user_all_documents_pushButton_clicked(){
 
 void loginTextEditor::on_user_own_documents_pushButton_clicked(){
     QStringList file_list;
+
+    ui->user_all_documents_pushButton->setStyleSheet(btnFilterDocumentsStylesheet);
+    ui->user_own_documents_pushButton->setStyleSheet(btnSelectedFilterStylesheet);
+    ui->user_shared_documents_pushButton->setStyleSheet(btnFilterDocumentsStylesheet);
+
     ui->user_file_listWidget->clear();
     QList documents = client->user.filename_to_owner_map.values();
     for (auto d:documents){
@@ -307,6 +315,9 @@ void loginTextEditor::on_user_own_documents_pushButton_clicked(){
 }
 
 void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
+    ui->user_all_documents_pushButton->setStyleSheet(btnFilterDocumentsStylesheet);
+    ui->user_own_documents_pushButton->setStyleSheet(btnFilterDocumentsStylesheet);
+    ui->user_shared_documents_pushButton->setStyleSheet(btnSelectedFilterStylesheet);
     QStringList file_list;
     ui->user_file_listWidget->clear();
     QList documents = client->user.filename_to_owner_map.values();

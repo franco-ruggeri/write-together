@@ -16,6 +16,18 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>552</width>
+    <height>771</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>552</width>
+    <height>771</height>
+   </size>
+  </property>
   <property name="font">
    <font>
     <family>Roboto Light</family>
@@ -36,8 +48,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>552</width>
-     <height>61</height>
+     <width>561</width>
+     <height>70</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -94,10 +106,16 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>60</y>
+     <y>70</y>
      <width>561</width>
      <height>711</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -207,7 +225,7 @@ margin-right: 20px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Current Username:</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Current &lt;span style=&quot; text-decoration: underline;&quot;&gt;U&lt;/span&gt;sername:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_username_label">
@@ -352,7 +370,7 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Confirm Pass&amp;word:</string>
+      <string>Confirm &amp;Password:</string>
      </property>
      <property name="buddy">
       <cstring>changepass_confirmpass_lineEdit</cstring>
@@ -390,7 +408,7 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>Su&amp;rname:    </string>
+      <string>&amp;Surname:    </string>
      </property>
      <property name="buddy">
       <cstring>changeuser_newsurname_lineEdit</cstring>
@@ -517,17 +535,6 @@ font-size:8pt</string>
    </widget>
   </widget>
  </widget>
- <tabstops>
-  <tabstop>change_icon_pushButton</tabstop>
-  <tabstop>changeuser_newuser_lineEdit</tabstop>
-  <tabstop>changeuser_newname_lineEdit</tabstop>
-  <tabstop>changeuser_newsurname_lineEdit</tabstop>
-  <tabstop>changeuser_newemail_lineEdit</tabstop>
-  <tabstop>changepass_newpass_lineEdit</tabstop>
-  <tabstop>changepass_confirmpass_lineEdit</tabstop>
-  <tabstop>changepass_change_pushButton</tabstop>
-  <tabstop>changepass_cancel_pushButton</tabstop>
- </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

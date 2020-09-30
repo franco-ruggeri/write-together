@@ -16,6 +16,10 @@ extern const QString btnEditProfileStylesheet;
 extern const QString btnNewFileStylesheet;
 extern const QString btnFilterDocumentsStylesheet;
 extern const QString btnCancelStylesheet;
+extern const QString btnCreateFileStylesheet;
+extern const QString btnCancelFileStylesheet;
+extern const QString btnPasteFileStylesheet;
+extern const QString btnSelectedFilterStylesheet;
 
 
 #endif //COLLABORATIVE_TEXT_EDITOR_QTSTYLESHEET_H

@@ -1,5 +1,5 @@
 /*
- * Author: Stefano Di Blasio
+ * Author: Stefano Di Blasio, Claudio Nuzzo
  */
 
 #include <cte/client/OpenFileUrl.h>
@@ -7,11 +7,17 @@
 #include <QtGui/QGuiApplication>
 #include <QtGui/QClipboard>
 #include <QtWidgets/QMessageBox>
+#include <QTStylesheet.h>
+
 
 namespace cte {
     OpenFileUrl::OpenFileUrl(QWidget *parent, QSharedPointer<myClient> client) :
             QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint), ui(new Ui::OpenFileUrl), client_(client) {
         ui->setupUi(this);
+
+        ui->cancel_button->setStyleSheet(btnCancelFileStylesheet);
+        ui->paste_button->setStyleSheet(btnPasteFileStylesheet);
+        ui->open_button->setStyleSheet(btnCreateFileStylesheet);
     }
 
     void OpenFileUrl::clear_content() {
