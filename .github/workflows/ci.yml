@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration
 
 on:
   push:
@@ -15,11 +15,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
-      - name: Install Boost
-        run: sudo apt update && sudo apt install -yq libboost-all-dev
       - name: Build
         run: |
           cmake .
-          cmake --build .
+          make
       - name: Test
         run: ctest .
