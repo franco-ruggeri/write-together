@@ -1,5 +1,5 @@
 /*
- * Test the commutativity property required by a collaborative text cte and obtained by means of CRDT.
+ * Test the commutativity property required by a collaborative text editor and obtained by means of CRDT.
  *
  * Author: Franco Ruggeri
  */
@@ -8,8 +8,7 @@
 #include <cte/crdt/Symbol.h>
 #include <QtCore/QString>
 #include <QtCore/QChar>
-
-#include <iostream>
+#include <assert.h>
 
 int main() {
     QString text = "CAT";
@@ -33,9 +32,6 @@ int main() {
     cte::Symbol symbol2 = editor2.local_erase(index);
     editor2.remote_insert(symbol1);
     editor1.remote_erase(symbol2);
-
-    std::cout << editor1.to_string().toStdString() << std::endl;
-    std::cout << editor2.to_string().toStdString() << std::endl;
 
     text[index] = value;
     assert(editor1.to_string() == text);

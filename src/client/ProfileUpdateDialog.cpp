@@ -49,7 +49,7 @@ ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClien
     ui->changepass_newpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
     ui->changepass_confirmpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
 
-    connect(client.get(), &myClient::profile_update_result, this, &ProfileUpdateDialog::update_profile_result);
+    connect(client.data(), &myClient::profile_update_result, this, &ProfileUpdateDialog::update_profile_result);
 }
 
 void ProfileUpdateDialog::on_change_icon_pushButton_clicked() {

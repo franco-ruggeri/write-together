@@ -55,7 +55,7 @@ file(file), user_row_(0){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION + client->user.username());
     editor = QSharedPointer<QTextEdit>::create(this);
-    setCentralWidget(editor.get());
+    setCentralWidget(editor.data());
 
     this->client = client;
     change_from_server = false;
@@ -71,14 +71,14 @@ file(file), user_row_(0){
     connect(editor->document()->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged , this, &texteditor::draw_cursors);
     connect(this->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &texteditor::draw_cursors);;
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-    connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
-    connect(editor.get(), &QTextEdit::cursorPositionChanged, this, &texteditor::cursorPositionChanged);
+    connect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
+    connect(editor.data(), &QTextEdit::cursorPositionChanged, this, &texteditor::cursorPositionChanged);
 
-    connect(client.get(), &myClient::user_added, this, &texteditor::remote_open);
-    connect(client.get(), &myClient::user_removed, this, &texteditor::remote_close);
-    connect(client.get(), &myClient::char_inserted, this, &texteditor::remote_insert);
-    connect(client.get(), &myClient::char_removed, this, &texteditor::remote_erase);
-    connect(client.get(), &myClient::cursor, this, &texteditor::remote_cursor);
+    connect(client.data(), &myClient::user_added, this, &texteditor::remote_open);
+    connect(client.data(), &myClient::user_removed, this, &texteditor::remote_close);
+    connect(client.data(), &myClient::char_inserted, this, &texteditor::remote_insert);
+    connect(client.data(), &myClient::char_removed, this, &texteditor::remote_erase);
+    connect(client.data(), &myClient::cursor, this, &texteditor::remote_cursor);
 
 }
 
@@ -122,9 +122,9 @@ void texteditor::setupPeers(){
     peers = QSharedPointer<QDockWidget>::create(); // widget to show the peers
     peers->setObjectName("Peers");
     peers->setWindowTitle("Peers");
-    peers->setWidget(list_user.get()); // add other user to the dock
-    addDockWidget(Qt::RightDockWidgetArea,peers.get());
-    connect(list_user.get(), SIGNAL(itemClicked(QListWidgetItem*)),
+    peers->setWidget(list_user.data()); // add other user to the dock
+    addDockWidget(Qt::RightDockWidgetArea,peers.data());
+    connect(list_user.data(), SIGNAL(itemClicked(QListWidgetItem*)),
             this, SLOT(on_list_user_itemClicked(QListWidgetItem*)));
 
 }
@@ -140,7 +140,7 @@ void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
 
     int i = 0;
     disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-    disconnect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
+    disconnect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
 
     int start_pos = -1;
     auto s = shared_editor->text();
@@ -150,16 +150,16 @@ void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
             start_pos = i;
         }
         if(file.site_ids()[s[i].site_id()]!= username  && start_pos != -1 ){
-            user->draw_background_char(editor.get(),start_pos,i);
+            user->draw_background_char(editor.data(),start_pos,i);
             start_pos = -1;
         }
     }
     if(start_pos != -1)
-        user->draw_background_char(editor.get(),start_pos,i );
+        user->draw_background_char(editor.data(),start_pos,i );
 
 
     connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-    connect(editor.get(), &QTextEdit::textChanged, this, &texteditor::textChange);
+    connect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
 
     user->selected = !user->selected;
    // editor->setCurrentCharFormat(user->format);
@@ -174,7 +174,7 @@ void texteditor::init_cursors(){
         if(id != file.site_id()) {
             Symbol symbol = file.cursors().find(id).value();
             int cursor_pos = shared_editor->find(file.cursors().find(id).value());
-            username_to_user.find(username)->add_cursor(editor.get(),cursor_pos,id);
+            username_to_user.find(username)->add_cursor(editor.data(),cursor_pos,id);
         }
     }
 }
@@ -208,7 +208,7 @@ void texteditor::setupUserActions(){
    QToolBar *tb = addToolBar(tr("User Actions"));
    QMenu *menu = menuBar()->addMenu(tr("&User"));
    const QIcon showPeersIcon = QIcon::fromTheme("show-peers", QIcon(imgPath + "/user_group.png"));
-   show_peers = menu->addAction(showPeersIcon, tr("&Show"), peers.get(),&QDockWidget::show);
+   show_peers = menu->addAction(showPeersIcon, tr("&Show"), peers.data(),&QDockWidget::show);
    tb->addAction(show_peers);
    const QIcon peerProfile = QIcon::fromTheme("peer-profile", QIcon(imgPath + "/user_icon.png"));
    peer_profile = menu->addAction(peerProfile, tr("&Profile"), this, &texteditor::show_user_details);
@@ -219,12 +219,12 @@ void texteditor::setupEditActions() {
    QToolBar *tb = addToolBar(tr("Edit Actions"));
    QMenu *menu = menuBar()->addMenu(tr("&Edit"));
    const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
-   actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor.get(), &QTextEdit::undo);
+   actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor.data(), &QTextEdit::undo);
    actionUndo->setShortcut(QKeySequence::Undo);
    tb->addAction(actionUndo);
 
    const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(imgPath + "/editredo.png"));
-   actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor.get(), &QTextEdit::redo);
+   actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor.data(), &QTextEdit::redo);
    actionRedo->setPriority(QAction::LowPriority);
    actionRedo->setShortcut(QKeySequence::Redo);
    tb->addAction(actionRedo);
@@ -232,19 +232,19 @@ void texteditor::setupEditActions() {
 
 #ifndef QT_NO_CLIPBOARD
    const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(imgPath + "/editcut.png"));
-   actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor.get(), &QTextEdit::cut);
+   actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor.data(), &QTextEdit::cut);
    actionCut->setPriority(QAction::LowPriority);
    actionCut->setShortcut(QKeySequence::Cut);
    tb->addAction(actionCut);
 
    const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(imgPath + "/editcopy.png"));
-   actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor.get(), &QTextEdit::copy);
+   actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor.data(), &QTextEdit::copy);
    actionCopy->setPriority(QAction::LowPriority);
    actionCopy->setShortcut(QKeySequence::Copy);
    tb->addAction(actionCopy);
 
    const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(imgPath + "/editpaste.png"));
-   actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor.get(), &QTextEdit::paste);
+   actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor.data(), &QTextEdit::paste);
    actionPaste->setPriority(QAction::LowPriority);
    actionPaste->setShortcut(QKeySequence::Paste);
    tb->addAction(actionPaste);
@@ -337,7 +337,7 @@ void  texteditor::remote_erase(const Symbol& symbol){
 void texteditor::remote_cursor(const Symbol& symbol, const QString & username){
 
     int position = shared_editor->find(symbol);
-    username_to_user.find(username)->change_cursor_position(editor.get(),position,symbol.site_id());
+    username_to_user.find(username)->change_cursor_position(editor.data(),position,symbol.site_id());
 
 }
 
@@ -353,7 +353,7 @@ void texteditor::remote_open(const Profile &profile, int site_id){
         user_row_++;
 
     }
-    username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
+    username_to_user.find(profile.username()).value().add_cursor(editor.data(),0,site_id);
     file.insert_new_userId(site_id,profile.username());
 }
 
@@ -405,6 +405,6 @@ QColor texteditor::generate_color(){
 
 void texteditor::draw_cursors(){
     for(auto &user: username_to_user){
-        user.update_cursor(editor.get());
+        user.update_cursor(editor.data());
     }
 }

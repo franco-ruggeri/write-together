@@ -1,5 +1,5 @@
 /*
- * Test the idempotency property required by a collaborative text cte and obtained by means of CRDT.
+ * Test the idempotency property required by a collaborative text editor and obtained by means of CRDT.
  *
  * Author: Franco Ruggeri
  */
@@ -7,6 +7,7 @@
 #include <cte/crdt/SharedEditor.h>
 #include <cte/crdt/Symbol.h>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     QString text = "HAT";
@@ -24,7 +25,7 @@ int main() {
     assert(editor1.to_string() == text);
     assert(editor2.to_string() == text);
 
-    // insert and delete (must commute)
+    // delete (in both editors, must be idempotent)
     cte::Symbol symbol1 = editor1.local_erase(index);
     cte::Symbol symbol2 = editor2.local_erase(index);
     editor2.remote_erase(symbol1);

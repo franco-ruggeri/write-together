@@ -11,6 +11,7 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");

@@ -6,6 +6,7 @@
 #include <cte/protocol/Document.h>
 #include <cte/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
+#include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");

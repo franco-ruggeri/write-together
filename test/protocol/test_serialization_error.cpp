@@ -5,6 +5,7 @@
 #include <cte/protocol/ErrorMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const QString reason("test reason");

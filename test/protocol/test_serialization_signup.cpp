@@ -6,6 +6,7 @@
 #include <cte/protocol/Profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const cte::Profile username("test username", "test name", "test surname", QImage{});

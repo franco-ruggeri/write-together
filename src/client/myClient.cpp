@@ -41,9 +41,9 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         fallback_host_address_ = settings.value("client/secondhostname", "localhost").toString();
         port_ = settings.value("client/port").toUInt();
         ssl_handshake_failed_ = false;
-        QObject::connect(socket, &Socket::ready_message, wait_on_connection_.get(), &QTimer::stop);
+        QObject::connect(socket, &Socket::ready_message, wait_on_connection_.data(), &QTimer::stop);
         QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
-        QObject::connect(wait_on_connection_.get(), &QTimer::timeout, this, &myClient::attempt_timeout);
+        QObject::connect(wait_on_connection_.data(), &QTimer::timeout, this, &myClient::attempt_timeout);
         // establish connection and handshake
 //        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error); // supported as of qt 5.15
         QObject::connect(socket, QOverload<const QList<QSslError> &>::of(&QSslSocket::sslErrors), this, &myClient::handle_ssl_handshake);
@@ -53,7 +53,7 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         // the latter is temporally substituted by qt backward compatible slot connected to state changes of socket
         // the followings are for qt backward compatibility
         QObject::connect(socket, &QAbstractSocket::stateChanged, this, &myClient::handle_changed_state);
-        QObject::connect(connecting_interrupt_.get(), &QTimer::timeout, this, &myClient::timeout_on_connection);
+        QObject::connect(connecting_interrupt_.data(), &QTimer::timeout, this, &myClient::timeout_on_connection);
     } catch (const std::exception &e) {
         qDebug() << e.what();
         return;
@@ -292,8 +292,8 @@ void myClient::process_response() {
                 QSharedPointer<DocumentMessage> document_message = response.staticCast<DocumentMessage>();
                 QString document_name = document_message->document().full_name();
                 if ( ( (message_to_send_->type() == MessageType::create)  // file just created by user
-                    || (message_to_send_->type() == MessageType::open && static_cast<OpenMessage*>(message_to_send_.get())->sharing_link()
-                        && !(static_cast<OpenMessage*>(message_to_send_.get())->document()) ) // document opened by sharing link
+                    || (message_to_send_->type() == MessageType::open && static_cast<OpenMessage*>(message_to_send_.data())->sharing_link()
+                        && !(static_cast<OpenMessage*>(message_to_send_.data())->document()) ) // document opened by sharing link
                     ) && !user.filename_to_owner_map.contains(document_name) // be sure the document is not yet in the list
                     ) {
                     user.filename_to_owner_map.insert(document_name, document_message->document());

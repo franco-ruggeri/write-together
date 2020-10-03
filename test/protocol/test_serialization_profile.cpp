@@ -7,6 +7,7 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtGui/QImage>
+#include <assert.h>
 
 int main() {
     // icon

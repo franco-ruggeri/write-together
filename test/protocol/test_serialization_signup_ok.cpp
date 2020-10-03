@@ -4,6 +4,7 @@
 
 #include <cte/protocol/SignupOkMessage.h>
 #include <QtCore/QSharedPointer>
+#include <assert.h>
 
 int main() {
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::SignupOkMessage>::create();

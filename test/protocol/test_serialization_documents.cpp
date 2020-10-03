@@ -6,6 +6,7 @@
 #include <cte/protocol/Document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QSet>
+#include <assert.h>
 
 int main() {
     const QSet<cte::Document> documents = {

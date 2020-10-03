@@ -7,11 +7,11 @@ fi
 mkdir -p build
 cd build
 cmake ..
-cmake --build .
+make
 ctest .
 
 # install and run
-cmake --install .
+make install
 cd ../bin
 target=$1
 shift

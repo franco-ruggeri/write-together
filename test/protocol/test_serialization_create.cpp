@@ -5,6 +5,7 @@
 #include <cte/protocol/CreateMessage.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const QString document_name("test name");

@@ -1,6 +1,4 @@
 /*
- * Test the commutativity property required by a collaborative text cte and obtained by means of CRDT.
- *
  * Authors: Antonino Musmeci, Franco Ruggeri
  */
 

@@ -4,6 +4,7 @@
 
 #include <cte/protocol/LogoutMessage.h>
 #include <QtCore/QSharedPointer>
+#include <assert.h>
 
 int main() {
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::LogoutMessage>::create();

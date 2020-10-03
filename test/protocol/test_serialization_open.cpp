@@ -7,6 +7,7 @@
 #include <cte/protocol/Profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");
