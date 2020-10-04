@@ -114,7 +114,7 @@ namespace cte {
         QString query_string = "SELECT c.index, c.value, c.author "
                                "FROM `character` c "
                                "WHERE c.document_owner=:document_owner AND c.document_name=:document_name "
-                               "ORDER BY `index`";
+                               "ORDER BY c.index";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());
@@ -124,8 +124,9 @@ namespace cte {
 
     QSqlQuery query_select_documents(const QSqlDatabase& database, const QString& username) {
         QString query_string = "SELECT * "
-                               "FROM `sharing` s "
-                               "WHERE s.sharing_user=:username";
+                               "FROM `sharing` "
+                               "WHERE sharing_user=:username "
+                               "ORDER BY document_owner, document_owner";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":username", username);
