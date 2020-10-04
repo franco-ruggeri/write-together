@@ -4,7 +4,7 @@ list(APPEND SRC
         Message.cpp
         Profile.cpp
         Document.cpp
-        DocumentData.cpp
+        DocumentInfo.cpp
         ErrorMessage.cpp
         SignupMessage.cpp
         SignupOkMessage.cpp

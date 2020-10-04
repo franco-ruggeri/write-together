@@ -12,7 +12,7 @@
 #include <cte/crdt/SharedEditor.h>
 #include <cte/crdt/Symbol.h>
 #include <cte/protocol/Document.h>
-#include <cte/protocol/DocumentData.h>
+#include <cte/protocol/DocumentInfo.h>
 
 namespace cte {
     class OpenDocument {

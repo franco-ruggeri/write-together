@@ -18,7 +18,7 @@
 #include <cte/server/OpenDocument.h>
 #include <cte/crdt/Symbol.h>
 #include <cte/protocol/Document.h>
-#include <cte/protocol/DocumentData.h>
+#include <cte/protocol/DocumentInfo.h>
 #include <cte/protocol/Profile.h>
 #include <optional>
 
@@ -36,9 +36,9 @@ namespace cte {
         DocumentManager();
 
         // document management
-        std::optional<DocumentData> create_document(int session_id, const Document& document);
-        std::optional<DocumentData> open_document(int session_id, const Document& document, const QString& username);
-        std::pair<Document,std::optional<DocumentData>> open_document(int session_id, const QUrl& sharing_link,
+        std::optional<DocumentInfo> create_document(int session_id, const Document& document);
+        std::optional<DocumentInfo> open_document(int session_id, const Document& document, const QString& username);
+        std::pair<Document,std::optional<DocumentInfo>> open_document(int session_id, const QUrl& sharing_link,
                                                                       const QString& username);
         void close_document(int session_id, const Document& document);
         QSet<Document> get_document_list(int session_id, const QString& username) const;    // accessible but not opened

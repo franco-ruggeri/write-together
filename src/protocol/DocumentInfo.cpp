@@ -2,23 +2,23 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/DocumentData.h>
+#include <cte/protocol/DocumentInfo.h>
 #include <cte/crdt/SharedEditor.h>
 #include <QtCore/QJsonArray>
 
 namespace cte {
-    DocumentData::DocumentData() : site_id_(SharedEditor::invalid_site_id) {}
+    DocumentInfo::DocumentInfo() : site_id_(SharedEditor::invalid_site_id) {}
 
-    DocumentData::DocumentData(int site_id_user, const QUrl& sharing_link) :
+    DocumentInfo::DocumentInfo(int site_id_user, const QUrl& sharing_link) :
         site_id_(site_id_user), sharing_link_(sharing_link) {}
 
-    DocumentData::DocumentData(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
+    DocumentInfo::DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
                                const QHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
                                const QUrl& sharing_link) :
         text_(text), site_id_(site_id), cursors_(cursors), site_ids_(site_ids), profiles_(profiles),
         sharing_link_(sharing_link) {}
 
-   DocumentData::DocumentData(const QJsonObject& json_object) {
+   DocumentInfo::DocumentInfo(const QJsonObject& json_object) {
        auto end_iterator = json_object.end();
        auto text_iterator = json_object.find("text");
        auto site_id_iterator = json_object.find("site_id");
@@ -108,37 +108,37 @@ namespace cte {
        }
    }
 
-   bool DocumentData::operator==(const DocumentData& other) const {
+   bool DocumentInfo::operator==(const DocumentInfo& other) const {
        return this->text_ == other.text_ && this->site_id_ == other.site_id_ &&
               this->site_ids_ == other.site_ids_ && this->cursors_ == other.cursors_ &&
               this->profiles_ == other.profiles_ && this->sharing_link_ == other.sharing_link_;
     }
 
-   QList<Symbol> DocumentData::text() const {
+   QList<Symbol> DocumentInfo::text() const {
         return text_;
     }
 
-    int DocumentData::site_id() const {
+    int DocumentInfo::site_id() const {
         return site_id_;
     }
 
-    QHash<QString,Profile> DocumentData::profiles() const {
+    QHash<QString,Profile> DocumentInfo::profiles() const {
         return profiles_;
     }
 
-    QHash<int,Symbol> DocumentData::cursors() const {
+    QHash<int,Symbol> DocumentInfo::cursors() const {
         return cursors_;
     }
 
-    QHash<int,QString> DocumentData::site_ids() const {
+    QHash<int,QString> DocumentInfo::site_ids() const {
         return site_ids_;
     }
 
-    QUrl DocumentData::sharing_link() const {
+    QUrl DocumentInfo::sharing_link() const {
         return sharing_link_;
     }
 
-    QJsonObject DocumentData::json() const {
+    QJsonObject DocumentInfo::json() const {
         QJsonObject json_object;
 
         json_object["sharing_link"] = sharing_link().toString();

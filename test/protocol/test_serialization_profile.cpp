@@ -14,7 +14,7 @@ int main() {
     QImage icon(24, 24, QImage::Format_RGB32);
     icon.fill(QColor(0, 0, 255));
 
-    const cte::Profile profile("test username", "test name", "test surname", icon);
+    const cte::Profile profile("test username", "test name", "test surname", "test email", icon);
     const QString password("test password");
 
     QSharedPointer<cte::Message> message1, message2;

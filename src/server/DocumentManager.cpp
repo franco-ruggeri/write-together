@@ -15,7 +15,7 @@
 namespace cte {
     DocumentManager::DocumentManager() : mutex_(QMutex::Recursive) {}
 
-    std::optional<DocumentData> DocumentManager::create_document(int session_id, const Document& document) {
+    std::optional<DocumentInfo> DocumentManager::create_document(int session_id, const Document& document) {
         // check inputs
         if (document.name().isEmpty()) throw std::logic_error("document creation failed: invalid document name");
 
@@ -30,7 +30,7 @@ namespace cte {
         execute_query(query);
 
         // create document
-        std::optional<DocumentData> document_data;
+        std::optional<DocumentInfo> document_info;
         if (query.size() == 0) {
             QString owner = document.owner();
             QUrl sharing_link = Document::generate_sharing_link(document);
@@ -46,17 +46,17 @@ namespace cte {
             int site_id = od.open(owner);
             QMutexLocker ml(&mutex_);
             open_documents_.insert(document, od);
-            site_ids_[session_id].insert(document, document_data->site_id());
-            document_data = DocumentData(site_id, sharing_link);
+            site_ids_[session_id].insert(document, document_info->site_id());
+            document_info = DocumentInfo(site_id, sharing_link);
         }
 
         // commit transaction
         database.commit();
 
-        return document_data;
+        return document_info;
     }
 
-    std::optional<DocumentData> DocumentManager::open_document(int session_id, const Document& document,
+    std::optional<DocumentInfo> DocumentManager::open_document(int session_id, const Document& document,
                                                                const QString& username) {
         // check inputs
         if (opened(session_id, document)) throw std::logic_error("document already opened");
@@ -72,7 +72,7 @@ namespace cte {
         execute_query(query);
 
         // open document
-        std::optional<DocumentData> document_data;
+        std::optional<DocumentInfo> document_info;
         if (query.next()) {
             // load sharing link
             QString sharing_link = query.value("sharing_link").toString();
@@ -84,8 +84,9 @@ namespace cte {
             while (query.next()) {
                 QString username = query.value("username").toString();
                 Profile profile(username, query.value("name").toString(),
-                                     query.value("surname").toString(),
-                                     query.value("icon").value<QImage>());
+                                query.value("surname").toString(),
+                                query.value("email").toString(),
+                                query.value("icon").value<QImage>());
                 profiles.insert(username, profile);
             }
 
@@ -105,16 +106,16 @@ namespace cte {
             OpenDocument& od = open_documents_[document];
             int site_id = od.open(username);
             site_ids_[session_id].insert(document, site_id);
-            document_data = DocumentData(od.text(), site_id, od.cursors(), od.site_ids(), profiles, sharing_link);
+            document_info = DocumentInfo(od.text(), site_id, od.cursors(), od.site_ids(), profiles, sharing_link);
         }
 
         // commit transaction
         database.commit();
 
-        return document_data;
+        return document_info;
     }
 
-    std::pair<Document,std::optional<DocumentData>>
+    std::pair<Document,std::optional<DocumentInfo>>
     DocumentManager::open_document(int session_id, const QUrl& sharing_link, const QString& username) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();

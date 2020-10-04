@@ -30,14 +30,15 @@ namespace cte {
     }
 
     QSqlQuery query_insert_profile(const QSqlDatabase& database, const Profile& profile, const QString& password) {
-        QString query_string = "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `icon`) "
-                               "VALUES (:username, :password, :name, :surname, :icon)";
+        QString query_string = "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `email`, `icon`) "
+                               "VALUES (:username, :password, :name, :surname, :email, :icon)";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":username", profile.username());
         query.bindValue(":password", password);
         query.bindValue(":name", profile.name());
         query.bindValue(":surname", profile.surname());
+        query.bindValue(":email", profile.email());
         query.bindValue(":icon", profile.icon());
         return query;
     }
@@ -48,13 +49,15 @@ namespace cte {
         QString query_string = QString{} +
                 "UPDATE `user` SET username=:username, " +
                 (update_password ? "password=:password, " : "") +
-                "name=:name, surname=:surname, icon=:icon WHERE username=:old_username";
+                "name=:name, surname=:surname, email=:email, icon=:icon "
+                "WHERE username=:old_username";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":old_username", old_username);
         query.bindValue(":username", new_profile.username());
         query.bindValue(":name", new_profile.name());
         query.bindValue(":surname", new_profile.surname());
+        query.bindValue(":email", new_profile.email());
         query.bindValue(":icon", new_profile.icon());
         if (update_password) query.bindValue(":password", new_password);
         return query;

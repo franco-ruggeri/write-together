@@ -14,7 +14,7 @@
 #include <cte/crdt/Symbol.h>
 
 namespace cte {
-    class DocumentData {
+    class DocumentInfo {
         QList<Symbol> text_;
         int site_id_;                       // assigned to the client
         QHash<int,Symbol> cursors_;         // site_id -> symbol, for users currently editing the document
@@ -23,14 +23,14 @@ namespace cte {
         QUrl sharing_link_;
 
     public:
-        DocumentData();
-        DocumentData(int site_id, const QUrl& sharing_link);
-        DocumentData(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
+        DocumentInfo();
+        DocumentInfo(int site_id, const QUrl& sharing_link);
+        DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
                      const QHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
                      const QUrl& sharing_link);
-        explicit DocumentData(const QJsonObject& json_object);
+        explicit DocumentInfo(const QJsonObject& json_object);
 
-        bool operator==(const DocumentData& other) const;
+        bool operator==(const DocumentInfo& other) const;
 
         QList<Symbol> text() const;
         int site_id() const;

@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `user`
 	`password` VARCHAR(200) NOT NULL,
 	`name` VARCHAR(100),
 	`surname` VARCHAR(100),
+	`email` VARCHAR(320),   -- standard says max 64 for username + 1 for '@' + max 255 for domain name
 	`icon` BLOB,
 	PRIMARY KEY (username)
 );

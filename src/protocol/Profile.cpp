@@ -9,26 +9,30 @@
 namespace cte {
     Profile::Profile() {}
 
-    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QImage& icon) :
-        username_(username), name_(name), surname_(surname), icon_(icon) {}
+    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
+                     const QImage& icon) :
+        username_(username), name_(name), surname_(surname), email_(email), icon_(icon) {}
 
     Profile::Profile(const QJsonObject &json_object) {
         auto end_iterator = json_object.end();
         auto username_iterator = json_object.find("username");
         auto name_iterator = json_object.find("name");
         auto surname_iterator = json_object.find("surname");
+        auto email_iterator = json_object.find("email");
         auto icon_iterator = json_object.find("icon");
 
         if (username_iterator == end_iterator || name_iterator == end_iterator ||
-            surname_iterator == end_iterator || icon_iterator == end_iterator)
+            surname_iterator == end_iterator || email_iterator == end_iterator ||
+            icon_iterator == end_iterator)
             throw std::logic_error("invalid message: invalid fields");
 
         username_ = username_iterator->toString();
         name_ = name_iterator->toString();
         surname_ = surname_iterator->toString();
+        email_ = email_iterator->toString();
         QString icon_base64 = icon_iterator->toString();
 
-        if (username_.isNull() || name_.isNull() || surname_.isNull() || icon_base64.isNull())
+        if (username_.isNull() || name_.isNull() || surname_.isNull() || email_.isNull() || icon_base64.isNull())
             throw std::logic_error("invalid message: invalid fields");
 
         QByteArray bytes = QByteArray::fromBase64(icon_base64.toLatin1());
@@ -37,7 +41,7 @@ namespace cte {
 
     bool Profile::operator==(const Profile& other) const {
         return this->username_ == other.username_ && this->name_ == other.name_ && this->surname_ == other.surname_ &&
-               this->icon_ == other.icon_;
+               this->email_ == other.email_ && this->icon_ == other.icon_;
     }
 
     QString Profile::username() const {
@@ -52,6 +56,10 @@ namespace cte {
         return surname_;
     }
 
+    QString Profile::email() const {
+        return email_;
+    }
+
     QImage Profile::icon() const {
         return icon_;
     }
@@ -62,6 +70,7 @@ namespace cte {
         json_object["username"] = username_;
         json_object["name"] = name_;
         json_object["surname"] = surname_;
+        json_object["email"] = email_;
 
         // icon in base64
         QByteArray bytes;

@@ -298,7 +298,7 @@ void myClient::process_response() {
                     ) {
                     user.filename_to_owner_map.insert(document_name, document_message->document());
                 }
-                fileInfo file(document_message->document(), document_message->document_data());
+                fileInfo file(document_message->document(), document_message->document_info());
                 emit document(file);
             } else {
                 emit generic_error(tr("Received an error message instead of document data.\n") + response.staticCast<ErrorMessage>()->reason());
@@ -383,14 +383,14 @@ void myClient::logout() {
 
 void myClient::signup(QString& username, QString& email, QString& password, QString name, QString surname, QImage icon) {
     //TODO: add icon on signup
-    Profile profile(username,name,surname,icon);
+    Profile profile(username,name,surname,email,icon);
     user = UserInfo(profile);
     QSharedPointer<Message> signup_message = QSharedPointer<SignupMessage>::create(profile,password);
     send_message(signup_message);
 }
 
 void myClient::update_profile(const QString &username, const QString &email, const QString &name, const QString &surname, const QImage &icon, QString &password) {
-    new_user = Profile(username, name, surname, icon);
+    new_user = Profile(username, name, surname, email, icon);
     QSharedPointer<Message> profile_update_message;
     if (password.isEmpty()) {
         profile_update_message = QSharedPointer<ProfileMessage>::create(new_user);

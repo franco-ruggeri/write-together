@@ -4,7 +4,7 @@
 
 #include <cte/protocol/DocumentMessage.h>
 #include <cte/protocol/Document.h>
-#include <cte/protocol/DocumentData.h>
+#include <cte/protocol/DocumentInfo.h>
 #include <cte/crdt/SharedEditor.h>
 #include <cte/crdt/Symbol.h>
 #include <QtCore/QSharedPointer>
@@ -46,7 +46,7 @@ int main() {
     };
 
     // serialization
-    cte::DocumentData document_data(text, editor.site_id(), cursors, site_ids, profiles, sharing_link);
+    cte::DocumentInfo document_data(text, editor.site_id(), cursors, site_ids, profiles, sharing_link);
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::DocumentMessage>::create(document, document_data);
     QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);

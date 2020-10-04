@@ -86,7 +86,7 @@ namespace cte {
 
         qDebug() << "new connection from: { address:" << socket->peerAddress().toString()
                  << ", port:" << socket->peerPort()
-                 << ", thread: " << QThread::currentThreadId() << "}";
+                 << ", thread:" << QThread::currentThreadId() << "}";
     }
 
     void Worker::close_session(int session_id, Socket *socket) {
@@ -286,8 +286,8 @@ namespace cte {
 
         // create document
         Document document(document_owner, document_name);
-        std::optional<DocumentData> document_data = document_manager.create_document(session_id, document);
-        if (!document_data) {
+        std::optional<DocumentInfo> document_info = document_manager.create_document(session_id, document);
+        if (!document_info) {
             send_error(socket, "document creation failed: document already existing");
             return;
         }
@@ -296,7 +296,7 @@ namespace cte {
         editing_clients.insert(document, QSet{socket});;
 
         // send document data
-        QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create(document, *document_data);
+        QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create(document, *document_info);
         socket->write_message(response);
 
         qDebug() << "document created:" << document.full_name();
@@ -314,17 +314,17 @@ namespace cte {
         std::optional<QUrl> sharing_link = open_message->sharing_link();
 
         // open document
-        std::optional<DocumentData> document_data;
+        std::optional<DocumentInfo> document_info;
         if (document) {
-            document_data = document_manager.open_document(session_id, *document, username);
+            document_info = document_manager.open_document(session_id, *document, username);
         } else if (sharing_link) {
             auto result = document_manager.open_document(session_id, *sharing_link, username);
             document = result.first;
-            document_data = result.second;
+            document_info = result.second;
         } else {
             throw std::logic_error("invalid message: open with neither document nor sharing link");
         }
-        if (!document_data) {
+        if (!document_info) {
             send_error(socket, "document open failed: document not existing or not accessible");
             return;
         }
@@ -333,12 +333,12 @@ namespace cte {
         editing_clients[*document].insert(socket);
 
         // send document data
-        QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create(*document, *document_data);
+        QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create(*document, *document_info);
         socket->write_message(response);
 
         // dispatch message
-        int site_id = document_data->site_id();
-        Profile profile = document_data->profiles().find(username).value();
+        int site_id = document_info->site_id();
+        Profile profile = document_info->profiles().find(username).value();
         open_message = QSharedPointer<OpenMessage>::create(*document, site_id, profile);
         emit new_message(socket->socketDescriptor(), open_message);
 

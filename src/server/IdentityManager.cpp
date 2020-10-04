@@ -77,7 +77,7 @@ namespace cte {
         sessions_.insert(session_id, username);
 
         return Profile(username, query.value("name").toString(), query.value("surname").toString(),
-                            query.value("icon").value<QImage>());
+                       query.value("email").toString(), query.value("icon").value<QImage>());
     }
 
     void IdentityManager::logout(int session_id) {

@@ -7,7 +7,7 @@
 #include <utility>
 
 
-fileInfo::fileInfo(Document const &document, DocumentData const data):document_(document),documentData_(data){
+fileInfo::fileInfo(Document const &document, DocumentInfo const data): document_(document), documentData_(data){
     site_ids_ = documentData_.site_ids();
 }
 
