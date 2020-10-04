@@ -82,12 +82,12 @@ namespace cte {
             execute_query(query);
             QHash<QString,Profile> profiles;
             while (query.next()) {
-                QString username = query.value("username").toString();
-                Profile profile(username, query.value("name").toString(),
+                Profile profile(query.value("username").toString(),
+                                query.value("name").toString(),
                                 query.value("surname").toString(),
                                 query.value("email").toString(),
                                 query.value("icon").value<QImage>());
-                profiles.insert(username, profile);
+                profiles.insert(profile.username(), profile);
             }
 
             // open document
@@ -248,7 +248,7 @@ namespace cte {
 
             // insert updated document text
             query = prepare_query_insert_character(database, document);
-            for (unsigned int i=0; i<text.size(); i++) {
+            for (int i=0; i<text.size(); i++) {
                 bind_query_insert_character(query, i, site_ids[text[i].site_id()], text[i].value());
                 execute_query(query);
             }

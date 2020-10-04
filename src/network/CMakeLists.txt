@@ -3,7 +3,7 @@ set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/network)
 
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
 
-list(APPEND SRC Socket.cpp)
+list(APPEND SRC Socket.cpp network_utility.cpp)
 list(APPEND LIB Qt5::Core Qt5::Network protocol)
 list(APPEND INCLUDE ${QOBJ_DIR})
 list(APPEND QOBJ_HEADERS ${QOBJ_DIR}/Socket.h)

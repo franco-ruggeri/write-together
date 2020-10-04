@@ -30,7 +30,7 @@ namespace cte {
     }
 
     bool DocumentsMessage::operator==(const Message& other) const {
-        const DocumentsMessage *o = dynamic_cast<const DocumentsMessage*>(&other);
+        const auto *o = dynamic_cast<const DocumentsMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->documents_ == o->documents_;
     }

@@ -50,7 +50,7 @@ namespace cte {
     }
 
     bool OpenMessage::operator==(const Message& other) const {
-        const OpenMessage *o = dynamic_cast<const OpenMessage*>(&other);
+        const auto *o = dynamic_cast<const OpenMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->sharing_link_ == o->sharing_link_ &&
                this->site_id_ == o->site_id_ && this->profile_ == o->profile_;

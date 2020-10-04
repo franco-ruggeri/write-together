@@ -9,8 +9,8 @@ namespace cte {
         connect(this, &Socket::readyRead, this, &Socket::read_lines);
     }
 
-    Socket::Socket(int socket_fd) : Socket() {
-        if (!setSocketDescriptor(socket_fd))
+    void Socket::set_socket_descriptor(int socket_fd) {
+        if (!QSslSocket::setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");
     }
 

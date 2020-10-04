@@ -24,7 +24,7 @@ namespace cte {
     }
 
     bool LoginMessage::operator==(const Message& other) const {
-        const LoginMessage *o = dynamic_cast<const LoginMessage*>(&other);
+        const auto *o = dynamic_cast<const LoginMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->username_ == o->username_ && this->password_ == o->password_;
     }

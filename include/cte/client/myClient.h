@@ -14,7 +14,6 @@
 #include <cte/protocol/Document.h>
 #include <cte/protocol/Profile.h>
 #include <cte/crdt/Symbol.h>
-#include <cte/client/utility.h>
 #include <cte/client/fileInfo.h>
 #include <cte/client/UserInfo.h>
 #include <cte/network/Socket.h>

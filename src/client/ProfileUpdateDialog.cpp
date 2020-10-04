@@ -87,7 +87,7 @@ void ProfileUpdateDialog::on_changepass_change_pushButton_clicked() {
     }
     if (with_password) {
         QString error_display;
-        if (!utility::check_password_validity(new_password) || !utility::check_password_validity(new_passowrd_confirm)) {
+        if (!cte::Profile::check_password(new_password) || !cte::Profile::check_password(new_passowrd_confirm)) {
             if (new_password != new_passowrd_confirm) {
                 error_display += tr("Please check to have inserted the same password.\n");
             }

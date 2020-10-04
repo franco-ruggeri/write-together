@@ -4,12 +4,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/client)
 
-find_package(Qt5 COMPONENTS Core Widgets Gui Network Concurrent PrintSupport REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui Concurrent PrintSupport REQUIRED)
 
 list(APPEND SRC
         client.cpp
         loginTextEditor.cpp
-        utility.cpp
         newFileDialog.cpp
         OpenFileUrl.cpp
         ProfileUpdateDialog.cpp
@@ -29,7 +28,7 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/texteditor.h
         ${QOBJ_DIR}/UserInfo.h)
 
-list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network Qt5::Concurrent Qt5::PrintSupport protocol crdt network)
+list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Concurrent Qt5::PrintSupport protocol crdt network)
 list(APPEND INCLUDE ${QOBJ_DIR})
 
 add_executable(client ${SRC} ${QOBJ_HEADERS} resource.qrc)

@@ -21,7 +21,7 @@ namespace cte {
     }
 
     bool ErrorMessage::operator==(const Message& other) const {
-        const ErrorMessage *o = dynamic_cast<const ErrorMessage*>(&other);
+        const auto *o = dynamic_cast<const ErrorMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
             this->reason_ == o->reason_;
     }

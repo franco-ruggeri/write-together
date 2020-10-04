@@ -26,7 +26,7 @@ namespace cte {
         bool signup(int session_id, const Profile& profile, const QString& password);
         std::optional<Profile> login(int session_id, const QString& username, const QString& password);
         void logout(int session_id);
-        bool update_profile(int session_id, const Profile& new_profile, const QString& new_password=QString{});
+        void update_profile(int session_id, const Profile& new_profile, const QString& new_password=QString{}) const;
 
         bool authenticated(int session_id) const;
         std::optional<QString> username(int session_id) const;

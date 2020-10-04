@@ -9,7 +9,7 @@
 
 namespace cte {
     class LogoutMessage : public Message {
-        LogoutMessage(const QJsonObject& json_object);
+        explicit LogoutMessage(const QJsonObject& json_object);
         friend Message;
 
     public:

@@ -8,7 +8,7 @@
 
 namespace cte {
     class ProfileOkMessage : public Message {
-        ProfileOkMessage(const QJsonObject& json_object);
+        explicit ProfileOkMessage(const QJsonObject& json_object);
         friend Message;
 
     public:

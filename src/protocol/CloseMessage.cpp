@@ -1,6 +1,7 @@
 /*
  * Author: Franco Ruggeri
  */
+
 #include <cte/protocol/CloseMessage.h>
 
 namespace cte {
@@ -26,7 +27,7 @@ namespace cte {
     }
 
     bool CloseMessage::operator==(const Message& other) const {
-        const CloseMessage *o = dynamic_cast<const CloseMessage*>(&other);
+        const auto *o = dynamic_cast<const CloseMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->username_ == o->username_;
     }

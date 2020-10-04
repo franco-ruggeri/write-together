@@ -10,7 +10,7 @@ namespace cte {
     ProfileOkMessage::ProfileOkMessage(const QJsonObject &json_object) : Message(MessageType::profile_ok) {}
 
     bool ProfileOkMessage::operator==(const Message& other) const {
-        const ProfileOkMessage *o = dynamic_cast<const ProfileOkMessage*>(&other);
+        const auto *o = dynamic_cast<const ProfileOkMessage*>(&other);
         return o != nullptr && this->type() == o->type();
     }
 }

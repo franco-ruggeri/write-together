@@ -8,7 +8,7 @@
 
 namespace cte {
     class SignupOkMessage : public Message {
-        SignupOkMessage(const QJsonObject& json_object);
+        explicit SignupOkMessage(const QJsonObject& json_object);
         friend Message;
 
     public:

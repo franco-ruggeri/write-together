@@ -22,7 +22,7 @@ namespace cte {
     }
 
     bool EraseMessage::operator==(const Message& other) const {
-        const EraseMessage *o = dynamic_cast<const EraseMessage*>(&other);
+        const auto *o = dynamic_cast<const EraseMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->symbol_ == o->symbol_;
     }

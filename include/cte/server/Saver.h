@@ -17,6 +17,6 @@ namespace cte {
         void save();
 
     public:
-        Saver(int period);  // in milliseconds
+        explicit Saver(int period);  // in milliseconds
     };
 }

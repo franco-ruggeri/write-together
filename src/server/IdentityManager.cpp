@@ -21,7 +21,9 @@ namespace cte {
         // check inputs
         QString username = profile.username();
         if (authenticated(session_id)) throw std::logic_error("session already authenticated");
-        if (username.isEmpty() || password.isEmpty()) throw std::logic_error("signup failed: invalid credentials");
+        if (!Profile::check_username(username)) throw std::logic_error("signup failed: invalid username");
+        if (!Profile::check_email(profile.email())) throw std::logic_error("signup failed: invalid email");
+        if (!Profile::check_password(password)) throw std::logic_error("signup failed: invalid password");
 
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
@@ -87,50 +89,30 @@ namespace cte {
         sessions_.remove(session_id);
     }
 
-    bool IdentityManager::update_profile(int session_id, const Profile& new_profile, const QString& new_password) {
+    void IdentityManager::update_profile(int session_id, const Profile& new_profile, const QString& new_password) const {
         // check inputs
         if (!authenticated(session_id)) throw std::logic_error("session not authenticated");
-        QString old_username = *username(session_id);
-        QString new_username = new_profile.username();
-        if (new_username.isEmpty() || (!new_password.isNull() && new_password.isEmpty())) return false;
+        if (new_profile.username() != *username(session_id))
+            throw std::logic_error("profile update failed: username cannot be changed");
+        if (!Profile::check_email(new_profile.email()))
+            throw std::logic_error("profile update failed: invalid email");
+        if (!new_password.isNull() && !Profile::check_password(new_password))
+            throw std::logic_error("profile update failed: invalid password");
 
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
-        database.transaction();
         QSqlQuery query(database);
 
-        // check if the new username is already used
-        bool username_ok = true;
-        if (old_username != new_username) {
-            query = query_select_profile(database, new_username, true);
-            execute_query(query);
-            if (query.size() > 0)
-                username_ok = false;
-        }
-
         // update profile
-        bool updated = false;
-        if (username_ok) {
-            // update profile
-            if (new_password.isNull())
-                query = query_update_profile(database, old_username, new_profile);
-            else {
-                QString new_hash = QString::fromStdString(generate_password(static_cast<secure_string>(new_password.toStdString())));
-                query = query_update_profile(database, old_username, new_profile, new_hash);
-            }
-            execute_query(query);
-
-            // update session
-            QMutexLocker ml(&m_sessions_);
-            sessions_[session_id] = new_username;
-            updated = true;
+        if (new_password.isNull())
+            query = query_update_profile(database, new_profile);
+        else {
+            QString new_hash = QString::fromStdString(
+                    generate_password(static_cast<secure_string>(new_password.toStdString())));
+            query = query_update_profile(database, new_profile, new_hash);
         }
-
-        // commit transaction
-        database.commit();
-
-        return updated;
+        execute_query(query);
     }
 
     bool IdentityManager::authenticated(int session_id) const {

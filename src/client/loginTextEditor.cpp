@@ -7,10 +7,10 @@
 #include <QtCore/QDebug>
 #include <cte/client/loginTextEditor.h>
 #include "ui_loginTextEditor.h"
-#include <cte/client/utility.h>
 #include <cte/client/fileInfo.h>
 #include <QClipboard>
 #include <cte/protocol/Document.h>
+#include <cte/network/network_utility.h>
 #include <QTStylesheet.h>
 
 
@@ -140,7 +140,7 @@ void loginTextEditor::handle_disconnection_server() {
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
     QString ip_address = ui->connect_address_lineEdit_->text();
-    if (!utility::check_ip_address(ip_address)) {
+    if (!cte::check_ip_address(ip_address)) {
         QMessageBox::warning(this, "WARNING", "Insert a valid IP address");
         return;
     }
@@ -170,18 +170,18 @@ void loginTextEditor::on_signup_login_pushButton_clicked() {
 
 void loginTextEditor::on_singup_register_pushButton_clicked() {
     QString email = ui->signup_email_lineEdit->text();
-    if (!utility::check_email_validity(email.trimmed())) {
+    if (!cte::Profile::check_email(email.trimmed())) {
         QMessageBox::warning(this, "WARNING", "Please insert a valid email");
         return;
     }
     QString username = ui->signup_username_lineEdit->text();
-    if (!utility::check_username_validity(username.trimmed())) {
+    if (!cte::Profile::check_username(username.trimmed())) {
 
         QMessageBox::warning(this, "WARNING", "Username should be at least 3 characters long");
         return;
     }
     QString password = ui->signup_password_lineEdit->text();
-    if (!utility::check_password_validity(password)) {
+    if (!cte::Profile::check_password(password)) {
         QMessageBox::warning(this, "WARNING",
                              "your password must be at least 8 characters long including at least one number and both lower and upper characters");
         return;

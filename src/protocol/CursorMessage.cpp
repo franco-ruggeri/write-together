@@ -32,7 +32,7 @@ namespace cte {
     }
 
     bool CursorMessage::operator==(const Message& other) const {
-        const CursorMessage *o = dynamic_cast<const CursorMessage*>(&other);
+        const auto *o = dynamic_cast<const CursorMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_ == o->document_ && this->username_ == o->username_ && this->symbol_ == o->symbol_;
     }

@@ -36,7 +36,7 @@ namespace cte {
         }
     }
 
-    Worker::Worker() {
+    Worker::Worker() : number_of_connections_(0) {
         qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
         QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
         QObject::connect(this, &Worker::new_message, this, &Worker::dispatch_message);
@@ -64,7 +64,8 @@ namespace cte {
         // create socket
         Socket *socket;
         try {
-            socket = new Socket(socket_fd);
+            socket = new Socket();
+            socket->set_socket_descriptor(socket_fd);
         } catch (const std::bad_alloc& e) {
             qDebug() << e.what();
             return;
@@ -218,8 +219,6 @@ namespace cte {
 
         // login
         std::optional<Profile> profile = identity_manager.login(session_id, username, password);
-        password.fill(0);
-        password.clear();
         if (!profile) {
             send_error(socket, "login failed: wrong credentials");
             return;
@@ -258,14 +257,7 @@ namespace cte {
         std::optional<QString> old_username = identity_manager.username(session_id);
 
         // update profile
-        if (!identity_manager.update_profile(session_id, profile, password.value_or(QString{}))) {
-            send_error(socket, "profile update failed: username already used");
-            return;
-        }
-        if (password.has_value()) {
-            password.value().fill(0);
-            password.value().clear();
-        }
+        identity_manager.update_profile(session_id, profile, password.value_or(QString{}));
 
         // send acknowledgement
         QSharedPointer<Message> response = QSharedPointer<ProfileOkMessage>::create();
@@ -293,7 +285,7 @@ namespace cte {
         }
 
         // register for dispatching
-        editing_clients.insert(document, QSet{socket});;
+        editing_clients.insert(document, QSet{socket});
 
         // send document data
         QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create(document, *document_info);

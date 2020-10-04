@@ -22,7 +22,7 @@ namespace cte {
     }
 
     bool CreateMessage::operator==(const Message& other) const {
-        const CreateMessage *o = dynamic_cast<const CreateMessage*>(&other);
+        const auto *o = dynamic_cast<const CreateMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->document_name_ == o->document_name_;
     }

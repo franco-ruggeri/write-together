@@ -1,12 +1,17 @@
 /*
- * Author: Franco Ruggeri
+ * Author: Franco Ruggeri, Antonino Musmeci
  */
 
 #include <cte/protocol/Profile.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
+#include <QtCore/QRegExp>
 
 namespace cte {
+    static QRegExp username_regexp("^[a-zA-Z0-9]{3,}$");
+    static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
+    static QRegExp password_regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
+
     Profile::Profile() {}
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
@@ -80,5 +85,17 @@ namespace cte {
         json_object["icon"] = QLatin1String(bytes.toBase64());
 
         return json_object;
+    }
+
+    bool Profile::check_username(const QString& username) {
+        return username_regexp.exactMatch(username);
+    }
+
+    bool Profile::check_email(const QString& email) {
+        return email_regexp.exactMatch(email);
+    }
+
+    bool Profile::check_password(const QString& password) {
+        return password_regexp.exactMatch(password);
     }
 }

@@ -28,7 +28,7 @@ namespace cte {
     }
 
     bool ProfileMessage::operator==(const Message& other) const {
-        const ProfileMessage *o = dynamic_cast<const ProfileMessage*>(&other);
+        const auto *o = dynamic_cast<const ProfileMessage*>(&other);
         return o != nullptr && this->type() == o->type() &&
                this->profile_ == o->profile_ && this->password_ == o->password_;
     }

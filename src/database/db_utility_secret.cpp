@@ -9,13 +9,13 @@
 #include <cte/database/db_utility.h>
 
 namespace cte {
-    static const QString driver_type("QMYSQL");
-    static const QString database_name("collaborative_text_editor");
-    static const QString hostname("127.0.0.1");
-    static const QString username("collaborative_text_editor");
-    static const QString password("?PdSPr0j3ct!");
-
     QSqlDatabase connect_to_database() {
+        static const QString driver_type("QMYSQL");
+        static const QString database_name("collaborative_text_editor");
+        static const QString hostname("127.0.0.1");
+        static const QString username("collaborative_text_editor");
+        static const QString password("?PdSPr0j3ct!");
+
         return connect_to_database(driver_type, database_name, hostname, username, password);
     }
 
@@ -43,17 +43,16 @@ namespace cte {
         return query;
     }
 
-    QSqlQuery query_update_profile(const QSqlDatabase& database, const QString& old_username,
-                                   const Profile& new_profile, const QString& new_password) {
+    QSqlQuery query_update_profile(const QSqlDatabase& database, const Profile& new_profile,
+                                   const QString& new_password) {
         bool update_password = !new_password.isNull();
         QString query_string = QString{} +
-                "UPDATE `user` SET username=:username, " +
+                "UPDATE `user` SET " +
                 (update_password ? "password=:password, " : "") +
                 "name=:name, surname=:surname, email=:email, icon=:icon "
                 "WHERE username=:old_username";
         QSqlQuery query(database);
         query.prepare(query_string);
-        query.bindValue(":old_username", old_username);
         query.bindValue(":username", new_profile.username());
         query.bindValue(":name", new_profile.name());
         query.bindValue(":surname", new_profile.surname());

@@ -34,5 +34,11 @@ namespace cte {
         QImage icon() const;
 
         QJsonObject json() const;
+
+        static bool check_username(const QString& username);
+        static bool check_email(const QString& email);
+        static bool check_password(const QString& password);
     };
+
+
 }

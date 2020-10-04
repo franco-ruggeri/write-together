@@ -17,12 +17,12 @@ namespace cte {
     SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text, const Lseq& pos_allocator) :
             site_id_(site_id), site_counter_(starting_site_counter), text_(text), pos_allocator_(pos_allocator) {}
 
-    Symbol SharedEditor::local_insert(unsigned int index, QChar value) {
+    Symbol SharedEditor::local_insert(int index, QChar value) {
        if (value.isNull()) throw std::logic_error("trying to insert null character");
 
         // allocate position
-        QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
-        QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
+        QVector<int> prev_pos = index == 0 ? Lseq::begin() : text_.at(index-1).position();
+        QVector<int> next_pos = index == text_.size() ? Lseq::end() : text_.at(index).position();
         QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
 
         // insert locally
@@ -31,16 +31,16 @@ namespace cte {
         return symbol;
     }
 
-    Symbol SharedEditor::insert_cursor(unsigned int index, QChar value) {
+    Symbol SharedEditor::insert_cursor(int index, QChar value) {
         /** TODO: ho aggiunto questo solo per provare i cursori, è da sistemare **/
-        QVector<int> prev_pos = index == 0 ? pos_allocator_.begin() : text_.at(index-1).position();
-        QVector<int> next_pos = index == text_.size() ? pos_allocator_.end() : text_.at(index).position();
+        QVector<int> prev_pos = index == 0 ? Lseq::begin() : text_.at(index-1).position();
+        QVector<int> next_pos = index == text_.size() ? Lseq::end() : text_.at(index).position();
         QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
         Symbol symbol(value, site_id_, site_counter_++, between_pos);
         return symbol;
     }
 
-    Symbol SharedEditor::local_erase(unsigned int index) {
+    Symbol SharedEditor::local_erase(int index) {
         Symbol symbol = text_.at(index);
         text_.erase(text_.begin() + index);
         return symbol;

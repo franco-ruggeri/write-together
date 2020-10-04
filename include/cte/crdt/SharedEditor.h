@@ -25,8 +25,8 @@ namespace cte {
         explicit SharedEditor(int site_id, const Lseq& pos_allocator=Lseq{});
         SharedEditor(int site_id, const QList<Symbol>& text, const Lseq& pos_allocator=Lseq{});
 
-        Symbol local_insert(unsigned int index, QChar value);
-        Symbol local_erase(unsigned int index);
+        Symbol local_insert(int index, QChar value);
+        Symbol local_erase(int index);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
 
@@ -40,6 +40,6 @@ namespace cte {
         static const int invalid_site_id, invalid_site_counter;
         static const int starting_site_id, starting_site_counter;
 
-        Symbol insert_cursor(unsigned int index, QChar value);
+        Symbol insert_cursor(int index, QChar value);
     };
 }

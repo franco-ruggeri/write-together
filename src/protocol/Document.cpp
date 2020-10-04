@@ -3,6 +3,7 @@
  */
 
 #include <cte/protocol/Document.h>
+#include <random>
 
 namespace cte {
     Document::Document() {}
