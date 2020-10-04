@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `character`
 	`document_owner` VARCHAR(100) NOT NULL,
 	`document_name` VARCHAR(100) NOT NULL,
 	`index` INT NOT NULL,
-	`value` CHAR(1) NOT NULL,
+	`value` VARCHAR(1) NOT NULL,    -- not CHAR because CHAR removes trailing spaces
     `author` VARCHAR(100) NOT NULL,
 	PRIMARY KEY (`document_owner`, `document_name`, `index`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`) ON UPDATE CASCADE,
