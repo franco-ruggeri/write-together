@@ -46,7 +46,7 @@ public:
 
     UserInfo(Profile profile);
     UserInfo& operator=(const Profile& other);
-    const QColor color();
+    const QColor color() const;
 
     void add_cursor(QTextEdit *editor, int newCursorPosition, int id);
 
@@ -54,6 +54,7 @@ public:
 
     QColor color_;
 
+    bool has_cursor(int id) const;
     void remove_cursors(int id);
     void update_cursor(QTextEdit *editor);
     void clear_fields();

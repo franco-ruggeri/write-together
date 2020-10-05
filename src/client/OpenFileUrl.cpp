@@ -4,6 +4,7 @@
 
 #include <cte/client/OpenFileUrl.h>
 #include <ui_OpenFileUrl.h>
+#include <QtCore/QMimeData>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QClipboard>
 #include <QtWidgets/QMessageBox>
@@ -18,6 +19,13 @@ namespace cte {
         ui->cancel_button->setStyleSheet(btnCancelFileStylesheet);
         ui->paste_button->setStyleSheet(btnPasteFileStylesheet);
         ui->open_button->setStyleSheet(btnCreateFileStylesheet);
+#ifndef QT_NO_CLIPBOARD
+        /* paste button enabled at opening */
+        const QMimeData *md = QGuiApplication::clipboard()->mimeData();
+        if (md) ui->paste_button->setEnabled(md->hasText());
+        /* paste button to be enabled or disabled due to clipboard changes */
+        QObject::connect(QGuiApplication::clipboard(), &QClipboard::dataChanged, this, &OpenFileUrl::clipboard_changed);
+#endif
     }
 
     void OpenFileUrl::clear_content() {
@@ -44,6 +52,15 @@ namespace cte {
         client_->open_file(file_url, false);
         accept();
     }
+
+#ifndef QT_NO_CLIPBOARD
+    void OpenFileUrl::clipboard_changed() {
+        const QMimeData *md = QGuiApplication::clipboard()->mimeData();
+        if (md) {
+            ui->paste_button->setEnabled(md->hasText());
+        }
+    }
+#endif
 
 /*
     TODO: understand if correct to delete ui

@@ -51,7 +51,7 @@ const QString imgPath = ":/images";
 
 
 texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file): QMainWindow(parent),
-file(file), user_row_(0){
+                        file(file){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(APPLICATION + client->user.username());
     editor = QSharedPointer<QTextEdit>::create(this);
@@ -88,18 +88,10 @@ void texteditor::setupPeers(){
     h =  std::floor(rand());
 //    auto ids = file.cursors().keys();
 
-    list_user = QSharedPointer<QListWidget>::create();
-    list_user->setObjectName("list_user");
-
     // current user
     UserInfo user = client->user;
-    user.color_ = generate_color();
     user.format.setFontPointSize(14);
     username_to_user.insert(user.username(),user);
-    QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
-    auto *widget = new QListWidgetItem(user_icon, user.username() + " (you)");
-    widget->setBackground(user.color());
-    list_user->insertItem(user_row_, widget);
     if(!file.site_ids().count(file.site_id()))
         file.insert_new_userId(file.site_id(),user.username());
     // other users
@@ -107,29 +99,52 @@ void texteditor::setupPeers(){
         if(!username_to_user.count(profile.username())) {
             UserInfo user(profile, generate_color());
             username_to_user.insert(profile.username(), user);
+        }
+    }
+}
+
+void texteditor::setupPeersPanel() {
+
+    active_user_list_ = QSharedPointer<QListWidget>::create();
+    active_user_list_->setObjectName("active_users");
+    inactive_user_list_ = QSharedPointer<QListWidget>::create();
+    inactive_user_list_->setObjectName("inactive_users");
+
+    // current user
+    UserInfo my_user = client->user;
+    my_user.color_ = generate_color();
+    QIcon user_icon = QIcon(QPixmap::fromImage(my_user.icon()));
+    auto *widget = new QListWidgetItem(user_icon, my_user.username() + " (you)");
+    widget->setBackground(my_user.color());
+    active_user_list_->addItem(widget);
+    for (const auto& user : username_to_user) {
+        if (user.username() != my_user.username()) {
             QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
             auto *widget = new QListWidgetItem(user_icon, user.username());
-            widget->setBackground(user.color());
-            username_to_row.insert(profile.username(), user_row_);
-            list_user->insertItem(user_row_, widget);
-            user_row_++;
+            if (user.has_cursor(file.site_ids().key(user.username()))) { // an active user
+                widget->setBackground(user.color());
+                active_user_list_->addItem(widget);
+            } else {
+                widget->setBackground(QColor("gainsboro"));
+                inactive_user_list_->addItem(widget);
+            }
         }
     }
 
-
-
-    list_user->setSelectionMode(QAbstractItemView::NoSelection);
+    active_user_list_->setSelectionMode(QAbstractItemView::NoSelection);
+    inactive_user_list_->setSelectionMode(QAbstractItemView::NoSelection);
+    peers_wrapper_ = QSharedPointer<QSplitter>::create(Qt::Vertical);
+    peers_wrapper_->insertWidget(0, active_user_list_.get());
+    peers_wrapper_->insertWidget(1, inactive_user_list_.get());
     peers = QSharedPointer<QDockWidget>::create(); // widget to show the peers
     peers->setObjectName("Peers");
     peers->setWindowTitle("Peers");
-    peers->setWidget(list_user.get()); // add other user to the dock
+    peers->setWidget(peers_wrapper_.get()); // add other user to the dock
     addDockWidget(Qt::RightDockWidgetArea,peers.get());
-    connect(list_user.get(), SIGNAL(itemClicked(QListWidgetItem*)),
+    connect(active_user_list_.get(), SIGNAL(itemClicked(QListWidgetItem *)),
             this, SLOT(on_list_user_itemClicked(QListWidgetItem*)));
 
 }
-
-
 
 
 void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
@@ -177,6 +192,7 @@ void texteditor::init_cursors(){
             username_to_user.find(username)->add_cursor(editor.get(),cursor_pos,id);
         }
     }
+    setupPeersPanel();
 }
 
 
@@ -250,6 +266,8 @@ void texteditor::setupEditActions() {
    tb->addAction(actionPaste);
    if (const QMimeData *md = QApplication::clipboard()->mimeData())
        actionPaste->setEnabled(md->hasText());
+
+   QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &texteditor::clipboard_changed);
 #endif
 }
 
@@ -342,25 +360,47 @@ void texteditor::remote_cursor(const Symbol& symbol, const QString & username){
 }
 
 void texteditor::remote_open(const Profile &profile, int site_id){
-    if(!username_to_user.count(profile.username())){
+    if(!username_to_user.count(profile.username())){ // user just joined the file
         UserInfo user(profile,generate_color());
         username_to_user.insert(user.username(),user);
         QIcon user_icon = QIcon(QPixmap::fromImage(profile.icon()));
         QListWidgetItem* widget = new QListWidgetItem(user_icon,profile.username());
         widget->setBackground(user.color());
-        username_to_row.insert(user.username(), user_row_);
-        list_user->insertItem(user_row_, widget);
-        user_row_++;
-
+        active_user_list_->addItem(widget);
+    } else {
+        QListWidget *inactive_list = static_cast<QListWidget*>((static_cast<QSplitter*>(peers->widget()))->widget(1));
+        QListWidget *active_list = static_cast<QListWidget*>((static_cast<QSplitter*>(peers->widget()))->widget(0));
+        QList<QListWidgetItem *> profile_matches = inactive_list->findItems(profile.username(), Qt::MatchContains);
+        UserInfo user = username_to_user.value(profile.username());
+        QListWidgetItem *widget = profile_matches.first();
+        auto* widget_to_move = inactive_list->takeItem(inactive_list->row(widget));
+        widget_to_move->setBackground(user.color());
+        active_list->addItem(widget_to_move);
     }
     username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
     file.insert_new_userId(site_id,profile.username());
 }
 
 void texteditor::remote_close(const QString &username, int site_id) {
-    username_to_user.find(username)->remove_cursors(site_id);
+    QListWidget *active_list = static_cast<QListWidget*>((static_cast<QSplitter*>(peers->widget()))->widget(0));
+    QListWidget *inactive_list = static_cast<QListWidget*>((static_cast<QSplitter*>(peers->widget()))->widget(1));
+    QList<QListWidgetItem *> profile_matches = active_list->findItems(username, Qt::MatchContains);
+    QListWidgetItem *widget = profile_matches.first();
+    auto* widget_to_move = active_list->takeItem(active_list->row(widget));
+    widget_to_move->setBackground(QColor("gainsboro"));
+    inactive_list->addItem(widget_to_move);
 
+    username_to_user.find(username)->remove_cursors(site_id);
 }
+
+#ifndef QT_NO_CLIPBOARD
+void texteditor::clipboard_changed() {
+    const QMimeData *md = QApplication::clipboard()->mimeData();
+    if (md) {
+        actionPaste->setEnabled(md->hasText());
+    }
+}
+#endif
 
 void texteditor::closeEvent(QCloseEvent *event){
     file_close(event->spontaneous());

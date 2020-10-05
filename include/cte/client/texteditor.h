@@ -12,6 +12,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QListWidget>
+#include <QtWidgets/QSplitter>
 #include <cte/crdt/SharedEditor.h>
 #include <cte/client/myClient.h>
 #include <cte/client/fileInfo.h>
@@ -56,9 +57,14 @@ private slots:
     void remote_insert(const Symbol& symbol);
     QColor generate_color();
 
+#ifndef QT_NO_CLIPBOARD
+    void clipboard_changed();
+#endif
+
 private:
 
     QSharedPointer<QDockWidget>peers;
+    QSharedPointer<QSplitter> peers_wrapper_;
     QSharedPointer<QTextEdit> editor;
     QSharedPointer<myClient> client;
     QSharedPointer<SharedEditor> shared_editor;
@@ -69,17 +75,16 @@ private:
     fileInfo file;
     double h;
     int current_position;
-    QSharedPointer<QListWidget>list_user;
+    QSharedPointer<QListWidget> active_user_list_;
+    QSharedPointer<QListWidget> inactive_user_list_;
     QHash<QString,UserInfo> username_to_user;
-    QHash<QString,int> username_to_row;
-    int user_row_;
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;
     QAction *actionCopy;
     QAction *actionPaste;
 #endif
 
-
+    void setupPeersPanel();
     void draw_cursors();
 };
 

@@ -254,7 +254,7 @@ void loginTextEditor::on_user_add_pushButton_clicked() {
 void loginTextEditor::on_user_logout_pushButton_clicked() {
     client->logout();
     clear_user_fields();
-    this->setCurrentIndex(3);
+    this->setCurrentIndex(2);
 }
 
 void loginTextEditor::on_user_file_listWidget_itemDoubleClicked(QListWidgetItem *item) {
@@ -338,8 +338,9 @@ void loginTextEditor::on_user_shared_documents_pushButton_clicked(){
 }
 
 void loginTextEditor::open_editor(fileInfo file){
-    if (file_dialog != nullptr && file_dialog->isVisible())
+    if (file_dialog != nullptr && file_dialog->isVisible()) {
         file_dialog->hide();
+    }
     if (file_open_request_ == OpenFileSource::open_from_link) {
         open_dialog_->clear_content();
     }
@@ -369,7 +370,7 @@ void loginTextEditor::clear_user_fields(){
 void loginTextEditor::share_file(const QString& shared_link){
     QMessageBox msgBox;
     QClipboard *cb = QApplication::clipboard();
-    msgBox.setText(" URI: " + shared_link);
+    msgBox.setText(shared_link);
     QAbstractButton* pButtonYes = msgBox.addButton(tr("Copy"), QMessageBox::YesRole);
     msgBox.addButton(tr("Close"), QMessageBox::NoRole);
     msgBox.exec();
