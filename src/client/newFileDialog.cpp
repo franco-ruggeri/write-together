@@ -9,6 +9,7 @@
 #include <QtWidgets/QWidget>
 #include <QTStylesheet.h>
 #include <cte/client/loginTextEditor.h>
+#include <QDebug>
 
 NewFileDialog::NewFileDialog(QWidget *parent,QSharedPointer<myClient> client, QSharedPointer<texteditor> editor):
         QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint), ui(new Ui::NewFileDialog), client(client), editor(editor) {
@@ -21,9 +22,13 @@ NewFileDialog::NewFileDialog(QWidget *parent,QSharedPointer<myClient> client, QS
 
 void NewFileDialog::on_newfile_create_pushButton_clicked() {
     QString filename = ui->newfile_filename_lineEdit->text();
-    ui->newfile_filename_lineEdit->clear();
 
-    client->new_file(filename);
+    ui->newfile_filename_lineEdit->clear();
+if (filename.isNull() || filename.length() == 0){
+        QMessageBox::warning(this, tr("Error"), "Please provide a valid filename.");
+    }
+    else
+        client->new_file(filename);
 }
 
 void NewFileDialog::on_newfile_cancel_pushButton_clicked(){
