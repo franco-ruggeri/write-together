@@ -53,8 +53,7 @@ const QString imgPath = ":/images";
 texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file): QMainWindow(parent),
                         file(file){
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
-    this->setWindowTitle(APPLICATION + client->user.username());
-    editor = QSharedPointer<QTextEdit>::create(this);
+    this->setWindowTitle(file.document().full_name() + " " + APPLICATION);    editor = QSharedPointer<QTextEdit>::create(this);
     setCentralWidget(editor.get());
 
     this->client = client;
@@ -320,16 +319,15 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
     }
 
-   for(int i = 0 ; i < charsAdded; i++) {
-       QChar c = editor->document()->characterAt(position + i );
-       if(!c.isNull()) {
-           Symbol s = shared_editor->local_insert(position + i, editor->toPlainText()[position + i]);
-           client->sendInsert(file.document(), s);
-       }
-   }
-
+    for(int i = 0 ; i < charsAdded; i++) {
+        QChar c = editor->toPlainText()[position + i];
+        if(!c.isNull()) {
+            Symbol s = shared_editor->local_insert(position + i, c);
+            client->sendInsert(file.document(), s);
+        }
+    }
 }
-
+/*
 void  texteditor::remote_insert(const Symbol& symbol){
     QString username = file.site_ids().find(symbol.site_id()).value();
     change_from_server = true;
@@ -341,6 +339,35 @@ void  texteditor::remote_insert(const Symbol& symbol){
     cursor.insertText(symbol.value(),username_to_user.find(username)->format);
 
 }
+*/
+void  texteditor::remote_insert(const Symbol& symbol){
+    QString username = file.site_ids().find(symbol.site_id()).value();
+    change_from_server = true;
+    int pos = shared_editor->find(symbol);
+    qDebug() << pos;
+    QTextCursor cursor = editor->textCursor();
+
+
+    if(pos == cursor.position()) {
+        shared_editor->remote_insert(symbol);
+        editor->toPlainText().insert(pos,symbol.value());
+//        cursor.setPosition(pos);
+        int old_pos = cursor.position();
+        cursor.insertText(symbol.value(),username_to_user.find(username)->format);
+        cursor.setPosition(old_pos);
+        editor->setTextCursor(cursor);
+    }
+
+    else {
+        shared_editor->remote_insert(symbol);
+        editor->toPlainText().insert(pos, symbol.value());
+        cursor.setPosition(pos);
+        cursor.insertText(symbol.value(), username_to_user.find(username)->format);
+    }
+
+
+}
+
 
 
 void  texteditor::remote_erase(const Symbol& symbol){
@@ -411,7 +438,7 @@ void texteditor::closeEvent(QCloseEvent *event){
 
 
 void texteditor::textChange() {
-    draw_cursors();
+//    draw_cursors();
     editor->setFontPointSize(14);
     if(change_from_server) {
         current_position = editor->textCursor().position();
