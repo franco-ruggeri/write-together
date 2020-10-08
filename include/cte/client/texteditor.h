@@ -24,19 +24,16 @@ class texteditor : public QMainWindow{
 
 public:
     texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file);
-
     bool change_from_server;
     void setupFileActions();
     void closeEvent(QCloseEvent *event) override;
-
-
     void init_cursors();
 
 signals:
     void show_user_page(const QSet<Document> &docs);
     void show_profile_update();
     void share_file(const QString string);
-
+//    void number_user_change();
 private slots:
 
     void show_user_details();
@@ -75,6 +72,8 @@ private:
     fileInfo file;
     double h;
     int current_position;
+    int number_online_users;
+    int number_offline_users;
     QSharedPointer<QListWidget> active_user_list_;
     QSharedPointer<QListWidget> inactive_user_list_;
     QHash<QString,UserInfo> username_to_user;
@@ -86,6 +85,8 @@ private:
 
     void setupPeersPanel();
     void draw_cursors();
+
+//    void update_number_user();
 };
 
 

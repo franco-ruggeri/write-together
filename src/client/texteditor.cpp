@@ -55,13 +55,11 @@ texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, 
     this->resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     this->setWindowTitle(file.document().full_name() + " " + APPLICATION);    editor = QSharedPointer<QTextEdit>::create(this);
     setCentralWidget(editor.get());
-
     this->client = client;
     change_from_server = false;
     editor->setFontPointSize(14);
     shared_editor = QSharedPointer<SharedEditor>::create(file.site_id(), file.getFileContent());
     editor->setText(shared_editor->to_string()); // set the text content
-
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupPeers();
     setupFileActions();
@@ -83,7 +81,6 @@ texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, 
 
 
 void texteditor::setupPeers(){
-
     h =  std::floor(rand());
 //    auto ids = file.cursors().keys();
 
@@ -103,38 +100,54 @@ void texteditor::setupPeers(){
 }
 
 void texteditor::setupPeersPanel() {
-
+    number_online_users = 1;
+    number_offline_users = 0;
     active_user_list_ = QSharedPointer<QListWidget>::create();
     active_user_list_->setObjectName("active_users");
+
     inactive_user_list_ = QSharedPointer<QListWidget>::create();
     inactive_user_list_->setObjectName("inactive_users");
 
     // current user
-    UserInfo my_user = client->user;
-    my_user.color_ = generate_color();
-    QIcon user_icon = QIcon(QPixmap::fromImage(my_user.icon()));
-    auto *widget = new QListWidgetItem(user_icon, my_user.username() + " (you)");
-    widget->setBackground(my_user.color());
+    auto my_user = username_to_user.find(client->user.username());
+    my_user->color_ = generate_color();
+    QIcon user_icon = QIcon(QPixmap::fromImage(my_user->icon()));
+    auto *widget = new QListWidgetItem(user_icon, my_user->username() + " (you)");
+    widget->setBackground(my_user->color());
     active_user_list_->addItem(widget);
     for (const auto& user : username_to_user) {
-        if (user.username() != my_user.username()) {
+        if (user.username() != my_user->username()) {
             QIcon user_icon = QIcon(QPixmap::fromImage(user.icon()));
             auto *widget = new QListWidgetItem(user_icon, user.username());
             if (user.has_cursor(file.site_ids().key(user.username()))) { // an active user
                 widget->setBackground(user.color());
                 active_user_list_->addItem(widget);
+                number_online_users ++;
             } else {
                 widget->setBackground(QColor("gainsboro"));
                 inactive_user_list_->addItem(widget);
+                number_offline_users++;
             }
         }
     }
+    QListWidgetItem* online_user_header = new QListWidgetItem("Online Users: " + QString::number(number_online_users));
+    QListWidgetItem*  offline_user_header = new QListWidgetItem("Offline Users: " + QString::number(number_offline_users));
+
+
+//    connect(editor, &texteditor::number_user_change, editor, &texteditor::update_number_user);
+
+    active_user_list_->insertItem(0,online_user_header);
+    inactive_user_list_->insertItem(0,offline_user_header );
+
+
 
     active_user_list_->setSelectionMode(QAbstractItemView::NoSelection);
     inactive_user_list_->setSelectionMode(QAbstractItemView::NoSelection);
     peers_wrapper_ = QSharedPointer<QSplitter>::create(Qt::Vertical);
+
     peers_wrapper_->insertWidget(0, active_user_list_.get());
     peers_wrapper_->insertWidget(1, inactive_user_list_.get());
+
     peers = QSharedPointer<QDockWidget>::create(); // widget to show the peers
     peers->setObjectName("Peers");
     peers->setWindowTitle("Peers");
@@ -142,15 +155,31 @@ void texteditor::setupPeersPanel() {
     addDockWidget(Qt::RightDockWidgetArea,peers.get());
     connect(active_user_list_.get(), SIGNAL(itemClicked(QListWidgetItem *)),
             this, SLOT(on_list_user_itemClicked(QListWidgetItem*)));
-
+    active_user_list_->item(0)->setFlags(active_user_list_->item(0)->flags() & !Qt::ItemIsUserCheckable);
+    inactive_user_list_->item(0)->setFlags(inactive_user_list_->item(0)->flags() & !Qt::ItemIsUserCheckable);
+//    active_user_list_->setStyleSheet("QListWidget::item {border-width:1px; border-color:black;}");
+    inactive_user_list_->item(0)->setForeground(Qt::black);
+    active_user_list_->item(0)->setForeground(Qt::black);
 }
+
+//
+//void texteditor::update_number_user(){
+//
+//}
+
 
 
 void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
 
+    if (active_user_list_->item(0) == item)
+        return;
     QString username = item->text().split(' ')[0];
 
     auto user = username_to_user.find(username);
+    qDebug() << username;
+    qDebug() << user->color(); // ??
+    qDebug() << user->username();
+
 
     int i = 0;
     disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
@@ -403,9 +432,15 @@ void texteditor::remote_open(const Profile &profile, int site_id){
         auto* widget_to_move = inactive_list->takeItem(inactive_list->row(widget));
         widget_to_move->setBackground(user.color());
         active_list->addItem(widget_to_move);
+
+        number_offline_users --;
+        number_online_users ++;
+        inactive_user_list_->item(0)->setText("Offline Users: " + QString::number(number_offline_users));
+        active_user_list_->item(0)->setText("Online Users: " + QString::number(number_online_users));
     }
     username_to_user.find(profile.username()).value().add_cursor(editor.get(),0,site_id);
     file.insert_new_userId(site_id,profile.username());
+
 }
 
 void texteditor::remote_close(const QString &username, int site_id) {
@@ -416,8 +451,12 @@ void texteditor::remote_close(const QString &username, int site_id) {
     auto* widget_to_move = active_list->takeItem(active_list->row(widget));
     widget_to_move->setBackground(QColor("gainsboro"));
     inactive_list->addItem(widget_to_move);
-
     username_to_user.find(username)->remove_cursors(site_id);
+
+    number_offline_users ++;
+    number_online_users --;
+    inactive_user_list_->item(0)->setText("Offline Users: " + QString::number(number_offline_users));
+    active_user_list_->item(0)->setText("Online Users: " + QString::number(number_online_users));
 }
 
 #ifndef QT_NO_CLIPBOARD
@@ -438,7 +477,7 @@ void texteditor::closeEvent(QCloseEvent *event){
 
 
 void texteditor::textChange() {
-//    draw_cursors();
+//    dra_cursors();
     editor->setFontPointSize(14);
     if(change_from_server) {
         current_position = editor->textCursor().position();
