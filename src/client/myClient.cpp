@@ -9,21 +9,21 @@
 #include <QPixmap>
 #include <QJsonDocument>
 #include <QtCore/QSettings>
-#include <cte/protocol/MessageType.h>
-#include <cte/protocol/OpenMessage.h>
-#include <cte/protocol/ProfileMessage.h>
+#include <cte/protocol/message_type.h>
+#include <cte/protocol/open_message.h>
+#include <cte/protocol/profile_message.h>
 #include <cte/client/fileInfo.h>
-#include <cte/protocol/CloseMessage.h>
-#include <cte/protocol/CursorMessage.h>
-#include <cte/protocol/DocumentMessage.h>
-#include <cte/protocol/SignupMessage.h>
-#include <cte/protocol/LogoutMessage.h>
-#include <cte/protocol/InsertMessage.h>
-#include <cte/protocol/CreateMessage.h>
-#include <cte/protocol/EraseMessage.h>
-#include <cte/protocol/LoginMessage.h>
-#include <cte/protocol/ErrorMessage.h>
-#include <cte/protocol/DocumentsMessage.h>
+#include <cte/protocol/close_message.h>
+#include <cte/protocol/cursor_message.h>
+#include <cte/protocol/document_message.h>
+#include <cte/protocol/signup_message.h>
+#include <cte/protocol/logout_message.h>
+#include <cte/protocol/insert_message.h>
+#include <cte/protocol/create_message.h>
+#include <cte/protocol/erase_message.h>
+#include <cte/protocol/login_message.h>
+#include <cte/protocol/error_message.h>
+#include <cte/protocol/documents_message.h>
 #include <iostream>
 
 

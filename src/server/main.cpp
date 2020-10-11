@@ -5,7 +5,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QThread>
-#include <cte/server/Server.h>
+#include <cte/server/server.h>
 #include <iostream>
 
 int main(int argc, char **argv) {

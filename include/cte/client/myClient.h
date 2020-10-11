@@ -10,13 +10,13 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QTimer>
 #include <QtNetwork/QTcpSocket>
-#include <cte/protocol/Message.h>
-#include <cte/protocol/Document.h>
-#include <cte/protocol/Profile.h>
-#include <cte/crdt/Symbol.h>
+#include <cte/protocol/message.h>
+#include <cte/protocol/document.h>
+#include <cte/protocol/profile.h>
+#include <cte/crdt/symbol.h>
 #include <cte/client/fileInfo.h>
 #include <cte/client/UserInfo.h>
-#include <cte/network/Socket.h>
+#include <cte/network/socket.h>
 
 using namespace cte;
 

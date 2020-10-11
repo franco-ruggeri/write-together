@@ -2,8 +2,8 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/DocumentsMessage.h>
-#include <cte/protocol/Document.h>
+#include <cte/protocol/documents_message.h>
+#include <cte/protocol/document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QSet>
 #include <assert.h>

@@ -5,10 +5,10 @@
 #pragma once
 
 #include <QtCore/QString>
-#include <cte/crdt/Symbol.h>
-#include <cte/protocol/Profile.h>
-#include <cte/protocol/DocumentInfo.h>
-#include <cte/protocol/Document.h>
+#include <cte/crdt/symbol.h>
+#include <cte/protocol/profile.h>
+#include <cte/protocol/document_info.h>
+#include <cte/protocol/document.h>
 
 using namespace cte;
 class fileInfo {

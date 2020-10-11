@@ -2,8 +2,8 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/SignupMessage.h>
-#include <cte/protocol/Profile.h>
+#include <cte/protocol/signup_message.h>
+#include <cte/protocol/profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <assert.h>

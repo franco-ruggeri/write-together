@@ -9,7 +9,7 @@
 #include "ui_loginTextEditor.h"
 #include <cte/client/fileInfo.h>
 #include <QClipboard>
-#include <cte/protocol/Document.h>
+#include <cte/protocol/document.h>
 #include <cte/network/network_utility.h>
 #include <QTStylesheet.h>
 

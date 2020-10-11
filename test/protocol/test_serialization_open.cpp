@@ -2,9 +2,9 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/OpenMessage.h>
-#include <cte/protocol/Document.h>
-#include <cte/protocol/Profile.h>
+#include <cte/protocol/open_message.h>
+#include <cte/protocol/document.h>
+#include <cte/protocol/profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <assert.h>

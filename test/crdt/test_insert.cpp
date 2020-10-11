@@ -4,9 +4,9 @@
 
 #include <iostream>
 #include <QtCore/QString>
-#include <cte/crdt/SharedEditor.h>
-#include <cte/crdt/Symbol.h>
-#include <cte/crdt/Lseq.h>
+#include <cte/crdt/shared_editor.h>
+#include <cte/crdt/symbol.h>
+#include <cte/crdt/lseq.h>
 
 void print_position(const QVector<int>& position) {
     std::cout << "[ ";

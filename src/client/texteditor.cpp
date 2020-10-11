@@ -37,11 +37,11 @@
 #include <cte/client/myClient.h>
 #include <iostream>
 #include <utility>
-#include <cte/protocol/InsertMessage.h>
+#include <cte/protocol/insert_message.h>
 #include <cte/client/loginTextEditor.h>
-#include <cte/protocol/EraseMessage.h>
-#include <cte/protocol/CursorMessage.h>
-#include <cte/protocol/OpenMessage.h>
+#include <cte/protocol/erase_message.h>
+#include <cte/protocol/cursor_message.h>
+#include <cte/protocol/open_message.h>
 #include <QPushButton>
 #include <QtWidgets/QHBoxLayout>
 #include <cmath>

@@ -2,11 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/DocumentMessage.h>
-#include <cte/protocol/Document.h>
-#include <cte/protocol/DocumentInfo.h>
-#include <cte/crdt/SharedEditor.h>
-#include <cte/crdt/Symbol.h>
+#include <cte/protocol/document_message.h>
+#include <cte/protocol/document.h>
+#include <cte/protocol/document_info.h>
+#include <cte/crdt/shared_editor.h>
+#include <cte/crdt/symbol.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QList>
 #include <QtCore/QHash>

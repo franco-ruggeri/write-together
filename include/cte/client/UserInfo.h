@@ -6,10 +6,10 @@
 #include <QtGui/QImage>
 #include <QtGui/QTextCursor>
 #include <QtWidgets/QLabel>
-#include <cte/crdt/Symbol.h>
+#include <cte/crdt/symbol.h>
 #include <QtWidgets/QTextEdit>
-#include <cte/protocol/Document.h>
-#include <cte/protocol/Profile.h>
+#include <cte/protocol/document.h>
+#include <cte/protocol/profile.h>
 
 using namespace cte;
 class UserInfo {

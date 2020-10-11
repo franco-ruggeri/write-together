@@ -4,8 +4,8 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/crdt/SharedEditor.h>
-#include <cte/crdt/Symbol.h>
+#include <cte/crdt/shared_editor.h>
+#include <cte/crdt/symbol.h>
 #include <QtCore/QString>
 #include <assert.h>
 
