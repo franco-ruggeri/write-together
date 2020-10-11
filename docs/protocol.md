@@ -14,8 +14,8 @@ Here are the fields and the explanation of each message type appearing in the st
 - *profile_ok* : server confirms success of profile update.
 - *documents [\<list_of_documents>]* : client requests (without optional argument) or server sends (with optional argument) list of documents that can still be opened (accessible, i.e. created or accessed previously with sharing link, and not yet opened).
 - *create \<document_name>* : client requests to create a new document.
-- *open \<document|sharing_link> [\<site_id> \<profile>]* : client requests to open an existing document (without optional arguments) or server notifies a user opening the document (with *\<document>* and optional arguments).
-- *close \<document> [\<username>]* : client requests to close an opened document (without optional argument) or server notifies a close to the other editing users (with optional argument).
+- *open \<document|sharing_link> [\<site_id> \<profile>]* : client requests to open an existing document (without optional arguments) or server notifies an open to the other editing users (with *\<document>* and optional arguments).
+- *close \<document> [\<site_id>]* : client requests to close an opened document (without optional argument) or server notifies a close to the other editing users (with optional argument).
 - *document \<document> \<document_info>* : server sends all the info about the requested (open/create) document.
 - *insert \<document> \<symbol>* : insert symbol in an opened document.
 - *erase \<document> \<symbol>* : erase symbol from an opened document.

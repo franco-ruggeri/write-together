@@ -343,7 +343,7 @@ void myClient::process_data_from_server() {
             // remove user from user list
             closed = response.staticCast<CloseMessage>();
             username= closed->username().value();
-            emit user_removed(username,0); // site_id from close message
+            emit user_removed(username, *closed->site_id());
             break;
         case MessageType::insert :
             // perform remote insert

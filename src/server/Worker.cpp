@@ -346,17 +346,17 @@ namespace cte {
         Document document = close_message->document();
 
         // close document
-        document_manager.close_document(session_id, document);
+        int site_id = document_manager.close_document(session_id, document);
 
         // unregister for dispatching
         editing_clients[document].remove(socket);
 
         // dispatch message
-        QString username = *identity_manager.username(session_id);
-        close_message = QSharedPointer<CloseMessage>::create(document, username);
+        close_message = QSharedPointer<CloseMessage>::create(document, site_id);
         emit new_message(socket->socketDescriptor(), close_message);
 
-        qDebug() << "document closed: { document:" << document.full_name() << ", user:" << username << "}";
+        qDebug() << "document closed: { document:" << document.full_name()
+                << ", user:" << *identity_manager.username(session_id) << "}";
     }
 
     void Worker::get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
@@ -425,11 +425,10 @@ namespace cte {
         Symbol symbol = cursor_message->symbol();
 
         // move cursor
-        document_manager.move_cursor(session_id, document, symbol);
+        int site_id = document_manager.move_cursor(session_id, document, symbol);
 
         // dispatch message
-        QString username = *identity_manager.username(session_id);
-        cursor_message = QSharedPointer<CursorMessage>::create(document, symbol, username);
+        cursor_message = QSharedPointer<CursorMessage>::create(document, symbol, site_id);
         emit new_message(socket->socketDescriptor(), cursor_message);
 
         qDebug() << "move cursor: { document:" << document.full_name()

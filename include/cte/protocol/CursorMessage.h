@@ -15,7 +15,7 @@ namespace cte {
     class CursorMessage : public Message {
         Document document_;
         Symbol symbol_;
-        std::optional<QString> username_;
+        std::optional<int> site_id_;
 
         explicit CursorMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
@@ -23,10 +23,10 @@ namespace cte {
 
     public:
         CursorMessage(const Document& document, const Symbol& symbol);
-        CursorMessage(const Document& document, const Symbol& symbol, const QString& username);
+        CursorMessage(const Document& document, const Symbol& symbol, int site_id);
         bool operator==(const Message& other) const override;
         Document document() const;
         Symbol symbol() const;
-        std::optional<QString> username() const;
+        std::optional<int> site_id() const;
     };
 }

@@ -13,7 +13,7 @@
 namespace cte {
     class CloseMessage : public Message {
         Document document_;
-        std::optional<QString> username_;
+        std::optional<int> site_id_;
 
         explicit CloseMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
@@ -21,9 +21,9 @@ namespace cte {
 
     public:
         explicit CloseMessage(const Document& document);
-        CloseMessage(const Document& document, const QString& username);
+        CloseMessage(const Document& document, int site_id);
         bool operator==(const Message& other) const override;
         Document document() const;
-        std::optional<QString> username() const;
+        std::optional<int> site_id() const;
     };
 }

@@ -144,11 +144,12 @@ namespace cte {
         return {document, open_document(session_id, document, username)};
     }
 
-    void DocumentManager::close_document(int session_id, const Document& document) {
+    int DocumentManager::close_document(int session_id, const Document& document) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         int site_id = site_ids_[session_id].take(document);
         get_open_document(document).close(site_id);
+        return site_id;
     }
 
     OpenDocument& DocumentManager::get_open_document(const Document& document) {
@@ -181,10 +182,12 @@ namespace cte {
         get_open_document(document).erase_symbol(symbol);
     }
 
-    void DocumentManager::move_cursor(int session_id, const Document& document, const Symbol& symbol) {
+    int DocumentManager::move_cursor(int session_id, const Document& document, const Symbol& symbol) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
-        get_open_document(document).move_cursor(site_ids_[session_id][document], symbol);
+        int site_id = site_ids_[session_id][document];
+        get_open_document(document).move_cursor(site_id, symbol);
+        return site_id;
     }
 
     QSet<Document> DocumentManager::get_document_list(int session_id, const QString& username) const {
