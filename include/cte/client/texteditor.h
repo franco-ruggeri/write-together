@@ -25,6 +25,7 @@ class texteditor : public QMainWindow{
 public:
     texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file);
     bool change_from_server;
+    bool content_change;
     void setupFileActions();
     void closeEvent(QCloseEvent *event) override;
     void init_cursors();
@@ -74,6 +75,8 @@ private:
     int current_position;
     int number_online_users;
     int number_offline_users;
+    int number_of_words;
+    int number_of_characters;
     QSharedPointer<QListWidget> active_user_list_;
     QSharedPointer<QListWidget> inactive_user_list_;
     QHash<QString,UserInfo> username_to_user;

@@ -57,9 +57,13 @@ texteditor::texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, 
     setCentralWidget(editor.get());
     this->client = client;
     change_from_server = false;
+    content_change = false;
     editor->setFontPointSize(14);
     shared_editor = QSharedPointer<SharedEditor>::create(file.site_id(), file.getFileContent());
     editor->setText(shared_editor->to_string()); // set the text content
+    number_of_words = editor->toPlainText().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).count();
+    number_of_characters = editor->toPlainText().count();
+    this->statusBar()->showMessage("words: " + QString::number(number_of_words) + "   characters: " + QString::number(number_of_characters));
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupPeers();
     setupFileActions();
@@ -157,15 +161,11 @@ void texteditor::setupPeersPanel() {
             this, SLOT(on_list_user_itemClicked(QListWidgetItem*)));
     active_user_list_->item(0)->setFlags(active_user_list_->item(0)->flags() & !Qt::ItemIsUserCheckable);
     inactive_user_list_->item(0)->setFlags(inactive_user_list_->item(0)->flags() & !Qt::ItemIsUserCheckable);
-//    active_user_list_->setStyleSheet("QListWidget::item {border-width:1px; border-color:black;}");
     inactive_user_list_->item(0)->setForeground(Qt::black);
     active_user_list_->item(0)->setForeground(Qt::black);
 }
 
-//
-//void texteditor::update_number_user(){
-//
-//}
+
 
 
 
@@ -260,6 +260,9 @@ void texteditor::setupUserActions(){
 }
 
 void texteditor::setupEditActions() {
+
+
+
    QToolBar *tb = addToolBar(tr("Edit Actions"));
    QMenu *menu = menuBar()->addMenu(tr("&Edit"));
    const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
@@ -335,9 +338,11 @@ void texteditor::show_user_details() {
 }
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
+   content_change = true;
    if(change_from_server) return;
 
-    if(position ==  0 && charsAdded > 1){
+    if(position ==  editor->textCursor().block().position() && charsAdded > 1){
+
         charsAdded  = charsAdded - charsRemoved;
         charsRemoved = 0;
     }
@@ -356,27 +361,27 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
         }
     }
 }
-/*
-void  texteditor::remote_insert(const Symbol& symbol){
-    QString username = file.site_ids().find(symbol.site_id()).value();
-    change_from_server = true;
-    int pos = shared_editor->find(symbol);
-    shared_editor->remote_insert(symbol);
-    editor->toPlainText().insert(pos,symbol.value());
-    QTextCursor cursor = editor->textCursor();
-    cursor.setPosition(pos);
-    cursor.insertText(symbol.value(),username_to_user.find(username)->format);
 
-}
-*/
+//void  texteditor::remote_insert(const Symbol& symbol){
+//    QString username = file.site_ids().find(symbol.site_id()).value();
+//    change_from_server = true;
+//    int pos = shared_editor->find(symbol);
+//    shared_editor->remote_insert(symbol);
+//    editor->toPlainText().insert(pos,symbol.value());
+//    QTextCursor cursor = editor->textCursor();
+//    cursor.setPosition(pos);
+//    cursor.insertText(symbol.value(),username_to_user.find(username)->format);
+//
+//}
+
+//
 void  texteditor::remote_insert(const Symbol& symbol){
     QString username = file.site_ids().find(symbol.site_id()).value();
     change_from_server = true;
     int pos = shared_editor->find(symbol);
     qDebug() << pos;
+    qDebug() << symbol.value();
     QTextCursor cursor = editor->textCursor();
-
-
     if(pos == cursor.position()) {
         shared_editor->remote_insert(symbol);
         editor->toPlainText().insert(pos,symbol.value());
@@ -393,7 +398,7 @@ void  texteditor::remote_insert(const Symbol& symbol){
         cursor.setPosition(pos);
         cursor.insertText(symbol.value(), username_to_user.find(username)->format);
     }
-
+    username_to_user.find(username)->change_cursor_position(editor.get(),pos + 1,symbol.site_id());
 
 }
 
@@ -404,15 +409,17 @@ void  texteditor::remote_erase(const Symbol& symbol){
     int pos = shared_editor->find(symbol);
     shared_editor->remote_erase(symbol);
     QTextCursor cursor = editor->textCursor();
-    cursor.setPosition(pos );
+    cursor.setPosition(pos);
     cursor.deleteChar();
+//    QString username = file.site_ids().find(symbol.site_id()).value();
+//    username_to_user.find(username)->change_cursor_position(editor.get(),pos,symbol.site_id());
+//    remote_cursor(symbol, username);
+
 }
 
 void texteditor::remote_cursor(const Symbol& symbol, const QString & username){
-
     int position = shared_editor->find(symbol);
     username_to_user.find(username)->change_cursor_position(editor.get(),position,symbol.site_id());
-
 }
 
 void texteditor::remote_open(const Profile &profile, int site_id){
@@ -477,27 +484,32 @@ void texteditor::closeEvent(QCloseEvent *event){
 
 
 void texteditor::textChange() {
-//    dra_cursors();
+    draw_cursors();
+    number_of_words = editor->toPlainText().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).count();
+    number_of_characters = editor->toPlainText().count();
+    this->statusBar()->showMessage("words: " + QString::number(number_of_words) + "   characters: " + QString::number(number_of_characters));
     editor->setFontPointSize(14);
     if(change_from_server) {
-        current_position = editor->textCursor().position();
-        change_from_server  = false;
-        return;
+       current_position = editor->textCursor().position();
+       change_from_server  = false;
+//        return;
     }
 }
 
 void texteditor::cursorPositionChanged() {
-    QTextCursor cursor = editor->textCursor();
-
-    if(cursor.hasSelection())
-        return;
-    editor->setCurrentCharFormat(username_to_user.find(client->user.username())->format);
-
-    if(cursor.position() != current_position) {
-        current_position = cursor.position();
-        this->client->send_cursor(this->file.document(),
-                                  this->shared_editor->insert_cursor(cursor.position(), QChar()));
+    if(!content_change) {
+        QTextCursor cursor = editor->textCursor();
+        if (cursor.hasSelection())
+            return;
+        editor->setCurrentCharFormat(username_to_user.find(client->user.username())->format);
+        if (cursor.position() != current_position) {
+            qDebug() << "cursor pos change";
+            current_position = cursor.position();
+            this->client->send_cursor(this->file.document(),
+                                      this->shared_editor->insert_cursor(cursor.position(), QChar()));
+        }
     }
+    content_change = false;
 }
 
 QColor texteditor::generate_color(){
