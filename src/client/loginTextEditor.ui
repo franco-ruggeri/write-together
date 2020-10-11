@@ -72,15 +72,16 @@ QLabel{
 color:#5d6879;
 }
 QMessageBox  QLabel {
-  background-color:#455265;
-  color: white
+  background-color:#f2f2f2;
+  color: #1C4073;
 }
 QMessageBox  QIcon {
-  background-color:#455265;
-}</string>
+  background-color:#f2f2f2;
+}
+QMessageBox QPushButton {min-width: 50; min-height: 19; background-color: green; color: white} </string>
   </property>
   <property name="currentIndex">
-   <number>3</number>
+   <number>1</number>
   </property>
   <widget class="QWidget" name="user_page">
    <property name="font">
@@ -1639,7 +1640,7 @@ background-color:  #00ABE7;
 background-color: transparent;</string>
         </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Insert a valid IP address &lt;br&gt; to connect to a server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Insert a valid IP address and a port&lt;br/&gt;to connect to a server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -1654,7 +1655,7 @@ background-color: transparent;</string>
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>10</height>
+          <height>13</height>
          </size>
         </property>
        </spacer>
@@ -1698,10 +1699,69 @@ background-color: rgb(238, 238, 236);</string>
           <property name="text">
            <string>127.0.0.1</string>
           </property>
+          <property name="placeholderText">
+           <string>address</string>
+          </property>
          </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_11">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_10">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_22"/>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_19">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="connect_port_lineEdit_">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>500</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color:  #102E4A; border-radius: 2px;
+background-color: rgb(238, 238, 236);</string>
+          </property>
+          <property name="placeholderText">
+           <string>port</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_20">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>

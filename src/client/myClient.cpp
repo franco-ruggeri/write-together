@@ -180,9 +180,6 @@ void myClient::send_message(const QSharedPointer<Message>& request) {
         wait_on_connection_->start();
     }
     socket->write_message(request);
-    if (request_type == MessageType::logout) {
-        socket->disconnectFromHost();
-    }
 }
 
 void myClient::attempt_timeout() {

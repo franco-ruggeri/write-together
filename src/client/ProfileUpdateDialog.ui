@@ -41,7 +41,17 @@
     <normaloff>:/images/user.png</normaloff>:/images/user.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #F2F2f2;</string>
+   <string notr="true">QMessageBox  QLabel {
+  background-color:#f2f2f2;
+  color: #1C4073;
+}
+QMessageBox  QIcon {
+  background-color:#f2f2f2;
+}
+QMessageBox QPushButton {min-width: 50; min-height: 19; background-color: green; color: white} 
+
+background-color: #F2F2f2;
+</string>
   </property>
   <widget class="QFrame" name="header_user_page">
    <property name="geometry">

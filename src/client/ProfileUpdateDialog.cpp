@@ -11,6 +11,7 @@
 #include <cte/client/ProfileUpdateDialog.h>
 #include "ui_ProfileUpdateDialog.h"
 #include <QTStylesheet.h>
+#include <QDebug>
 
 ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClient> client):
         QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint), ui(new Ui::ProfileUpdateDialog), client(client){
@@ -44,6 +45,10 @@ ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClien
     QIcon user_icon(":/images/user.png");
     QIcon pass_icon(":/images/password.png");
 
+    //IF IMAGE FROM DB == NULL
+    client->user.icon().isNull() ? ui->profile_image->setPixmap(QPixmap(":/images/user_icon.png")) :
+                                    ui->profile_image->setPixmap(QPixmap().fromImage(client->user.icon()));
+
     //Login
     ui->changeuser_newuser_lineEdit->addAction(user_icon, QLineEdit::LeadingPosition);
     ui->changepass_newpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
@@ -57,13 +62,15 @@ void ProfileUpdateDialog::on_change_icon_pushButton_clicked() {
     take_picture.setFileMode(QFileDialog::ExistingFile);
     take_picture.setNameFilter(tr("Images (*.png *.jpg *.jpeg *.xpm"));
     take_picture.setDirectory(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).takeFirst());
-    QString image_file;
-    if (take_picture.exec())
-        image_file = take_picture.selectedFiles().takeFirst();
-    if (!image_file.isEmpty() && QFileInfo::exists(image_file) && QFileInfo(image_file).isFile()) {
-        QImage profile_image(image_file);
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Images"),
+                                                    QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).takeFirst(),
+                                                    tr("*.png *.bmp *.jpg *.jpeg "));
+    if (!filename.isNull() && QFileInfo::exists(filename) && QFileInfo(filename).isFile()){
+        QImage profile_image(filename);
         if (!profile_image.isNull()) {
             ui->profile_image->setPixmap(QPixmap::fromImage(profile_image));
+            client->user.setIcon(profile_image);
         }
     }
 }
@@ -109,7 +116,7 @@ void ProfileUpdateDialog::on_changepass_change_pushButton_clicked() {
 void ProfileUpdateDialog::update_profile_result(bool result, const QString &error_message) {
     if (result) {
         ui->changeuser_username_label->setText(client->user.username());
-        QMessageBox::information(this, tr("Update successful"), tr("Your data have been correctly updated"));
+        QMessageBox::information(this, "Profile updated", "Your data have been updated");
     } else {
         QMessageBox::warning(this, tr("Update problem"), tr("The server reported the following error.\n") + error_message);
     }
@@ -124,7 +131,7 @@ void ProfileUpdateDialog::on_changepass_cancel_pushButton_clicked(){
     ui->changeuser_newname_lineEdit->setText(client->user.name());
     ui->changeuser_newsurname_lineEdit->setText(client->user.surname());
     ui->changeuser_newemail_lineEdit->setText(client->user.email());
-    ui->profile_image->setPixmap(QPixmap::fromImage(client->user.icon()));
+
     reject(); // this is not a signal; check if control returns to loginTextEditor instead of texteditor
 }
 

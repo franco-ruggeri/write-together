@@ -73,7 +73,7 @@ void UserInfo::setIcon(const QImage &icon) {
 
 }
 
-const QColor UserInfo::color() {
+const QColor UserInfo::color() const{
     return color_;
 }
 
@@ -130,6 +130,10 @@ void UserInfo::change_cursor_position(QTextEdit *editor, int new_position, int i
 
     }
 
+}
+
+bool UserInfo::has_cursor(int id) const {
+    return site_id_to_cursor.contains(id);
 }
 
 void UserInfo::remove_cursors(int id){

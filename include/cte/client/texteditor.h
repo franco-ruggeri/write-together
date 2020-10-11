@@ -13,6 +13,7 @@
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QListWidget>
 #include <cte/crdt/shared_editor.h>
+#include <QtWidgets/QSplitter>
 #include <cte/client/myClient.h>
 #include <cte/client/fileInfo.h>
 
@@ -23,19 +24,16 @@ class texteditor : public QMainWindow{
 
 public:
     texteditor(QStackedWidget *parent, QSharedPointer<myClient> client, fileInfo file);
-
     bool change_from_server;
     void setupFileActions();
     void closeEvent(QCloseEvent *event) override;
-
-
     void init_cursors();
 
 signals:
     void show_user_page(const QSet<Document> &docs);
     void show_profile_update();
     void share_file(const QString string);
-
+//    void number_user_change();
 private slots:
 
     void show_user_details();
@@ -56,9 +54,14 @@ private slots:
     void remote_insert(const Symbol& symbol);
     QColor generate_color();
 
+#ifndef QT_NO_CLIPBOARD
+    void clipboard_changed();
+#endif
+
 private:
 
     QSharedPointer<QDockWidget>peers;
+    QSharedPointer<QSplitter> peers_wrapper_;
     QSharedPointer<QTextEdit> editor;
     QSharedPointer<myClient> client;
     QSharedPointer<SharedEditor> shared_editor;
@@ -69,18 +72,21 @@ private:
     fileInfo file;
     double h;
     int current_position;
-    QSharedPointer<QListWidget>list_user;
+    int number_online_users;
+    int number_offline_users;
+    QSharedPointer<QListWidget> active_user_list_;
+    QSharedPointer<QListWidget> inactive_user_list_;
     QHash<QString,UserInfo> username_to_user;
-    QHash<QString,int> username_to_row;
-    int user_row_;
 #ifndef QT_NO_CLIPBOARD
     QAction *actionCut;
     QAction *actionCopy;
     QAction *actionPaste;
 #endif
 
-
+    void setupPeersPanel();
     void draw_cursors();
+
+//    void update_number_user();
 };
 
 

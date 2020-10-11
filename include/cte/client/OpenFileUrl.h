@@ -27,5 +27,9 @@ namespace cte {
         void on_cancel_button_clicked();
         void on_paste_button_clicked();
         void on_open_button_clicked();
+
+#ifndef QT_NO_CLIPBOARD
+        void clipboard_changed();
+#endif
     };
 }
