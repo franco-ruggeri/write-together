@@ -2,15 +2,16 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/DocumentMessage.h>
-#include <cte/protocol/Document.h>
-#include <cte/protocol/DocumentData.h>
-#include <cte/crdt/SharedEditor.h>
-#include <cte/crdt/Symbol.h>
+#include <cte/protocol/document_message.h>
+#include <cte/protocol/document.h>
+#include <cte/protocol/document_info.h>
+#include <cte/crdt/shared_editor.h>
+#include <cte/crdt/symbol.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");
@@ -45,7 +46,7 @@ int main() {
     };
 
     // serialization
-    cte::DocumentData document_data(text, editor.site_id(), cursors, site_ids, profiles, sharing_link);
+    cte::DocumentInfo document_data(text, editor.site_id(), cursors, site_ids, profiles, sharing_link);
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::DocumentMessage>::create(document, document_data);
     QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);

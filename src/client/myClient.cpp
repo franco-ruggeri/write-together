@@ -9,21 +9,21 @@
 #include <QPixmap>
 #include <QJsonDocument>
 #include <QtCore/QSettings>
-#include <cte/protocol/MessageType.h>
-#include <cte/protocol/OpenMessage.h>
-#include <cte/protocol/ProfileMessage.h>
+#include <cte/protocol/message_type.h>
+#include <cte/protocol/open_message.h>
+#include <cte/protocol/profile_message.h>
 #include <cte/client/fileInfo.h>
-#include <cte/protocol/CloseMessage.h>
-#include <cte/protocol/CursorMessage.h>
-#include <cte/protocol/DocumentMessage.h>
-#include <cte/protocol/SignupMessage.h>
-#include <cte/protocol/LogoutMessage.h>
-#include <cte/protocol/InsertMessage.h>
-#include <cte/protocol/CreateMessage.h>
-#include <cte/protocol/EraseMessage.h>
-#include <cte/protocol/LoginMessage.h>
-#include <cte/protocol/ErrorMessage.h>
-#include <cte/protocol/DocumentsMessage.h>
+#include <cte/protocol/close_message.h>
+#include <cte/protocol/cursor_message.h>
+#include <cte/protocol/document_message.h>
+#include <cte/protocol/signup_message.h>
+#include <cte/protocol/logout_message.h>
+#include <cte/protocol/insert_message.h>
+#include <cte/protocol/create_message.h>
+#include <cte/protocol/erase_message.h>
+#include <cte/protocol/login_message.h>
+#include <cte/protocol/error_message.h>
+#include <cte/protocol/documents_message.h>
 #include <iostream>
 
 
@@ -41,9 +41,9 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         fallback_host_address_ = settings.value("client/secondhostname", "localhost").toString();
         port_ = settings.value("client/port").toUInt();
         ssl_handshake_failed_ = false;
-        QObject::connect(socket, &Socket::ready_message, wait_on_connection_.get(), &QTimer::stop);
+        QObject::connect(socket, &Socket::ready_message, wait_on_connection_.data(), &QTimer::stop);
         QObject::connect(socket, &Socket::ready_message, this, &myClient::process_response);
-        QObject::connect(wait_on_connection_.get(), &QTimer::timeout, this, &myClient::attempt_timeout);
+        QObject::connect(wait_on_connection_.data(), &QTimer::timeout, this, &myClient::attempt_timeout);
         // establish connection and handshake
 //        QObject::connect(socket, &QAbstractSocket::errorOccurred, this, &myClient::handle_connection_error); // supported as of qt 5.15
         QObject::connect(socket, QOverload<const QList<QSslError> &>::of(&QSslSocket::sslErrors), this, &myClient::handle_ssl_handshake);
@@ -53,7 +53,7 @@ myClient::myClient(QObject *parent) : QObject(parent) {
         // the latter is temporally substituted by qt backward compatible slot connected to state changes of socket
         // the followings are for qt backward compatibility
         QObject::connect(socket, &QAbstractSocket::stateChanged, this, &myClient::handle_changed_state);
-        QObject::connect(connecting_interrupt_.get(), &QTimer::timeout, this, &myClient::timeout_on_connection);
+        QObject::connect(connecting_interrupt_.data(), &QTimer::timeout, this, &myClient::timeout_on_connection);
     } catch (const std::exception &e) {
         qDebug() << e.what();
         return;
@@ -289,13 +289,13 @@ void myClient::process_response() {
                 QSharedPointer<DocumentMessage> document_message = response.staticCast<DocumentMessage>();
                 QString document_name = document_message->document().full_name();
                 if ( ( (message_to_send_->type() == MessageType::create)  // file just created by user
-                    || (message_to_send_->type() == MessageType::open && static_cast<OpenMessage*>(message_to_send_.get())->sharing_link()
-                        && !(static_cast<OpenMessage*>(message_to_send_.get())->document()) ) // document opened by sharing link
+                    || (message_to_send_->type() == MessageType::open && static_cast<OpenMessage*>(message_to_send_.data())->sharing_link()
+                        && !(static_cast<OpenMessage*>(message_to_send_.data())->document()) ) // document opened by sharing link
                     ) && !user.filename_to_owner_map.contains(document_name) // be sure the document is not yet in the list
                     ) {
                     user.filename_to_owner_map.insert(document_name, document_message->document());
                 }
-                fileInfo file(document_message->document(), document_message->document_data());
+                fileInfo file(document_message->document(), document_message->document_info());
                 emit document(file);
             } else {
                 emit generic_error(tr("Received an error message instead of document data.\n") + response.staticCast<ErrorMessage>()->reason());
@@ -340,7 +340,7 @@ void myClient::process_data_from_server() {
             // remove user from user list
             closed = response.staticCast<CloseMessage>();
             username= closed->username().value();
-            emit user_removed(username,0); // site_id from close message
+            emit user_removed(username, *closed->site_id());
             break;
         case MessageType::insert :
             // perform remote insert
@@ -380,14 +380,14 @@ void myClient::logout() {
 
 void myClient::signup(QString& username, QString& email, QString& password, QString name, QString surname, QImage icon) {
     //TODO: add icon on signup
-    Profile profile(username,name,surname,icon);
+    Profile profile(username,name,surname,email,icon);
     user = UserInfo(profile);
     QSharedPointer<Message> signup_message = QSharedPointer<SignupMessage>::create(profile,password);
     send_message(signup_message);
 }
 
 void myClient::update_profile(const QString &username, const QString &email, const QString &name, const QString &surname, const QImage &icon, QString &password) {
-    new_user = Profile(username, name, surname, icon);
+    new_user = Profile(username, name, surname, email, icon);
     QSharedPointer<Message> profile_update_message;
     if (password.isEmpty()) {
         profile_update_message = QSharedPointer<ProfileMessage>::create(new_user);

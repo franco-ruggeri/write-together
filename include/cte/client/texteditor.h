@@ -12,8 +12,8 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QListWidget>
+#include <cte/crdt/shared_editor.h>
 #include <QtWidgets/QSplitter>
-#include <cte/crdt/SharedEditor.h>
 #include <cte/client/myClient.h>
 #include <cte/client/fileInfo.h>
 

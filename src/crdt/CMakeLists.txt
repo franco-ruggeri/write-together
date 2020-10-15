@@ -1,6 +1,6 @@
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
-list(APPEND SRC Symbol.cpp SharedEditor.cpp Lseq.cpp)
+list(APPEND SRC symbol.cpp shared_editor.cpp lseq.cpp)
 list(APPEND LIB Qt5::Core)
 list(APPEND INCLUDE)
 

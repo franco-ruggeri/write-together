@@ -26,6 +26,7 @@ Be sure that the following CMAKE variables contain the reported paths.
     mkdir -p cryptopp
     mv cryptopp*.zip cryptopp
     cd cryptopp
+    unzip cryptopp*.zip
     make libcryptopp.a libcryptopp.so cryptest.exe
     make test
     sudo make install

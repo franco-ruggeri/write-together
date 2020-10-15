@@ -1,25 +1,25 @@
 find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 
 list(APPEND SRC
-        Message.cpp
-        Profile.cpp
-        Document.cpp
-        DocumentData.cpp
-        ErrorMessage.cpp
-        SignupMessage.cpp
-        SignupOkMessage.cpp
-        LoginMessage.cpp
-        LogoutMessage.cpp
-        ProfileMessage.cpp
-        ProfileOkMessage.cpp
-        DocumentsMessage.cpp
-        CreateMessage.cpp
-        OpenMessage.cpp
-        CloseMessage.cpp
-        DocumentMessage.cpp
-        InsertMessage.cpp
-        EraseMessage.cpp
-        CursorMessage.cpp)
+        message.cpp
+        profile.cpp
+        document.cpp
+        document_info.cpp
+        error_message.cpp
+        signup_message.cpp
+        signup_ok_message.cpp
+        login_message.cpp
+        logout_message.cpp
+        profile_message.cpp
+        profile_ok_message.cpp
+        documents_message.cpp
+        create_message.cpp
+        open_message.cpp
+        close_message.cpp
+        document_message.cpp
+        insert_message.cpp
+        erase_message.cpp
+        cursor_message.cpp)
 
 list(APPEND LIB Qt5::Core Qt5::Gui crdt)
 list(APPEND INCLUDE)

@@ -7,10 +7,10 @@
 #include <QtCore/QDebug>
 #include <cte/client/loginTextEditor.h>
 #include "ui_loginTextEditor.h"
-#include <cte/client/utility.h>
 #include <cte/client/fileInfo.h>
 #include <QClipboard>
-#include <cte/protocol/Document.h>
+#include <cte/protocol/document.h>
+#include <cte/network/network_utility.h>
 #include <QTStylesheet.h>
 
 
@@ -22,14 +22,14 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     client = QSharedPointer<myClient>::create();
     ui->signup_password_lineEdit->setEchoMode(QLineEdit::Password);
     ui->login_password_lineEdit->setEchoMode(QLineEdit::Password);
-    connect(client.get(), &myClient::generic_error, this, &loginTextEditor::handle_generic_error);
-    connect(client.get(), &myClient::timeout_expired, this, &loginTextEditor::handle_timeout);
-    connect(client.get(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
-    connect(client.get(), &myClient::user_documents, this, &loginTextEditor::display_documents);
-    connect(client.get(), &myClient::document, this, &loginTextEditor::open_editor);
-    connect(client.get(), &myClient::host_connected, this, &loginTextEditor::connection_to_server);
-    connect(client.get(), &myClient::server_disconnected, this, &loginTextEditor::handle_disconnection_server);
-    QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection);
+    connect(client.data(), &myClient::generic_error, this, &loginTextEditor::handle_generic_error);
+    connect(client.data(), &myClient::timeout_expired, this, &loginTextEditor::handle_timeout);
+    connect(client.data(), &myClient::authentication_result, this, &loginTextEditor::account_log_result);
+    connect(client.data(), &myClient::user_documents, this, &loginTextEditor::display_documents);
+    connect(client.data(), &myClient::document, this, &loginTextEditor::open_editor);
+    connect(client.data(), &myClient::host_connected, this, &loginTextEditor::connection_to_server);
+    connect(client.data(), &myClient::server_disconnected, this, &loginTextEditor::handle_disconnection_server);
+    QMetaObject::invokeMethod(client.data(), "connect", Qt::QueuedConnection);
 
     //Clear button enabled
     ui->login_email_lineEdit->setClearButtonEnabled(true);
@@ -133,14 +133,14 @@ void loginTextEditor::handle_disconnection_server() {
             change_profile_dialog->close();
         }
         this->setCurrentIndex(4);
-        QMetaObject::invokeMethod(client.get(), "connect", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(client.data(), "connect", Qt::QueuedConnection);
     }
 }
 
 /**************home-page function***************/
 void loginTextEditor::on_connect_pushButton_clicked() {
     QString ip_address = ui->connect_address_lineEdit_->text();
-    if (!utility::check_ip_address(ip_address)) {
+    if (!cte::check_ip_address(ip_address)) {
         QMessageBox::warning(this, "WARNING", "Insert a valid IP address");
         return;
     }
@@ -170,18 +170,18 @@ void loginTextEditor::on_signup_login_pushButton_clicked() {
 
 void loginTextEditor::on_singup_register_pushButton_clicked() {
     QString email = ui->signup_email_lineEdit->text();
-    if (!utility::check_email_validity(email.trimmed())) {
+    if (!cte::Profile::check_email(email.trimmed())) {
         QMessageBox::warning(this, "WARNING", "Please insert a valid email");
         return;
     }
     QString username = ui->signup_username_lineEdit->text();
-    if (!utility::check_username_validity(username.trimmed())) {
+    if (!cte::Profile::check_username(username.trimmed())) {
 
         QMessageBox::warning(this, "WARNING", "Username should be at least 3 characters long");
         return;
     }
     QString password = ui->signup_password_lineEdit->text();
-    if (!utility::check_password_validity(password)) {
+    if (!cte::Profile::check_password(password)) {
         QMessageBox::warning(this, "WARNING",
                              "your password must be at least 8 characters long including at least one number and both lower and upper characters");
         return;
@@ -346,10 +346,10 @@ void loginTextEditor::open_editor(fileInfo file){
     }
     this->hide();
     editor = QSharedPointer<texteditor>::create(nullptr,client,file);
-    connect(editor.get(), &texteditor::show_user_page, this, &QWidget::show);
-    connect(editor.get(), &texteditor::show_user_page, this, &loginTextEditor::display_documents);
-    connect(editor.get(), &texteditor::share_file, this, &loginTextEditor::share_file);
-    connect(editor.get(), &texteditor::show_profile_update, this, &loginTextEditor::open_profile_editor);
+    connect(editor.data(), &texteditor::show_user_page, this, &QWidget::show);
+    connect(editor.data(), &texteditor::show_user_page, this, &loginTextEditor::display_documents);
+    connect(editor.data(), &texteditor::share_file, this, &loginTextEditor::share_file);
+    connect(editor.data(), &texteditor::show_profile_update, this, &loginTextEditor::open_profile_editor);
     editor->show();
     editor->init_cursors();
 }

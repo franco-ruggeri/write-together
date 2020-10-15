@@ -2,10 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/InsertMessage.h>
-#include <cte/protocol/Document.h>
-#include <cte/crdt/Symbol.h>
+#include <cte/protocol/insert_message.h>
+#include <cte/protocol/document.h>
+#include <cte/crdt/symbol.h>
 #include <QtCore/QSharedPointer>
+#include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");

@@ -2,10 +2,11 @@
  * Author: Franco Ruggeri
  */
 
-#include <cte/protocol/CloseMessage.h>
-#include <cte/protocol/Document.h>
+#include <cte/protocol/close_message.h>
+#include <cte/protocol/document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");

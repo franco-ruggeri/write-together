@@ -54,7 +54,7 @@ ProfileUpdateDialog::ProfileUpdateDialog(QWidget *parent, QSharedPointer<myClien
     ui->changepass_newpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
     ui->changepass_confirmpass_lineEdit->addAction(pass_icon, QLineEdit::LeadingPosition);
 
-    connect(client.get(), &myClient::profile_update_result, this, &ProfileUpdateDialog::update_profile_result);
+    connect(client.data(), &myClient::profile_update_result, this, &ProfileUpdateDialog::update_profile_result);
 }
 
 void ProfileUpdateDialog::on_change_icon_pushButton_clicked() {
@@ -94,7 +94,7 @@ void ProfileUpdateDialog::on_changepass_change_pushButton_clicked() {
     }
     if (with_password) {
         QString error_display;
-        if (!utility::check_password_validity(new_password) || !utility::check_password_validity(new_passowrd_confirm)) {
+        if (!cte::Profile::check_password(new_password) || !cte::Profile::check_password(new_passowrd_confirm)) {
             if (new_password != new_passowrd_confirm) {
                 error_display += tr("Please check to have inserted the same password.\n");
             }
