@@ -1,5 +1,5 @@
 /*
- * Local instance of cte shared with other users through the network. The communication on the network is not
+ * Local instance of editor shared with other users through the network. The communication on the network is not
  * handled here, it must be implemented outside.
  *
  * Author: Franco Ruggeri
@@ -13,6 +13,7 @@
 #include <cte/protocol/message.h>
 #include <cte/crdt/symbol.h>
 #include <cte/crdt/lseq.h>
+#include <optional>
 
 namespace cte {
     class SharedEditor {
@@ -27,8 +28,8 @@ namespace cte {
 
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
-        void remote_insert(const Symbol& symbol);
-        void remote_erase(const Symbol& symbol);
+        int remote_insert(const Symbol& symbol);
+        std::optional<int> remote_erase(const Symbol& symbol);
 
         int find(const Symbol& symbol) const;   // returns lower bound index, non-existing symbol is ok
         Symbol at(int index) const;
@@ -39,7 +40,5 @@ namespace cte {
 
         static const int invalid_site_id, invalid_site_counter;
         static const int starting_site_id, starting_site_counter;
-
-        Symbol insert_cursor(int index, QChar value);
     };
 }

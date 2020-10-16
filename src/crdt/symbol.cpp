@@ -54,7 +54,7 @@ namespace cte {
         return false;
     }
 
-    bool Symbol::operator==(const Symbol &other) const {
+    bool Symbol::operator==(const Symbol& other) const {
         return this->value_ == other.value_ && this->site_id_ == other.site_id_ &&
                 this->site_counter_ == other.site_counter_ && this->position_ == other.position_;
     }
