@@ -36,7 +36,7 @@ namespace cte {
         }
     }
 
-    Worker::Worker() : number_of_connections_(0) {
+    Worker::Worker(QObject *parent) : QObject(parent), number_of_connections_(0) {
         qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
         QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
         QObject::connect(this, &Worker::new_message, this, &Worker::dispatch_message);
@@ -62,16 +62,13 @@ namespace cte {
 
     void Worker::start_session(int socket_fd) {
         // create socket
-        Socket *socket;
+        QPointer<Socket> socket;
         try {
-            socket = new Socket();
+            socket = new Socket(this);
             socket->set_socket_descriptor(socket_fd);
-        } catch (const std::bad_alloc& e) {
-            qDebug() << e.what();
-            return;
         } catch (const std::exception& e) {
             qDebug() << e.what();
-            delete socket;
+            if (!socket.isNull()) socket.clear();
             return;
         }
 
@@ -285,7 +282,7 @@ namespace cte {
         }
 
         // register for dispatching
-        editing_clients.insert(document, QSet{socket});
+        editing_clients.insert(document, QSet<Socket*>{socket});
 
         // send document data
         QSharedPointer<Message> response = QSharedPointer<DocumentMessage>::create(document, *document_info);

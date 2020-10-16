@@ -17,6 +17,6 @@ namespace cte {
         void save();
 
     public:
-        explicit Saver(int period);  // in milliseconds
+        explicit Saver(int period, QObject *parent=nullptr);  // period in milliseconds
     };
 }

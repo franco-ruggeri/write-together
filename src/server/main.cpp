@@ -7,6 +7,7 @@
 #include <QtCore/QThread>
 #include <cte/server/server.h>
 #include <iostream>
+#include <string>
 
 int main(int argc, char **argv) {
     const std::string& usage = std::string("usage ") + argv[0] + " port saving_period" + "\n\n" +

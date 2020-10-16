@@ -5,7 +5,7 @@
 #include <cte/server/server.h>
 #include <cte/server/identity_manager.h>
 #include <cte/server/document_manager.h>
-#include <QtCore/QCoreApplication>
+#include <QtCore/QPointer>
 #include <QtCore/QThread>
 #include <algorithm>
 
@@ -13,25 +13,25 @@ namespace cte {
     IdentityManager identity_manager;
     DocumentManager document_manager;
 
-    Server::Server(int port, int n_workers, int saving_interval_ms) {
+    Server::Server(int port, int n_workers, int saving_period) {
+        QPointer<QThread> thread;
+
         // try to save (better to crash at startup if there are problems)
         qDebug() << "trying to save";
         document_manager.save();
 
         // launch thread for saver
-        saver_ = QSharedPointer<Saver>::create(saving_interval_ms);
-        auto *thread = new QThread(this);
+        thread = new QThread(this);
         thread->start();
+        saver_ = QSharedPointer<Saver>::create(saving_period);
         saver_->moveToThread(thread);
 
         // launch thread pool for workers
         for (int i=0; i < n_workers; i++) {
-            auto *thread = new QThread(this);
+            thread = new QThread(this);
             thread->start();
-
             workers_.push_back(QSharedPointer<Worker>::create());
             workers_[i]->moveToThread(thread);
-
             for (int j=0; j<i; j++)
                 Worker::connect(*workers_[i], *workers_[j]);
         }

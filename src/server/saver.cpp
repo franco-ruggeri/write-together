@@ -10,7 +10,7 @@
 namespace cte {
     extern DocumentManager document_manager;
 
-    Saver::Saver(int period) {
+    Saver::Saver(int period, QObject *parent) : QObject(parent) {
         connect(&timer_, &QTimer::timeout, this, &Saver::save);
         timer_.start(period);
     }

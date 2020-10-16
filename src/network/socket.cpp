@@ -5,7 +5,7 @@
 #include <cte/network/socket.h>
 
 namespace cte {
-    Socket::Socket() {
+    Socket::Socket(QObject *parent) : QSslSocket(parent) {
         connect(this, &Socket::readyRead, this, &Socket::read_lines);
     }
 

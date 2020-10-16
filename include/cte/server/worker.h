@@ -8,6 +8,7 @@
 #pragma once
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
 #include <QtCore/QSet>
@@ -52,7 +53,7 @@ namespace cte {
         void dispatch_message(int source_socket_fd, const QSharedPointer<Message>& message);
 
     public:
-        Worker();
+        Worker(QObject *parent=nullptr);
         void assign_connection(int socket_fd);
         unsigned int number_of_connections() const;
         static void connect(const Worker& worker1, const Worker& worker2);
