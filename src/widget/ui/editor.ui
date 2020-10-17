@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Editor</class>
+ <widget class="QMainWindow" name="Editor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1018</width>
+    <height>841</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Editor</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QTextEdit" name="editor"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1018</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menu_export_as">
+     <property name="title">
+      <string>Export as</string>
+     </property>
+     <addaction name="action_export_pdf"/>
+    </widget>
+    <addaction name="action_invite"/>
+    <addaction name="menu_export_as"/>
+    <addaction name="separator"/>
+    <addaction name="action_home"/>
+    <addaction name="action_close"/>
+   </widget>
+   <widget class="QMenu" name="menu_edit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="action_undo"/>
+    <addaction name="action_redo"/>
+    <addaction name="separator"/>
+    <addaction name="action_cut"/>
+    <addaction name="action_copy"/>
+    <addaction name="action_paste"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_edit"/>
+  </widget>
+  <widget class="QToolBar" name="toolbar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_home"/>
+   <addaction name="action_invite"/>
+   <addaction name="action_export_pdf"/>
+   <addaction name="separator"/>
+   <addaction name="action_undo"/>
+   <addaction name="action_redo"/>
+   <addaction name="separator"/>
+   <addaction name="action_cut"/>
+   <addaction name="action_copy"/>
+   <addaction name="action_paste"/>
+  </widget>
+  <widget class="QDockWidget" name="dock_users">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Users</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dock_users_content">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QTreeWidget" name="tree_users">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_undo">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-undo" resource="resource.qrc">
+     <normaloff>:/images/editor/undo.png</normaloff>:/images/editor/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="action_redo">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-redo" resource="resource.qrc">
+     <normaloff>:/images/editor/redo.png</normaloff>:/images/editor/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="toolTip">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="action_cut">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-cut" resource="resource.qrc">
+     <normaloff>:/images/editor/cut.png</normaloff>:/images/editor/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="toolTip">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="action_copy">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-copy" resource="resource.qrc">
+     <normaloff>:/images/editor/copy.png</normaloff>:/images/editor/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_paste">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-paste" resource="resource.qrc">
+     <normaloff>:/images/editor/paste.png</normaloff>:/images/editor/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="action_invite">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/invite.png</normaloff>:/images/editor/invite.png</iconset>
+   </property>
+   <property name="text">
+    <string>Invite to collaborate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="action_close">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="window-close">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="action_export_pdf">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/export_pdf.png</normaloff>:/images/editor/export_pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export as PDF</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_home">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="go-home" resource="resource.qrc">
+     <normaloff>:/images/editor/home.png</normaloff>:/images/editor/home.png</iconset>
+   </property>
+   <property name="text">
+    <string>Home</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

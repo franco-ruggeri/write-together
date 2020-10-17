@@ -1,0 +1,13 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
+        <file>images/app/logo.png</file>
+        <file>images/editor/home.png</file>
+        <file>images/editor/invite.png</file>
+        <file>images/editor/export_pdf.png</file>
+        <file>images/editor/undo.png</file>
+        <file>images/editor/redo.png</file>
+        <file>images/editor/cut.png</file>
+        <file>images/editor/copy.png</file>
+        <file>images/editor/paste.png</file>
+    </qresource>
+</RCC>
