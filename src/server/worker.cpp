@@ -363,7 +363,7 @@ namespace cte {
         QString username = *opt;
 
         // get documents
-        QSet<Document> documents = document_manager.get_document_list(session_id, username);
+        QList<Document> documents = document_manager.get_document_list(username);
 
         // send documents
         QSharedPointer<Message> response = QSharedPointer<DocumentsMessage>::create(documents);

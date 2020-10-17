@@ -5,16 +5,16 @@
 #include <QtGui/QImage>
 
 namespace cte {
-    SignupForm::SignupForm(QWidget *parent) : Form(parent) {
+    SignupForm::SignupForm(QWidget *parent) : Widget(parent) {
         ui_ = QSharedPointer<Ui::SignupForm>::create();
         ui_->setupUi(this);
     }
 
     void SignupForm::on_signup_clicked() {
+        // TODO: check password == confirm_password, check password ecc.
         Profile profile(ui_->username->text(), ui_->name->text(), ui_->surname->text(), ui_->email->text(),
                         QImage(":/images/profile/default.png"));
-        QSharedPointer<Message> message = QSharedPointer<ProfileMessage>::create(profile);
-        emit new_message(message);
+        signup(profile, ui_->password->text());
     }
 
     void SignupForm::clear() {

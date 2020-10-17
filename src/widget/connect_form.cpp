@@ -2,7 +2,7 @@
 #include <ui_connect_form.h>
 
 namespace cte {
-    ConnectForm::ConnectForm(QWidget *parent) : Form(parent) {
+    ConnectForm::ConnectForm(QWidget *parent) : Widget(parent) {
         ui_ = QSharedPointer<Ui::ConnectForm>::create();
         ui_->setupUi(this);
     }

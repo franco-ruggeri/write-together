@@ -127,8 +127,7 @@ namespace cte {
     QSqlQuery query_select_documents(const QSqlDatabase& database, const QString& username) {
         QString query_string = "SELECT * "
                                "FROM `sharing` "
-                               "WHERE sharing_user=:username "
-                               "ORDER BY document_owner, document_owner";
+                               "WHERE sharing_user=:username";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":username", username);

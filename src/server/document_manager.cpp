@@ -190,7 +190,7 @@ namespace cte {
         return site_id;
     }
 
-    QSet<Document> DocumentManager::get_document_list(int session_id, const QString& username) const {
+    QList<Document> DocumentManager::get_document_list(const QString& username) const {
         // open connection
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -199,19 +199,11 @@ namespace cte {
         // load accessible documents
         query = query_select_documents(database, username);
         execute_query(query);
-        QSet<Document> documents;
+        QList<Document> documents;
         while (query.next()) {
             Document document(query.value("document_owner").toString(), query.value("document_name").toString());
-            documents.insert(document);
+            documents.append(document);
         }
-
-        // remove already opened ones
-        QMutexLocker ml(&mutex_);
-        auto it = site_ids_.find(session_id);
-        if (it != site_ids_.end())
-            for (const auto& document : it->keys())
-                documents.remove(document);
-
         return documents;
     }
 

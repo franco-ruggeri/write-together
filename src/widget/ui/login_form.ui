@@ -72,6 +72,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="go_to_signup">
+       <property name="text">
+        <string>Go to signup</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="1" column="1">

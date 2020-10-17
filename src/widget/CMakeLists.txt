@@ -9,7 +9,6 @@ find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 
 list(APPEND SRC
         widget.cpp
-        form.cpp
         connect_form.cpp
         login_form.cpp
         signup_form.cpp
@@ -18,7 +17,6 @@ list(APPEND SRC
 
 list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/widget.h
-        ${QOBJ_DIR}/form.h
         ${QOBJ_DIR}/connect_form.h
         ${QOBJ_DIR}/login_form.h
         ${QOBJ_DIR}/signup_form.h

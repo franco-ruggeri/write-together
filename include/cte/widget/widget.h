@@ -8,8 +8,8 @@ namespace cte {
     class Widget : public QWidget {
         Q_OBJECT
 
-    signals:
-        void new_message(const QSharedPointer<Message>& message);
+    public slots:
+        virtual void clear() = 0;
 
     public:
         explicit Widget(QWidget *parent=nullptr);

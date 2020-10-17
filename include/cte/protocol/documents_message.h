@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <QtCore/QSet>
+#include <QtCore/QList>
 #include <QtCore/QJsonObject>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
@@ -12,7 +12,7 @@
 
 namespace cte {
     class DocumentsMessage : public Message {
-        std::optional<QSet<Document>> documents_;
+        std::optional<QList<Document>> documents_;
 
         explicit DocumentsMessage(const QJsonObject& json_object);
         QJsonObject json() const override;
@@ -20,8 +20,8 @@ namespace cte {
 
     public:
         DocumentsMessage();
-        explicit DocumentsMessage(const QSet<Document>& documents);
+        explicit DocumentsMessage(const QList<Document>& documents);
         bool operator==(const Message& other) const override;
-        std::optional<QSet<Document>> documents() const;
+        std::optional<QList<Document>> documents() const;
     };
 }

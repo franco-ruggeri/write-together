@@ -1,15 +1,16 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 #include <QtWidgets/QWidget>
-#include <cte/widget/form.h>
+#include <cte/widget/widget.h>
 
 namespace Ui {
     class ConnectForm;
 }
 
 namespace cte {
-    class ConnectForm : public Form {
+    class ConnectForm : public Widget {
         Q_OBJECT
 
         QSharedPointer<Ui::ConnectForm> ui_;

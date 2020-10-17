@@ -2,6 +2,7 @@
 
 namespace cte {
     NetworkWorker::NetworkWorker(QObject *parent) : QObject(parent) {
+        qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
         connect(this, &NetworkWorker::new_server, this, &NetworkWorker::connect_to_server);
     }
 
@@ -10,15 +11,19 @@ namespace cte {
 
         connect(socket_, &Socket::connected, this, &NetworkWorker::connected);
         connect(socket_, &Socket::disconnected, this, &NetworkWorker::disconnected);
+        connect(socket_, &Socket::ready_message, this, &NetworkWorker::read_message);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))      // errorOccurred() was introduced in Qt 5.15
-        connect(socket_.data(), &Socket::errorOccurred,
-                [this](QAbstractSocket::SocketError socket_error) { emit error(); });
+        connect(socket_.data(), &Socket::errorOccurred, this, &NetworkWorker::error);
 #else
-        connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&Socket::error),
-                [this](QAbstractSocket::SocketError socket_error) { emit error(); });
+        connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&Socket::error), this, &NetworkWorker::error);
 #endif
 
         socket_->connectToHost(hostname, port);
+    }
+
+    void NetworkWorker::read_message() {
+        QSharedPointer<Message> message = socket_->read_message();
+        emit new_message(message);
     }
 
     void NetworkWorker::set_server(const QString& hostname, int port) {

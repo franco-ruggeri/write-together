@@ -1,8 +1,9 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 #include <QtWidgets/QWidget>
-#include <cte/widget/form.h>
+#include <cte/widget/widget.h>
 #include <cte/protocol/profile.h>
 
 namespace Ui {
@@ -10,10 +11,13 @@ namespace Ui {
 }
 
 namespace cte {
-    class SignupForm : public Form {
+    class SignupForm : public Widget {
         Q_OBJECT
 
         QSharedPointer<Ui::SignupForm> ui_;
+
+    signals:
+        void signup(const Profile& profile, const QString& password);
 
     private slots:
         void on_signup_clicked();

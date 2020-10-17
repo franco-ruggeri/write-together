@@ -21,6 +21,7 @@ namespace cte {
 
     private slots:
         void connect_to_server(const QString& hostname, int port);
+        void read_message();
 
     public slots:
         void set_server(const QString& hostname, int port);

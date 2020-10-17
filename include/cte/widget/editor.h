@@ -4,7 +4,6 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
 #include <cte/crdt/shared_editor.h>
-#include <cte/widget/widget.h>
 
 namespace Ui {
     class Editor;

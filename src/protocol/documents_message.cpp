@@ -8,7 +8,7 @@
 namespace cte {
     DocumentsMessage::DocumentsMessage() : Message(MessageType::documents) {}
 
-    DocumentsMessage::DocumentsMessage(const QSet<Document>& documents) :
+    DocumentsMessage::DocumentsMessage(const QList<Document>& documents) :
         Message(MessageType::documents), documents_(documents) {}
 
     DocumentsMessage::DocumentsMessage(const QJsonObject &json_object) : Message(MessageType::documents) {
@@ -19,12 +19,12 @@ namespace cte {
             if (!documents_iterator->isArray())
                 throw std::logic_error("invalid message: invalid fields");
 
-            documents_ = QSet<Document>{};
+            documents_ = QList<Document>{};
             QJsonArray documents_json = documents_iterator->toArray();
             for (const auto& d_json : documents_json) {
                 if (!d_json.isObject()) throw std::logic_error("invalid message: invalid fields");
                 Document d(d_json.toObject());
-                documents_->insert(d);
+                documents_->append(d);
             }
         }
     }
@@ -35,7 +35,7 @@ namespace cte {
                this->documents_ == o->documents_;
     }
         
-    std::optional<QSet<Document>> DocumentsMessage::documents() const {
+    std::optional<QList<Document>> DocumentsMessage::documents() const {
         return documents_;
     }
 
