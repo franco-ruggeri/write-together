@@ -2,6 +2,7 @@
 
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <QtCore/QSet>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTableWidgetItem>
 #include <cte/protocol/document.h>
@@ -13,10 +14,21 @@ namespace Ui {
 }
 
 namespace cte {
+
     class Home : public QWidget {
         Q_OBJECT
 
+        enum class Filter {
+            all_documents, your_documents, shared_with_you
+        };
+
         QSharedPointer<Ui::Home> ui_;
+        Profile profile_;
+        QSet<Document> documents_;
+        Filter filter_;
+
+        void update_filter(Filter filter);
+        void refresh();
 
     signals:
         void create_document(const QString& document_name);
@@ -27,6 +39,9 @@ namespace cte {
     private slots:
         void on_new_document_clicked();
         void on_collaborate_clicked();
+        void on_all_documents_clicked();
+        void on_your_documents_clicked();
+        void on_shared_with_you_clicked();
         void on_documents_cellClicked(int row, int column);
 
     public slots:
@@ -36,5 +51,6 @@ namespace cte {
         explicit Home(QWidget *parent=nullptr);
         void set_profile(const Profile& profile);
         void set_documents(const QList<Document>& documents);
+        void add_document(const Document& document);
     };
 }

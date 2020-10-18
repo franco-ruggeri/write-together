@@ -4,6 +4,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <QtCore/QHash>
 #include <QtWidgets/QStackedWidget>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>

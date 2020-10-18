@@ -131,9 +131,13 @@ namespace cte {
     }
 
     void UiWorker::open_editor(const QSharedPointer<Message>& message) {
-        // TODO: update document list in home
         QSharedPointer<DocumentMessage> document_message = message.staticCast<DocumentMessage>();
+
+        // update home
         Document document = document_message->document();
+        home_->add_document(document);
+
+        // open editor
         DocumentInfo document_info = document_message->document_info();
         QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document_info.site_id(), document_info.text());
         editors_.insert(document_message->document(), editor);

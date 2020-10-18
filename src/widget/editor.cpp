@@ -6,6 +6,7 @@ inline void init_resource() { Q_INIT_RESOURCE(resource); }
 namespace cte {
     Editor::Editor(int site_id, const QList<Symbol>& text, QWidget *parent) :
             QMainWindow(parent), shared_editor_(site_id, text) {
+        // TODO: nome documento
         init_resource();
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
