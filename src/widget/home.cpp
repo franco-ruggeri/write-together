@@ -63,16 +63,17 @@ namespace cte {
         profile_ = profile_dialog_->profile();
         profile_dialog_->accept();
         profile_dialog_->deleteLater();
+        refresh();
     }
 
     void Home::on_new_document_clicked() {
         QString document_name = QInputDialog::getText(this, tr("Create document"), tr("Document name:"));
-        emit create_document(document_name);
+        if (!document_name.isNull()) emit create_document(document_name);
     }
 
     void Home::on_collaborate_clicked() {
         QString sharing_link = QInputDialog::getText(this, tr("Collaborate"), tr("Sharing link:"));
-        emit collaborate(sharing_link);
+        if (!sharing_link.isNull()) emit collaborate(sharing_link);
     }
 
     void Home::update_filter(Filter filter) {
