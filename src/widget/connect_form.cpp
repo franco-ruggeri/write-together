@@ -1,8 +1,11 @@
 #include <cte/widget/connect_form.h>
 #include <ui_connect_form.h>
 
+inline void init_resource() { Q_INIT_RESOURCE(resource); }
+
 namespace cte {
-    ConnectForm::ConnectForm(QWidget *parent) : Widget(parent) {
+    ConnectForm::ConnectForm(QWidget *parent) : QWidget(parent) {
+        init_resource();
         ui_ = QSharedPointer<Ui::ConnectForm>::create();
         ui_->setupUi(this);
     }

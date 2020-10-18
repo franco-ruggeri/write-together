@@ -1,9 +1,13 @@
 #include <cte/widget/home.h>
+#include <cte/widget/create_dialog.h>
 #include <ui_home.h>
 #include <QtWidgets/QTableWidgetItem>
 
+inline void init_resource() { Q_INIT_RESOURCE(resource); }
+
 namespace cte {
-    Home::Home(QWidget *parent) : Widget(parent) {
+    Home::Home(QWidget *parent) : QWidget(parent) {
+        init_resource();
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
     }
@@ -20,6 +24,12 @@ namespace cte {
             ui_->documents->setItem(row, 1, new QTableWidgetItem(document.name()));
             row++;
         }
+    }
+
+    void Home::on_new_document_clicked() {
+        CreateDialog create_dialog(this);
+        connect(&create_dialog, &CreateDialog::create_document, this, &Home::create_document);
+        create_dialog.exec();
     }
 
     void Home::clear() {

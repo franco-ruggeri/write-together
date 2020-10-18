@@ -35,6 +35,7 @@ namespace cte {
         connect(login_form_, &LoginForm::login, this, &UiWorker::login);
         connect(login_form_, &LoginForm::go_to_signup, this, &UiWorker::show_signup_form);
         connect(signup_form_, &SignupForm::signup, this, &UiWorker::signup);
+        connect(home_, &Home::create_document, this, &UiWorker::create_document);
     }
 
     void UiWorker::show_connect_form() {
@@ -64,7 +65,8 @@ namespace cte {
             case MessageType::documents:
                 show_document_list(message);
                 break;
-            case MessageType::create:
+            case MessageType::document:
+                open_editor(message);
                 break;
             case MessageType::open:
                 break;
@@ -92,6 +94,11 @@ namespace cte {
         emit new_message(message);
     }
 
+    void UiWorker::create_document(const QString &document_name) {
+        QSharedPointer<Message> message = QSharedPointer<CreateMessage>::create(document_name);
+        emit new_message(message);
+    }
+
     void UiWorker::logged_in(const QSharedPointer<Message>& message) {
         // save profile
         if (message->type() == MessageType::profile)
@@ -109,5 +116,15 @@ namespace cte {
 
     void UiWorker::show_document_list(const QSharedPointer<Message>& message) {
         home_->set_documents(*message.staticCast<DocumentsMessage>()->documents());
+    }
+
+    void UiWorker::open_editor(const QSharedPointer<Message>& message) {
+        // TODO: update document list in home
+        QSharedPointer<DocumentMessage> document_message = message.staticCast<DocumentMessage>();
+        Document document = document_message->document();
+        DocumentInfo document_info = document_message->document_info();
+        QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document_info.site_id(), document_info.text());
+        editors_.insert(document_message->document(), editor);
+        editor->show();
     }
 }

@@ -24,9 +24,11 @@ namespace cte {
         QPointer<Home> home_;
 
         Profile profile_;
+        QHash<Document,QSharedPointer<Editor>> editors_;
 
         void logged_in(const QSharedPointer<Message>& message);
         void show_document_list(const QSharedPointer<Message>& message);
+        void open_editor(const QSharedPointer<Message>& message);
 
     signals:
         void connect_to_server(const QString& hostname, int port);
@@ -36,6 +38,7 @@ namespace cte {
         void show_signup_form();
         void login(const QString& username, const QString& password);
         void signup(const Profile& profile, const QString& password);
+        void create_document(const QString& document_name);
 
     public slots:
         void show_connect_form();

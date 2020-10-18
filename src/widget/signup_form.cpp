@@ -4,8 +4,11 @@
 #include <ui_signup_form.h>
 #include <QtGui/QImage>
 
+inline void init_resource() { Q_INIT_RESOURCE(resource); }
+
 namespace cte {
-    SignupForm::SignupForm(QWidget *parent) : Widget(parent) {
+    SignupForm::SignupForm(QWidget *parent) : QWidget(parent) {
+        init_resource();
         ui_ = QSharedPointer<Ui::SignupForm>::create();
         ui_->setupUi(this);
     }

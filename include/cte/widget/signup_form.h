@@ -3,7 +3,6 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtWidgets/QWidget>
-#include <cte/widget/widget.h>
 #include <cte/protocol/profile.h>
 
 namespace Ui {
@@ -11,7 +10,7 @@ namespace Ui {
 }
 
 namespace cte {
-    class SignupForm : public Widget {
+    class SignupForm : public QWidget {
         Q_OBJECT
 
         QSharedPointer<Ui::SignupForm> ui_;
@@ -23,7 +22,7 @@ namespace cte {
         void on_signup_clicked();
 
     public slots:
-        void clear() override;
+        void clear();
 
     public:
         explicit SignupForm(QWidget *parent=nullptr);

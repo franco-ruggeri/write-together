@@ -2,8 +2,11 @@
 #include <cte/protocol/login_message.h>
 #include <ui_login_form.h>
 
+inline void init_resource() { Q_INIT_RESOURCE(resource); }
+
 namespace cte {
-    LoginForm::LoginForm(QWidget *parent) : Widget(parent) {
+    LoginForm::LoginForm(QWidget *parent) : QWidget(parent) {
+        init_resource();
         ui_ = QSharedPointer<Ui::LoginForm>::create();
         ui_->setupUi(this);
 

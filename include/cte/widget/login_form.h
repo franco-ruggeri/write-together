@@ -3,14 +3,13 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtWidgets/QWidget>
-#include <cte/widget/widget.h>
 
 namespace Ui {
     class LoginForm;
 }
 
 namespace cte {
-    class LoginForm : public Widget {
+    class LoginForm : public QWidget {
         Q_OBJECT
 
         QSharedPointer<Ui::LoginForm> ui_;
@@ -23,7 +22,7 @@ namespace cte {
         void on_login_clicked();
 
     public slots:
-        void clear() override;
+        void clear();
 
     public:
         explicit LoginForm(QWidget *parent=nullptr);
