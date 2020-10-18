@@ -38,6 +38,10 @@ namespace cte {
         connect(home_, &Home::create_document, this, &UiWorker::create_document);
         connect(home_, &Home::open_document, this, &UiWorker::open_document);
         connect(home_, &Home::collaborate, this, &UiWorker::collaborate);
+        connect(home_, qOverload<const Profile&>(&Home::update_profile),
+                this, qOverload<const Profile&>(&UiWorker::update_profile));
+        connect(home_, qOverload<const Profile&, const QString&>(&Home::update_profile),
+                this, qOverload<const Profile&, const QString&>(&UiWorker::update_profile));
     }
 
     void UiWorker::show_connect_form() {
@@ -63,6 +67,9 @@ namespace cte {
             case MessageType::profile:
             case MessageType::signup_ok:
                 logged_in(message);
+                break;
+            case MessageType::profile_ok:
+                profile_updated(message);
                 break;
             case MessageType::documents:
                 show_document_list(message);
@@ -111,6 +118,16 @@ namespace cte {
         emit new_message(message);
     }
 
+    void UiWorker::update_profile(const Profile& profile) {
+        QSharedPointer<Message> message = QSharedPointer<ProfileMessage>::create(profile);
+        emit new_message(message);
+    }
+
+    void UiWorker::update_profile(const Profile& profile, const QString& password) {
+        QSharedPointer<Message> message = QSharedPointer<ProfileMessage>::create(profile, password);
+        emit new_message(message);
+    }
+
     void UiWorker::logged_in(const QSharedPointer<Message>& message) {
         // prepare home
         if (message->type() == MessageType::profile)
@@ -139,5 +156,9 @@ namespace cte {
         QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document_info.site_id(), document_info.text());
         editors_.insert(document_message->document(), editor);
         editor->show();
+    }
+
+    void UiWorker::profile_updated(const QSharedPointer<Message>& message) {
+        home_->profile_updated();
     }
 }

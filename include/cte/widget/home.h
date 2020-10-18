@@ -1,10 +1,12 @@
 #pragma once
 
+#include <QtCore/QPointer>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtCore/QSet>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTableWidgetItem>
+#include <cte/widget/profile_dialog.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/profile.h>
 #include <cte/protocol/document.h>
@@ -24,8 +26,9 @@ namespace cte {
 
         QSharedPointer<Ui::Home> ui_;
         QSet<Document> documents_;
-        Profile profile_;
         Filter filter_;
+        Profile profile_;
+        QPointer<ProfileDialog> profile_dialog_;
 
         void update_filter(Filter filter);
         void refresh();
@@ -34,6 +37,8 @@ namespace cte {
         void create_document(const QString& document_name);
         void open_document(const Document& document);
         void collaborate(const QString& sharing_link);
+        void update_profile(const Profile& profile);
+        void update_profile(const Profile& profile, const QString& password);
         void logout();
 
     private slots:
@@ -42,6 +47,7 @@ namespace cte {
         void on_all_documents_clicked();
         void on_your_documents_clicked();
         void on_shared_with_you_clicked();
+        void on_profile_clicked();
         void on_documents_cellClicked(int row, int column);
 
     public slots:
@@ -52,5 +58,6 @@ namespace cte {
         void set_profile(const Profile& profile);
         void set_documents(const QList<Document>& documents);
         void add_document(const Document& document);
+        void profile_updated();
     };
 }

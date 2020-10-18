@@ -39,7 +39,7 @@ namespace cte {
         query.bindValue(":name", profile.name());
         query.bindValue(":surname", profile.surname());
         query.bindValue(":email", profile.email());
-        query.bindValue(":icon", profile.icon());
+        query.bindValue(":icon", profile.icon_data());
         return query;
     }
 
@@ -57,7 +57,7 @@ namespace cte {
         query.bindValue(":name", new_profile.name());
         query.bindValue(":surname", new_profile.surname());
         query.bindValue(":email", new_profile.email());
-        query.bindValue(":icon", new_profile.icon());
+        query.bindValue(":icon", new_profile.icon_data());
         if (update_password) query.bindValue(":password", new_password);
         return query;
     }

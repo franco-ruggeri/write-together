@@ -7,16 +7,19 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QRegExp>
 
-namespace cte {
-    static QRegExp username_regexp("^[a-zA-Z0-9]{3,}$");
-    static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-    static QRegExp password_regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
+// TODO: aggiungi check in costruttori e aggiungi check per massima dimensione icona
 
+namespace cte {
     Profile::Profile() {}
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
                      const QImage& icon) :
-        username_(username), name_(name), surname_(surname), email_(email), icon_(icon) {}
+            username_(username), name_(name), surname_(surname), email_(email), icon_(icon) {}
+
+    Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
+                     const QByteArray& icon) : Profile(username, name, surname, email, QImage{}) {
+        set_icon(icon);
+    }
 
     Profile::Profile(const QJsonObject &json_object) {
         auto end_iterator = json_object.end();
@@ -40,8 +43,7 @@ namespace cte {
         if (username_.isNull() || name_.isNull() || surname_.isNull() || email_.isNull() || icon_base64.isNull())
             throw std::logic_error("invalid message: invalid fields");
 
-        QByteArray bytes = QByteArray::fromBase64(icon_base64.toLatin1());
-        icon_.loadFromData(bytes, "PNG");
+        set_icon(QByteArray::fromBase64(icon_base64.toLatin1()));
     }
 
     bool Profile::operator==(const Profile& other) const {
@@ -69,33 +71,40 @@ namespace cte {
         return icon_;
     }
 
-    QJsonObject Profile::json() const {
-        QJsonObject json_object;
-
-        json_object["username"] = username_;
-        json_object["name"] = name_;
-        json_object["surname"] = surname_;
-        json_object["email"] = email_;
-
-        // icon in base64
+    QByteArray Profile::icon_data() const {
         QByteArray bytes;
         QBuffer buffer(&bytes);
         buffer.open(QIODevice::WriteOnly);
         icon_.save(&buffer, "PNG");
-        json_object["icon"] = QLatin1String(bytes.toBase64());
+        return bytes;
+    }
 
+    void Profile::set_icon(const QByteArray& data) {
+        icon_.loadFromData(data, "PNG");
+    }
+
+    QJsonObject Profile::json() const {
+        QJsonObject json_object;
+        json_object["username"] = username_;
+        json_object["name"] = name_;
+        json_object["surname"] = surname_;
+        json_object["email"] = email_;
+        json_object["icon"] = QLatin1String(icon_data().toBase64());
         return json_object;
     }
 
     bool Profile::check_username(const QString& username) {
+        static QRegExp username_regexp("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
         return username_regexp.exactMatch(username);
     }
 
     bool Profile::check_email(const QString& email) {
+        static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
         return email_regexp.exactMatch(email);
     }
 
     bool Profile::check_password(const QString& password) {
+        static QRegExp password_regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
         return password_regexp.exactMatch(password);
     }
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
         <file>images/app/logo.png</file>
+        <file>images/profile/default.png</file>
         <file>images/editor/home.png</file>
         <file>images/editor/invite.png</file>
         <file>images/editor/export_pdf.png</file>

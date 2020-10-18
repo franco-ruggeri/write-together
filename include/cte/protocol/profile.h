@@ -23,6 +23,8 @@ namespace cte {
         Profile();
         Profile(const QString& username, const QString& name, const QString& surname, const QString& email,
                 const QImage& icon);
+        Profile(const QString& username, const QString& name, const QString& surname, const QString& email,
+                const QByteArray& icon);
         explicit Profile(const QJsonObject& json_object);
 
         bool operator==(const Profile& other) const;
@@ -32,6 +34,8 @@ namespace cte {
         QString surname() const;
         QString email() const;
         QImage icon() const;
+        QByteArray icon_data() const;
+        void set_icon(const QByteArray& data);
 
         QJsonObject json() const;
 

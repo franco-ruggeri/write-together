@@ -28,6 +28,7 @@ namespace cte {
         void logged_in(const QSharedPointer<Message>& message);
         void show_document_list(const QSharedPointer<Message>& message);
         void open_editor(const QSharedPointer<Message>& message);
+        void profile_updated(const QSharedPointer<Message>& message);
 
     signals:
         void connect_to_server(const QString& hostname, int port);
@@ -39,6 +40,8 @@ namespace cte {
         void create_document(const QString& document_name);
         void open_document(const Document& document);
         void collaborate(const QString& sharing_link);
+        void update_profile(const Profile& profile);
+        void update_profile(const Profile& profile, const QString& password);
 
     public slots:
         void show_connect_form();

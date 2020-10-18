@@ -12,13 +12,11 @@ namespace cte {
         clear();
     }
 
-    void Home::set_profile(const Profile& profile) {
-        profile_ = profile;
-        ui_->icon->setPixmap(QPixmap::fromImage(profile.icon()));
-        ui_->username->setText(profile.username());
-    }
-
     void Home::refresh() {
+        // update profile
+        ui_->icon->setPixmap(QPixmap::fromImage(profile_.icon()));
+        ui_->username->setText(profile_.username());
+
         // filter documents
         QList<Document> filtered_documents;
         std::copy_if(documents_.begin(), documents_.end(), std::back_inserter(filtered_documents),
@@ -30,7 +28,7 @@ namespace cte {
                                 (filter_ == Filter::shared_with_you && owner != username);
                      });
 
-        // populate UI
+        // populate document list
         ui_->documents->setRowCount(0);
         int row = 0;
         for (const auto& document : filtered_documents) {
@@ -40,10 +38,15 @@ namespace cte {
             row++;
         }
 
-        // sort UI (by owner, name)
+        // sort document list (by owner, name)
         // TODO: in another thread (?)
         ui_->documents->sortItems(1);
         ui_->documents->sortItems(0);
+    }
+
+    void Home::set_profile(const Profile& profile) {
+        profile_ = profile;
+        refresh();
     }
 
     void Home::set_documents(const QList<Document>& documents) {
@@ -54,6 +57,12 @@ namespace cte {
     void Home::add_document(const Document& document) {
         documents_.insert(document);
         refresh();
+    }
+
+    void Home::profile_updated() {
+        profile_ = profile_dialog_->profile();
+        profile_dialog_->accept();
+        profile_dialog_->deleteLater();
     }
 
     void Home::on_new_document_clicked() {
@@ -82,6 +91,16 @@ namespace cte {
 
     void Home::on_shared_with_you_clicked() {
         update_filter(Filter::shared_with_you);
+    }
+
+    void Home::on_profile_clicked() {
+        profile_dialog_ = new ProfileDialog(profile_, this);
+        connect(profile_dialog_, qOverload<const Profile&>(&ProfileDialog::update_profile),
+                this, qOverload<const Profile&>(&Home::update_profile));
+        connect(profile_dialog_, qOverload<const Profile&, const QString&>(&ProfileDialog::update_profile),
+                this, qOverload<const Profile&, const QString&>(&Home::update_profile));
+        profile_dialog_->setModal(true);
+        profile_dialog_->show();
     }
 
     void Home::on_documents_cellClicked(int row, int column) {
