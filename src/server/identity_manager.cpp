@@ -99,7 +99,7 @@ namespace cte {
         if (!new_password.isNull() && !Profile::check_password(new_password))
             throw std::logic_error("profile update failed: invalid password");
 
-        // open connection and start transaction
+        // open connection
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
         QSqlQuery query(database);

@@ -250,9 +250,6 @@ namespace cte {
         Profile profile = profile_message->profile();
         std::optional<QString> password = profile_message->password();
 
-        // save old username (just for final print)
-        std::optional<QString> old_username = identity_manager.username(session_id);
-
         // update profile
         identity_manager.update_profile(session_id, profile, password.value_or(QString{}));
 

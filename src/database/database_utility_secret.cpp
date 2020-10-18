@@ -50,7 +50,7 @@ namespace cte {
                 "UPDATE `user` SET " +
                 (update_password ? "password=:password, " : "") +
                 "name=:name, surname=:surname, email=:email, icon=:icon "
-                "WHERE username=:old_username";
+                "WHERE username=:username";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":username", new_profile.username());
