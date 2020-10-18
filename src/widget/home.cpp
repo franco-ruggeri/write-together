@@ -1,6 +1,5 @@
 #include <cte/widget/home.h>
-#include <cte/widget/create_dialog.h>
-#include <cte/widget/collaborate_dialog.h>
+#include <cte/widget/input_dialog.h>
 #include <ui_home.h>
 
 inline void init_resource() { Q_INIT_RESOURCE(resource); }
@@ -57,14 +56,14 @@ namespace cte {
     }
 
     void Home::on_new_document_clicked() {
-        CreateDialog create_dialog(this);
-        connect(&create_dialog, &CreateDialog::create_document, this, &Home::create_document);
+        InputDialog create_dialog("Document name", this);
+        connect(&create_dialog, &InputDialog::confirm, this, &Home::create_document);
         create_dialog.exec();
     }
 
     void Home::on_collaborate_clicked() {
-        CollaborateDialog collaborate_dialog(this);
-        connect(&collaborate_dialog, &CollaborateDialog::collaborate, this, &Home::collaborate);
+        InputDialog collaborate_dialog("Sharing link", this);
+        connect(&collaborate_dialog, &InputDialog::confirm, this, &Home::collaborate);
         collaborate_dialog.exec();
     }
 

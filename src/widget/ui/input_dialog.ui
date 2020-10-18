@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CreateDialog</class>
- <widget class="QDialog" name="CreateDialog">
+ <class>InputDialog</class>
+ <widget class="QDialog" name="InputDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -37,7 +37,7 @@ background-color: #f2f2f2;</string>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="newfile_filename_label">
+      <widget class="QLabel" name="prompt">
        <property name="styleSheet">
         <string notr="true">font-size: 18pt;
 padding: 0.5em;
@@ -45,12 +45,12 @@ background-color: transparent;
 </string>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Document &lt;/span&gt;&lt;span style=&quot; font-size:14pt; text-decoration: underline;&quot;&gt;n&lt;/span&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;ame:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="document_name">
+      <widget class="QLineEdit" name="input">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -64,7 +64,7 @@ background-color: transparent;
         </size>
        </property>
        <property name="placeholderText">
-        <string>Document name</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -83,12 +83,12 @@ background-color: transparent;
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="create">
+      <widget class="QPushButton" name="confirm">
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="text">
-        <string>&amp;Create</string>
+        <string>&amp;Confirm</string>
        </property>
       </widget>
      </item>
@@ -103,7 +103,7 @@ background-color: transparent;
   <connection>
    <sender>cancel</sender>
    <signal>clicked()</signal>
-   <receiver>CreateDialog</receiver>
+   <receiver>InputDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -117,9 +117,9 @@ background-color: transparent;
    </hints>
   </connection>
   <connection>
-   <sender>create</sender>
+   <sender>confirm</sender>
    <signal>clicked()</signal>
-   <receiver>CreateDialog</receiver>
+   <receiver>InputDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
