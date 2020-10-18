@@ -12,8 +12,7 @@ namespace cte {
 
     OpenDocument::OpenDocument(const QVector<character_t>& text) : OpenDocument() {
         QHash<QString,std::pair<int,int>> authors;
-        QList<Symbol> symbols;
-        Lseq pos_allocator;
+        int index = 0;
 
         for (const auto& c : text) {
             if (!authors.contains(c.author)) {
@@ -22,15 +21,8 @@ namespace cte {
                 next_site_id_++;
             }
             std::pair<int,int> author = authors[c.author];
-
-            QVector<int> prev_pos = (c.index == 0 || symbols.empty()) ? Lseq::begin() : symbols.last().position();
-            QVector<int> next_pos = Lseq::end();
-            QVector<int> between_pos = pos_allocator.between(prev_pos, next_pos);
-            
-            symbols.push_back(Symbol(c.value, author.first, author.second++, between_pos));
+            local_editor_->insert(author.first, author.second++, index++, c.value);
         }
-
-        local_editor_ = QSharedPointer<SharedEditor>::create(SharedEditor::invalid_site_id, symbols, pos_allocator);
     }
 
     int OpenDocument::open(const QString& username) {

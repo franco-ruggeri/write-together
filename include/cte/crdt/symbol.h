@@ -27,6 +27,7 @@ namespace cte {
 
         QChar value() const;
         int site_id() const;
+        int site_counter() const;
         QVector<int> position() const;
 
         QJsonObject json() const;

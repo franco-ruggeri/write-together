@@ -21,7 +21,7 @@ namespace cte {
         // create UI
         forms_and_home_ = QSharedPointer<QStackedWidget>::create();
         QStackedWidget *forms_and_home = forms_and_home_.data();
-        connect_form_ = new ConnectForm(forms_and_home);
+        connect_form_ = new ConnectionForm(forms_and_home);
         login_form_ = new LoginForm(forms_and_home);
         signup_form_ = new SignupForm(forms_and_home);
         home_ = new Home(forms_and_home);
@@ -31,16 +31,16 @@ namespace cte {
         forms_and_home_->addWidget(home_);
 
         // connect signals and slots
-        connect(connect_form_, &ConnectForm::connect_to_server, this, &UiWorker::connect_to_server);
-        connect(login_form_, &LoginForm::login, this, &UiWorker::login);
-        connect(login_form_, &LoginForm::go_to_signup, this, &UiWorker::show_signup_form);
-        connect(signup_form_, &SignupForm::signup, this, &UiWorker::signup);
-        connect(home_, &Home::create_document, this, &UiWorker::create_document);
-        connect(home_, &Home::open_document, this, &UiWorker::open_document);
-        connect(home_, &Home::collaborate, this, &UiWorker::collaborate);
-        connect(home_, qOverload<const Profile&>(&Home::update_profile),
+        connect(connect_form_, &ConnectionForm::connection_request, this, &UiWorker::connection_request);
+        connect(login_form_, &LoginForm::login_request, this, &UiWorker::login);
+        connect(login_form_, &LoginForm::signup_request, this, &UiWorker::show_signup_form);
+        connect(signup_form_, &SignupForm::signup_request, this, &UiWorker::signup);
+        connect(home_, &Home::new_document_request, this, &UiWorker::create_document);
+        connect(home_, qOverload<const Document&>(&Home::document_request), this, &UiWorker::open_document);
+        connect(home_, qOverload<const QString&>(&Home::document_request), this, &UiWorker::collaborate);
+        connect(home_, qOverload<const Profile&>(&Home::profile_update_request),
                 this, qOverload<const Profile&>(&UiWorker::update_profile));
-        connect(home_, qOverload<const Profile&, const QString&>(&Home::update_profile),
+        connect(home_, qOverload<const Profile&, const QString&>(&Home::profile_update_request),
                 this, qOverload<const Profile&, const QString&>(&UiWorker::update_profile));
     }
 

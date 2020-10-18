@@ -16,7 +16,7 @@ namespace cte {
         QSharedPointer<Ui::SignupForm> ui_;
 
     signals:
-        void signup(const Profile& profile, const QString& password);
+        void signup_request(const Profile& profile, const QString& password);
 
     private slots:
         void on_signup_clicked();

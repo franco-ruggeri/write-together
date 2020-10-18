@@ -23,8 +23,8 @@ namespace cte {
 
     public:
         explicit OpenMessage(const Document& document);
-        OpenMessage(const Document& document, int site_id, const Profile& profile);
         explicit OpenMessage(const QString& sharing_link);
+        OpenMessage(const Document& document, int site_id, const Profile& profile);
 
         bool operator==(const Message& other) const override;
 

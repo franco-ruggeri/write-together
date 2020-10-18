@@ -8,7 +8,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
-#include <cte/widget/connect_form.h>
+#include <cte/widget/connection_form.h>
 #include <cte/widget/login_form.h>
 #include <cte/widget/signup_form.h>
 #include <cte/widget/home.h>
@@ -19,7 +19,7 @@ namespace cte {
         Q_OBJECT
 
         QSharedPointer<QStackedWidget> forms_and_home_;
-        QPointer<ConnectForm> connect_form_;
+        QPointer<ConnectionForm> connect_form_;
         QPointer<LoginForm> login_form_;
         QPointer<SignupForm> signup_form_;
         QPointer<Home> home_;
@@ -31,7 +31,7 @@ namespace cte {
         void profile_updated(const QSharedPointer<Message>& message);
 
     signals:
-        void connect_to_server(const QString& hostname, int port);
+        void connection_request(const QString& hostname, int port);
         void new_message(const QSharedPointer<Message>& message);
 
     private slots:

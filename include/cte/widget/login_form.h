@@ -15,8 +15,8 @@ namespace cte {
         QSharedPointer<Ui::LoginForm> ui_;
 
     signals:
-        void login(const QString& username, const QString& password);
-        void go_to_signup();
+        void login_request(const QString& username, const QString& password);
+        void signup_request();
 
     private slots:
         void on_login_clicked();

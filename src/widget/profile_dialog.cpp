@@ -24,9 +24,9 @@ namespace cte {
                            ui_->icon->pixmap()->toImage());;
         QString password = ui_->password->text();
         if (password.isEmpty())
-            emit update_profile(profile_);
+            emit profile_update_request(profile_);
         else
-            emit update_profile(profile_, password);
+            emit profile_update_request(profile_, password);
     }
 
     void ProfileDialog::on_edit_icon_clicked() {

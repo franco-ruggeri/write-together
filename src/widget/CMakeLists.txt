@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${UI_DIR})
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 
 list(APPEND SRC
-        connect_form.cpp
+        connection_form.cpp
         login_form.cpp
         signup_form.cpp
         profile_dialog.cpp
@@ -16,7 +16,7 @@ list(APPEND SRC
         editor.cpp)
 
 list(APPEND QOBJ_HEADERS
-        ${QOBJ_DIR}/connect_form.h
+        ${QOBJ_DIR}/connection_form.h
         ${QOBJ_DIR}/login_form.h
         ${QOBJ_DIR}/signup_form.h
         ${QOBJ_DIR}/profile_dialog.h

@@ -1,5 +1,5 @@
 /*
- * Test the idempotency property required by a collaborative text editor and obtained by means of CRDT.
+ * Test the idempotency property required by a collaborative text editor.
  *
  * Author: Franco Ruggeri
  */

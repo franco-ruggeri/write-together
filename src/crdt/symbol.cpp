@@ -67,6 +67,10 @@ namespace cte {
         return site_id_;
     }
 
+    int Symbol::site_counter() const {
+        return site_counter_;
+    }
+
     QVector<int> Symbol::position() const {
         return position_;
     }

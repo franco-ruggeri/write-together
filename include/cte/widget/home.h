@@ -34,12 +34,12 @@ namespace cte {
         void refresh();
 
     signals:
-        void create_document(const QString& document_name);
-        void open_document(const Document& document);
-        void collaborate(const QString& sharing_link);
-        void update_profile(const Profile& profile);
-        void update_profile(const Profile& profile, const QString& password);
-        void logout();
+        void new_document_request(const QString& document_name);
+        void document_request(const Document& document);
+        void document_request(const QString& sharing_link);
+        void profile_update_request(const Profile& profile);
+        void profile_update_request(const Profile& profile, const QString& password);
+        void logout_request();
 
     private slots:
         void on_new_document_clicked();

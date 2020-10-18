@@ -20,9 +20,12 @@ namespace cte {
         void local_insert(const Symbol& symbol);
         void local_erase(const Symbol& symbol);
 
+    private slots:
+        void process_change(int position, int chars_removed, int chars_added);
+
     public slots:
         void remote_insert(const Symbol& symbol);
-        void remote_erase(const Symbol &symbol);
+        void remote_erase(const Symbol& symbol);
 
     public:
         Editor(int site_id, const QList<Symbol>& text, QWidget *parent=nullptr);

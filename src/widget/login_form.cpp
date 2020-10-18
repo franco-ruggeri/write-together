@@ -9,11 +9,11 @@ namespace cte {
         init_resource();
         ui_ = QSharedPointer<Ui::LoginForm>::create();
         ui_->setupUi(this);
-        connect(ui_->go_to_signup, &QPushButton::clicked, this, &LoginForm::go_to_signup);
+        connect(ui_->go_to_signup, &QPushButton::clicked, this, &LoginForm::signup_request);
     }
 
     void LoginForm::on_login_clicked() {
-        emit login(ui_->username->text(), ui_->password->text());
+        emit login_request(ui_->username->text(), ui_->password->text());
     }
 
     void LoginForm::clear() {

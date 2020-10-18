@@ -5,17 +5,17 @@
 #include <QtWidgets/QWidget>
 
 namespace Ui {
-    class ConnectForm;
+    class ConnectionForm;
 }
 
 namespace cte {
-    class ConnectForm : public QWidget {
+    class ConnectionForm : public QWidget {
         Q_OBJECT
 
-        QSharedPointer<Ui::ConnectForm> ui_;
+        QSharedPointer<Ui::ConnectionForm> ui_;
 
     signals:
-        void connect_to_server(const QString& hostname, int port);
+        void connection_request(const QString& hostname, int port);
 
     private slots:
         void on_connect_clicked();
@@ -24,6 +24,6 @@ namespace cte {
         void clear();
 
     public:
-        explicit ConnectForm(QWidget *parent=nullptr);
+        explicit ConnectionForm(QWidget *parent=nullptr);
     };
 }

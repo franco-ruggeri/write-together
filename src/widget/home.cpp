@@ -68,12 +68,12 @@ namespace cte {
 
     void Home::on_new_document_clicked() {
         QString document_name = QInputDialog::getText(this, tr("Create document"), tr("Document name:"));
-        if (!document_name.isNull()) emit create_document(document_name);
+        if (!document_name.isNull()) emit new_document_request(document_name);
     }
 
     void Home::on_collaborate_clicked() {
         QString sharing_link = QInputDialog::getText(this, tr("Collaborate"), tr("Sharing link:"));
-        if (!sharing_link.isNull()) emit collaborate(sharing_link);
+        if (!sharing_link.isNull()) emit document_request(sharing_link);
     }
 
     void Home::update_filter(Filter filter) {
@@ -96,10 +96,10 @@ namespace cte {
 
     void Home::on_profile_clicked() {
         profile_dialog_ = new ProfileDialog(profile_, this);
-        connect(profile_dialog_, qOverload<const Profile&>(&ProfileDialog::update_profile),
-                this, qOverload<const Profile&>(&Home::update_profile));
-        connect(profile_dialog_, qOverload<const Profile&, const QString&>(&ProfileDialog::update_profile),
-                this, qOverload<const Profile&, const QString&>(&Home::update_profile));
+        connect(profile_dialog_, qOverload<const Profile&>(&ProfileDialog::profile_update_request),
+                this, qOverload<const Profile&>(&Home::profile_update_request));
+        connect(profile_dialog_, qOverload<const Profile&, const QString&>(&ProfileDialog::profile_update_request),
+                this, qOverload<const Profile&, const QString&>(&Home::profile_update_request));
         profile_dialog_->setModal(true);
         profile_dialog_->show();
     }
@@ -108,7 +108,7 @@ namespace cte {
         QString document_owner = ui_->documents->item(row, 0)->text();
         QString document_name = ui_->documents->item(row, 1)->text();
         Document document(document_owner, document_name);
-        emit open_document(document);
+        emit document_request(document);
     }
 
     void Home::clear() {

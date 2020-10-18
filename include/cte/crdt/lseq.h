@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <QVector>
+#include <QtCore/QVector>
 
 namespace cte {
     class Lseq {

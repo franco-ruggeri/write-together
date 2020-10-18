@@ -17,8 +17,8 @@ namespace cte {
         Profile profile_;
 
     signals:
-        void update_profile(const Profile& profile);
-        void update_profile(const Profile& profile, const QString& password);
+        void profile_update_request(const Profile& profile);
+        void profile_update_request(const Profile& profile, const QString& password);
 
     private slots:
         void on_update_clicked();
