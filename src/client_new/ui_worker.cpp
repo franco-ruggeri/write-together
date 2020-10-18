@@ -36,6 +36,8 @@ namespace cte {
         connect(login_form_, &LoginForm::go_to_signup, this, &UiWorker::show_signup_form);
         connect(signup_form_, &SignupForm::signup, this, &UiWorker::signup);
         connect(home_, &Home::create_document, this, &UiWorker::create_document);
+        connect(home_, &Home::open_document, this, &UiWorker::open_document);
+        connect(home_, &Home::collaborate, this, &UiWorker::collaborate);
     }
 
     void UiWorker::show_connect_form() {
@@ -94,8 +96,18 @@ namespace cte {
         emit new_message(message);
     }
 
-    void UiWorker::create_document(const QString &document_name) {
+    void UiWorker::create_document(const QString& document_name) {
         QSharedPointer<Message> message = QSharedPointer<CreateMessage>::create(document_name);
+        emit new_message(message);
+    }
+
+    void UiWorker::open_document(const Document& document) {
+        QSharedPointer<Message> message = QSharedPointer<OpenMessage>::create(document);
+        emit new_message(message);
+    }
+
+    void UiWorker::collaborate(const QString& sharing_link) {
+        QSharedPointer<Message> message = QSharedPointer<OpenMessage>::create(sharing_link);
         emit new_message(message);
     }
 

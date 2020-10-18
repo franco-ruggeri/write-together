@@ -3,6 +3,7 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QTableWidgetItem>
 #include <cte/protocol/document.h>
 #include <cte/protocol/profile.h>
 #include <cte/protocol/document.h>
@@ -19,11 +20,14 @@ namespace cte {
 
     signals:
         void create_document(const QString& document_name);
-        void open_document(const Document& document_name);
+        void open_document(const Document& document);
+        void collaborate(const QString& sharing_link);
         void logout();
 
     private slots:
         void on_new_document_clicked();
+        void on_collaborate_clicked();
+        void on_documents_cellClicked(int row, int column);
 
     public slots:
         void clear();

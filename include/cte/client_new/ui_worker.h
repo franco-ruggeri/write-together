@@ -35,14 +35,16 @@ namespace cte {
         void new_message(const QSharedPointer<Message>& message);
 
     private slots:
-        void show_signup_form();
         void login(const QString& username, const QString& password);
         void signup(const Profile& profile, const QString& password);
         void create_document(const QString& document_name);
+        void open_document(const Document& document);
+        void collaborate(const QString& sharing_link);
 
     public slots:
         void show_connect_form();
         void show_login_form();
+        void show_signup_form();
         void process_message(const QSharedPointer<Message>& message);
 
     public:

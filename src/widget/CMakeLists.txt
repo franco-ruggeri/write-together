@@ -12,6 +12,7 @@ list(APPEND SRC
         login_form.cpp
         signup_form.cpp
         create_dialog.cpp
+        collaborate_dialog.cpp
         home.cpp
         editor.cpp)
 
@@ -20,6 +21,7 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/login_form.h
         ${QOBJ_DIR}/signup_form.h
         ${QOBJ_DIR}/create_dialog.h
+        ${QOBJ_DIR}/collaborate_dialog.h
         ${QOBJ_DIR}/home.h
         ${QOBJ_DIR}/editor.h)
 
