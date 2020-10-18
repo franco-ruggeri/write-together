@@ -23,8 +23,8 @@ namespace cte {
         };
 
         QSharedPointer<Ui::Home> ui_;
-        Profile profile_;
         QSet<Document> documents_;
+        Profile profile_;
         Filter filter_;
 
         void update_filter(Filter filter);

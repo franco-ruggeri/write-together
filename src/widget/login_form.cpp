@@ -9,7 +9,6 @@ namespace cte {
         init_resource();
         ui_ = QSharedPointer<Ui::LoginForm>::create();
         ui_->setupUi(this);
-
         connect(ui_->go_to_signup, &QPushButton::clicked, this, &LoginForm::go_to_signup);
     }
 

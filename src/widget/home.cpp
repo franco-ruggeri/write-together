@@ -1,6 +1,6 @@
 #include <cte/widget/home.h>
-#include <cte/widget/input_dialog.h>
 #include <ui_home.h>
+#include <QtWidgets/QInputDialog>
 
 inline void init_resource() { Q_INIT_RESOURCE(resource); }
 
@@ -41,6 +41,7 @@ namespace cte {
         }
 
         // sort UI (by owner, name)
+        // TODO: in another thread (?)
         ui_->documents->sortItems(1);
         ui_->documents->sortItems(0);
     }
@@ -56,15 +57,13 @@ namespace cte {
     }
 
     void Home::on_new_document_clicked() {
-        InputDialog create_dialog("Document name", this);
-        connect(&create_dialog, &InputDialog::confirm, this, &Home::create_document);
-        create_dialog.exec();
+        QString document_name = QInputDialog::getText(this, tr("Create document"), tr("Document name:"));
+        emit create_document(document_name);
     }
 
     void Home::on_collaborate_clicked() {
-        InputDialog collaborate_dialog("Sharing link", this);
-        connect(&collaborate_dialog, &InputDialog::confirm, this, &Home::collaborate);
-        collaborate_dialog.exec();
+        QString sharing_link = QInputDialog::getText(this, tr("Collaborate"), tr("Sharing link:"));
+        emit collaborate(sharing_link);
     }
 
     void Home::update_filter(Filter filter) {

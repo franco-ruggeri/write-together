@@ -23,8 +23,6 @@ namespace cte {
         QPointer<LoginForm> login_form_;
         QPointer<SignupForm> signup_form_;
         QPointer<Home> home_;
-
-        Profile profile_;
         QHash<Document,QSharedPointer<Editor>> editors_;
 
         void logged_in(const QSharedPointer<Message>& message);

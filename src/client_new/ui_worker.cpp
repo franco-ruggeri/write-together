@@ -91,7 +91,7 @@ namespace cte {
     }
 
     void UiWorker::signup(const Profile& profile, const QString& password) {
-        profile_ = profile;
+        home_->set_profile(profile);
         QSharedPointer<Message> message = QSharedPointer<SignupMessage>::create(profile, password);
         emit new_message(message);
     }
@@ -112,12 +112,9 @@ namespace cte {
     }
 
     void UiWorker::logged_in(const QSharedPointer<Message>& message) {
-        // save profile
-        if (message->type() == MessageType::profile)
-            profile_ = message.staticCast<ProfileMessage>()->profile();
-
         // prepare home
-        home_->set_profile(profile_);
+        if (message->type() == MessageType::profile)
+            home_->set_profile(message.staticCast<ProfileMessage>()->profile());
         forms_and_home_->setCurrentWidget(home_);
         forms_and_home_->show();
 
