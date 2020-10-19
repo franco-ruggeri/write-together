@@ -3,6 +3,7 @@
 #include <cte/protocol/signup_message.h>
 #include <cte/protocol/signup_ok_message.h>
 #include <cte/protocol/login_message.h>
+#include <cte/protocol/logout_message.h>
 #include <cte/protocol/profile_message.h>
 #include <cte/protocol/profile_ok_message.h>
 #include <cte/protocol/documents_message.h>
@@ -13,8 +14,6 @@
 #include <cte/protocol/insert_message.h>
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
-
-// TODO: click su documento gia' aperto -> focus su quell'editor
 
 namespace cte {
     UiWorker::UiWorker(QObject *parent) : QObject(parent) {
@@ -38,6 +37,7 @@ namespace cte {
         connect(login_form_, &LoginForm::login_request, this, &UiWorker::login);
         connect(login_form_, &LoginForm::signup_request, this, &UiWorker::show_signup_form);
         connect(signup_form_, &SignupForm::signup_request, this, &UiWorker::signup);
+        connect(signup_form_, &SignupForm::login_request, this, &UiWorker::show_login_form);
         connect(home_, &Home::new_document_request, this, &UiWorker::create_document);
         connect(home_, qOverload<const Document&>(&Home::document_request),
                 this, qOverload<const Document&>(&UiWorker::open_document));
@@ -47,6 +47,7 @@ namespace cte {
                 this, qOverload<const Profile&>(&UiWorker::update_profile));
         connect(home_, qOverload<const Profile&, const QString&>(&Home::profile_update_request),
                 this, qOverload<const Profile&, const QString&>(&UiWorker::update_profile));
+        connect(home_, &Home::logout_request, this, &UiWorker::logout);
     }
 
     void UiWorker::show_connect_form() {
@@ -109,6 +110,12 @@ namespace cte {
         home_->set_profile(profile);
         QSharedPointer<Message> message = QSharedPointer<SignupMessage>::create(profile, password);
         emit new_message(message);
+    }
+
+    void UiWorker::logout() {
+        QSharedPointer<Message> message = QSharedPointer<LogoutMessage>::create();
+        emit new_message(message);
+        show_login_form();
     }
 
     void UiWorker::create_document(const QString& document_name) {

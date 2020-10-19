@@ -17,6 +17,7 @@ namespace cte {
 
     signals:
         void signup_request(const Profile& profile, const QString& password);
+        void login_request();
 
     private slots:
         void on_signup_clicked();

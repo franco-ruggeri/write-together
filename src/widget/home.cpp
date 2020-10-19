@@ -9,6 +9,7 @@ namespace cte {
         init_resource();
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
+        connect(ui_->logout, &QPushButton::clicked, this, &Home::logout_request);
     }
 
     void Home::refresh() {

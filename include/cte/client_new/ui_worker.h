@@ -40,6 +40,7 @@ namespace cte {
     private slots:
         void login(const QString& username, const QString& password);
         void signup(const Profile& profile, const QString& password);
+        void logout();
         void create_document(const QString& document_name);
         void open_document(const Document& document);
         void open_document(const QUrl& sharing_link);
