@@ -92,7 +92,7 @@ namespace cte {
     }
 
     void Home::on_profile_clicked() {
-        profile_dialog_ = new ProfileDialog(profile_, this);
+        profile_dialog_ = new ProfileDialog(profile_, true, this);
         connect(profile_dialog_, qOverload<const Profile&>(&ProfileDialog::profile_update_request),
                 this, qOverload<const Profile&>(&Home::profile_update_request));
         connect(profile_dialog_, qOverload<const Profile&, const QString&>(&ProfileDialog::profile_update_request),

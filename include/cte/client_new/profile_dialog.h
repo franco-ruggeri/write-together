@@ -25,7 +25,7 @@ namespace cte {
         void on_edit_icon_clicked();
 
     public:
-        explicit ProfileDialog(const Profile& profile, QWidget *parent=nullptr);
+        explicit ProfileDialog(const Profile& profile, bool editable, QWidget *parent=nullptr);
         Profile profile() const;
     };
 }

@@ -325,7 +325,7 @@ margin: 0px;</string>
     <widget class="QLabel" name="changeuser_newname_label">
      <property name="geometry">
       <rect>
-       <x>36</x>
+       <x>40</x>
        <y>108</y>
        <width>173</width>
        <height>28</height>
@@ -335,7 +335,7 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>&amp;Name:    </string>
+      <string>Name:    </string>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_newsurname_label">
@@ -351,14 +351,14 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>&amp;Surname:    </string>
+      <string>Surname:    </string>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_newemail_label">
      <property name="geometry">
       <rect>
        <x>46</x>
-       <y>68</y>
+       <y>60</y>
        <width>173</width>
        <height>28</height>
       </rect>
@@ -367,7 +367,7 @@ margin: 0px;</string>
       <string notr="true">color:  #102E4A;</string>
      </property>
      <property name="text">
-      <string>&amp;Email:    </string>
+      <string>Email:    </string>
      </property>
     </widget>
     <widget class="QLabel" name="changeuser_username_label_2">
@@ -472,17 +472,32 @@ margin: 0px;</string>
       <string>New Password</string>
      </property>
     </widget>
-    <widget class="QLabel" name="username">
+    <widget class="QLineEdit" name="username">
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>17</y>
-       <width>191</width>
-       <height>20</height>
+       <y>10</y>
+       <width>250</width>
+       <height>28</height>
       </rect>
      </property>
-     <property name="text">
-      <string>TextLabel</string>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:  #102E4A; 
+border-radius: 2px;
+background-color: rgb(238, 238, 236);
+margin: 0px;</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>New Password</string>
      </property>
     </widget>
    </widget>

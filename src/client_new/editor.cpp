@@ -1,4 +1,5 @@
 #include <cte/client_new/editor.h>
+#include <cte/client_new/profile_dialog.h>
 #include <ui_editor.h>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QTextDocument>
@@ -7,19 +8,16 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QTreeWidgetItem>
 #include <QtPrintSupport/QPrinter>
-#include <QDebug>
 
 // TODO: find function
 // TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
-// TODO: document_info deve mandare tutti i profili che hanno accesso al documento, non solo chi ha inserito almeno un carattere
-        // forse e' gia' cosi', in caso modifica la documentazione
 // TODO: document_id per efficienza
 // TODO: merge signup_ok and profile_ok -> ok
 // TODO: titolo finestre
 // TODO: home come finestra a parte, form in stackedwidgets (?)
 // TODO: per rimettere icona di default?
+// TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
@@ -182,6 +180,53 @@ namespace cte {
             online_users_.erase(it_user);
             refresh_users();
         }
+    }
+
+    void Editor::on_users_itemClicked(QTreeWidgetItem *item, int column) {
+        // TODO
+//        QString username = item->text().split(' ')[0];
+//
+//        auto user = username_to_user.find(username);
+//        qDebug() << username;
+//        qDebug() << user->color(); // ??
+//        qDebug() << user->username();
+//
+//
+//        int i = 0;
+//        disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
+//        disconnect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
+//
+//        int start_pos = -1;
+//        auto s = shared_editor->text();
+//
+//        for (i = 0; i < s.size(); i++) {
+//            if (file.site_ids()[s[i].site_id()] == username && start_pos == -1) {
+//                start_pos = i;
+//            }
+//            if (file.site_ids()[s[i].site_id()] != username && start_pos != -1) {
+//                user->draw_background_char(editor.data(), start_pos, i);
+//                start_pos = -1;
+//            }
+//        }
+//        if (start_pos != -1)
+//            user->draw_background_char(editor.data(), start_pos, i);
+//
+//
+//        connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
+//        connect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
+//
+//        user->selected = !user->selected;
+//        // editor->setCurrentCharFormat(user->format);
+    }
+
+    void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {
+        if (item->parent() == nullptr) return;  // top-level item
+        QString username = item->text(0);
+        Profile profile = online_users_.contains(username) ?
+                          online_users_.value(username) : offline_users_.value(username);
+        ProfileDialog *profile_dialog = new ProfileDialog(profile, false);
+        connect(profile_dialog, &ProfileDialog::close, profile_dialog, &ProfileDialog::deleteLater);
+        profile_dialog->open();
     }
 
     void Editor::closeEvent(QCloseEvent *event) {

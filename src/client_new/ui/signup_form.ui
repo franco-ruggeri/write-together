@@ -75,10 +75,18 @@
       <widget class="QLineEdit" name="surname"/>
      </item>
      <item>
-      <widget class="QLineEdit" name="password"/>
+      <widget class="QLineEdit" name="password">
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="password_confirm"/>
+      <widget class="QLineEdit" name="password_confirm">
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="signup">

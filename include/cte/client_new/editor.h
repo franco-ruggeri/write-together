@@ -3,6 +3,7 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
 #include <QtCore/QUrl>
+#include <QtWidgets/QTreeWidgetItem>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
 #include <cte/crdt/shared_editor.h>
@@ -41,6 +42,8 @@ namespace cte {
         void remote_erase(int index);
         void export_pdf();
         void show_sharing_link();
+        void on_users_itemClicked(QTreeWidgetItem *item, int column);
+        void on_users_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
     protected:
         void closeEvent(QCloseEvent *event) override;

@@ -5,7 +5,8 @@
 #include <QtGui/QPixmap>
 
 namespace cte {
-    ProfileDialog::ProfileDialog(const Profile& profile, QWidget *parent) : profile_(profile), QDialog(parent) {
+    ProfileDialog::ProfileDialog(const Profile& profile, bool editable, QWidget *parent) :
+            profile_(profile), QDialog(parent) {
         ui_ = QSharedPointer<Ui::ProfileDialog>::create();
         ui_->setupUi(this);
         ui_->icon->setPixmap(QPixmap::fromImage(profile.icon()));
@@ -13,6 +14,17 @@ namespace cte {
         ui_->email->setText(profile.email());
         ui_->name->setText(profile.name());
         ui_->surname->setText(profile.surname());
+
+        if (!editable) {
+            ui_->edit_icon->hide();
+            ui_->email->setReadOnly(true);
+            ui_->name->setReadOnly(true);
+            ui_->surname->setReadOnly(true);
+            ui_->password->hide();
+            ui_->confirm_password->hide();
+            ui_->cancel->hide();
+            ui_->update->hide();
+        }
     }
 
     void ProfileDialog::on_update_clicked() {
