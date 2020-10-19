@@ -2,7 +2,6 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtWidgets/QStackedWidget>
@@ -24,7 +23,7 @@ namespace cte {
         QPointer<LoginForm> login_form_;
         QPointer<SignupForm> signup_form_;
         QPointer<Home> home_;
-        QHash<Document,QSharedPointer<Editor>> editors_;
+        QHash<Document,QPointer<Editor>> editors_;
 
         void logged_in(const QSharedPointer<Message>& message);
         void show_document_list(const QSharedPointer<Message>& message);
@@ -47,6 +46,7 @@ namespace cte {
         void update_profile(const Profile& profile, const QString& password);
         void local_insert(const Document& document, const Symbol& symbol);
         void local_erase(const Document& document, const Symbol& symbol);
+        void close_document(const Document& document);
 
     public slots:
         void show_connect_form();

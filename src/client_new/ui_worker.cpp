@@ -146,6 +146,21 @@ namespace cte {
         emit new_message(message);
     }
 
+    void UiWorker::close_document(const Document& document) {
+        // delete editor
+        auto it = editors_.find(document);
+        QPointer<Editor> editor = *it;
+        editor->deleteLater();
+        editors_.erase(it);
+
+        // activate home
+        activate_home();
+
+        // send message
+        QSharedPointer<Message> message = QSharedPointer<CloseMessage>::create(document);
+        emit new_message(message);
+    }
+
     void UiWorker::logged_in(const QSharedPointer<Message>& message) {
         // prepare home
         if (message->type() == MessageType::profile)
@@ -170,7 +185,8 @@ namespace cte {
 
         // create editor
         DocumentInfo document_info = document_message->document_info();
-        QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document, document_info);
+        QPointer<Editor> editor = new Editor(document, document_info);
+        editor->installEventFilter(this);
         editors_.insert(document_message->document(), editor);
 
         // connect signals and slots
@@ -179,10 +195,11 @@ namespace cte {
         connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
         connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
         connect(e, &Editor::home_focus, this, &UiWorker::activate_home);
+        connect(e, &Editor::closed, [this, document]() { close_document(document); });
 
         // show editor
-        forms_and_home_->showMinimized();
         editor->show();
+        forms_and_home_->showMinimized();
     }
 
     void UiWorker::profile_updated(const QSharedPointer<Message>& message) {

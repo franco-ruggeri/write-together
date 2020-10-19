@@ -26,6 +26,7 @@ namespace cte {
         void local_insert(const Symbol& symbol);
         void local_erase(const Symbol& symbol);
         void home_focus();
+        void closed();
 
     private slots:
         void process_change(int position, int chars_removed, int chars_added);
@@ -33,6 +34,9 @@ namespace cte {
         void remote_erase(int index);
         void export_pdf();
         void show_sharing_link();
+
+    protected:
+        void closeEvent(QCloseEvent *event) override;
 
     public:
         Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent=nullptr);

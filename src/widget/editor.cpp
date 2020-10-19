@@ -16,7 +16,6 @@ inline void init_resource() { Q_INIT_RESOURCE(resource); }
 // TODO: document_info deve mandare tutti i profili che hanno accesso al documento, non solo chi ha inserito almeno un carattere
 // TODO: document_id per efficienza
 // TODO: merge signup_ok and profile_ok -> ok
-// TODO: add ok as response to logout
 // TODO: titolo finestre
 
 namespace cte {
@@ -115,5 +114,10 @@ namespace cte {
         message_box.exec();
         if (message_box.clickedButton() == copy_button)
             QApplication::clipboard()->setText(message_box.text());
+    }
+
+    void Editor::closeEvent(QCloseEvent *event) {
+        emit closed();
+        event->accept();
     }
 }
