@@ -41,8 +41,8 @@ int main() {
 
     // profiles
     const QHash<QString,cte::Profile> profiles{
-            {username1, cte::Profile(username1, "test name 1", "test surname 1", QImage{})},
-            {username2, cte::Profile(username2, "test name 2", "test surname 2", QImage{})}
+            {username1, cte::Profile(username1, "test name 1", "test surname 1", "test email 1", QImage{})},
+            {username2, cte::Profile(username2, "test name 2", "test surname 2", "test email 2", QImage{})}
     };
 
     // serialization

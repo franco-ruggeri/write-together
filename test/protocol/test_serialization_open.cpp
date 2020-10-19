@@ -13,7 +13,7 @@ int main() {
     const cte::Document document("test owner", "test name");
     const QString sharing_link("fnsc:test_uri");
     const int site_id = 1;
-    const cte::Profile profile("test username", "test name", "test surname", QImage{});
+    const cte::Profile profile("test username", "test name", "test surname", "test email", QImage{});
 
     QSharedPointer<cte::Message> message1, message2;
 

@@ -9,7 +9,7 @@
 #include <assert.h>
 
 int main() {
-    const cte::Profile username("test username", "test name", "test surname", QImage{});
+    const cte::Profile username("test username", "test name", "test surname", "test email", QImage{});
     const QString password("test password");
 
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::SignupMessage>::create(username, password);
