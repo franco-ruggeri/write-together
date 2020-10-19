@@ -14,6 +14,8 @@
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
 
+// TODO: click su documento gia' aperto -> focus su quell'editor
+
 namespace cte {
     UiWorker::UiWorker(QObject *parent) : QObject(parent) {
         qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
@@ -36,8 +38,10 @@ namespace cte {
         connect(login_form_, &LoginForm::signup_request, this, &UiWorker::show_signup_form);
         connect(signup_form_, &SignupForm::signup_request, this, &UiWorker::signup);
         connect(home_, &Home::new_document_request, this, &UiWorker::create_document);
-        connect(home_, qOverload<const Document&>(&Home::document_request), this, &UiWorker::open_document);
-        connect(home_, qOverload<const QString&>(&Home::document_request), this, &UiWorker::collaborate);
+        connect(home_, qOverload<const Document&>(&Home::document_request),
+                this, qOverload<const Document&>(&UiWorker::open_document));
+        connect(home_, qOverload<const QString&>(&Home::document_request),
+                this, qOverload<const QString&>(&UiWorker::open_document));
         connect(home_, qOverload<const Profile&>(&Home::profile_update_request),
                 this, qOverload<const Profile&>(&UiWorker::update_profile));
         connect(home_, qOverload<const Profile&, const QString&>(&Home::profile_update_request),
@@ -82,8 +86,10 @@ namespace cte {
             case MessageType::close:
                 break;
             case MessageType::insert:
+                remote_insert(message);
                 break;
             case MessageType::erase:
+                remote_erase(message);
                 break;
             case MessageType::cursor:
                 break;
@@ -113,7 +119,7 @@ namespace cte {
         emit new_message(message);
     }
 
-    void UiWorker::collaborate(const QString& sharing_link) {
+    void UiWorker::open_document(const QString& sharing_link) {
         QSharedPointer<Message> message = QSharedPointer<OpenMessage>::create(sharing_link);
         emit new_message(message);
     }
@@ -125,6 +131,16 @@ namespace cte {
 
     void UiWorker::update_profile(const Profile& profile, const QString& password) {
         QSharedPointer<Message> message = QSharedPointer<ProfileMessage>::create(profile, password);
+        emit new_message(message);
+    }
+
+    void UiWorker::local_insert(const Document& document, const Symbol& symbol) {
+        QSharedPointer<Message> message = QSharedPointer<InsertMessage>::create(document, symbol);
+        emit new_message(message);
+    }
+
+    void UiWorker::local_erase(const Document& document, const Symbol& symbol) {
+        QSharedPointer<Message> message = QSharedPointer<EraseMessage>::create(document, symbol);
         emit new_message(message);
     }
 
@@ -151,14 +167,37 @@ namespace cte {
         Document document = document_message->document();
         home_->add_document(document);
 
-        // open editor
+        // create editor
         DocumentInfo document_info = document_message->document_info();
         QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document_info.site_id(), document_info.text());
         editors_.insert(document_message->document(), editor);
+
+        // connect signals and slots
+        // TODO: problema... le connessioni poi devo toglierle, non posso usare lambda
+        Editor *e = editor.data();
+        connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
+        connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
+
+        // show editor
+        forms_and_home_->showMinimized();
         editor->show();
     }
 
     void UiWorker::profile_updated(const QSharedPointer<Message>& message) {
         home_->profile_updated();
+    }
+
+    void UiWorker::remote_insert(const QSharedPointer<Message>& message) {
+        QSharedPointer<InsertMessage> document_message = message.staticCast<InsertMessage>();
+        Document document = document_message->document();
+        Symbol symbol = document_message->symbol();
+        editors_[document]->remote_insert(symbol);
+    }
+
+    void UiWorker::remote_erase(const QSharedPointer<Message>& message) {
+        QSharedPointer<EraseMessage> document_message = message.staticCast<EraseMessage>();
+        Document document = document_message->document();
+        Symbol symbol = document_message->symbol();
+        editors_[document]->remote_erase(symbol);
     }
 }

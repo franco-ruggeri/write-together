@@ -339,14 +339,16 @@ void texteditor::show_user_details() {
 
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    content_change = true;
-   if(change_from_server) return;
+   if(change_from_server) return;   // TODO: perche'? contentsChange() non viene emesso quando il testo viene cambiato da codice
 
+    // TODO: perche'? cosa fa di preciso e in che caso succede? un esempio?
     if(position ==  editor->textCursor().block().position() && charsAdded > 1){
 
         charsAdded  = charsAdded - charsRemoved;
         charsRemoved = 0;
     }
 
+    // TODO: perche' il check empty()? non puo' essere vuoto se non ci sono errori, e' sincronizzato con la GUI
     for(int i = 0 ; i < charsRemoved && !shared_editor->text().empty(); i++) {
         Symbol s = shared_editor->local_erase(position);
         client->sendErase(file.document(), s);
@@ -355,7 +357,7 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
 
     for(int i = 0 ; i < charsAdded; i++) {
         QChar c = editor->toPlainText()[position + i];
-        if(!c.isNull()) {
+        if(!c.isNull()) {   // TODO: perche' dovrebbe essere nullo?
             Symbol s = shared_editor->local_insert(position + i, c);
             client->sendInsert(file.document(), s);
         }

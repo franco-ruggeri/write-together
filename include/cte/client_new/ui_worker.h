@@ -8,6 +8,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
+#include <cte/crdt/symbol.h>
 #include <cte/widget/connection_form.h>
 #include <cte/widget/login_form.h>
 #include <cte/widget/signup_form.h>
@@ -29,6 +30,8 @@ namespace cte {
         void show_document_list(const QSharedPointer<Message>& message);
         void open_editor(const QSharedPointer<Message>& message);
         void profile_updated(const QSharedPointer<Message>& message);
+        void remote_insert(const QSharedPointer<Message>& message);
+        void remote_erase(const QSharedPointer<Message>& message);
 
     signals:
         void connection_request(const QString& hostname, int port);
@@ -39,9 +42,11 @@ namespace cte {
         void signup(const Profile& profile, const QString& password);
         void create_document(const QString& document_name);
         void open_document(const Document& document);
-        void collaborate(const QString& sharing_link);
+        void open_document(const QString& sharing_link);
         void update_profile(const Profile& profile);
         void update_profile(const Profile& profile, const QString& password);
+        void local_insert(const Document& document, const Symbol& symbol);
+        void local_erase(const Document& document, const Symbol& symbol);
 
     public slots:
         void show_connect_form();

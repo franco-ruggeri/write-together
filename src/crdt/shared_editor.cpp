@@ -87,7 +87,7 @@ namespace cte {
         }
 
         if (!erased)
-            emit std::distance(text_.begin(), it);
+            emit remote_insert(std::distance(text_.begin(), it), symbol.value());
     }
 
     void SharedEditor::remote_erase(const Symbol& symbol) {

@@ -73,6 +73,7 @@ namespace cte {
         }
 
         // connect signals and slots (use socket_fd as session_id)
+        // TODO: le disconnessioni alla cancellazione del socket...
         QObject::connect(socket, &Socket::ready_message,
                          [this, socket_fd, socket]() { serve_request(socket_fd, socket); });
         QObject::connect(socket, &Socket::disconnected,

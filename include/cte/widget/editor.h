@@ -15,6 +15,7 @@ namespace cte {
 
         QSharedPointer<Ui::Editor> ui_;
         SharedEditor shared_editor_;
+        int remote_changes_;
 
     signals:
         void local_insert(const Symbol& symbol);
@@ -22,12 +23,12 @@ namespace cte {
 
     private slots:
         void process_change(int position, int chars_removed, int chars_added);
-
-    public slots:
-        void remote_insert(const Symbol& symbol);
-        void remote_erase(const Symbol& symbol);
+        void remote_insert(int index, QChar value);
+        void remote_erase(int index);
 
     public:
         Editor(int site_id, const QList<Symbol>& text, QWidget *parent=nullptr);
+        void remote_insert(const Symbol& symbol);
+        void remote_erase(const Symbol& symbol);
     };
 }

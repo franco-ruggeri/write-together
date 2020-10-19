@@ -5,11 +5,10 @@
 inline void init_resource() { Q_INIT_RESOURCE(resource); }
 
 namespace cte {
-    Home::Home(QWidget *parent) : QWidget(parent) {
+    Home::Home(QWidget *parent) : QWidget(parent), filter_(Filter::all_documents) {
         init_resource();
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
-        clear();
     }
 
     void Home::refresh() {

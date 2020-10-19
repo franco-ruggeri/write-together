@@ -16,7 +16,7 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/ui_worker.h
         ${QOBJ_DIR}/network_worker.h)
 
-list(APPEND LIB Qt5::Core network protocol widget)
+list(APPEND LIB Qt5::Core network protocol crdt widget)
 list(APPEND INCLUDE ${QOBJ_DIR} ${UI_DIR})
 
 add_executable(client ${SRC} ${QOBJ_HEADERS})
