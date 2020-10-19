@@ -52,6 +52,7 @@ namespace cte {
         void show_connect_form();
         void show_login_form();
         void show_signup_form();
+        void activate_home();
         void process_message(const QSharedPointer<Message>& message);
 
     public:

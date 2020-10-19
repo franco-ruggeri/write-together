@@ -31,6 +31,7 @@ namespace cte {
         forms_and_home_->addWidget(login_form_);
         forms_and_home_->addWidget(signup_form_);
         forms_and_home_->addWidget(home_);
+        forms_and_home_->show();
 
         // connect signals and slots
         connect(connect_form_, &ConnectionForm::connection_request, this, &UiWorker::connection_request);
@@ -51,19 +52,20 @@ namespace cte {
     void UiWorker::show_connect_form() {
         connect_form_->clear();
         forms_and_home_->setCurrentWidget(connect_form_);
-        forms_and_home_->show();
     }
 
     void UiWorker::show_login_form() {
         login_form_->clear();
         forms_and_home_->setCurrentWidget(login_form_);
-        forms_and_home_->show();
     }
 
     void UiWorker::show_signup_form() {
         signup_form_->clear();
         forms_and_home_->setCurrentWidget(signup_form_);
-        forms_and_home_->show();
+    }
+
+    void UiWorker::activate_home() {
+        forms_and_home_->activateWindow();
     }
 
     void UiWorker::process_message(const QSharedPointer<Message>& message) {
@@ -149,7 +151,6 @@ namespace cte {
         if (message->type() == MessageType::profile)
             home_->set_profile(message.staticCast<ProfileMessage>()->profile());
         forms_and_home_->setCurrentWidget(home_);
-        forms_and_home_->show();
 
         // request document list
         QSharedPointer<Message> request = QSharedPointer<DocumentsMessage>::create();
@@ -169,7 +170,7 @@ namespace cte {
 
         // create editor
         DocumentInfo document_info = document_message->document_info();
-        QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document_info.site_id(), document_info.text());
+        QSharedPointer<Editor> editor = QSharedPointer<Editor>::create(document, document_info);
         editors_.insert(document_message->document(), editor);
 
         // connect signals and slots
@@ -177,6 +178,7 @@ namespace cte {
         Editor *e = editor.data();
         connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
         connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
+        connect(e, &Editor::home_focus, this, &UiWorker::activate_home);
 
         // show editor
         forms_and_home_->showMinimized();

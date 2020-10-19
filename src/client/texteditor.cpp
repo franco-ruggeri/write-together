@@ -225,7 +225,7 @@ void texteditor::init_cursors(){
 
 
 void texteditor::setupFileActions(){
-   QToolBar *tb = addToolBar(tr("File Actions"));
+   QToolBar *tb = addToolBar(tr("File Actions"));Action
    QMenu *menu = menuBar()->addMenu(tr("&File"));
    QAction *a;
    a = menu->addAction(QIcon::fromTheme("document-share", QIcon(imgPath + "/filesave.png")),

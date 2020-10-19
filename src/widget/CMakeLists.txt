@@ -5,7 +5,7 @@ set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/widget)
 set(UI_DIR ui)
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${UI_DIR})
 
-find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui PrintSupport REQUIRED)
 
 list(APPEND SRC
         connection_form.cpp
@@ -23,7 +23,7 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/home.h
         ${QOBJ_DIR}/editor.h)
 
-list(APPEND LIB Qt5::Core Qt5::Widgets crdt protocol)
+list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::PrintSupport crdt protocol)
 list(APPEND INCLUDE ${QOBJ_DIR} ${UI_DIR})
 
 add_library(widget STATIC ${SRC} ${QOBJ_HEADERS} ui/resource.qrc)
