@@ -42,5 +42,6 @@ namespace cte {
         Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent=nullptr);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
+        QUrl sharing_link() const;
     };
 }

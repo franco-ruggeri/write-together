@@ -4,6 +4,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QString>
 #include <QtCore/QHash>
+#include <QtCore/QUrl>
 #include <QtWidgets/QStackedWidget>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
@@ -41,7 +42,7 @@ namespace cte {
         void signup(const Profile& profile, const QString& password);
         void create_document(const QString& document_name);
         void open_document(const Document& document);
-        void open_document(const QString& sharing_link);
+        void open_document(const QUrl& sharing_link);
         void update_profile(const Profile& profile);
         void update_profile(const Profile& profile, const QString& password);
         void local_insert(const Document& document, const Symbol& symbol);

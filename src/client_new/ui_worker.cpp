@@ -42,7 +42,7 @@ namespace cte {
         connect(home_, qOverload<const Document&>(&Home::document_request),
                 this, qOverload<const Document&>(&UiWorker::open_document));
         connect(home_, qOverload<const QString&>(&Home::document_request),
-                this, qOverload<const QString&>(&UiWorker::open_document));
+                this, qOverload<const QUrl&>(&UiWorker::open_document));
         connect(home_, qOverload<const Profile&>(&Home::profile_update_request),
                 this, qOverload<const Profile&>(&UiWorker::update_profile));
         connect(home_, qOverload<const Profile&, const QString&>(&Home::profile_update_request),
@@ -117,11 +117,27 @@ namespace cte {
     }
 
     void UiWorker::open_document(const Document& document) {
+        // already opened => activate window
+        auto it = editors_.find(document);
+        if (it != editors_.end()) {
+            it.value()->activateWindow();
+            return;
+        }
+
+        // not opened => request
         QSharedPointer<Message> message = QSharedPointer<OpenMessage>::create(document);
         emit new_message(message);
     }
 
-    void UiWorker::open_document(const QString& sharing_link) {
+    void UiWorker::open_document(const QUrl& sharing_link) {
+        // already opened => activate window
+        for (const auto& e : editors_)
+            if (sharing_link == e->sharing_link()) {
+                e->activateWindow();
+                return;
+            }
+
+        // not opened => request
         QSharedPointer<Message> message = QSharedPointer<OpenMessage>::create(sharing_link);
         emit new_message(message);
     }
@@ -150,7 +166,7 @@ namespace cte {
         // delete editor
         auto it = editors_.find(document);
         QPointer<Editor> editor = *it;
-        editor->deleteLater();
+        it.value()->deleteLater();
         editors_.erase(it);
 
         // activate home

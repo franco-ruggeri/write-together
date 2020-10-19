@@ -8,10 +8,10 @@
 namespace cte {
     OpenMessage::OpenMessage(const Document& document) : Message(MessageType::open), document_(document) {}
 
-    OpenMessage::OpenMessage(const Document &document, int site_id, const Profile &profile) :
+    OpenMessage::OpenMessage(const Document& document, int site_id, const Profile& profile) :
         Message(MessageType::open), document_(document), site_id_(site_id), profile_(profile) {}
 
-    OpenMessage::OpenMessage(const QString &sharing_link) : Message(MessageType::open), sharing_link_(sharing_link) {}
+    OpenMessage::OpenMessage(const QUrl& sharing_link) : Message(MessageType::open), sharing_link_(sharing_link) {}
 
     OpenMessage::OpenMessage(const QJsonObject &json_object) : Message(MessageType::open) {
         auto end_iterator = json_object.end();
@@ -43,9 +43,10 @@ namespace cte {
                 profile_ = Profile(profile_iterator->toObject());
             }
         } else {
-            sharing_link_ = sharing_link_iterator->toString();
-            if (sharing_link_->isNull())
+            QString sharing_link = sharing_link_iterator->toString();
+            if (sharing_link.isNull())
                 throw std::logic_error("invalid message: invalid fields");
+            sharing_link_ = sharing_link;
         }
     }
 
@@ -60,7 +61,7 @@ namespace cte {
         return document_;
     }
 
-    std::optional<QString> OpenMessage::sharing_link() const {
+    std::optional<QUrl> OpenMessage::sharing_link() const {
         return sharing_link_;
     }
 
@@ -75,7 +76,7 @@ namespace cte {
     QJsonObject OpenMessage::json() const {
         QJsonObject json_object = Message::json();
         if (document_) json_object["document"] = document_->json();
-        if (sharing_link_) json_object["sharing_link"] = *sharing_link_;
+        if (sharing_link_) json_object["sharing_link"] = sharing_link_->toString();
         if (site_id_) json_object["site_id"] = *site_id_;
         if (profile_) json_object["profile"] = profile_->json();
         return json_object;

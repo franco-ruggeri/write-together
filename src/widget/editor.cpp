@@ -120,4 +120,8 @@ namespace cte {
         emit closed();
         event->accept();
     }
+
+    QUrl Editor::sharing_link() const {
+        return sharing_link_;
+    }
 }
