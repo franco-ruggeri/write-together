@@ -6,7 +6,7 @@
 #include <QtCore/QSet>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTableWidgetItem>
-#include <cte/widget/profile_dialog.h>
+#include <cte/client_new/profile_dialog.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/profile.h>
 #include <cte/protocol/document.h>
@@ -31,7 +31,8 @@ namespace cte {
         QPointer<ProfileDialog> profile_dialog_;
 
         void update_filter(Filter filter);
-        void refresh();
+        void refresh_profile();
+        void refresh_documents();
 
     signals:
         void new_document_request(const QString& document_name);

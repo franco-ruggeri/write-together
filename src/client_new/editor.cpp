@@ -1,4 +1,4 @@
-#include <cte/widget/editor.h>
+#include <cte/client_new/editor.h>
 #include <ui_editor.h>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QTextDocument>
@@ -7,25 +7,45 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QTreeWidgetItem>
 #include <QtPrintSupport/QPrinter>
-
-inline void init_resource() { Q_INIT_RESOURCE(resource); }
+#include <QDebug>
 
 // TODO: find function
 // TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
 // TODO: document_info deve mandare tutti i profili che hanno accesso al documento, non solo chi ha inserito almeno un carattere
+        // forse e' gia' cosi', in caso modifica la documentazione
 // TODO: document_id per efficienza
 // TODO: merge signup_ok and profile_ok -> ok
 // TODO: titolo finestre
+// TODO: home come finestra a parte, form in stackedwidgets (?)
+// TODO: per rimettere icona di default?
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
             QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
-            shared_editor_(document_info.site_id(), document_info.text()), remote_changes_(0) {
-        init_resource();
+            usernames_(document_info.usernames()), shared_editor_(document_info.site_id(), document_info.text()),
+            remote_changes_(0) {
+        // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
         ui_->editor->setText(shared_editor_.to_string());
+
+        // get online users
+        QHash<QString,Profile> profiles = document_info.profiles();
+        QHash<int,Symbol> cursors = document_info.cursors();
+        for (auto it=cursors.begin(); it != cursors.end(); it++) {
+            QString username = usernames_[it.key()];
+            online_users_.insert(username, profiles[username]);
+            session_counts_[username]++;
+        }
+
+        // get offline users
+        for (auto it=profiles.begin(); it != profiles.end(); it++) {
+            QString username = it.key();
+            if (!online_users_.contains(username))
+                offline_users_.insert(username, profiles[username]);
+        }
 
         // connect signals and slots
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
@@ -42,6 +62,30 @@ namespace cte {
                 this, qOverload<int,QChar>(&Editor::remote_insert));
         connect(&shared_editor_, qOverload<int>(&SharedEditor::remote_erase),
                 this, qOverload<int>(&Editor::remote_erase));
+
+        // show user list
+        ui_->users->topLevelItem(0)->setExpanded(true);
+        ui_->users->topLevelItem(1)->setExpanded(true);
+        refresh_users();
+    }
+
+    static void refresh_users_helper(QTreeWidgetItem *parent, QHash<QString,Profile> users) {
+        // clear
+        parent->takeChildren();
+
+        // populate
+        for (const Profile& p : users) {
+            QTreeWidgetItem *child = new QTreeWidgetItem;
+            child->setText(0, p.username());
+            child->setIcon(0, QIcon(QPixmap::fromImage(p.icon())));
+            parent->addChild(child);
+        }
+        parent->sortChildren(0, Qt::AscendingOrder);
+    }
+
+    void Editor::refresh_users() {
+        refresh_users_helper(ui_->users->topLevelItem(0), online_users_);
+        refresh_users_helper(ui_->users->topLevelItem(1), offline_users_);
     }
 
     void Editor::remote_insert(int index, QChar value) {
@@ -114,6 +158,30 @@ namespace cte {
         message_box.exec();
         if (message_box.clickedButton() == copy_button)
             QApplication::clipboard()->setText(message_box.text());
+    }
+
+    void Editor::add_online_user(int site_id, const Profile& profile) {
+        // TODO: add cursor
+        QString username = profile.username();
+        usernames_[site_id] = username;
+        online_users_[username] = profile;
+        offline_users_.remove(username);
+        session_counts_[username]++;
+        refresh_users();
+    }
+
+    void Editor::remove_online_user(int site_id) {
+        // TODO: remove cursor
+        QString username = usernames_[site_id];
+        auto it_count = session_counts_.find(username);
+        it_count.value()--;
+        if (*it_count == 0) {
+            session_counts_.erase(it_count);
+            auto it_user = online_users_.find(username);
+            offline_users_[username] = *it_user;
+            online_users_.erase(it_user);
+            refresh_users();
+        }
     }
 
     void Editor::closeEvent(QCloseEvent *event) {

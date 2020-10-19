@@ -17,16 +17,16 @@ namespace cte {
     class DocumentInfo {
         QList<Symbol> text_;
         int site_id_;                       // assigned to the client
-        QHash<int,Symbol> cursors_;         // site_id -> symbol, for users currently editing the document
-        QHash<int,QString> site_ids_;       // site_id -> username, for all users with access to the document
-        QHash<QString,Profile> profiles_;   // username -> profile, for all users with access to the document
+        QHash<int,Symbol> cursors_;         // site_id -> symbol, for online users
+        QHash<int,QString> usernames_;      // site_id -> username, for all users
+        QHash<QString,Profile> profiles_;   // username -> profile, for all users
         QUrl sharing_link_;
 
     public:
         DocumentInfo();
         DocumentInfo(int site_id, const QUrl& sharing_link);
         DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
-                     const QHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
+                     const QHash<int,QString>& usernames, const QHash<QString,Profile>& profiles,
                      const QUrl& sharing_link);
         explicit DocumentInfo(const QJsonObject& json_object);
 
@@ -35,7 +35,7 @@ namespace cte {
         QList<Symbol> text() const;
         int site_id() const;
         QHash<int,Symbol> cursors() const;
-        QHash<int,QString> site_ids() const;
+        QHash<int,QString> usernames() const;
         QHash<QString,Profile> profiles() const;
         QUrl sharing_link() const;
 

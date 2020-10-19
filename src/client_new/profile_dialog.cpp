@@ -1,14 +1,11 @@
-#include <cte/widget/profile_dialog.h>
+#include <cte/client_new/profile_dialog.h>
 #include <ui_profile_dialog.h>
 #include <QtCore/QStandardPaths>
 #include <QtWidgets/QFileDialog>
 #include <QtGui/QPixmap>
 
-inline void init_resource() { Q_INIT_RESOURCE(resource); }
-
 namespace cte {
     ProfileDialog::ProfileDialog(const Profile& profile, QWidget *parent) : profile_(profile), QDialog(parent) {
-        init_resource();
         ui_ = QSharedPointer<Ui::ProfileDialog>::create();
         ui_->setupUi(this);
         ui_->icon->setPixmap(QPixmap::fromImage(profile.icon()));

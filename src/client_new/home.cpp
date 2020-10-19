@@ -1,22 +1,20 @@
-#include <cte/widget/home.h>
+#include <cte/client_new/home.h>
 #include <ui_home.h>
 #include <QtWidgets/QInputDialog>
 
-inline void init_resource() { Q_INIT_RESOURCE(resource); }
-
 namespace cte {
     Home::Home(QWidget *parent) : QWidget(parent), filter_(Filter::all_documents) {
-        init_resource();
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
         connect(ui_->logout, &QPushButton::clicked, this, &Home::logout_request);
     }
 
-    void Home::refresh() {
-        // update profile
+    void Home::refresh_profile() {
         ui_->icon->setPixmap(QPixmap::fromImage(profile_.icon()));
         ui_->username->setText(profile_.username());
+    }
 
+    void Home::refresh_documents() {
         // filter documents
         QList<Document> filtered_documents;
         std::copy_if(documents_.begin(), documents_.end(), std::back_inserter(filtered_documents),
@@ -39,31 +37,30 @@ namespace cte {
         }
 
         // sort document list (by owner, name)
-        // TODO: in another thread (?)
         ui_->documents->sortItems(1);
         ui_->documents->sortItems(0);
     }
 
     void Home::set_profile(const Profile& profile) {
         profile_ = profile;
-        refresh();
+        refresh_profile();
     }
 
     void Home::set_documents(const QList<Document>& documents) {
         documents_ = QSet<Document>::fromList(documents);
-        refresh();
+        refresh_documents();
     }
 
     void Home::add_document(const Document& document) {
         documents_.insert(document);
-        refresh();
+        refresh_documents();
     }
 
     void Home::profile_updated() {
         profile_ = profile_dialog_->profile();
         profile_dialog_->accept();
         profile_dialog_->deleteLater();
-        refresh();
+        refresh_profile();
     }
 
     void Home::on_new_document_clicked() {
@@ -79,7 +76,7 @@ namespace cte {
     void Home::update_filter(Filter filter) {
         if (filter_ == filter) return;
         filter_ = filter;
-        refresh();
+        refresh_documents();
     }
 
     void Home::on_all_documents_clicked() {

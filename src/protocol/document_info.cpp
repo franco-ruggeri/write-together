@@ -5,6 +5,7 @@
 #include <cte/protocol/document_info.h>
 #include <cte/crdt/shared_editor.h>
 #include <QtCore/QJsonArray>
+#include <QDebug>
 
 namespace cte {
     DocumentInfo::DocumentInfo() : site_id_(SharedEditor::invalid_site_id) {}
@@ -13,24 +14,24 @@ namespace cte {
         site_id_(site_id_user), sharing_link_(sharing_link) {}
 
     DocumentInfo::DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
-                               const QHash<int,QString>& site_ids, const QHash<QString,Profile>& profiles,
+                               const QHash<int,QString>& usernames, const QHash<QString,Profile>& profiles,
                                const QUrl& sharing_link) :
-        text_(text), site_id_(site_id), cursors_(cursors), site_ids_(site_ids), profiles_(profiles),
+        text_(text), site_id_(site_id), cursors_(cursors), usernames_(usernames), profiles_(profiles),
         sharing_link_(sharing_link) {}
 
    DocumentInfo::DocumentInfo(const QJsonObject& json_object) {
        auto end_iterator = json_object.end();
        auto text_iterator = json_object.find("text");
        auto site_id_iterator = json_object.find("site_id");
-       auto profiles_iterator = json_object.find("profiles");
        auto cursors_iterator = json_object.find("cursors");
-       auto site_ids_iterator = json_object.find("site_ids");
+       auto usernames_iterator = json_object.find("usernames");
+       auto profiles_iterator = json_object.find("profiles");
        auto sharing_link_iterator = json_object.find("sharing_link");
 
        if (text_iterator == end_iterator || site_id_iterator == end_iterator ||
            profiles_iterator == end_iterator || cursors_iterator == end_iterator ||
-           site_ids_iterator == end_iterator || sharing_link_iterator == end_iterator ||
-           !text_iterator->isArray() || !site_ids_iterator->isArray() ||
+           usernames_iterator == end_iterator || sharing_link_iterator == end_iterator ||
+           !text_iterator->isArray() || !usernames_iterator->isArray() ||
            !profiles_iterator->isArray() || !cursors_iterator->isArray())
            throw std::logic_error("invalid message: invalid fields");
 
@@ -68,8 +69,8 @@ namespace cte {
            cursors_.insert(site_id, symbol);
        }
 
-       // site_ids
-       json_array = site_ids_iterator->toArray();
+       // usernames
+       json_array = usernames_iterator->toArray();
        for (const auto &u_json : json_array) {
            if (!u_json.isObject()) throw std::logic_error("invalid message: invalid fields");
            QJsonObject u_json_object = u_json.toObject();
@@ -85,7 +86,7 @@ namespace cte {
            if (username.isNull() || site_id == SharedEditor::invalid_site_id)
                throw std::logic_error("invalid message: invalid fields");
 
-           site_ids_.insert(site_id, username);
+           usernames_.insert(site_id, username);
        }
 
        // profiles
@@ -110,7 +111,7 @@ namespace cte {
 
    bool DocumentInfo::operator==(const DocumentInfo& other) const {
        return this->text_ == other.text_ && this->site_id_ == other.site_id_ &&
-              this->site_ids_ == other.site_ids_ && this->cursors_ == other.cursors_ &&
+              this->cursors_ == other.cursors_ && this->usernames_ == other.usernames_ &&
               this->profiles_ == other.profiles_ && this->sharing_link_ == other.sharing_link_;
     }
 
@@ -130,8 +131,8 @@ namespace cte {
         return cursors_;
     }
 
-    QHash<int,QString> DocumentInfo::site_ids() const {
-        return site_ids_;
+    QHash<int,QString> DocumentInfo::usernames() const {
+        return usernames_;
     }
 
     QUrl DocumentInfo::sharing_link() const {
@@ -160,15 +161,15 @@ namespace cte {
         }
         json_object["cursors"] = json_array;
 
-        // site_ids
+        // usernames
         json_array = QJsonArray{};
-        for (auto it=site_ids_.begin(); it!=site_ids_.end(); it++) {
+        for (auto it=usernames_.begin(); it!=usernames_.end(); it++) {
             QJsonObject u_json;
             u_json["site_id"] = it.key();
             u_json["username"] = it.value();
             json_array.push_back(u_json);
         }
-        json_object["site_ids"] = json_array;
+        json_object["usernames"] = json_array;
 
         // profiles
         json_array = QJsonArray{};

@@ -100,11 +100,10 @@ namespace cte {
     }
 
     QSqlQuery query_select_document_profiles(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "SELECT u.username, u.name, u.surname, u.icon "
-                               "FROM `user` u, `sharing` s, `document` d "
+        QString query_string = "SELECT u.username, u.name, u.surname, u.email, u.icon "
+                               "FROM `user` u, `sharing` s "
                                "WHERE u.username=s.sharing_user AND "
-                               "      s.document_owner=d.owner AND s.document_name=d.name AND "
-                               "      d.owner=:document_owner AND d.name=:document_name";
+                               "      s.document_owner=:document_owner AND s.document_name=:document_name";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());

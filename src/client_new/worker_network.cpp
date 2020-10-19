@@ -1,4 +1,4 @@
-#include <cte/client_new/network_worker.h>
+#include <cte/client_new/worker_network.h>
 
 namespace cte {
     NetworkWorker::NetworkWorker(QObject *parent) : QObject(parent) {

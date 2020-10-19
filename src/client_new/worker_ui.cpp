@@ -1,4 +1,4 @@
-#include <cte/client_new/ui_worker.h>
+#include <cte/client_new/worker_ui.h>
 #include <cte/protocol/error_message.h>
 #include <cte/protocol/signup_message.h>
 #include <cte/protocol/signup_ok_message.h>
@@ -85,8 +85,10 @@ namespace cte {
                 open_editor(message);
                 break;
             case MessageType::open:
+                peer_open_document(message);
                 break;
             case MessageType::close:
+                peer_close_document(message);
                 break;
             case MessageType::insert:
                 remote_insert(message);
@@ -95,6 +97,7 @@ namespace cte {
                 remote_erase(message);
                 break;
             case MessageType::cursor:
+//                peer_move_cursor();
                 break;
             default:    // should never happen, since the message is generated through Message::deserialize
                 throw std::logic_error("invalid message: invalid type");
@@ -196,7 +199,8 @@ namespace cte {
     }
 
     void UiWorker::show_document_list(const QSharedPointer<Message>& message) {
-        home_->set_documents(*message.staticCast<DocumentsMessage>()->documents());
+        QSharedPointer<DocumentsMessage> documents_message = message.staticCast<DocumentsMessage>();
+        home_->set_documents(*documents_message->documents());
     }
 
     void UiWorker::open_editor(const QSharedPointer<Message>& message) {
@@ -230,16 +234,31 @@ namespace cte {
     }
 
     void UiWorker::remote_insert(const QSharedPointer<Message>& message) {
-        QSharedPointer<InsertMessage> document_message = message.staticCast<InsertMessage>();
-        Document document = document_message->document();
-        Symbol symbol = document_message->symbol();
+        QSharedPointer<InsertMessage> insert_message = message.staticCast<InsertMessage>();
+        Document document = insert_message->document();
+        Symbol symbol = insert_message->symbol();
         editors_[document]->remote_insert(symbol);
     }
 
     void UiWorker::remote_erase(const QSharedPointer<Message>& message) {
-        QSharedPointer<EraseMessage> document_message = message.staticCast<EraseMessage>();
-        Document document = document_message->document();
-        Symbol symbol = document_message->symbol();
+        QSharedPointer<EraseMessage> erase_message = message.staticCast<EraseMessage>();
+        Document document = erase_message->document();
+        Symbol symbol = erase_message->symbol();
         editors_[document]->remote_erase(symbol);
+    }
+
+    void UiWorker::peer_open_document(const QSharedPointer<Message>& message) {
+        QSharedPointer<OpenMessage> open_message = message.staticCast<OpenMessage>();
+        Document document = *open_message->document();
+        int site_id = *open_message->site_id();
+        Profile profile = *open_message->profile();
+        editors_[document]->add_online_user(site_id, profile);
+    }
+
+    void UiWorker::peer_close_document(const QSharedPointer<Message>& message) {
+        QSharedPointer<CloseMessage> close_message = message.staticCast<CloseMessage>();
+        Document document = close_message->document();
+        int site_id = *close_message->site_id();
+        editors_[document]->remove_online_user(site_id);
     }
 }

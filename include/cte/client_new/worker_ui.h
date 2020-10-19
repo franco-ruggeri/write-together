@@ -9,11 +9,11 @@
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
 #include <cte/crdt/symbol.h>
-#include <cte/widget/connection_form.h>
-#include <cte/widget/login_form.h>
-#include <cte/widget/signup_form.h>
-#include <cte/widget/home.h>
-#include <cte/widget/editor.h>
+#include <cte/client_new/connection_form.h>
+#include <cte/client_new/login_form.h>
+#include <cte/client_new/signup_form.h>
+#include <cte/client_new/home.h>
+#include <cte/client_new/editor.h>
 
 namespace cte {
     class UiWorker : public QObject {
@@ -32,6 +32,8 @@ namespace cte {
         void profile_updated(const QSharedPointer<Message>& message);
         void remote_insert(const QSharedPointer<Message>& message);
         void remote_erase(const QSharedPointer<Message>& message);
+        void peer_open_document(const QSharedPointer<Message>& message);
+        void peer_close_document(const QSharedPointer<Message>& message);
 
     signals:
         void connection_request(const QString& hostname, int port);

@@ -1,14 +1,11 @@
-#include <cte/widget/signup_form.h>
+#include <cte/client_new/signup_form.h>
 #include <cte/protocol/profile.h>
 #include <cte/protocol/profile_message.h>
 #include <ui_signup_form.h>
 #include <QtGui/QImage>
 
-inline void init_resource() { Q_INIT_RESOURCE(resource); }
-
 namespace cte {
     SignupForm::SignupForm(QWidget *parent) : QWidget(parent) {
-        init_resource();
         ui_ = QSharedPointer<Ui::SignupForm>::create();
         ui_->setupUi(this);
         connect(ui_->go_to_login, &QPushButton::clicked, this, &SignupForm::login_request);

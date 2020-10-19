@@ -10,5 +10,7 @@
         <file>images/editor/cut.png</file>
         <file>images/editor/copy.png</file>
         <file>images/editor/paste.png</file>
+        <file>images/editor/online.png</file>
+        <file>images/editor/offline.png</file>
     </qresource>
 </RCC>

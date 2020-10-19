@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cte/client_new/network_worker.h>
-#include <cte/client_new/ui_worker.h>
+#include <cte/client_new/worker_network.h>
+#include <cte/client_new/worker_ui.h>
 
 namespace cte {
     class Client : public QObject {

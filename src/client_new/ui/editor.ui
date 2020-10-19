@@ -85,7 +85,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Users</string>
+    <string/>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -93,15 +93,33 @@
    <widget class="QWidget" name="dock_users_content">
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
-      <widget class="QTreeWidget" name="tree_users">
+      <widget class="QTreeWidget" name="users">
        <attribute name="headerVisible">
-        <bool>false</bool>
+        <bool>true</bool>
        </attribute>
        <column>
         <property name="text">
-         <string notr="true">1</string>
+         <string notr="true">Users</string>
         </property>
        </column>
+       <item>
+        <property name="text">
+         <string>Online</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/images/editor/online.png</normaloff>:/images/editor/online.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Offline</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/images/editor/offline.png</normaloff>:/images/editor/offline.png</iconset>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

@@ -86,7 +86,7 @@ namespace cte {
                                 query.value("name").toString(),
                                 query.value("surname").toString(),
                                 query.value("email").toString(),
-                                query.value("icon").value<QImage>());
+                                query.value("icon").toByteArray());
                 profiles.insert(profile.username(), profile);
             }
 
@@ -106,7 +106,7 @@ namespace cte {
             OpenDocument& od = open_documents_[document];
             int site_id = od.open(username);
             site_ids_[session_id].insert(document, site_id);
-            document_info = DocumentInfo(od.text(), site_id, od.cursors(), od.site_ids(), profiles, sharing_link);
+            document_info = DocumentInfo(od.text(), site_id, od.cursors(), od.usernames(), profiles, sharing_link);
         }
 
         // commit transaction
@@ -233,7 +233,7 @@ namespace cte {
         for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++) {
             const Document& document = it.key();
             QList<Symbol> text = it->text();
-            QHash<int,QString> site_ids = it->site_ids();
+            QHash<int,QString> site_ids = it->usernames();
             QString document_owner = document.owner();
             QString document_name = document.name();
 

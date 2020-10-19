@@ -17,7 +17,7 @@ namespace cte {
         for (const auto& c : text) {
             if (!authors.contains(c.author)) {
                 authors.insert(c.author, {next_site_id_, SharedEditor::starting_site_counter});
-                site_ids_.insert(next_site_id_, c.author);
+                usernames_.insert(next_site_id_, c.author);
                 next_site_id_++;
             }
             std::pair<int,int> author = authors[c.author];
@@ -28,7 +28,7 @@ namespace cte {
     int OpenDocument::open(const QString& username) {
         int site_id = next_site_id_;
         cursors_.insert(site_id, Symbol{});
-        site_ids_.insert(site_id, username);
+        usernames_.insert(site_id, username);
         next_site_id_++;
         reference_count_++;
         return site_id;
@@ -55,8 +55,8 @@ namespace cte {
         return local_editor_->text();
     }
 
-    QHash<int,QString> OpenDocument::site_ids() const {
-        return site_ids_;
+    QHash<int,QString> OpenDocument::usernames() const {
+        return usernames_;
     }
 
     QHash<int,Symbol> OpenDocument::cursors() const {

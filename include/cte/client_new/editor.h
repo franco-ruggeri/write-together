@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
+#include <QtCore/QHash>
 #include <QtCore/QUrl>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
@@ -22,6 +23,12 @@ namespace cte {
         SharedEditor shared_editor_;
         int remote_changes_;
 
+        QHash<int,QString> usernames_;
+        QHash<QString,int> session_counts_;
+        QHash<QString,Profile> online_users_, offline_users_;   // username -> profile
+
+        void refresh_users();
+
     signals:
         void local_insert(const Symbol& symbol);
         void local_erase(const Symbol& symbol);
@@ -42,6 +49,8 @@ namespace cte {
         Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent=nullptr);
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
+        void add_online_user(int site_id, const Profile& profile);
+        void remove_online_user(int site_id);
         QUrl sharing_link() const;
     };
 }
