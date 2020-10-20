@@ -195,12 +195,10 @@ namespace cte {
         QString password = signup_message->password();
 
         // signup
-        if (!identity_manager.signup(session_id, profile, password)) {
+        if (!identity_manager.signup(session_id, profile, std::move(password))) {
             send_error(socket, "signup failed: username already used");
             return;
         }
-        password.fill(0);
-        password.clear();
 
         // send acknowledgement
         QSharedPointer<Message> response = QSharedPointer<SignupOkMessage>::create();
@@ -216,7 +214,7 @@ namespace cte {
         QString password = login_message->password();
 
         // login
-        std::optional<Profile> profile = identity_manager.login(session_id, username, password);
+        std::optional<Profile> profile = identity_manager.login(session_id, username, std::move(password));
         if (!profile) {
             send_error(socket, "login failed: wrong credentials");
             return;

@@ -23,10 +23,10 @@ namespace cte {
     public:
         IdentityManager();
 
-        bool signup(int session_id, const Profile& profile, const QString& password);
-        std::optional<Profile> login(int session_id, const QString& username, const QString& password);
+        bool signup(int session_id, const Profile& profile, QString&& password);
+        std::optional<Profile> login(int session_id, const QString& username, QString&& password);
         void logout(int session_id);
-        void update_profile(int session_id, const Profile& new_profile, const QString& new_password=QString{}) const;
+        void update_profile(int session_id, const Profile& new_profile, QString&& new_password=QString{}) const;
 
         bool authenticated(int session_id) const;
         std::optional<QString> username(int session_id) const;

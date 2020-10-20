@@ -13,10 +13,15 @@ namespace cte {
     static const size_t digest_size = 64;
     static const size_t salt_size = 16;
 
-    std::string generate_password(secure_string &&password, bool random_salt, CryptoPP::word64 interactions,
+    typedef std::basic_string<char, std::char_traits<char>, CryptoPP::AllocatorWithCleanup<char>> secure_string;
+
+    std::string generate_password(QString &&password, bool random_salt, CryptoPP::word64 interactions,
                                   CryptoPP::word64 block_size, CryptoPP::word64 parallelism) {
+        secure_string password_sec = static_cast<secure_string>(password.toStdString());
+        password.fill(0);
+        password.clear();
         CryptoPP::SecByteBlock derived(digest_size);
-        CryptoPP::SecByteBlock pass(reinterpret_cast<const CryptoPP::byte *>(&password[0]), password.size());
+        CryptoPP::SecByteBlock pass(reinterpret_cast<const CryptoPP::byte *>(&password_sec[0]), password_sec.size());
         CryptoPP::SecByteBlock salt(default_salt, 5);
         if (random_salt) {
             CryptoPP::AutoSeededRandomPool rng;
@@ -39,9 +44,12 @@ namespace cte {
         return digest;
     }
 
-    bool verify_password(secure_string &&password, const std::string &hash) {
+    bool verify_password(QString &&password, const std::string &hash) {
+        secure_string password_sec = static_cast<secure_string>(password.toStdString());
+        password.fill(0);
+        password.clear();
         CryptoPP::SecByteBlock derived(digest_size);
-        CryptoPP::SecByteBlock pass(reinterpret_cast<const CryptoPP::byte *>(&password[0]), password.size());
+        CryptoPP::SecByteBlock pass(reinterpret_cast<const CryptoPP::byte *>(&password_sec[0]), password_sec.size());
         CryptoPP::SecByteBlock salt;
 
         // parse the hash in its components
