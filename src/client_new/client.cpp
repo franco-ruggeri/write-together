@@ -7,7 +7,7 @@ namespace cte {
         // launch thread for network worker
         thread_ = new QThread(this);
         thread_->start();
-        network_worker_ = QSharedPointer<NetworkWorker>::create();
+        network_worker_ = new NetworkWorker();
         network_worker_->moveToThread(thread_);
 
         // use this thread for UI worker
