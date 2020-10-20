@@ -2,17 +2,8 @@
 #include <QtCore/QObject>
 
 namespace cte {
-    User::User(const Profile &profile, const QList<int>& site_ids, double color_h) :
-            profile_(profile), site_ids_(site_ids) {
-        generate_color(color_h);
-    }
-
-    void User::generate_color(double color_h) {
-        static double golden_ratio_conjugate = 0.618033988749895;
-        color_h += golden_ratio_conjugate;
-        color_h = color_h - static_cast<int>(color_h);
-        color_.setHsvF(color_h, 0.5, 0.95);
-    }
+    User::User(const Profile &profile, const QSet<int>& site_ids, const QColor& color) :
+            profile_(profile), site_ids_(site_ids), selected_(false), color_(color) {}
 
     void User::add_cursor(int site_id, const Symbol& symbol) {
         // TODO
@@ -41,11 +32,19 @@ namespace cte {
         return !cursors_.isEmpty();
     }
 
-    bool User::selected() const {
-        return selected();
+    QColor User::color() const {
+        return color_;
     }
 
-    void User::set_selected(bool selected) {
-        selected_ = selected;
+    bool User::selected() const {
+        return selected_;
+    }
+
+    void User::toggle_selected() {
+        selected_ = !selected_;
+    }
+
+    bool User::contains(int site_id) {
+        return site_ids_.contains(site_id);
     }
 }

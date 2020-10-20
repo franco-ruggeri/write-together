@@ -1,6 +1,8 @@
 #include <cte/client_new/editor.h>
 #include <cte/client_new/profile_dialog.h>
 #include <ui_editor.h>
+#include <QtCore/QList>
+#include <QtCore/QSet>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
@@ -22,6 +24,8 @@
 // TODO: per rimettere icona di default?
 // TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
 // TODO: home chiusa -> non funziona pulsante in editor
+#include <QDebug>
+
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
@@ -38,7 +42,7 @@ namespace cte {
             Profile& profile = u.first;
             QList<int>& site_ids = u.second;
 
-            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids, color_h_);
+            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids.toSet(), generate_color());
             username_users_.insert(profile.username(), user);
             for (const auto& si : site_ids)
                 site_id_users_.insert(si, user);
@@ -74,10 +78,21 @@ namespace cte {
         refresh_users();
     }
 
+    QColor Editor::generate_color() {
+        static double golden_ratio_conjugate = 0.618033988749895;
+        color_h_ += golden_ratio_conjugate;
+        color_h_ = color_h_ - static_cast<int>(color_h_);
+
+        QColor color;
+        color.setHsvF(color_h_, 0.5, 0.95);
+        return color;
+    }
+
     void Editor::refresh_users() {
-        // clear
         QTreeWidgetItem *online_users = ui_->users->topLevelItem(0);
         QTreeWidgetItem *offline_users = ui_->users->topLevelItem(1);
+
+        // clear
         online_users->takeChildren();
         offline_users->takeChildren();
 
@@ -85,11 +100,19 @@ namespace cte {
         for (const auto& u : username_users_) {
             Profile profile = u->profile();
             QTreeWidgetItem *child = new QTreeWidgetItem;
-            child->setText(0, profile.username());
-            child->setIcon(0, QIcon(QPixmap::fromImage(profile.icon())));
             if (u->online()) online_users->addChild(child);
             else offline_users->addChild(child);
+
+            // fill and color
+            child->setText(0, profile.username());
+            child->setIcon(0, QIcon(QPixmap::fromImage(profile.icon())));
+            if (u->online() || u->selected())   // only if selected for offline users!
+                child->setBackground(0, u->color());
         }
+
+        // sort
+        online_users->sortChildren(0, Qt::AscendingOrder);
+        offline_users->sortChildren(0, Qt::AscendingOrder);
     }
 
     void Editor::remote_insert(int index, QChar value) {
@@ -170,7 +193,7 @@ namespace cte {
         QSharedPointer<User> user;
         auto it = username_users_.find(username);
         if (it == username_users_.end()) {
-            user = QSharedPointer<User>::create(profile, QList<int>{site_id}, color_h_);
+            user = QSharedPointer<User>::create(profile, QSet<int>{site_id}, color_h_);
             username_users_.insert(username, user);
         } else {
             user = *it;
@@ -192,43 +215,21 @@ namespace cte {
     }
 
     void Editor::on_users_itemClicked(QTreeWidgetItem *item, int column) {
-        // TODO
-//        if (item->parent() == nullptr) return;  // top-level item
-//        QString username = item->text(0);
-//
-//        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
-//
-//        int start_pos = -1;
-//        QList<Symbol> text = shared_editor_.text();
-//        for (int i=0; i<text.size(); i++) {
-//            int site_id = text[i].site_id();
-//
-//
-//            if (file.site_ids()[s[i].site_id()] == username && start_pos == -1) {
-//                start_pos = i;
-//            }
-//            if (file.site_ids()[s[i].site_id()] != username && start_pos != -1) {
-//
-//                if(selected)
-//                    format.setBackground(Qt::transparent);
-//                else
-//                    format.setBackground(color_);
-//                format.setFontPointSize(14);
-//                QTextCursor cursor(editor->document());
-//                cursor.setPosition(start);
-//                cursor.setPosition(end, QTextCursor::KeepAnchor);
-//                cursor.setCharFormat(format);
-//
-//                user->draw_background_char(editor.data(), start_pos, i);
-//                start_pos = -1;
-//            }
-//        }
-//        if (start_pos != -1)
-//            user->draw_background_char(editor.data(), start_pos, i);
-//
-//        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
-//        user->selected = !user->selected;
-//        // editor->setCurrentCharFormat(user->format);
+        if (item->parent() == nullptr) return;      // top-level item
+
+        // toggle selection
+        QString username = item->text(0);
+        QSharedPointer<User> user = username_users_[username];
+        user->toggle_selected();
+
+        // offline -> colored only if selected
+        if (!user->online()) {
+            if (user->selected()) item->setBackground(0, QBrush(user->color()));
+            else item->setBackground(0, QBrush());
+        }
+
+        // refresh UI
+//        refresh_text_background()     // TODO
     }
 
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {

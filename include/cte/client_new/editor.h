@@ -29,6 +29,7 @@ namespace cte {
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
         double color_h_;
 
+        QColor generate_color();
         void refresh_users();
 
     signals:
