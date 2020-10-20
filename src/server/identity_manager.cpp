@@ -17,7 +17,7 @@
 namespace cte {
     IdentityManager::IdentityManager() : m_sessions_(QMutex::Recursive) {}
 
-    bool IdentityManager::signup(int session_id, const Profile& profile, const QString& password) {
+    bool IdentityManager::signup(int session_id, const Profile& profile, QString&& password) {
         // check inputs
         QString username = profile.username();
         if (authenticated(session_id)) throw std::logic_error("session already authenticated");
@@ -39,7 +39,7 @@ namespace cte {
         bool signed_up = false;
         if (query.size() == 0) {
             // insert profile
-            QString hash = QString::fromStdString(generate_password(static_cast<secure_string>(password.toStdString())));
+            QString hash = QString::fromStdString(generate_password(static_cast<QString &&>(password)));
             query = query_insert_profile(database, profile, hash);
             execute_query(query);
 
@@ -55,7 +55,7 @@ namespace cte {
         return signed_up;
     }
 
-    std::optional<Profile> IdentityManager::login(int session_id, const QString& username, const QString& password) {
+    std::optional<Profile> IdentityManager::login(int session_id, const QString& username, QString&& password) {
         // check inputs
         if (authenticated(session_id)) throw std::logic_error("session already authenticated");
 
@@ -71,7 +71,7 @@ namespace cte {
 
         // check password
         QString hash = query.value("password").toString();
-        if (!verify_password(static_cast<secure_string>(password.toStdString()), hash.toStdString()))
+        if (!verify_password(static_cast<QString &&>(password), hash.toStdString()))
             return std::nullopt;    // wrong password
 
         // authenticate session
@@ -89,7 +89,7 @@ namespace cte {
         sessions_.remove(session_id);
     }
 
-    void IdentityManager::update_profile(int session_id, const Profile& new_profile, const QString& new_password) const {
+    void IdentityManager::update_profile(int session_id, const Profile& new_profile, QString&& new_password) const {
         // check inputs
         if (!authenticated(session_id)) throw std::logic_error("session not authenticated");
         if (new_profile.username() != *username(session_id))
@@ -109,7 +109,7 @@ namespace cte {
             query = query_update_profile(database, new_profile);
         else {
             QString new_hash = QString::fromStdString(
-                    generate_password(static_cast<secure_string>(new_password.toStdString())));
+                    generate_password(static_cast<QString &&>(new_password)));
             query = query_update_profile(database, new_profile, new_hash);
         }
         execute_query(query);

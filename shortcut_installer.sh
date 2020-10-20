@@ -1,5 +1,5 @@
 root_dir=$(pwd)
-cd ~/Documents/ || exit
+cd ~/Desktop/ || exit
 echo [Desktop Entry] > "Collaborative Doc.desktop"
 echo Version=1.0 >> "Collaborative Doc.desktop"
 echo Type=Application >> "Collaborative Doc.desktop"

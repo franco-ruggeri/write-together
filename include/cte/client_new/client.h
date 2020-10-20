@@ -7,7 +7,7 @@ namespace cte {
     class Client : public QObject {
         Q_OBJECT
 
-        QSharedPointer<NetworkWorker> network_worker_;
+        QPointer<NetworkWorker> network_worker_;
         QSharedPointer<UiWorker> ui_worker_;
         QPointer<QThread> thread_;
 
