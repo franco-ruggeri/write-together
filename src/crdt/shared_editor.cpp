@@ -15,13 +15,13 @@ namespace cte {
     const Symbol SharedEditor::eof(QChar(), reserved_site_id, starting_site_counter, {Lseq::end});
 
     SharedEditor::SharedEditor(int site_id, QObject *parent) :
-            QObject(parent), site_id_(site_id), site_counter_(starting_site_counter) {
+            site_id_(site_id), site_counter_(starting_site_counter) {
         text_.append(bof);
         text_.append(eof);
     }
 
-    SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text, QObject *parent) :
-            QObject(parent), site_id_(site_id), site_counter_(starting_site_counter) {
+    SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text) :
+            site_id_(site_id), site_counter_(starting_site_counter) {
         // fill text
         std::copy(text.begin(), text.end(), std::back_inserter(text_));
         text_.insert(0, bof);
@@ -60,18 +60,33 @@ namespace cte {
         // insert
         Symbol symbol(value, site_id, site_counter, between_pos);
         text_.insert(text_.begin()+index, symbol);
+        update_version_vector(symbol);
         return symbol;
     }
 
-    std::optional<int> SharedEditor::buffered_erase(const Symbol& symbol) {
-        if (version_vector_[symbol.site_id()] < symbol.site_counter())
-            return std::nullopt;
+    bool SharedEditor::process_deletion_buffer() {
+        QList<Symbol> deletion_buffer_copy(deletion_buffer_);
+        deletion_buffer_.clear();
 
-        auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
-        if (it == text_.end() || !(*it == symbol)) return std::nullopt;
-        int pos = std::distance(text_.begin(), it);
-        text_.erase(it);
-        return pos;
+        bool erased = false;
+        for (const auto& symbol : deletion_buffer_copy) {
+            int site_id = symbol.site_id();
+            int site_counter = symbol.site_counter();
+
+            // check version vector
+            auto it_site_counter = version_vector_.find(site_id);
+            if (it_site_counter == version_vector_.end() || *it_site_counter < site_counter) {
+                deletion_buffer_.append(symbol);
+                continue;
+            }
+
+            // erase
+            auto it_symbol = std::lower_bound(text_.begin(), text_.end(), symbol);
+            if (it_symbol == text_.end() || !(*it_symbol == symbol)) continue;  // already erased
+            text_.erase(it_symbol);
+            erased = true;
+        }
+        return erased;
     }
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
@@ -86,39 +101,17 @@ namespace cte {
         return symbol;
     }
 
-    void SharedEditor::remote_insert(const Symbol& symbol) {
+    bool SharedEditor::remote_insert(const Symbol& symbol) {
         if (symbol.value().isNull()) throw std::logic_error("trying to insert null character");
-
-        // insert
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
         text_.insert(it, symbol);
         update_version_vector(symbol);
-
-        // process deletion buffer
-        bool erased = false;
-        QList<Symbol> deletion_buffer_copy(deletion_buffer_);
-        deletion_buffer_.clear();
-        for (const auto& s : deletion_buffer_copy) {
-            std::optional<int> index = buffered_erase(s);
-            if (s == symbol) erased = true;     // inserted symbol has been erased
-            else if (index) emit remote_erase(*index);
-            else deletion_buffer_.append(s);
-        }
-
-        if (!erased)
-            emit remote_insert(std::distance(text_.begin(), it), symbol.value());
+        return !process_deletion_buffer();
     }
 
-    void SharedEditor::remote_erase(const Symbol& symbol) {
-        update_version_vector(symbol);
-        QList<Symbol> deletion_buffer_copy(deletion_buffer_);
-        deletion_buffer_copy.append(symbol);
-
-        for (const auto& s : deletion_buffer_copy) {
-            std::optional<int> index = buffered_erase(s);
-            if (index) emit remote_erase(*index);
-            else deletion_buffer_.append(s);
-        }
+    bool SharedEditor::remote_erase(const Symbol& symbol) {
+        deletion_buffer_.append(symbol);
+        return process_deletion_buffer();
     }
 
     int SharedEditor::find(const Symbol& symbol) const {

@@ -5,6 +5,7 @@
 #include <QtCore/QHash>
 #include <QtGui/QColor>
 #include <cte/client_new/profile_dialog.h>
+#include <cte/client_new/remote_cursor.h>
 #include <cte/protocol/profile.h>
 #include <cte/crdt/symbol.h>
 
@@ -12,20 +13,20 @@ namespace cte {
     class User {
         Profile profile_;
         QSet<int> site_ids_;
-        QHash<int,int> cursors_;    // TODO: cambia value
+        QHash<int,QSharedPointer<RemoteCursor>> remote_cursors_;
         QColor color_;
-        bool selected_;
+        bool selected_, online_, local_;
         QPointer<ProfileDialog> profile_dialog_;
-
-        void generate_color(double color_h);
 
     public:
         User(const Profile& profile, const QSet<int>& site_ids, const QColor& color);
 
-        void add_cursor(int site_id, const Symbol& symbol);
-        void remove_cursor(int site_id);
+        void add_remote_cursor(QTextEdit *editor, int site_id, const Symbol& symbol);
+        void remove_remote_cursor(int site_id);
         void show_profile();
 
+        bool local() const;
+        void set_local(bool local);
         Profile profile() const;
         bool online() const;
         QColor color() const;

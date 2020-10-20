@@ -21,9 +21,7 @@
 #include <cte/crdt/lseq.h>
 
 namespace cte {
-    class SharedEditor : public QObject {
-        Q_OBJECT
-
+    class SharedEditor {
         int site_id_;
         int site_counter_;
         QList<Symbol> text_;
@@ -35,21 +33,17 @@ namespace cte {
 
         bool valid_index(int index) const;
         void update_version_vector(const Symbol& symbol);
-        std::optional<int> buffered_erase(const Symbol& symbol);
-
-    signals:
-        void remote_insert(int index, QChar value);
-        void remote_erase(int index);
+        bool process_deletion_buffer();             // returns true if an erase is executed
 
     public:
         explicit SharedEditor(int site_id, QObject *parent=nullptr);
-        SharedEditor(int site_id, const QList<Symbol>& text, QObject *parent=nullptr);
+        SharedEditor(int site_id, const QList<Symbol>& text);
 
         Symbol insert(int site_id, int site_counter, int index, QChar value);   // should be used only by the server
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
-        void remote_insert(const Symbol& symbol);
-        void remote_erase(const Symbol& symbol);    // erase may happen later (put in deletion buffer)
+        bool remote_insert(const Symbol& symbol);   // returns false in case of erase in deletion buffer
+        bool remote_erase(const Symbol& symbol);    // returns false if erase is put in deletion buffer
 
         int find(const Symbol& symbol) const;       // returns lower bound index, non-existing symbol is ok
         Symbol at(int index) const;

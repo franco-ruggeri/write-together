@@ -25,6 +25,7 @@ namespace cte {
         SharedEditor shared_editor_;
         int remote_changes_;
 
+        QSharedPointer<User> local_user_;
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
         double color_h_;

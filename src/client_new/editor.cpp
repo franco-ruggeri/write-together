@@ -38,6 +38,11 @@ namespace cte {
         ui_->setupUi(this);
         ui_->editor->setText(shared_editor_.to_string());
 
+        // set cursor to begin
+        QTextCursor cursor = ui_->editor->textCursor();
+        cursor.setPosition(0);
+        ui_->editor->setTextCursor(cursor);
+
         // create users
         for (auto& u : document_info.users()) {
             Profile& profile = u.first;
@@ -49,12 +54,19 @@ namespace cte {
                 site_id_users_.insert(si, user);
         }
 
-        // create cursors
+        // add remote cursors
+        int my_site_id = document_info.site_id();
         QHash<int,Symbol> cursors = document_info.cursors();
         for (auto it=cursors.begin(); it != cursors.end(); it++) {
             int site_id = it.key();
             Symbol& symbol = it.value();
-            site_id_users_[site_id]->add_cursor(site_id, symbol);
+            QSharedPointer<User> user = site_id_users_[site_id];
+            if (site_id != my_site_id)
+                user->add_remote_cursor(ui_->editor, site_id, symbol);
+            else {
+                user->set_local(true);
+                local_user_ = user;
+            }
         }
 
         // connect signals and slots
@@ -68,10 +80,6 @@ namespace cte {
         connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QTextEdit::cut);
         connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QTextEdit::copy);
         connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QTextEdit::paste);
-        connect(&shared_editor_, qOverload<int,QChar>(&SharedEditor::remote_insert),
-                this, qOverload<int,QChar>(&Editor::remote_insert));
-        connect(&shared_editor_, qOverload<int>(&SharedEditor::remote_erase),
-                this, qOverload<int>(&Editor::remote_erase));
 
         // show user list
         ui_->users->topLevelItem(0)->setExpanded(true);
@@ -105,7 +113,7 @@ namespace cte {
             else offline_users->addChild(child);
 
             // fill and color
-            child->setText(0, profile.username());
+            child->setText(0, profile.username() + (u->local() ? " (you)" : ""));
             child->setIcon(0, QIcon(QPixmap::fromImage(profile.icon())));
             if (u->online() || u->selected())   // only if selected for offline users!
                 child->setBackground(0, u->color());
@@ -199,7 +207,7 @@ namespace cte {
         } else {
             user = *it;
         }
-        user->add_cursor(site_id, SharedEditor::bof);
+        user->add_remote_cursor(ui_->editor, site_id, SharedEditor::bof);
         site_id_users_[site_id] = user;
 
         // refresh UI
@@ -209,7 +217,7 @@ namespace cte {
     void Editor::remove_online_user(int site_id) {
         // remove cursor
         QSharedPointer<User> user = site_id_users_.value(site_id);
-        user->remove_cursor(site_id);
+        user->remove_remote_cursor(site_id);
 
         // refresh UI
         refresh_users();
@@ -219,7 +227,7 @@ namespace cte {
         if (item->parent() == nullptr) return;      // top-level item
 
         // toggle selection
-        QString username = item->text(0);
+        QString username = item->text(0).split(' ')[0];
         QSharedPointer<User> user = username_users_[username];
         user->toggle_selected();
 
