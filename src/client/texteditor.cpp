@@ -258,84 +258,6 @@ void texteditor::setupUserActions(){
    tb->addAction(peer_profile);
 }
 
-void texteditor::setupEditActions() {
-
-
-
-   QToolBar *tb = addToolBar(tr("Edit Actions"));
-   QMenu *menu = menuBar()->addMenu(tr("&Edit"));
-   const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(imgPath + "/editundo.png"));
-   actionUndo = menu->addAction(undoIcon, tr("&Undo"), editor.data(), &QTextEdit::undo);
-   actionUndo->setShortcut(QKeySequence::Undo);
-   tb->addAction(actionUndo);
-
-   const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(imgPath + "/editredo.png"));
-   actionRedo = menu->addAction(redoIcon, tr("&Redo"), editor.data(), &QTextEdit::redo);
-   actionRedo->setPriority(QAction::LowPriority);
-   actionRedo->setShortcut(QKeySequence::Redo);
-   tb->addAction(actionRedo);
-   menu->addSeparator();
-
-#ifndef QT_NO_CLIPBOARD
-   const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(imgPath + "/editcut.png"));
-   actionCut = menu->addAction(cutIcon, tr("Cu&t"), editor.data(), &QTextEdit::cut);
-   actionCut->setPriority(QAction::LowPriority);
-   actionCut->setShortcut(QKeySequence::Cut);
-   tb->addAction(actionCut);
-
-   const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(imgPath + "/editcopy.png"));
-   actionCopy = menu->addAction(copyIcon, tr("&Copy"), editor.data(), &QTextEdit::copy);
-   actionCopy->setPriority(QAction::LowPriority);
-   actionCopy->setShortcut(QKeySequence::Copy);
-   tb->addAction(actionCopy);
-
-   const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(imgPath + "/editpaste.png"));
-   actionPaste = menu->addAction(pasteIcon, tr("&Paste"), editor.data(), &QTextEdit::paste);
-   actionPaste->setPriority(QAction::LowPriority);
-   actionPaste->setShortcut(QKeySequence::Paste);
-   tb->addAction(actionPaste);
-   if (const QMimeData *md = QApplication::clipboard()->mimeData())
-       actionPaste->setEnabled(md->hasText());
-
-   QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &texteditor::clipboard_changed);
-#endif
-}
-
-void texteditor::file_to_pdf() {
-   QFileDialog fileDialog(this, tr("Export PDF"));
-   fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-   fileDialog.setMimeTypeFilters(QStringList("application/pdf"));
-   fileDialog.setDefaultSuffix("pdf");
-   if (fileDialog.exec() != QDialog::Accepted)
-       return;
-   QString fileName = fileDialog.selectedFiles().first();
-   QPrinter printer(QPrinter::HighResolution);
-   printer.setOutputFormat(QPrinter::PdfFormat);
-   printer.setOutputFileName(fileName);
-   editor->document()->print(&printer);
-   statusBar()->showMessage(tr("Exported \"%1\"")
-                                    .arg(QDir::toNativeSeparators(fileName)));
-}
-
-void texteditor::file_close(bool spontaneous) {
-    if (spontaneous) this->client->file_close(this->file);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
-    emit show_user_page(client->user.filename_to_owner_map.values().toSet());
-#else
-    QList<Document> docs = client->user.filename_to_owner_map.values();
-    emit show_user_page(QSet<Document>(docs.rbegin(), docs.rend()));
-#endif
-    this->close();
-}
-
-void texteditor::file_share(){
-   emit share_file(file.sharing_link().toString());
-}
-
-void texteditor::show_user_details() {
-    emit show_profile_update();
-}
-
 void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) {
    content_change = true;
    if(change_from_server) return;   // TODO: perche'? contentsChange() non viene emesso quando il testo viene cambiato da codice
@@ -363,19 +285,6 @@ void texteditor::contentsChange(int position, int charsRemoved, int charsAdded) 
     }
 }
 
-//void  texteditor::remote_insert(const Symbol& symbol){
-//    QString username = file.site_ids().find(symbol.site_id()).value();
-//    change_from_server = true;
-//    int pos = shared_editor->find(symbol);
-//    shared_editor->remote_insert(symbol);
-//    editor->toPlainText().insert(pos,symbol.value());
-//    QTextCursor cursor = editor->textCursor();
-//    cursor.setPosition(pos);
-//    cursor.insertText(symbol.value(),username_to_user.find(username)->format);
-//
-//}
-
-//
 void  texteditor::remote_insert(const Symbol& symbol){
     QString username = file.site_ids().find(symbol.site_id()).value();
     change_from_server = true;
@@ -511,15 +420,6 @@ void texteditor::cursorPositionChanged() {
         }
     }
     content_change = false;
-}
-
-QColor texteditor::generate_color(){
-    QColor color;
-    double golden_ratio_conjugate = 0.618033988749895;
-    h += golden_ratio_conjugate;
-    h = h - (int)h;
-    color.setHsvF(h, 0.5, 0.95);
-    return color;
 }
 
 void texteditor::draw_cursors(){

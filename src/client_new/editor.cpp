@@ -7,6 +7,7 @@
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
 #include <QtGui/QClipboard>
+#include <QtGui/QTextCharFormat>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
@@ -222,14 +223,29 @@ namespace cte {
         QSharedPointer<User> user = username_users_[username];
         user->toggle_selected();
 
-        // offline -> colored only if selected
+        // offline user -> colored only if selected
         if (!user->online()) {
             if (user->selected()) item->setBackground(0, QBrush(user->color()));
             else item->setBackground(0, QBrush());
         }
 
-        // refresh UI
-//        refresh_text_background()     // TODO
+        // update color text
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
+        QList<Symbol> text = shared_editor_.text();
+        QTextCursor cursor(ui_->editor->textCursor());
+        QTextCharFormat format;
+        format.setBackground(user->selected() ? user->color() : Qt::transparent);
+        cursor.setPosition(0);
+        for (int i = 0; i < text.size(); i++) {
+            if (user->contains(text[i].site_id())) {    // author
+                cursor.setPosition(i, QTextCursor::KeepAnchor);
+            } else {
+                cursor.setCharFormat(format);
+                cursor.setPosition(i, QTextCursor::MoveAnchor);
+            }
+        }
+        cursor.setCharFormat(format);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
     }
 
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {
