@@ -12,6 +12,7 @@ list(APPEND SRC
         client.cpp
         worker_ui.cpp
         worker_network.cpp
+        user.cpp
         connection_form.cpp
         login_form.cpp
         signup_form.cpp

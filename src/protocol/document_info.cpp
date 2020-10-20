@@ -14,33 +14,28 @@ namespace cte {
         site_id_(site_id_user), sharing_link_(sharing_link) {}
 
     DocumentInfo::DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
-                               const QHash<int,QString>& usernames, const QHash<QString,Profile>& profiles,
-                               const QUrl& sharing_link) :
-        text_(text), site_id_(site_id), cursors_(cursors), usernames_(usernames), profiles_(profiles),
-        sharing_link_(sharing_link) {}
+                               const QHash<QString,std::pair<Profile,QList<int>>>& users, const QUrl& sharing_link) :
+        text_(text), site_id_(site_id), cursors_(cursors), users_(users), sharing_link_(sharing_link) {}
 
    DocumentInfo::DocumentInfo(const QJsonObject& json_object) {
        auto end_iterator = json_object.end();
        auto text_iterator = json_object.find("text");
        auto site_id_iterator = json_object.find("site_id");
        auto cursors_iterator = json_object.find("cursors");
-       auto usernames_iterator = json_object.find("usernames");
-       auto profiles_iterator = json_object.find("profiles");
+       auto users_iterator = json_object.find("users");
        auto sharing_link_iterator = json_object.find("sharing_link");
 
        if (text_iterator == end_iterator || site_id_iterator == end_iterator ||
-           profiles_iterator == end_iterator || cursors_iterator == end_iterator ||
-           usernames_iterator == end_iterator || sharing_link_iterator == end_iterator ||
-           !text_iterator->isArray() || !usernames_iterator->isArray() ||
-           !profiles_iterator->isArray() || !cursors_iterator->isArray())
+           cursors_iterator == end_iterator || users_iterator == end_iterator ||
+           sharing_link_iterator == end_iterator || !text_iterator->isArray() ||
+           !cursors_iterator->isArray() || !users_iterator->isArray())
            throw std::logic_error("invalid message: invalid fields");
 
        site_id_ = site_id_iterator->toInt(SharedEditor::invalid_site_id);
-       QString sl = sharing_link_iterator->toString();
-
-       if (site_id_ == SharedEditor::invalid_site_id || sl.isNull())
+       QString sharing_link = sharing_link_iterator->toString();
+       if (site_id_ == SharedEditor::invalid_site_id || sharing_link.isNull())
            throw std::logic_error("invalid message: invalid fields");
-       sharing_link_ = QUrl(sl);
+       sharing_link_ = QUrl(sharing_link);
 
        // text
        QJsonArray json_array = text_iterator->toArray();
@@ -69,50 +64,40 @@ namespace cte {
            cursors_.insert(site_id, symbol);
        }
 
-       // usernames
-       json_array = usernames_iterator->toArray();
-       for (const auto &u_json : json_array) {
+       // users
+       json_array = users_iterator->toArray();
+       for (const auto& u_json : json_array) {
            if (!u_json.isObject()) throw std::logic_error("invalid message: invalid fields");
            QJsonObject u_json_object = u_json.toObject();
 
            auto end_iterator = u_json_object.end();
-           auto site_id_iterator = u_json_object.find("site_id");
            auto username_iterator = u_json_object.find("username");
-           if (site_id_iterator == end_iterator || username_iterator == end_iterator)
-               throw std::logic_error("invalid message: invalid fields");
-
-           int site_id = site_id_iterator->toInt(SharedEditor::invalid_site_id);
-           QString username = username_iterator->toString();
-           if (username.isNull() || site_id == SharedEditor::invalid_site_id)
-               throw std::logic_error("invalid message: invalid fields");
-
-           usernames_.insert(site_id, username);
-       }
-
-       // profiles
-       json_array = profiles_iterator->toArray();
-       for (const auto &c_json : json_array) {
-           if (!c_json.isObject()) throw std::logic_error("invalid message: invalid fields");
-           QJsonObject c_json_object = c_json.toObject();
-
-           auto end_iterator = c_json_object.end();
-           auto username_iterator = c_json_object.find("username");
-           auto profile_iterator = c_json_object.find("profile");
-           if (username_iterator == end_iterator || profile_iterator == end_iterator || !profile_iterator->isObject())
+           auto profile_iterator = u_json_object.find("profile");
+           auto site_ids_iterator = u_json_object.find("site_ids");
+           if (username_iterator == end_iterator || profile_iterator == end_iterator ||
+                site_ids_iterator == end_iterator || !site_ids_iterator->isArray())
                throw std::logic_error("invalid message: invalid fields");
 
            QString username = username_iterator->toString();
            Profile profile(profile_iterator->toObject());
-           if (username.isNull()) throw std::logic_error("invalid message: invalid fields");
 
-           profiles_.insert(username, profile);
+           QList<int> site_ids;
+           QJsonArray si_json_array = site_ids_iterator->toArray();
+           for (const auto& si_json : si_json_array) {
+               int site_id = si_json.toInt(SharedEditor::invalid_site_id);
+               if (site_id == SharedEditor::invalid_site_id)
+                   throw std::logic_error("invalid message: invalid fields");
+               site_ids.append(site_id);
+           }
+
+           users_.insert(username, {profile, site_ids});
        }
    }
 
    bool DocumentInfo::operator==(const DocumentInfo& other) const {
        return this->text_ == other.text_ && this->site_id_ == other.site_id_ &&
-              this->cursors_ == other.cursors_ && this->usernames_ == other.usernames_ &&
-              this->profiles_ == other.profiles_ && this->sharing_link_ == other.sharing_link_;
+              this->cursors_ == other.cursors_ && this->users_ == other.users_ &&
+              this->sharing_link_ == other.sharing_link_;
     }
 
    QList<Symbol> DocumentInfo::text() const {
@@ -123,16 +108,12 @@ namespace cte {
         return site_id_;
     }
 
-    QHash<QString,Profile> DocumentInfo::profiles() const {
-        return profiles_;
-    }
-
     QHash<int,Symbol> DocumentInfo::cursors() const {
         return cursors_;
     }
 
-    QHash<int,QString> DocumentInfo::usernames() const {
-        return usernames_;
+    QHash<QString,std::pair<Profile,QList<int>>> DocumentInfo::users() const {
+        return users_;
     }
 
     QUrl DocumentInfo::sharing_link() const {
@@ -161,25 +142,19 @@ namespace cte {
         }
         json_object["cursors"] = json_array;
 
-        // usernames
+        // users
         json_array = QJsonArray{};
-        for (auto it=usernames_.begin(); it!=usernames_.end(); it++) {
+        for (auto it=users_.begin(); it!=users_.end(); it++) {
             QJsonObject u_json;
-            u_json["site_id"] = it.key();
-            u_json["username"] = it.value();
+            u_json["username"] = it.key();
+            u_json["profile"] = it.value().first.json();
+            QJsonArray si_json;
+            for (int si : it.value().second)
+                si_json.push_back(si);
+            u_json["site_ids"] = si_json;
             json_array.push_back(u_json);
         }
-        json_object["usernames"] = json_array;
-
-        // profiles
-        json_array = QJsonArray{};
-        for (auto it=profiles_.begin(); it!=profiles_.end(); it++) {
-            QJsonObject c_json;
-            c_json["username"] = it.key();
-            c_json["profile"] = it.value().json();
-            json_array.push_back(c_json);
-        }
-        json_object["profiles"] = json_array;
+        json_object["users"] = json_array;
 
         return json_object;
     }

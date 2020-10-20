@@ -16,18 +16,16 @@
 namespace cte {
     class DocumentInfo {
         QList<Symbol> text_;
-        int site_id_;                       // assigned to the client
-        QHash<int,Symbol> cursors_;         // site_id -> symbol, for online users
-        QHash<int,QString> usernames_;      // site_id -> username, for all users
-        QHash<QString,Profile> profiles_;   // username -> profile, for all users
+        int site_id_;                                           // assigned to the client
+        QHash<int,Symbol> cursors_;                             // site_id -> symbol, for online users
+        QHash<QString,std::pair<Profile,QList<int>>> users_;    // username -> {profile, site_ids}, for all users
         QUrl sharing_link_;
 
     public:
         DocumentInfo();
         DocumentInfo(int site_id, const QUrl& sharing_link);
         DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
-                     const QHash<int,QString>& usernames, const QHash<QString,Profile>& profiles,
-                     const QUrl& sharing_link);
+                     const QHash<QString,std::pair<Profile,QList<int>>>& users, const QUrl& sharing_link);
         explicit DocumentInfo(const QJsonObject& json_object);
 
         bool operator==(const DocumentInfo& other) const;
@@ -35,8 +33,7 @@ namespace cte {
         QList<Symbol> text() const;
         int site_id() const;
         QHash<int,Symbol> cursors() const;
-        QHash<int,QString> usernames() const;
-        QHash<QString,Profile> profiles() const;
+        QHash<QString,std::pair<Profile,QList<int>>> users() const;
         QUrl sharing_link() const;
 
         QJsonObject json() const;

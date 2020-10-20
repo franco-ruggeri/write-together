@@ -113,6 +113,9 @@
          <iconset resource="resource.qrc">
           <normaloff>:/images/editor/online.png</normaloff>:/images/editor/online.png</iconset>
         </property>
+        <property name="flags">
+         <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
        </item>
        <item>
         <property name="text">
@@ -121,6 +124,9 @@
         <property name="icon">
          <iconset resource="resource.qrc">
           <normaloff>:/images/editor/offline.png</normaloff>:/images/editor/offline.png</iconset>
+        </property>
+        <property name="flags">
+         <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
         </property>
        </item>
       </widget>

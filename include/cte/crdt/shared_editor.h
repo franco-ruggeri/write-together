@@ -31,6 +31,9 @@ namespace cte {
         QHash<int,int> version_vector_;
         QList<Symbol> deletion_buffer_;
 
+        static const int reserved_site_id;
+
+        bool valid_index(int index) const;
         void update_version_vector(const Symbol& symbol);
         std::optional<int> buffered_erase(const Symbol& symbol);
 
@@ -57,5 +60,6 @@ namespace cte {
 
         static const int invalid_site_id, invalid_site_counter;
         static const int starting_site_id, starting_site_counter;
+        static const Symbol bof, eof;
     };
 }

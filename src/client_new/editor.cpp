@@ -9,7 +9,10 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
 #include <QtPrintSupport/QPrinter>
+#include <cmath>
 
+// TODO: cursore visualizzato dopo il simbolo in cui si trova!!!! cosi' posso settarlo a shared_editor.begin() all'apertura
+// TODO: occhio alle connect con le lambda, devo eliminare le connessioni senno' c'e' leakage
 // TODO: find function
 // TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
 // TODO: document_id per efficienza
@@ -18,31 +21,35 @@
 // TODO: home come finestra a parte, form in stackedwidgets (?)
 // TODO: per rimettere icona di default?
 // TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
+// TODO: home chiusa -> non funziona pulsante in editor
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
             QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
-            usernames_(document_info.usernames()), shared_editor_(document_info.site_id(), document_info.text()),
+            shared_editor_(document_info.site_id(), document_info.text()), color_h_(std::floor(std::rand())),
             remote_changes_(0) {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
         ui_->editor->setText(shared_editor_.to_string());
 
-        // get online users
-        QHash<QString,Profile> profiles = document_info.profiles();
-        QHash<int,Symbol> cursors = document_info.cursors();
-        for (auto it=cursors.begin(); it != cursors.end(); it++) {
-            QString username = usernames_[it.key()];
-            online_users_.insert(username, profiles[username]);
-            session_counts_[username]++;
+        // create users
+        for (auto& u : document_info.users()) {
+            Profile& profile = u.first;
+            QList<int>& site_ids = u.second;
+
+            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids, color_h_);
+            username_users_.insert(profile.username(), user);
+            for (const auto& si : site_ids)
+                site_id_users_.insert(si, user);
         }
 
-        // get offline users
-        for (auto it=profiles.begin(); it != profiles.end(); it++) {
-            QString username = it.key();
-            if (!online_users_.contains(username))
-                offline_users_.insert(username, profiles[username]);
+        // create cursors
+        QHash<int,Symbol> cursors = document_info.cursors();
+        for (auto it=cursors.begin(); it != cursors.end(); it++) {
+            int site_id = it.key();
+            Symbol& symbol = it.value();
+            site_id_users_[site_id]->add_cursor(site_id, symbol);
         }
 
         // connect signals and slots
@@ -67,23 +74,22 @@ namespace cte {
         refresh_users();
     }
 
-    static void refresh_users_helper(QTreeWidgetItem *parent, QHash<QString,Profile> users) {
+    void Editor::refresh_users() {
         // clear
-        parent->takeChildren();
+        QTreeWidgetItem *online_users = ui_->users->topLevelItem(0);
+        QTreeWidgetItem *offline_users = ui_->users->topLevelItem(1);
+        online_users->takeChildren();
+        offline_users->takeChildren();
 
         // populate
-        for (const Profile& p : users) {
+        for (const auto& u : username_users_) {
+            Profile profile = u->profile();
             QTreeWidgetItem *child = new QTreeWidgetItem;
-            child->setText(0, p.username());
-            child->setIcon(0, QIcon(QPixmap::fromImage(p.icon())));
-            parent->addChild(child);
+            child->setText(0, profile.username());
+            child->setIcon(0, QIcon(QPixmap::fromImage(profile.icon())));
+            if (u->online()) online_users->addChild(child);
+            else offline_users->addChild(child);
         }
-        parent->sortChildren(0, Qt::AscendingOrder);
-    }
-
-    void Editor::refresh_users() {
-        refresh_users_helper(ui_->users->topLevelItem(0), online_users_);
-        refresh_users_helper(ui_->users->topLevelItem(1), offline_users_);
     }
 
     void Editor::remote_insert(int index, QChar value) {
@@ -159,51 +165,60 @@ namespace cte {
     }
 
     void Editor::add_online_user(int site_id, const Profile& profile) {
-        // TODO: add cursor
+        // add cursor
         QString username = profile.username();
-        usernames_[site_id] = username;
-        online_users_[username] = profile;
-        offline_users_.remove(username);
-        session_counts_[username]++;
+        QSharedPointer<User> user;
+        auto it = username_users_.find(username);
+        if (it == username_users_.end()) {
+            user = QSharedPointer<User>::create(profile, QList<int>{site_id}, color_h_);
+            username_users_.insert(username, user);
+        } else {
+            user = *it;
+        }
+        user->add_cursor(site_id, SharedEditor::bof);
+        site_id_users_[site_id] = user;
+
+        // refresh UI
         refresh_users();
     }
 
     void Editor::remove_online_user(int site_id) {
-        // TODO: remove cursor
-        QString username = usernames_[site_id];
-        auto it_count = session_counts_.find(username);
-        it_count.value()--;
-        if (*it_count == 0) {
-            session_counts_.erase(it_count);
-            auto it_user = online_users_.find(username);
-            offline_users_[username] = *it_user;
-            online_users_.erase(it_user);
-            refresh_users();
-        }
+        // remove cursor
+        QSharedPointer<User> user = site_id_users_.value(site_id);
+        user->remove_cursor(site_id);
+
+        // refresh UI
+        refresh_users();
     }
 
     void Editor::on_users_itemClicked(QTreeWidgetItem *item, int column) {
         // TODO
-//        QString username = item->text().split(' ')[0];
+//        if (item->parent() == nullptr) return;  // top-level item
+//        QString username = item->text(0);
 //
-//        auto user = username_to_user.find(username);
-//        qDebug() << username;
-//        qDebug() << user->color(); // ??
-//        qDebug() << user->username();
-//
-//
-//        int i = 0;
-//        disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-//        disconnect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
+//        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
 //
 //        int start_pos = -1;
-//        auto s = shared_editor->text();
+//        QList<Symbol> text = shared_editor_.text();
+//        for (int i=0; i<text.size(); i++) {
+//            int site_id = text[i].site_id();
 //
-//        for (i = 0; i < s.size(); i++) {
+//
 //            if (file.site_ids()[s[i].site_id()] == username && start_pos == -1) {
 //                start_pos = i;
 //            }
 //            if (file.site_ids()[s[i].site_id()] != username && start_pos != -1) {
+//
+//                if(selected)
+//                    format.setBackground(Qt::transparent);
+//                else
+//                    format.setBackground(color_);
+//                format.setFontPointSize(14);
+//                QTextCursor cursor(editor->document());
+//                cursor.setPosition(start);
+//                cursor.setPosition(end, QTextCursor::KeepAnchor);
+//                cursor.setCharFormat(format);
+//
 //                user->draw_background_char(editor.data(), start_pos, i);
 //                start_pos = -1;
 //            }
@@ -211,10 +226,7 @@ namespace cte {
 //        if (start_pos != -1)
 //            user->draw_background_char(editor.data(), start_pos, i);
 //
-//
-//        connect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
-//        connect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);
-//
+//        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
 //        user->selected = !user->selected;
 //        // editor->setCurrentCharFormat(user->format);
     }
@@ -222,11 +234,7 @@ namespace cte {
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {
         if (item->parent() == nullptr) return;  // top-level item
         QString username = item->text(0);
-        Profile profile = online_users_.contains(username) ?
-                          online_users_.value(username) : offline_users_.value(username);
-        ProfileDialog *profile_dialog = new ProfileDialog(profile, false);
-        connect(profile_dialog, &ProfileDialog::close, profile_dialog, &ProfileDialog::deleteLater);
-        profile_dialog->open();
+        username_users_[username]->show_profile();
     }
 
     void Editor::closeEvent(QCloseEvent *event) {

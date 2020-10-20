@@ -7,7 +7,7 @@
 
 namespace cte {
     OpenDocument::OpenDocument() :
-            local_editor_(QSharedPointer<SharedEditor>::create(SharedEditor::invalid_site_id)),
+            shared_editor_(QSharedPointer<SharedEditor>::create(SharedEditor::invalid_site_id)),
             next_site_id_(SharedEditor::starting_site_counter), reference_count_(0) {}
 
     OpenDocument::OpenDocument(const QVector<character_t>& text) : OpenDocument() {
@@ -21,13 +21,13 @@ namespace cte {
                 next_site_id_++;
             }
             std::pair<int,int> author = authors[c.author];
-            local_editor_->insert(author.first, author.second++, index++, c.value);
+            shared_editor_->insert(author.first, author.second++, index++, c.value);
         }
     }
 
     int OpenDocument::open(const QString& username) {
         int site_id = next_site_id_;
-        cursors_.insert(site_id, Symbol{});
+        cursors_.insert(site_id, SharedEditor::bof);
         usernames_.insert(site_id, username);
         next_site_id_++;
         reference_count_++;
@@ -40,11 +40,11 @@ namespace cte {
     }
 
     void OpenDocument::insert_symbol(const Symbol& symbol) {
-        local_editor_->remote_insert(symbol);
+        shared_editor_->remote_insert(symbol);
     }
 
     void OpenDocument::erase_symbol(const Symbol& symbol) {
-        local_editor_->remote_erase(symbol);
+        shared_editor_->remote_erase(symbol);
     }
 
     void OpenDocument::move_cursor(int site_id, const Symbol& symbol) {
@@ -52,15 +52,19 @@ namespace cte {
     }
 
     QList<Symbol> OpenDocument::text() const {
-        return local_editor_->text();
+        return shared_editor_->text();
     }
 
-    QHash<int,QString> OpenDocument::usernames() const {
-        return usernames_;
+    QString OpenDocument::username(int site_id) const {
+        return *usernames_.find(site_id);
     }
 
     QHash<int,Symbol> OpenDocument::cursors() const {
         return cursors_;
+    }
+
+    QHash<int,QString> OpenDocument::usernames() const {
+        return usernames_;
     }
 
     int OpenDocument::reference_count() const {

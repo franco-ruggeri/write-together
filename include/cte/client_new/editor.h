@@ -6,6 +6,7 @@
 #include <QtWidgets/QTreeWidgetItem>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
+#include <cte/client_new//user.h>
 #include <cte/crdt/shared_editor.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/document_info.h>
@@ -24,9 +25,9 @@ namespace cte {
         SharedEditor shared_editor_;
         int remote_changes_;
 
-        QHash<int,QString> usernames_;
-        QHash<QString,int> session_counts_;
-        QHash<QString,Profile> online_users_, offline_users_;   // username -> profile
+        QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
+        QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
+        double color_h_;
 
         void refresh_users();
 

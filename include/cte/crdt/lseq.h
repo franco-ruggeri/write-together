@@ -28,14 +28,11 @@ namespace cte {
         QVector<Strategy> strategies_;          // strategy at each depth
         unsigned int boundary_;
 
-        static const int begin_;                // first possible child of a node, reserved
-        static const int end_;                  // last possible child of a node, reserved
         static const unsigned int default_boundary;
 
     public:
         explicit Lseq(unsigned int boundary=default_boundary);
-        static QVector<int> begin();            // get dummy begin (to use as prev when there is no prev)
-        static QVector<int> end();              // get dummy end (to use as next when there is no next)
         QVector<int> between(QVector<int> prev, QVector<int> next);
+        static const int begin, end;            // first and last possible child of a node
     };
 }

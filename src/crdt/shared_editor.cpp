@@ -10,15 +10,30 @@ namespace cte {
     const int SharedEditor::invalid_site_counter = -1;
     const int SharedEditor::starting_site_id = 0;
     const int SharedEditor::starting_site_counter = 0;
+    const int SharedEditor::reserved_site_id = -2;
+    const Symbol SharedEditor::bof(QChar(), reserved_site_id, starting_site_counter, {Lseq::begin});
+    const Symbol SharedEditor::eof(QChar(), reserved_site_id, starting_site_counter, {Lseq::end});
 
     SharedEditor::SharedEditor(int site_id, QObject *parent) :
-            QObject(parent), site_id_(site_id), site_counter_(starting_site_counter) {}
+            QObject(parent), site_id_(site_id), site_counter_(starting_site_counter) {
+        text_.append(bof);
+        text_.append(eof);
+    }
 
     SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text, QObject *parent) :
-            QObject(parent), site_id_(site_id), site_counter_(starting_site_counter), text_(text) {
+            QObject(parent), site_id_(site_id), site_counter_(starting_site_counter) {
+        // fill text
+        std::copy(text.begin(), text.end(), std::back_inserter(text_));
+        text_.insert(0, bof);
+        text_.append(eof);
+
         // populate version vector
         for (const auto& s : text_)
             update_version_vector(s);
+    }
+
+    bool SharedEditor::valid_index(int index) const {
+        return index >= 0 && index <= text_.size()-2;
     }
 
     void SharedEditor::update_version_vector(const Symbol& symbol) {
@@ -34,10 +49,12 @@ namespace cte {
 
     Symbol SharedEditor::insert(int site_id, int site_counter, int index, QChar value) {
         if (value.isNull()) throw std::logic_error("trying to insert null character");
+        if (!valid_index(index)) throw std::logic_error("trying to insert at an invalid index");
 
         // allocate position
-        QVector<int> prev_pos = index == 0 ? Lseq::begin() : text_.at(index-1).position();
-        QVector<int> next_pos = index == text_.size() ? Lseq::end() : text_.at(index).position();
+        index += 1;     // for BOF
+        QVector<int> prev_pos = text_.at(index-1).position();
+        QVector<int> next_pos = text_.at(index).position();
         QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
 
         // insert
@@ -62,6 +79,8 @@ namespace cte {
     }
 
     Symbol SharedEditor::local_erase(int index) {
+        if (!valid_index(index)) throw std::logic_error("trying to erase at an invalid index");
+        index += 1;     // for BOF
         Symbol symbol = text_.at(index);
         text_.erase(text_.begin() + index);
         return symbol;
@@ -116,13 +135,16 @@ namespace cte {
     }
 
     QList<Symbol> SharedEditor::text() const {
-        return text_;
+        QList<Symbol> text(text_);
+        text.removeFirst();     // BOF
+        text.removeLast();      // EOF
+        return text;
     }
 
     QString SharedEditor::to_string() const {
         QString result;
-        for (const auto& s : text_)
-            result.append(s.value());
+        for (auto it = text_.begin()+1; it != text_.end()-1; it++)  // skip BOF and EOF
+            result.append(it->value());
         return result;
     }
 }

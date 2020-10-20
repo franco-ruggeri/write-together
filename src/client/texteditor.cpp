@@ -180,7 +180,6 @@ void texteditor::on_list_user_itemClicked(QListWidgetItem *item) {
     qDebug() << user->color(); // ??
     qDebug() << user->username();
 
-
     int i = 0;
     disconnect(editor->document(), &QTextDocument::contentsChange, this, &texteditor::contentsChange);
     disconnect(editor.data(), &QTextEdit::textChanged, this, &texteditor::textChange);

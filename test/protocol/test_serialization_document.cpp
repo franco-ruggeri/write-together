@@ -32,21 +32,14 @@ int main() {
             {3, text[2]}
     };
 
-    // site_ids
-    const QMultiHash<int,QString> site_ids{
-            {1, username1},
-            {2, username2},
-            {3, username1}
-    };
-
-    // profiles
-    const QHash<QString,cte::Profile> profiles{
-            {username1, cte::Profile(username1, "test name 1", "test surname 1", "test email 1", QImage{})},
-            {username2, cte::Profile(username2, "test name 2", "test surname 2", "test email 2", QImage{})}
+    // users
+    const QHash<QString,std::pair<cte::Profile,QList<int>>> users{
+            {username1, {cte::Profile(username1, "test name 1", "test surname 1", "test email 1", QImage{}), {1, 3}}},
+            {username2, {cte::Profile(username2, "test name 2", "test surname 2", "test email 2", QImage{}), {2}}}
     };
 
     // serialization
-    cte::DocumentInfo document_data(text, editor.site_id(), cursors, site_ids, profiles, sharing_link);
+    cte::DocumentInfo document_data(text, editor.site_id(), cursors, users, sharing_link);
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::DocumentMessage>::create(document, document_data);
     QSharedPointer<cte::Message> message2 = cte::Message::deserialize(message1->serialize());
     assert(*message1 == *message2);

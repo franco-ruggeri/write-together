@@ -106,7 +106,15 @@ namespace cte {
             OpenDocument& od = open_documents_[document];
             int site_id = od.open(username);
             site_ids_[session_id].insert(document, site_id);
-            document_info = DocumentInfo(od.text(), site_id, od.cursors(), od.usernames(), profiles, sharing_link);
+
+            // get document info
+            QHash<QString,std::pair<Profile,QList<int>>> users;
+            QHash<int,QString> usernames = od.usernames();
+            for (const auto& p : profiles)
+                users.insert(p.username(), {p, QList<int>()} );
+            for (auto it=usernames.begin(); it != usernames.end(); it++)
+                users[it.value()].second.append(it.key());
+            document_info = DocumentInfo(od.text(), site_id, od.cursors(), users, sharing_link);
         }
 
         // commit transaction
@@ -232,8 +240,9 @@ namespace cte {
         // save documents
         for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++) {
             const Document& document = it.key();
-            QList<Symbol> text = it->text();
-            QHash<int,QString> site_ids = it->usernames();
+            OpenDocument& open_document = it.value();
+
+            QList<Symbol> text = open_document.text();
             QString document_owner = document.owner();
             QString document_name = document.name();
 
@@ -244,7 +253,9 @@ namespace cte {
             // insert updated document text
             query = prepare_query_insert_character(database, document);
             for (int i=0; i<text.size(); i++) {
-                bind_query_insert_character(query, i, site_ids[text[i].site_id()], text[i].value());
+                QString username = open_document.username(text[i].site_id());
+                QChar value = text[i].value();
+                bind_query_insert_character(query, i, username, value);
                 execute_query(query);
             }
 

@@ -15,7 +15,7 @@
 
 namespace cte {
     class OpenDocument {
-        QSharedPointer<SharedEditor> local_editor_;     // pointer to have assignability, SharedEditor is not assignable
+        QSharedPointer<SharedEditor> shared_editor_;    // pointer to have assignability, SharedEditor is not assignable
         QHash<int,Symbol> cursors_;                     // site_id -> symbol, for online users
         QHash<int,QString> usernames_;                  // site_id -> username, for all users
         int next_site_id_;
@@ -38,6 +38,7 @@ namespace cte {
         void move_cursor(int site_id, const Symbol& symbol);
 
         QList<Symbol> text() const;
+        QString username(int site_id) const;
         QHash<int,Symbol> cursors() const;
         QHash<int,QString> usernames() const;
         int reference_count() const;

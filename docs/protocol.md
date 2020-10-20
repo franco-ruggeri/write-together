@@ -19,7 +19,7 @@ Here are the fields and the explanation of each message type appearing in the st
 - *document \<document> \<document_info>* : server sends all the info about the requested (open/create) document.
 - *insert \<document> \<symbol>* : insert symbol in an opened document.
 - *erase \<document> \<symbol>* : erase symbol from an opened document.
-- *cursor \<document> \<symbol> [\<username>]* : move cursor of a client in an opened document (client to server without optional argument, server to client with optional argument).
+- *cursor \<document> \<symbol> [\<site_id>]* : move cursor of a client in an opened document (client to server without optional argument, server to client with optional argument).
 
 Further details:
 - *\<document>* contains: *owner* (username) and *document_name*.
@@ -29,6 +29,5 @@ Further details:
 	+ *text* (array of symbols)
 	+ *site_id* assigned to the client opening the document
 	+ map *site_id* -> *symbol* (cursors) for all the online users editing the document
-	+ map *site_id* -> *username* for all the users with access to the document
-	+ map *username* -> *profile* for all the users with access to the document
+	+ map *username* -> {profile, *site_ids*} for all the users with access to the document
 	+ *sharing_link*
