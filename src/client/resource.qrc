@@ -28,5 +28,6 @@
         <file>images/shared_files.png</file>
         <file>images/new_doc.png</file>
         <file>images/shared_doc.png</file>
+        <file>images/background.png</file>
     </qresource>
 </RCC>

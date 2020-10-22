@@ -41,7 +41,7 @@ loginTextEditor::loginTextEditor(QWidget *parent) : QStackedWidget(parent), ui(n
     ui->signup_password_lineEdit->setClearButtonEnabled(true);
 
     //Image login
-    QPixmap login_image(":/images/collaboration.png");
+    QPixmap login_image(":/images/background.png");
     ui->label_image_login->setPixmap(login_image);
 
     //Icon QLineEdit
