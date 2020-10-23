@@ -19,7 +19,7 @@ namespace cte {
         while (canReadLine()) {
             // read line
             QByteArray bytes = readLine();
-            if (bytes.at(bytes.size()-1) != '\n')
+            if (bytes.isEmpty() || bytes.at(bytes.size()-1) != '\n')
                 throw std::runtime_error("read() failed");
 
             // remove '\n' and, if present, '\r'
@@ -42,6 +42,6 @@ namespace cte {
         bytes.push_back('\n');
 
         qint64 n_written = write(bytes);
-        if (n_written < bytes.size()) throw std::runtime_error("write() failed");
+        if (n_written == -1) throw std::runtime_error("write() failed");
     }
 }

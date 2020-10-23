@@ -25,8 +25,10 @@
 // TODO: per rimettere icona di default?
 // TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
 // TODO: home chiusa -> non funziona pulsante in editor
+// TODO: appication icon, https://doc.qt.io/qt-5/appicon.html
+// TODO: animazione per hover in document list (home)
+// TODO: logout -> chiudi tutti gli editor
 #include <QDebug>
-
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :

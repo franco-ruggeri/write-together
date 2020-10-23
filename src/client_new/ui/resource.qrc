@@ -1,6 +1,11 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
         <file>images/app/logo.png</file>
+        <file>images/home/new_document.png</file>
+        <file>images/home/collaborate.png</file>
+        <file>images/home/all_documents.png</file>
+        <file>images/home/your_documents.png</file>
+        <file>images/home/shared_with_you.png</file>
         <file>images/profile/default.png</file>
         <file>images/editor/home.png</file>
         <file>images/editor/invite.png</file>

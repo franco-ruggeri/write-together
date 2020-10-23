@@ -61,5 +61,6 @@ namespace cte {
 
     public:
         explicit UiWorker(QObject *parent=nullptr);
+        bool eventFilter(QObject *watched, QEvent *event) override;
     };
 }

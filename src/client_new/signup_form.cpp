@@ -24,6 +24,6 @@ namespace cte {
         ui_->name->clear();
         ui_->surname->clear();
         ui_->password->clear();
-        ui_->password_confirm->clear();
+        ui_->repeat_password->clear();
     }
 }

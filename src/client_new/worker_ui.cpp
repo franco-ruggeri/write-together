@@ -14,6 +14,7 @@
 #include <cte/protocol/insert_message.h>
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
+#include <QtCore/QEvent>
 
 namespace cte {
     UiWorker::UiWorker(QObject *parent) : QObject(parent) {
@@ -30,7 +31,7 @@ namespace cte {
         forms_and_home_->addWidget(login_form_);
         forms_and_home_->addWidget(signup_form_);
         forms_and_home_->addWidget(home_);
-        forms_and_home_->show();
+        forms_and_home_->installEventFilter(this);
 
         // connect signals and slots
         connect(connect_form_, &ConnectionForm::connection_request, this, &UiWorker::connection_request);
@@ -53,16 +54,19 @@ namespace cte {
     void UiWorker::show_connect_form() {
         connect_form_->clear();
         forms_and_home_->setCurrentWidget(connect_form_);
+        forms_and_home_->show();
     }
 
     void UiWorker::show_login_form() {
         login_form_->clear();
         forms_and_home_->setCurrentWidget(login_form_);
+        forms_and_home_->show();
     }
 
     void UiWorker::show_signup_form() {
         signup_form_->clear();
         forms_and_home_->setCurrentWidget(signup_form_);
+        forms_and_home_->show();
     }
 
     void UiWorker::activate_home() {
@@ -192,6 +196,7 @@ namespace cte {
         if (message->type() == MessageType::profile)
             home_->set_profile(message.staticCast<ProfileMessage>()->profile());
         forms_and_home_->setCurrentWidget(home_);
+        forms_and_home_->show();
 
         // request document list
         QSharedPointer<Message> request = QSharedPointer<DocumentsMessage>::create();
@@ -260,5 +265,15 @@ namespace cte {
         Document document = close_message->document();
         int site_id = *close_message->site_id();
         editors_[document]->remove_online_user(site_id);
+    }
+
+    bool UiWorker::eventFilter(QObject *watched, QEvent *event) {
+        if (watched == forms_and_home_ && event->type() == QEvent::Close &&
+                forms_and_home_->currentWidget() == home_ && !editors_.isEmpty()) {
+            forms_and_home_->showMinimized();   // minimize instead of closing, home should be available from editors
+            event->ignore();                    // return true is not enough, the CloseEvent must be ignored
+            return true;
+        }
+        return false;
     }
 }

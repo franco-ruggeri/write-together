@@ -3,10 +3,14 @@
 #include <QtWidgets/QInputDialog>
 
 namespace cte {
-    Home::Home(QWidget *parent) : QWidget(parent), filter_(Filter::all_documents) {
+    Home::Home(QWidget *parent) : QWidget(parent) {
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
+        ui_->documents->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         connect(ui_->logout, &QPushButton::clicked, this, &Home::logout_request);
+        connect(ui_->all_documents, &QRadioButton::clicked, this, &Home::refresh_documents);
+        connect(ui_->your_documents, &QPushButton::clicked, this, &Home::refresh_documents);
+        connect(ui_->shared_with_you, &QPushButton::clicked, this, &Home::refresh_documents);
     }
 
     void Home::refresh_profile() {
@@ -15,30 +19,33 @@ namespace cte {
     }
 
     void Home::refresh_documents() {
-        // filter documents
-        QList<Document> filtered_documents;
-        std::copy_if(documents_.begin(), documents_.end(), std::back_inserter(filtered_documents),
-                     [this](const Document &document) {
-                         QString username = profile_.username();
-                         QString owner = document.owner();
-                         return filter_ == Filter::all_documents ||
-                                (filter_ == Filter::your_documents && owner == username) ||
-                                (filter_ == Filter::shared_with_you && owner != username);
-                     });
+        QString username = profile_.username();
+        bool yours = ui_->your_documents->isChecked();
+        bool shared_with_you = ui_->shared_with_you->isChecked();
 
         // populate document list
+        ui_->documents->setSortingEnabled(false);
         ui_->documents->setRowCount(0);
         int row = 0;
-        for (const auto& document : filtered_documents) {
+        for (const auto& document : documents_) {
+            QString owner = document.owner();
+            if (yours && owner != username) continue;
+            if (shared_with_you && owner == username) continue;
+
+            auto *owner_item = new QTableWidgetItem(owner);
+            auto *name_item = new QTableWidgetItem(document.name());
+            owner_item->setTextAlignment(Qt::AlignCenter);
+            name_item->setTextAlignment(Qt::AlignCenter);
+            owner_item->setFont(QFont("Roboto Light", 12, 200, true));
+            name_item->setFont(QFont("Roboto Light", 12, 200, true));
+
             ui_->documents->insertRow(row);
-            ui_->documents->setItem(row, 0, new QTableWidgetItem(document.owner()));
-            ui_->documents->setItem(row, 1, new QTableWidgetItem(document.name()));
+            ui_->documents->setItem(row, 0, owner_item);
+            ui_->documents->setItem(row, 1, name_item);
+
             row++;
         }
-
-        // sort document list (by owner, name)
-        ui_->documents->sortItems(1);
-        ui_->documents->sortItems(0);
+        ui_->documents->setSortingEnabled(true);
     }
 
     void Home::set_profile(const Profile& profile) {
@@ -48,7 +55,8 @@ namespace cte {
 
     void Home::set_documents(const QList<Document>& documents) {
         documents_ = QSet<Document>::fromList(documents);
-        refresh_documents();
+        ui_->all_documents->click();
+        ui_->documents->sortItems(0);   // sort document list by owner
     }
 
     void Home::add_document(const Document& document) {
@@ -73,24 +81,6 @@ namespace cte {
         if (!sharing_link.isNull()) emit document_request(sharing_link);
     }
 
-    void Home::update_filter(Filter filter) {
-        if (filter_ == filter) return;
-        filter_ = filter;
-        refresh_documents();
-    }
-
-    void Home::on_all_documents_clicked() {
-        update_filter(Filter::all_documents);
-    }
-
-    void Home::on_your_documents_clicked() {
-        update_filter(Filter::your_documents);
-    }
-
-    void Home::on_shared_with_you_clicked() {
-        update_filter(Filter::shared_with_you);
-    }
-
     void Home::on_profile_clicked() {
         profile_dialog_ = new ProfileDialog(profile_, true, this);
         connect(profile_dialog_, qOverload<const Profile&>(&ProfileDialog::profile_update_request),
@@ -111,7 +101,6 @@ namespace cte {
     void Home::clear() {
         profile_ = Profile{};
         documents_.clear();
-        filter_ = Filter::all_documents;
         ui_->icon->clear();
         ui_->username->clear();
         ui_->documents->clearContents();

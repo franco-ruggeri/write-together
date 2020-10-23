@@ -20,17 +20,11 @@ namespace cte {
     class Home : public QWidget {
         Q_OBJECT
 
-        enum class Filter {
-            all_documents, your_documents, shared_with_you
-        };
-
         QSharedPointer<Ui::Home> ui_;
         QSet<Document> documents_;
-        Filter filter_;
         Profile profile_;
         QPointer<ProfileDialog> profile_dialog_;
 
-        void update_filter(Filter filter);
         void refresh_profile();
         void refresh_documents();
 
@@ -45,9 +39,6 @@ namespace cte {
     private slots:
         void on_new_document_clicked();
         void on_collaborate_clicked();
-        void on_all_documents_clicked();
-        void on_your_documents_clicked();
-        void on_shared_with_you_clicked();
         void on_profile_clicked();
         void on_documents_cellClicked(int row, int column);
 
