@@ -164,7 +164,7 @@ QTableWidget#documents {
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>20</number>
+       <number>30</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -382,13 +382,13 @@ QTableWidget#documents {
        <number>15</number>
       </property>
       <property name="topMargin">
-       <number>20</number>
+       <number>30</number>
       </property>
       <property name="rightMargin">
        <number>15</number>
       </property>
       <property name="bottomMargin">
-       <number>20</number>
+       <number>30</number>
       </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
