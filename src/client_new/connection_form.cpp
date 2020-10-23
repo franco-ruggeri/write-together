@@ -1,5 +1,6 @@
 #include <cte/client_new/connection_form.h>
 #include <ui_connection_form.h>
+#include <string>
 
 inline void init_resource() { Q_INIT_RESOURCE(resource); }
 

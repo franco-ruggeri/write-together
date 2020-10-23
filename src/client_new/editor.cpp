@@ -29,7 +29,6 @@
 // TODO: animazione per hover in document list (home)
 #include <QDebug>
 
-
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
             QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
