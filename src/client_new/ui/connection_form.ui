@@ -60,7 +60,6 @@ QPushButton#connect {
 QLabel#instructions {
 	font-style: italic;
 	font-size: 13pt;
-	font-weigth: 200;
 }</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">

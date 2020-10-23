@@ -36,6 +36,8 @@ namespace cte {
             auto *name_item = new QTableWidgetItem(document.name());
             owner_item->setTextAlignment(Qt::AlignCenter);
             name_item->setTextAlignment(Qt::AlignCenter);
+            owner_item->setFont(QFont("Roboto Light", 12, 200, true));
+            name_item->setFont(QFont("Roboto Light", 12, 200, true));
 
             ui_->documents->insertRow(row);
             ui_->documents->setItem(row, 0, owner_item);

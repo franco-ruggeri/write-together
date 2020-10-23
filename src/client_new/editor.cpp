@@ -27,6 +27,7 @@
 // TODO: home chiusa -> non funziona pulsante in editor
 // TODO: appication icon, https://doc.qt.io/qt-5/appicon.html
 // TODO: animazione per hover in document list (home)
+// TODO: logout -> chiudi tutti gli editor
 #include <QDebug>
 
 namespace cte {
