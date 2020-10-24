@@ -7,8 +7,6 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QRegExp>
 
-// TODO: aggiungi check in costruttori e aggiungi check per massima dimensione icona
-
 namespace cte {
     Profile::Profile() {}
 
@@ -93,18 +91,30 @@ namespace cte {
         return json_object;
     }
 
-    bool Profile::check_username(const QString& username) {
+    bool Profile::valid_username() const {
+        return valid_username(username_);
+    }
+
+    bool Profile::valid_username(const QString& username) {
         static QRegExp username_regexp("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
         return username_regexp.exactMatch(username);
     }
 
-    bool Profile::check_email(const QString& email) {
-        static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-        return email_regexp.exactMatch(email);
-    }
-
-    bool Profile::check_password(const QString& password) {
+    bool Profile::valid_password(const QString& password) {
         static QRegExp password_regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
         return password_regexp.exactMatch(password);
+    }
+
+    bool Profile::valid_email() const {
+        static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
+        return email_regexp.exactMatch(email_);
+    }
+
+    bool Profile::valid_name() const {
+        return !name_.isEmpty();
+    }
+
+    bool Profile::valid_surname() const {
+        return !surname_.isEmpty();
     }
 }

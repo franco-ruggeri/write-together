@@ -21,9 +21,11 @@ namespace cte {
         // check inputs
         QString username = profile.username();
         if (authenticated(session_id)) throw std::logic_error("session already authenticated");
-        if (!Profile::check_username(username)) throw std::logic_error("signup failed: invalid username");
-        if (!Profile::check_email(profile.email())) throw std::logic_error("signup failed: invalid email");
-        if (!Profile::check_password(password)) throw std::logic_error("signup failed: invalid password");
+        if (!profile.valid_username()) throw std::logic_error("signup failed: invalid username");
+        if (!profile.valid_name()) throw std::logic_error("signup failed: invalid name");
+        if (!profile.valid_surname()) throw std::logic_error("signup failed: invalid surname");
+        if (!profile.valid_email()) throw std::logic_error("signup failed: invalid email");
+        if (!Profile::valid_password(password)) throw std::logic_error("signup failed: invalid password");
 
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
@@ -94,9 +96,9 @@ namespace cte {
         if (!authenticated(session_id)) throw std::logic_error("session not authenticated");
         if (new_profile.username() != *username(session_id))
             throw std::logic_error("profile update failed: username cannot be changed");
-        if (!Profile::check_email(new_profile.email()))
+        if (!Profile::valid_email(new_profile.email()))
             throw std::logic_error("profile update failed: invalid email");
-        if (!new_password.isNull() && !Profile::check_password(new_password))
+        if (!new_password.isNull() && !Profile::valid_password(new_password))
             throw std::logic_error("profile update failed: invalid password");
 
         // open connection

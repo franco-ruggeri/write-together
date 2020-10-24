@@ -37,11 +37,15 @@ namespace cte {
         QByteArray icon_data() const;
         void set_icon(const QByteArray& data);
 
+        bool valid_username() const;
+        bool valid_name() const;
+        bool valid_surname() const;
+        bool valid_email() const;
+
         QJsonObject json() const;
 
-        static bool check_username(const QString& username);
-        static bool check_email(const QString& email);
-        static bool check_password(const QString& password);
+        static bool valid_username(const QString& username);
+        static bool valid_password(const QString& password);
     };
 
 
