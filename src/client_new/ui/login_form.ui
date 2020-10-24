@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Real-Time Collaborative Text Editor</string>
   </property>
   <property name="styleSheet">
    <string notr="true">* {
@@ -53,8 +53,16 @@ QLineEdit:focus {
 
 QPushButton#login {
 	border-radius: 10px;
-	background-color: green;
+	background-color: #1877f2;
 	color: white;
+}
+
+QPushButton#login:hover {
+	background-color: #0464E0;
+}
+
+QPushButton#login:hover:pressed {
+	border-radius: 15px;
 }
 
 QPushButton#go_to_signup {
@@ -253,6 +261,9 @@ QLabel#instructions {
         <property name="placeholderText">
          <string>Username</string>
         </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item alignment="Qt::AlignHCenter">
@@ -291,6 +302,9 @@ QLabel#instructions {
         </property>
         <property name="placeholderText">
          <string>Password</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

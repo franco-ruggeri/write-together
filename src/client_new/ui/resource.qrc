@@ -1,6 +1,12 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
         <file>images/app/logo.png</file>
+        <file>images/forms/username.png</file>
+        <file>images/forms/email.png</file>
+        <file>images/forms/name.png</file>
+        <file>images/forms/surname.png</file>
+        <file>images/forms/password.png</file>
+        <file>images/forms/repeat_password.png</file>
         <file>images/home/new_document.png</file>
         <file>images/home/collaborate.png</file>
         <file>images/home/all_documents.png</file>

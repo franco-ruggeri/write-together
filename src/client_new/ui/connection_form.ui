@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Real-Time Collaborative Text Editor</string>
   </property>
   <property name="styleSheet">
    <string notr="true">* {
@@ -247,6 +247,9 @@ QLabel#instructions {
         </property>
         <property name="placeholderText">
          <string/>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
