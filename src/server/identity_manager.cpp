@@ -96,8 +96,9 @@ namespace cte {
         if (!authenticated(session_id)) throw std::logic_error("session not authenticated");
         if (new_profile.username() != *username(session_id))
             throw std::logic_error("profile update failed: username cannot be changed");
-        if (!Profile::valid_email(new_profile.email()))
-            throw std::logic_error("profile update failed: invalid email");
+        if (!new_profile.valid_name()) throw std::logic_error("profile update failed: invalid name");
+        if (!new_profile.valid_surname()) throw std::logic_error("profile update failed: invalid surname");
+        if (!new_profile.valid_email()) throw std::logic_error("profile update failed: invalid email");
         if (!new_password.isNull() && !Profile::valid_password(new_password))
             throw std::logic_error("profile update failed: invalid password");
 

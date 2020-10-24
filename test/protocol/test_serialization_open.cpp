@@ -6,12 +6,12 @@
 #include <cte/protocol/document.h>
 #include <cte/protocol/profile.h>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QString>
+#include <QtCore/QUrl>
 #include <assert.h>
 
 int main() {
     const cte::Document document("test owner", "test name");
-    const QString sharing_link("fnsc:test_uri");
+    const QUrl sharing_link("fnsc:test_uri");
     const int site_id = 1;
     const cte::Profile profile("test username", "test name", "test surname", "test email", QImage{});
 
