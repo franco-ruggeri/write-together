@@ -28,6 +28,7 @@
 // TODO: appication icon, https://doc.qt.io/qt-5/appicon.html
 // TODO: animazione per hover in document list (home)
 // TODO: logout -> chiudi tutti gli editor
+// TODO: update profile -> edit icon non si vede bene, sistema UI
 #include <QDebug>
 
 namespace cte {
@@ -115,7 +116,7 @@ namespace cte {
             else offline_users->addChild(child);
 
             // fill and color
-            child->setText(0, profile.username() + (u->local() ? " (you)" : ""));
+            child->setText(0, profile.username() + (u->local() ? tr(" (you)") : ""));
             child->setIcon(0, QIcon(QPixmap::fromImage(profile.icon())));
             if (u->online() || u->selected())   // only if selected for offline users!
                 child->setBackground(0, u->color());

@@ -36,9 +36,12 @@ namespace cte {
 
         // set document title
         QString title;
-        if (yours) title = empty ? "You don't own any document" : "Own documents";
-        else if (shared_with_you) title = empty ? "No documents have been shared with you" : "Documents shared with you";
-        else title = empty ? "No documents available" : "Accessible documents";
+        if (yours)
+            title = empty ? tr("You don't own any document") : tr("Own documents");
+        else if (shared_with_you)
+            title = empty ? tr("No documents have been shared with you") : tr("Documents shared with you");
+        else
+            title = empty ? tr("No documents available") : tr("Accessible documents");
         ui_->documents_title->setText(title);
     }
 

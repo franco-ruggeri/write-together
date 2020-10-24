@@ -127,8 +127,8 @@ namespace cte {
         if (!editors_.isEmpty()) {
             QMessageBox::StandardButton response = QMessageBox::question(
                     forms_and_home_.data(),
-                    "Log out?",
-                    "There are still open editors. Logging out will close them. Are you sure?"
+                    tr("Log out?"),
+                    tr("There are still open editors. Logging out will close them. Are you sure?")
             );
             if (response == QMessageBox::No) return;
             close_editors();
@@ -296,8 +296,8 @@ namespace cte {
 
             QMessageBox::StandardButton response = QMessageBox::question(
                     forms_and_home_.data(),
-                    "Close the application?",
-                    "There are still open editors. Closing the application will close them. Are you sure?"
+                    tr("Close the application?"),
+                    tr("There are still open editors. Closing the application will close them. Are you sure?")
             );
 
             if (response == QMessageBox::No) {
