@@ -34,6 +34,7 @@ namespace cte {
         void remote_erase(const QSharedPointer<Message>& message);
         void peer_open_document(const QSharedPointer<Message>& message);
         void peer_close_document(const QSharedPointer<Message>& message);
+        void close_editors();
 
     signals:
         void connection_request(const QString& hostname, int port);

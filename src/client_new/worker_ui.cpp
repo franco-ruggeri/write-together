@@ -15,6 +15,8 @@
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
 #include <QtCore/QEvent>
+#include <QtCore/QDebug>
+#include <QtWidgets/QMessageBox>
 
 namespace cte {
     UiWorker::UiWorker(QObject *parent) : QObject(parent) {
@@ -27,6 +29,7 @@ namespace cte {
         login_form_ = new LoginForm(forms_and_home);
         signup_form_ = new SignupForm(forms_and_home);
         home_ = new Home(forms_and_home);
+        forms_and_home_->setWindowTitle("Real-Time Collaborative Text Editor");
         forms_and_home_->addWidget(connect_form_);
         forms_and_home_->addWidget(login_form_);
         forms_and_home_->addWidget(signup_form_);
@@ -120,6 +123,18 @@ namespace cte {
     }
 
     void UiWorker::logout() {
+        // open editors => ask for confirmation
+        if (!editors_.isEmpty()) {
+            QMessageBox::StandardButton response = QMessageBox::question(
+                    forms_and_home_.data(),
+                    "Log out?",
+                    "There are still open editors. Logging out will close them. Are you sure?"
+            );
+            if (response == QMessageBox::No) return;
+            close_editors();
+        }
+
+        // logout
         QSharedPointer<Message> message = QSharedPointer<LogoutMessage>::create();
         emit new_message(message);
         show_login_form();
@@ -218,6 +233,7 @@ namespace cte {
         // create editor
         DocumentInfo document_info = document_message->document_info();
         QPointer<Editor> editor = new Editor(document, document_info);
+        editor->setWindowTitle(document.full_name());
         editor->installEventFilter(this);
         editors_.insert(document_message->document(), editor);
 
@@ -232,6 +248,12 @@ namespace cte {
         // show editor
         editor->show();
         forms_and_home_->showMinimized();
+    }
+
+    void UiWorker::close_editors() {
+        for (auto& e : editors_)
+            e->deleteLater();
+        editors_.clear();
     }
 
     void UiWorker::profile_updated(const QSharedPointer<Message>& message) {
@@ -268,12 +290,23 @@ namespace cte {
     }
 
     bool UiWorker::eventFilter(QObject *watched, QEvent *event) {
-        if (watched == forms_and_home_ && event->type() == QEvent::Close &&
-                forms_and_home_->currentWidget() == home_ && !editors_.isEmpty()) {
-            forms_and_home_->showMinimized();   // minimize instead of closing, home should be available from editors
-            event->ignore();                    // return true is not enough, the CloseEvent must be ignored
-            return true;
+        // closing with open editors => ask for confirmation
+        if (watched == forms_and_home_ && event->type() == QEvent::Close && forms_and_home_->currentWidget() == home_ &&
+            !editors_.isEmpty()) {
+
+            QMessageBox::StandardButton response = QMessageBox::question(
+                    forms_and_home_.data(),
+                    "Close the application?",
+                    "There are still open editors. Closing the application will close them. Are you sure?"
+            );
+
+            if (response == QMessageBox::No) {
+                event->ignore();    // filtering is not enough, it must be set to ignored
+                return true;
+            }
+            close_editors();
         }
+
         return false;
     }
 }

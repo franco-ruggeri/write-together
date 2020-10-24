@@ -3,6 +3,7 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QHash>
 #include <QtCore/QUrl>
+#include <QtGui/QCloseEvent>
 #include <QtWidgets/QTreeWidgetItem>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
