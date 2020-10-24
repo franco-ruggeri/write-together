@@ -6,7 +6,6 @@ namespace cte {
     Home::Home(QWidget *parent) : QWidget(parent) {
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
-        ui_->documents->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         connect(ui_->logout, &QPushButton::clicked, this, &Home::logout_request);
         connect(ui_->all_documents, &QRadioButton::clicked, this, &Home::refresh_documents);
         connect(ui_->your_documents, &QPushButton::clicked, this, &Home::refresh_documents);
@@ -22,30 +21,25 @@ namespace cte {
         QString username = profile_.username();
         bool yours = ui_->your_documents->isChecked();
         bool shared_with_you = ui_->shared_with_you->isChecked();
+        bool empty = true;
 
         // populate document list
-        ui_->documents->setSortingEnabled(false);
-        ui_->documents->setRowCount(0);
-        int row = 0;
+        ui_->documents->clear();
         for (const auto& document : documents_) {
             QString owner = document.owner();
             if (yours && owner != username) continue;
             if (shared_with_you && owner == username) continue;
-
-            auto *owner_item = new QTableWidgetItem(owner);
-            auto *name_item = new QTableWidgetItem(document.name());
-            owner_item->setTextAlignment(Qt::AlignCenter);
-            name_item->setTextAlignment(Qt::AlignCenter);
-            owner_item->setFont(QFont("Roboto Light", 12, 200, true));
-            name_item->setFont(QFont("Roboto Light", 12, 200, true));
-
-            ui_->documents->insertRow(row);
-            ui_->documents->setItem(row, 0, owner_item);
-            ui_->documents->setItem(row, 1, name_item);
-
-            row++;
+            empty = false;
+            ui_->documents->addItem(document.full_name());
         }
-        ui_->documents->setSortingEnabled(true);
+        ui_->documents->sortItems();
+
+        // set document title
+        QString title;
+        if (yours) title = empty ? "You don't own any document" : "Own documents";
+        else if (shared_with_you) title = empty ? "No documents have been shared with you" : "Documents shared with you";
+        else title = empty ? "No documents available" : "Accessible documents";
+        ui_->documents_title->setText(title);
     }
 
     void Home::set_profile(const Profile& profile) {
@@ -55,11 +49,11 @@ namespace cte {
 
     void Home::set_documents(const QList<Document>& documents) {
         documents_ = QSet<Document>::fromList(documents);
-        ui_->all_documents->click();
-        ui_->documents->sortItems(0);   // sort document list by owner
+        refresh_documents();
     }
 
     void Home::add_document(const Document& document) {
+        if (documents_.contains(document)) return;
         documents_.insert(document);
         refresh_documents();
     }
@@ -91,10 +85,8 @@ namespace cte {
         profile_dialog_->show();
     }
 
-    void Home::on_documents_cellClicked(int row, int column) {
-        QString document_owner = ui_->documents->item(row, 0)->text();
-        QString document_name = ui_->documents->item(row, 1)->text();
-        Document document(document_owner, document_name);
+    void Home::on_documents_itemClicked(QListWidgetItem *item) {
+        Document document(item->text());
         emit document_request(document);
     }
 
@@ -103,6 +95,9 @@ namespace cte {
         documents_.clear();
         ui_->icon->clear();
         ui_->username->clear();
-        ui_->documents->clearContents();
+        ui_->documents->clear();
+        ui_->all_documents->setChecked(true);
+        refresh_profile();
+        refresh_documents();
     }
 }

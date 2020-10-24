@@ -5,7 +5,7 @@
 #include <QtCore/QString>
 #include <QtCore/QSet>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QTableWidgetItem>
+#include <QtWidgets/QListWidgetItem>
 #include <cte/client_new/profile_dialog.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/profile.h>
@@ -40,7 +40,7 @@ namespace cte {
         void on_new_document_clicked();
         void on_collaborate_clicked();
         void on_profile_clicked();
-        void on_documents_cellClicked(int row, int column);
+        void on_documents_itemClicked(QListWidgetItem *item);
 
     public slots:
         void clear();

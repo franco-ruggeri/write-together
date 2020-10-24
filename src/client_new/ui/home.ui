@@ -14,7 +14,7 @@
    <enum>Qt::TabFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Real-Time Collaborative Text Editor</string>
   </property>
   <property name="styleSheet">
    <string notr="true">* {
@@ -28,12 +28,14 @@ QFrame {
 
 QFrame#header {
 	background-color:  #1e2530;
-    font-weight: 700;
 }
 
 QFrame#actions {
 	background-color: #2c3645;
-    font-weight: 700;
+}
+
+QFrame#document_list {
+	background-color: #f2f2f2;
 }
 
 QFrame#header QPushButton {
@@ -53,6 +55,10 @@ QFrame#actions QPushButton {
 
 QFrame#actions QPushButton:hover {
 	background-color: green;
+}
+
+QFrame#actions QPushButton:hover:pressed {
+	background-color: #056905;
 }
 
 QFrame#actions QRadioButton:hover {
@@ -113,8 +119,30 @@ QLabel#username {
 	font-size: 18pt;
 }
 
-QTableWidget#documents {
-	font-weight: 500;
+QLabel#documents_title {
+	border-bottom: 1px solid #1e2530;
+	color: #1e2530;
+   	padding-left: 15px;
+	font-size: 20pt;
+}
+
+QListWidget#documents {
+   	border: 0;
+	background-color: transparent;
+	font-style: italic;
+}
+
+QListWidget#documents::item {
+	border-bottom: 1px solid #F2F2F2;
+   	color: #2c3645;
+   	padding: 15px;
+   	background-color: white;
+}
+
+QListWidget#documents::item:hover {
+   	color: #102E4A;
+   	border: 2px solid white;
+	background-color: transparent;
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -527,65 +555,77 @@ QTableWidget#documents {
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QTableWidget" name="documents">
-     <property name="cursor" stdset="0">
-      <cursorShape>ArrowCursor</cursorShape>
+    <widget class="QFrame" name="document_list">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::NoSelection</enum>
-     </property>
-     <property name="showGrid">
-      <bool>false</bool>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="horizontalHeaderCascadingSectionResizes">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="verticalHeaderStretchLastSection">
-      <bool>false</bool>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Owner</string>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>20</number>
       </property>
-      <property name="textAlignment">
-       <set>AlignCenter</set>
+      <property name="leftMargin">
+       <number>15</number>
       </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name</string>
+      <property name="topMargin">
+       <number>30</number>
       </property>
-      <property name="textAlignment">
-       <set>AlignCenter</set>
+      <property name="rightMargin">
+       <number>15</number>
       </property>
-     </column>
+      <property name="bottomMargin">
+       <number>15</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="documents_title">
+        <property name="text">
+         <string>Accessible documents</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="documents">
+        <property name="focusPolicy">
+         <enum>Qt::TabFocus</enum>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="tabKeyNavigation">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::NoSelection</enum>
+        </property>
+        <property name="resizeMode">
+         <enum>QListView::Fixed</enum>
+        </property>
+        <property name="modelColumn">
+         <number>0</number>
+        </property>
+        <property name="sortingEnabled">
+         <bool>false</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>example_user/example_doc.txt</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>example_user_2/example_doc.txt</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>documents</tabstop>
   <tabstop>profile</tabstop>
   <tabstop>logout</tabstop>
   <tabstop>new_document</tabstop>
