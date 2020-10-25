@@ -302,16 +302,20 @@ namespace cte {
         std::optional<DocumentInfo> document_info;
         if (document) {
             document_info = document_manager.open_document(session_id, *document, username);
+            if (!document_info) {
+                send_error(socket, "document open failed: document not existing or not accessible");
+                return;
+            }
         } else if (sharing_link) {
             auto result = document_manager.open_document(session_id, *sharing_link, username);
-            document = result.first;
-            document_info = result.second;
+            if (!result) {
+                send_error(socket, "document open failed: invalid sharing link");
+                return;
+            }
+            document = result->first;
+            document_info = result->second;
         } else {
             throw std::logic_error("invalid message: open with neither document nor sharing link");
-        }
-        if (!document_info) {
-            send_error(socket, "document open failed: document not existing or not accessible");
-            return;
         }
 
         // register for dispatching

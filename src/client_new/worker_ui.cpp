@@ -228,7 +228,7 @@ namespace cte {
         if (message->type() == MessageType::profile)
             home_->set_profile(message.staticCast<ProfileMessage>()->profile());
         forms_->hide();
-        home_->showMaximized();
+        home_->show();
 
         // request document list
         QSharedPointer<Message> request = QSharedPointer<DocumentsMessage>::create();

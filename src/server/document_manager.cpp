@@ -123,7 +123,7 @@ namespace cte {
         return document_info;
     }
 
-    std::pair<Document,std::optional<DocumentInfo>>
+    std::optional<std::pair<Document,DocumentInfo>>
     DocumentManager::open_document(int session_id, const QUrl& sharing_link, const QString& username) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
@@ -132,24 +132,28 @@ namespace cte {
         QSqlQuery query(database);
 
         // load document
+        std::optional<std::pair<Document,DocumentInfo>> result;
         query = query_select_document(database, sharing_link);
         execute_query(query);
-        if (!query.next()) throw std::logic_error("invalid sharing link");
-        Document document(query.value("owner").toString(), query.value("name").toString());
+        if (query.next()) {
+            Document document(query.value("owner").toString(), query.value("name").toString());
+            DocumentInfo document_info = *open_document(session_id, document, username);
+            result = {document, document_info};
 
-        // add sharing if not present
-        query = query_select_document(database, document, username);
-        execute_query(query);
-        if (query.size() == 0) {
-            query = query_insert_sharing(database, document, username);
+            // add sharing if not present
+            query = query_select_document(database, document, username);
             execute_query(query);
+            if (query.size() == 0) {
+                query = query_insert_sharing(database, document, username);
+                execute_query(query);
+            }
         }
 
         // commit transaction
         database.commit();
 
         // open document
-        return {document, open_document(session_id, document, username)};
+        return result;
     }
 
     int DocumentManager::close_document(int session_id, const Document& document) {

@@ -38,7 +38,7 @@ namespace cte {
         // document management
         std::optional<DocumentInfo> create_document(int session_id, const Document& document);
         std::optional<DocumentInfo> open_document(int session_id, const Document& document, const QString& username);
-        std::pair<Document,std::optional<DocumentInfo>> open_document(int session_id, const QUrl& sharing_link,
+        std::optional<std::pair<Document,DocumentInfo>> open_document(int session_id, const QUrl& sharing_link,
                                                                       const QString& username);
         int close_document(int session_id, const Document& document);
         QList<Document> get_document_list(const QString& username) const;
