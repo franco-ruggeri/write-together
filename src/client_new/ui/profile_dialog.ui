@@ -240,6 +240,9 @@ QPushButton#save:hover {
           <property name="readOnly">
            <bool>false</bool>
           </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
@@ -271,6 +274,9 @@ QPushButton#save:hover {
           <property name="readOnly">
            <bool>false</bool>
           </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
@@ -301,6 +307,9 @@ QPushButton#save:hover {
           </property>
           <property name="readOnly">
            <bool>false</bool>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -336,6 +345,9 @@ QPushButton#save:hover {
           <property name="placeholderText">
            <string>Password</string>
           </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
@@ -369,6 +381,9 @@ QPushButton#save:hover {
           </property>
           <property name="placeholderText">
            <string>Confirm password</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

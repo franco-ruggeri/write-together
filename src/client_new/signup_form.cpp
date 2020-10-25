@@ -10,18 +10,21 @@ namespace cte {
     SignupForm::SignupForm(QWidget *parent) : QWidget(parent) {
         ui_ = QSharedPointer<Ui::SignupForm>::create();
         ui_->setupUi(this);
+
         ui_->username->addAction(QIcon(":images/forms/username.png"), QLineEdit::LeadingPosition);
         ui_->email->addAction(QIcon(":images/forms/email.png"), QLineEdit::LeadingPosition);
         ui_->name->addAction(QIcon(":images/forms/name.png"), QLineEdit::LeadingPosition);
         ui_->surname->addAction(QIcon(":images/forms/surname.png"), QLineEdit::LeadingPosition);
         ui_->password->addAction(QIcon(":images/forms/password.png"), QLineEdit::LeadingPosition);
         ui_->repeat_password->addAction(QIcon(":images/forms/repeat_password.png"), QLineEdit::LeadingPosition);
+
         ui_->username->installEventFilter(this);
         ui_->email->installEventFilter(this);
         ui_->name->installEventFilter(this);
         ui_->surname->installEventFilter(this);
         ui_->password->installEventFilter(this);
         ui_->repeat_password->installEventFilter(this);
+
         connect(ui_->go_to_login, &QPushButton::clicked, this, &SignupForm::login_request);
     }
 

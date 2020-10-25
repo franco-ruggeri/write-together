@@ -11,6 +11,7 @@ namespace cte {
 
         connect(socket_, &Socket::connected, this, &NetworkWorker::connected);
         connect(socket_, &Socket::ready_message, this, &NetworkWorker::read_message);
+        connect(socket_, &Socket::disconnected, socket_, &Socket::deleteLater);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))      // errorOccurred() was introduced in Qt 5.15
         connect(socket_, &Socket::errorOccurred,
                 this, qOverload<QAbstractSocket::SocketError>(&NetworkWorker::error_occurred));

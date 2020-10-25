@@ -11,6 +11,8 @@ namespace cte {
             profile_(profile), QDialog(parent) {
         ui_ = QSharedPointer<Ui::ProfileDialog>::create();
         ui_->setupUi(this);
+
+        // add icons
         ui_->username->addAction(QIcon(":images/forms/username.png"), QLineEdit::LeadingPosition);
         ui_->email->addAction(QIcon(":images/forms/email.png"), QLineEdit::LeadingPosition);
         ui_->name->addAction(QIcon(":images/forms/name.png"), QLineEdit::LeadingPosition);
@@ -27,17 +29,24 @@ namespace cte {
 
         // adapt for showcase
         if (!editable) {
-            ui_->edit_icon->hide();
             ui_->email->setReadOnly(true);
             ui_->name->setReadOnly(true);
             ui_->surname->setReadOnly(true);
+
+            ui_->email->setClearButtonEnabled(false);
+            ui_->name->setClearButtonEnabled(false);
+            ui_->surname->setClearButtonEnabled(false);
+
             ui_->email->setFocusPolicy(Qt::FocusPolicy::NoFocus);
             ui_->name->setFocusPolicy(Qt::FocusPolicy::NoFocus);
             ui_->surname->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
+            ui_->edit_icon->hide();
             ui_->password->hide();
             ui_->repeat_password->hide();
             ui_->cancel->hide();
             ui_->save->hide();
+
             adjustSize();
         } else {
             ui_->email->installEventFilter(this);
