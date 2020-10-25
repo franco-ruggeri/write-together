@@ -10,13 +10,13 @@ namespace cte {
         socket_ = new Socket(this);
 
         connect(socket_, &Socket::connected, this, &NetworkWorker::connected);
-        connect(socket_, &Socket::disconnected, this, &NetworkWorker::disconnected);
         connect(socket_, &Socket::ready_message, this, &NetworkWorker::read_message);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))      // errorOccurred() was introduced in Qt 5.15
-        connect(socket_, &Socket::errorOccurred, this, &NetworkWorker::error);
+        connect(socket_, &Socket::errorOccurred,
+                this, qOverload<QAbstractSocket::SocketError>(&NetworkWorker::error_occurred));
 #else
-        connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&Socket::error), this,
-                &NetworkWorker::error);
+        connect(socket_, qOverload<QAbstractSocket::SocketError>(&Socket::error),
+                this, qOverload<QAbstractSocket::SocketError>(&NetworkWorker::error_occurred));
 #endif
 
         socket_->connectToHost(hostname, port);
@@ -37,5 +37,10 @@ namespace cte {
 
     void NetworkWorker::send_message(const QSharedPointer<Message>& message) {
         socket_->write_message(message);
+    }
+
+    void NetworkWorker::error_occurred(QAbstractSocket::SocketError socket_error) {
+        QString error = tr("Socket error. Error code: ") + QString::number(static_cast<int>(socket_error));
+        emit error_occurred(error);
     }
 }

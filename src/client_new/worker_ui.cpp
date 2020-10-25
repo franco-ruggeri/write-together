@@ -14,7 +14,6 @@
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
 #include <QtCore/QEvent>
-#include <QtCore/QDebug>
 #include <QtWidgets/QMessageBox>
 
 namespace cte {
@@ -53,13 +52,18 @@ namespace cte {
         connect(home, &Home::logout_request, this, &UiWorker::logout);
     }
 
-    void UiWorker::show_connect_form() {
-        connection_form_->clear();
+    void UiWorker::show_connection_form() {
+        close_editors();
+        home_->clear();
+        home_->hide();
         forms_->setCurrentWidget(connection_form_);
         forms_->show();
     }
 
     void UiWorker::show_login_form() {
+        close_editors();
+        home_->clear();
+        home_->hide();
         login_form_->clear();
         forms_->setCurrentWidget(login_form_);
         forms_->show();
@@ -71,12 +75,22 @@ namespace cte {
         forms_->show();
     }
 
+    void UiWorker::show_error(const QString& error) {
+        QWidget *parent = nullptr;
+        if (!forms_->isHidden()) parent = forms_.data();
+        else if (!home_->isHidden()) parent = home_.data();
+        QMessageBox::critical(parent, tr("Error"), error);
+    }
+
     void UiWorker::activate_home() {
         home_->activateWindow();
     }
 
     void UiWorker::process_message(const QSharedPointer<Message>& message) {
         switch (message->type()) {
+            case MessageType::error:
+                show_error(message);
+                break;
             case MessageType::profile:
             case MessageType::signup_ok:
                 logged_in(message);
@@ -130,14 +144,11 @@ namespace cte {
                     tr("There are still open editors. Logging out will close them. Are you sure?")
             );
             if (response == QMessageBox::No) return;
-            close_editors();
         }
 
         // logout
         QSharedPointer<Message> message = QSharedPointer<LogoutMessage>::create();
         emit new_message(message);
-        home_->clear();
-        home_->hide();
         show_login_form();
     }
 
@@ -205,6 +216,11 @@ namespace cte {
         // send message
         QSharedPointer<Message> message = QSharedPointer<CloseMessage>::create(document);
         emit new_message(message);
+    }
+
+    void UiWorker::show_error(const QSharedPointer<Message>& message) {
+        QSharedPointer<ErrorMessage> error_message = message.staticCast<ErrorMessage>();
+        show_error("Response from server... " + error_message->reason());
     }
 
     void UiWorker::logged_in(const QSharedPointer<Message>& message) {

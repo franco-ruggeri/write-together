@@ -26,6 +26,7 @@ namespace cte {
         QSharedPointer<Home> home_;
         QHash<Document,QPointer<Editor>> editors_;
 
+        void show_error(const QSharedPointer<Message>& message);
         void logged_in(const QSharedPointer<Message>& message);
         void show_document_list(const QSharedPointer<Message>& message);
         void open_editor(const QSharedPointer<Message>& message);
@@ -52,12 +53,13 @@ namespace cte {
         void local_insert(const Document& document, const Symbol& symbol);
         void local_erase(const Document& document, const Symbol& symbol);
         void close_document(const Document& document);
+        void activate_home();
+        void show_signup_form();
 
     public slots:
-        void show_connect_form();
+        void show_connection_form();
         void show_login_form();
-        void show_signup_form();
-        void activate_home();
+        void show_error(const QString& error);
         void process_message(const QSharedPointer<Message>& message);
 
     public:

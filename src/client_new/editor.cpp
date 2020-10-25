@@ -19,7 +19,6 @@
 // TODO: find function
 // TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
 // TODO: document_id per efficienza
-// TODO: merge signup_ok and profile_ok -> ok
 // TODO: titolo finestre
 // TODO: home come finestra a parte, form in stackedwidgets (?)
 // TODO: per rimettere icona di default?

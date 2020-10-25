@@ -12,11 +12,12 @@ namespace cte {
 
         Socket *socket_;
 
+        void error_occurred(QAbstractSocket::SocketError socket_error);
+
     signals:
         void new_server(const QString& hostname, int port);
         void connected();
-        void disconnected();
-        void error();
+        void error_occurred(const QString& error);
         void new_message(const QSharedPointer<Message>& message);
 
     private slots:

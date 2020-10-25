@@ -49,10 +49,6 @@ QLineEdit:focus {
 	border: 2px solid #1877f2;
 }
 
-QPushButton[readOnly=&quot;true&quot;] {
-	background-color: transparent;
-}
-
 QPushButton#signup {
 	border-radius: 10px;
 	background-color: green;
