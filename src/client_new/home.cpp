@@ -6,6 +6,7 @@ namespace cte {
     Home::Home(QWidget *parent) : QWidget(parent) {
         ui_ = QSharedPointer<Ui::Home>::create();
         ui_->setupUi(this);
+        clear();
         connect(ui_->logout, &QPushButton::clicked, this, &Home::logout_request);
         connect(ui_->all_documents, &QRadioButton::clicked, this, &Home::refresh_documents);
         connect(ui_->your_documents, &QPushButton::clicked, this, &Home::refresh_documents);

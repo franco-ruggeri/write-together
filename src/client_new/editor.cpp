@@ -29,6 +29,8 @@
 // TODO: animazione per hover in document list (home)
 // TODO: logout -> chiudi tutti gli editor
 // TODO: update profile -> edit icon non si vede bene, sistema UI
+// TODO: login/signup/connection se messi a schermo intero fanno caga... dimensione fissa?
+// TODO: mostra pagina di caricamento mentre si connette al server
 #include <QDebug>
 
 namespace cte {
@@ -191,6 +193,7 @@ namespace cte {
 
     void Editor::show_sharing_link() {
         QMessageBox message_box(this);
+        message_box.setWindowTitle(tr("Sharing link"));
         message_box.setText(sharing_link_.toString());
         message_box.addButton(tr("Close"), QMessageBox::NoRole);
         QPushButton *copy_button = message_box.addButton(tr("Copy"), QMessageBox::YesRole);
@@ -261,7 +264,7 @@ namespace cte {
 
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {
         if (item->parent() == nullptr) return;  // top-level item
-        QString username = item->text(0);
+        QString username = item->text(0).split(" ")[0];
         username_users_[username]->show_profile();
     }
 

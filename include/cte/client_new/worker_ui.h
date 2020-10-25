@@ -19,11 +19,11 @@ namespace cte {
     class UiWorker : public QObject {
         Q_OBJECT
 
-        QSharedPointer<QStackedWidget> forms_and_home_;
-        QPointer<ConnectionForm> connect_form_;
+        QSharedPointer<QStackedWidget> forms_;
+        QPointer<ConnectionForm> connection_form_;
         QPointer<LoginForm> login_form_;
         QPointer<SignupForm> signup_form_;
-        QPointer<Home> home_;
+        QSharedPointer<Home> home_;
         QHash<Document,QPointer<Editor>> editors_;
 
         void logged_in(const QSharedPointer<Message>& message);

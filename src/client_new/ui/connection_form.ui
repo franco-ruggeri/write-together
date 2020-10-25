@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1533</width>
-    <height>668</height>
+    <width>975</width>
+    <height>562</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -29,7 +29,6 @@
    <string notr="true">* {
 	font-family: &quot;Roboto Light&quot;;
 	font-size: 14pt;
-    font-weight: 500;
 }
 
 QFrame {
@@ -43,7 +42,6 @@ QLine {
 QLineEdit,QSpinBox {
 	background-color: white;
 	padding: 5px 16px 5px;
-	height: 34;
     border-radius: 5px;
 }
 
@@ -55,6 +53,14 @@ QPushButton#connect {
 	border-radius: 10px;
 	background-color: green;
 	color: white;
+}
+
+QPushButton#connect:hover {
+	background-color: #056905;
+}
+
+QPushButton#connect:pressed {
+	border-radius: 15px;
 }
 
 QLabel#instructions {
@@ -93,19 +99,31 @@ QLabel#instructions {
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>30</number>
+      </property>
+      <property name="topMargin">
+       <number>30</number>
+      </property>
+      <property name="rightMargin">
+       <number>30</number>
+      </property>
+      <property name="bottomMargin">
+       <number>30</number>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="maximumSize">
          <size>
-          <width>960</width>
-          <height>640</height>
+          <width>400</width>
+          <height>500</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="resource.qrc">:/images/app/logo.png</pixmap>
+         <pixmap resource="resource.qrc">:/images/app/background.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -170,8 +188,9 @@ QLabel#instructions {
          <font>
           <family>Roboto Light</family>
           <pointsize>14</pointsize>
-          <weight>62</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -232,8 +251,8 @@ QLabel#instructions {
          <font>
           <family>Roboto Light</family>
           <pointsize>14</pointsize>
-          <weight>62</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -296,8 +315,8 @@ QLabel#instructions {
          <font>
           <family>Roboto Light</family>
           <pointsize>14</pointsize>
-          <weight>62</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="cursor">

@@ -21,7 +21,7 @@ namespace cte {
         void profile_update_request(const Profile& profile, const QString& password);
 
     private slots:
-        void on_update_clicked();
+        void on_save_clicked();
         void on_edit_icon_clicked();
 
     public:

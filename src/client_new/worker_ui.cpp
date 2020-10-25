@@ -5,7 +5,6 @@
 #include <cte/protocol/login_message.h>
 #include <cte/protocol/logout_message.h>
 #include <cte/protocol/profile_message.h>
-#include <cte/protocol/profile_ok_message.h>
 #include <cte/protocol/documents_message.h>
 #include <cte/protocol/create_message.h>
 #include <cte/protocol/open_message.h>
@@ -23,57 +22,57 @@ namespace cte {
         qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
 
         // create UI
-        forms_and_home_ = QSharedPointer<QStackedWidget>::create();
-        QStackedWidget *forms_and_home = forms_and_home_.data();
-        connect_form_ = new ConnectionForm(forms_and_home);
-        login_form_ = new LoginForm(forms_and_home);
-        signup_form_ = new SignupForm(forms_and_home);
-        home_ = new Home(forms_and_home);
-        forms_and_home_->setWindowTitle("Real-Time Collaborative Text Editor");
-        forms_and_home_->addWidget(connect_form_);
-        forms_and_home_->addWidget(login_form_);
-        forms_and_home_->addWidget(signup_form_);
-        forms_and_home_->addWidget(home_);
-        forms_and_home_->installEventFilter(this);
+        forms_ = QSharedPointer<QStackedWidget>::create();
+        QStackedWidget *forms = forms_.data();
+        connection_form_ = new ConnectionForm(forms);
+        login_form_ = new LoginForm(forms);
+        signup_form_ = new SignupForm(forms);
+        forms_->setWindowTitle("Real-Time Collaborative Text Editor");
+        forms_->addWidget(connection_form_);
+        forms_->addWidget(login_form_);
+        forms_->addWidget(signup_form_);
+        home_ = QSharedPointer<Home>::create();
+        home_->installEventFilter(this);
+        Home *home = home_.data();
 
         // connect signals and slots
-        connect(connect_form_, &ConnectionForm::connection_request, this, &UiWorker::connection_request);
+        connect(connection_form_, &ConnectionForm::connection_request, this, &UiWorker::connection_request);
         connect(login_form_, &LoginForm::login_request, this, &UiWorker::login);
         connect(login_form_, &LoginForm::signup_request, this, &UiWorker::show_signup_form);
         connect(signup_form_, &SignupForm::signup_request, this, &UiWorker::signup);
         connect(signup_form_, &SignupForm::login_request, this, &UiWorker::show_login_form);
-        connect(home_, &Home::new_document_request, this, &UiWorker::create_document);
-        connect(home_, qOverload<const Document&>(&Home::document_request),
+        connect(home, &Home::new_document_request, this, &UiWorker::create_document);
+        connect(home, qOverload<const Document&>(&Home::document_request),
                 this, qOverload<const Document&>(&UiWorker::open_document));
-        connect(home_, qOverload<const QString&>(&Home::document_request),
+        connect(home, qOverload<const QString&>(&Home::document_request),
                 this, qOverload<const QUrl&>(&UiWorker::open_document));
-        connect(home_, qOverload<const Profile&>(&Home::profile_update_request),
+        connect(home, qOverload<const Profile&>(&Home::profile_update_request),
                 this, qOverload<const Profile&>(&UiWorker::update_profile));
-        connect(home_, qOverload<const Profile&, const QString&>(&Home::profile_update_request),
+        connect(home, qOverload<const Profile&, const QString&>(&Home::profile_update_request),
                 this, qOverload<const Profile&, const QString&>(&UiWorker::update_profile));
-        connect(home_, &Home::logout_request, this, &UiWorker::logout);
+        connect(home, &Home::logout_request, this, &UiWorker::logout);
     }
 
     void UiWorker::show_connect_form() {
-        connect_form_->clear();
-        forms_and_home_->setCurrentWidget(connect_form_);
-        forms_and_home_->show();
+        connection_form_->clear();
+        forms_->setCurrentWidget(connection_form_);
+        forms_->show();
     }
 
     void UiWorker::show_login_form() {
         login_form_->clear();
-        forms_and_home_->setCurrentWidget(login_form_);
-        forms_and_home_->show();
+        forms_->setCurrentWidget(login_form_);
+        forms_->show();
     }
 
     void UiWorker::show_signup_form() {
         signup_form_->clear();
-        forms_and_home_->setCurrentWidget(signup_form_);
-        forms_and_home_->show();
+        forms_->setCurrentWidget(signup_form_);
+        forms_->show();
     }
 
     void UiWorker::activate_home() {
-        forms_and_home_->activateWindow();
+        home_->activateWindow();
     }
 
     void UiWorker::process_message(const QSharedPointer<Message>& message) {
@@ -123,10 +122,10 @@ namespace cte {
     }
 
     void UiWorker::logout() {
-        // open editors => ask for confirmation
+        // logout with open editors => ask for confirmation
         if (!editors_.isEmpty()) {
             QMessageBox::StandardButton response = QMessageBox::question(
-                    forms_and_home_.data(),
+                    home_.data(),
                     tr("Log out?"),
                     tr("There are still open editors. Logging out will close them. Are you sure?")
             );
@@ -137,6 +136,8 @@ namespace cte {
         // logout
         QSharedPointer<Message> message = QSharedPointer<LogoutMessage>::create();
         emit new_message(message);
+        home_->clear();
+        home_->hide();
         show_login_form();
     }
 
@@ -207,11 +208,11 @@ namespace cte {
     }
 
     void UiWorker::logged_in(const QSharedPointer<Message>& message) {
-        // prepare home
+        // show home
         if (message->type() == MessageType::profile)
             home_->set_profile(message.staticCast<ProfileMessage>()->profile());
-        forms_and_home_->setCurrentWidget(home_);
-        forms_and_home_->show();
+        forms_->hide();
+        home_->showMaximized();
 
         // request document list
         QSharedPointer<Message> request = QSharedPointer<DocumentsMessage>::create();
@@ -247,7 +248,7 @@ namespace cte {
 
         // show editor
         editor->show();
-        forms_and_home_->showMinimized();
+        home_->showMinimized();
     }
 
     void UiWorker::close_editors() {
@@ -291,15 +292,12 @@ namespace cte {
 
     bool UiWorker::eventFilter(QObject *watched, QEvent *event) {
         // closing with open editors => ask for confirmation
-        if (watched == forms_and_home_ && event->type() == QEvent::Close && forms_and_home_->currentWidget() == home_ &&
-            !editors_.isEmpty()) {
-
+        if (watched == home_ && event->type() == QEvent::Close && !editors_.isEmpty()) {
             QMessageBox::StandardButton response = QMessageBox::question(
-                    forms_and_home_.data(),
+                    home_.data(),
                     tr("Close the application?"),
                     tr("There are still open editors. Closing the application will close them. Are you sure?")
             );
-
             if (response == QMessageBox::No) {
                 event->ignore();    // filtering is not enough, it must be set to ignored
                 return true;

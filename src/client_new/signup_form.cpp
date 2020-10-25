@@ -24,8 +24,8 @@ namespace cte {
         QString password = ui_->password->text();
 
         if (!profile.valid_username())
-            QMessageBox::warning(this, "Invalid fields", "The username must begin with an alphanumeric character and "
-                                                         " can contain alphanumeric characters, dashes or underscores.");
+            QMessageBox::warning(this, "Invalid fields", "The username must begin with an alphanumeric character and  "
+                                                         "can contain alphanumeric characters, dashes or underscores.");
         else if (!profile.valid_email())
             QMessageBox::warning(this, "Invalid fields", "Please insert a valid email.");
         else if (!profile.valid_name())
