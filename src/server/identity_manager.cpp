@@ -8,7 +8,6 @@
 #include <cte/crypto/password_utility.h>
 #include <database_utility_secret.h>
 #include <QtCore/QVariant>
-#include <QtCore/QDebug>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>

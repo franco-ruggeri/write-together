@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>404</width>
-    <height>642</height>
+    <height>608</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -125,16 +125,22 @@ QPushButton#save:hover {
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item alignment="Qt::AlignHCenter">
          <widget class="QLabel" name="icon">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
-            <width>130</width>
-            <height>130</height>
+            <width>96</width>
+            <height>96</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>130</width>
-            <height>130</height>
+            <width>96</width>
+            <height>96</height>
            </size>
           </property>
           <property name="text">

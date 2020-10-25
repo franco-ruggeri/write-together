@@ -421,16 +421,16 @@ QListWidget#documents::item:hover {
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="leftMargin">
-       <number>15</number>
+       <number>30</number>
       </property>
       <property name="topMargin">
-       <number>30</number>
+       <number>15</number>
       </property>
       <property name="rightMargin">
        <number>15</number>
       </property>
       <property name="bottomMargin">
-       <number>30</number>
+       <number>15</number>
       </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -447,14 +447,14 @@ QListWidget#documents::item:hover {
           </property>
           <property name="minimumSize">
            <size>
-            <width>38</width>
-            <height>38</height>
+            <width>96</width>
+            <height>96</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>38</width>
-            <height>38</height>
+            <width>96</width>
+            <height>96</height>
            </size>
           </property>
           <property name="text">

@@ -18,6 +18,7 @@ namespace cte {
     class Profile {
         QString username_, name_, surname_, email_;
         QImage icon_;
+        static const char *icon_format_;
 
     public:
         Profile();
@@ -36,6 +37,7 @@ namespace cte {
         QImage icon() const;
         QByteArray icon_data() const;
         void set_icon(const QByteArray& data);
+        void set_icon(const QImage& data);
 
         bool valid_username() const;
         bool valid_name() const;

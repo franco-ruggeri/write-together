@@ -8,11 +8,15 @@
 #include <QtCore/QRegExp>
 
 namespace cte {
+    const char *Profile::icon_format_ = "PNG";
+
     Profile::Profile() {}
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
                      const QImage& icon) :
-            username_(username), name_(name), surname_(surname), email_(email), icon_(icon) {}
+            username_(username), name_(name), surname_(surname), email_(email) {
+        set_icon(icon);
+    }
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
                      const QByteArray& icon) : Profile(username, name, surname, email, QImage{}) {
@@ -73,12 +77,20 @@ namespace cte {
         QByteArray bytes;
         QBuffer buffer(&bytes);
         buffer.open(QIODevice::WriteOnly);
-        icon_.save(&buffer, "PNG");
+        icon_.save(&buffer, icon_format_);
         return bytes;
     }
 
+    void Profile::set_icon(const QImage& icon) {
+        static const int width = 96;
+        static const int height = 96;
+        icon_ = icon.scaled(width, height);
+    }
+
     void Profile::set_icon(const QByteArray& data) {
-        icon_.loadFromData(data, "PNG");
+        QImage icon;
+        icon.loadFromData(data, icon_format_);
+        set_icon(icon);
     }
 
     QJsonObject Profile::json() const {
