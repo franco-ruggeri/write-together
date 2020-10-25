@@ -106,13 +106,14 @@ namespace cte {
 
         // insert
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
+        int index = std::distance(text_.begin(), it) - 1;   // -1 for BOF
         text_.insert(it, symbol);
         update_version_vector(symbol);
 
         // process deletion buffer
         bool erased = process_deletion_buffer().has_value();
-        if (erased) return std::nullopt;                    // inserted symbol was erased
-        else return std::distance(text_.begin(), it)-1;     // return position, -1 for BOF
+        if (erased) return std::nullopt;    // inserted symbol was erased
+        else return index;                  // return position, -1 for BOF
     }
 
     std::optional<int> SharedEditor::remote_erase(const Symbol& symbol) {

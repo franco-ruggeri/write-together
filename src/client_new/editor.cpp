@@ -24,7 +24,7 @@
 // TODO: login/signup/connection se messi a schermo intero fanno caga... dimensione fissa?
 // TODO: CSS editor
 // TODO: action_user_list
-// TODO: icona quando faccio home_.activate() e' troppo grande
+// TODO: puo' assegnare colore nero a utente, in tal caso rimpiazzalo (caso speciale), senno' non si vede niente
 #include <QDebug>
 
 namespace cte {
@@ -128,8 +128,6 @@ namespace cte {
     }
 
     void Editor::remote_insert(const Symbol& symbol) {
-        qDebug() << "remote insert" << shared_editor_.find(symbol);
-
         std::optional<int> index = shared_editor_.remote_insert(symbol);
         if (index) {
             disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
@@ -169,7 +167,6 @@ namespace cte {
         for (int i=0 ; i<chars_added; i++) {
             QChar value = ui_->editor->toPlainText()[position+i];
             Symbol symbol = shared_editor_.local_insert(position+i, value);
-            qDebug() << "new text:" << shared_editor_.to_string();
             emit local_insert(symbol);
         }
     }
