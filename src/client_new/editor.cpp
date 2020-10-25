@@ -23,6 +23,8 @@
 // TODO: appication icon, https://doc.qt.io/qt-5/appicon.html
 // TODO: login/signup/connection se messi a schermo intero fanno caga... dimensione fissa?
 // TODO: mostra pagina di caricamento mentre si connette al server
+// TODO: CSS editor
+// TODO: action_user_list
 #include <QDebug>
 
 namespace cte {
@@ -116,6 +118,10 @@ namespace cte {
             if (u->online() || u->selected())   // only if selected for offline users!
                 child->setBackground(0, u->color());
         }
+
+        // show counts
+        online_users->setText(0, online_users->text(0) + " (" + QString::number(online_users->childCount()) + ")");
+        offline_users->setText(0, offline_users->text(0) + " (" + QString::number(offline_users->childCount()) + ")");
 
         // sort
         online_users->sortChildren(0, Qt::AscendingOrder);

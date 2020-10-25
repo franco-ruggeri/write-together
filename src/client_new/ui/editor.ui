@@ -13,6 +13,11 @@
   <property name="windowTitle">
    <string>Editor</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMenuBar,QDockWidget {
+	font-family: &quot;Roboto Light&quot;;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
@@ -26,7 +31,7 @@
      <x>0</x>
      <y>0</y>
      <width>1018</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -56,8 +61,15 @@
     <addaction name="action_copy"/>
     <addaction name="action_paste"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="action_user_list"/>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_edit"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="toolbar">
    <property name="windowTitle">
@@ -72,6 +84,7 @@
    <addaction name="action_home"/>
    <addaction name="action_invite"/>
    <addaction name="action_export_pdf"/>
+   <addaction name="action_user_list"/>
    <addaction name="separator"/>
    <addaction name="action_undo"/>
    <addaction name="action_redo"/>
@@ -81,11 +94,17 @@
    <addaction name="action_paste"/>
   </widget>
   <widget class="QDockWidget" name="dock_users">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string/>
+    <string>Users</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -104,7 +123,7 @@
         <enum>QAbstractItemView::SelectItems</enum>
        </property>
        <attribute name="headerVisible">
-        <bool>true</bool>
+        <bool>false</bool>
        </attribute>
        <column>
         <property name="text">
@@ -282,6 +301,21 @@
    </property>
    <property name="text">
     <string>Home</string>
+   </property>
+  </action>
+  <action name="action_user_list">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/online.png</normaloff>:/images/editor/online.png</iconset>
+   </property>
+   <property name="text">
+    <string>user_list</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
    </property>
   </action>
  </widget>
