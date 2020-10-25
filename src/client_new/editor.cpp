@@ -13,24 +13,21 @@
 #include <QtWidgets/QPushButton>
 #include <QtPrintSupport/QPrinter>
 #include <optional>
-#include <cmath>
 
+// TODO: verifica colorazione, non colora l'ultimo carattere
 // TODO: cursore visualizzato dopo il simbolo in cui si trova!!!! cosi' posso settarlo a shared_editor.begin() all'apertura
 // TODO: occhio alle connect con le lambda, devo eliminare le connessioni senno' c'e' leakage
-// TODO: find function
-// TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
-// TODO: document_id per efficienza
-// TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
-// TODO: login/signup/connection se messi a schermo intero fanno caga... dimensione fissa?
 // TODO: CSS editor
 // TODO: action_user_list
+// TODO: find function
+// TODO: document_id per efficienza
 // TODO: puo' assegnare colore nero a utente, in tal caso rimpiazzalo (caso speciale), senno' non si vede niente
 #include <QDebug>
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
             QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
-            shared_editor_(document_info.site_id(), document_info.text()), color_h_(std::floor(std::rand())) {
+            shared_editor_(document_info.site_id(), document_info.text()) {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
@@ -47,7 +44,7 @@ namespace cte {
             Profile& profile = u.first;
             QList<int>& site_ids = u.second;
 
-            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids.toSet(), generate_color());
+            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids.toSet());
             username_users_.insert(profile.username(), user);
             for (const auto& si : site_ids)
                 site_id_users_.insert(si, user);
@@ -60,16 +57,17 @@ namespace cte {
             int site_id = it.key();
             Symbol& symbol = it.value();
             QSharedPointer<User> user = site_id_users_[site_id];
-            if (site_id != my_site_id)
-                user->add_remote_cursor(ui_->editor, site_id, symbol);
-            else {
+            if (site_id != my_site_id) {
+                int position = shared_editor_.find(symbol);
+                user->add_remote_cursor(ui_->editor, site_id, position);
+            } else {
                 user->set_local(true);
+                local_site_id_ = site_id;
                 local_user_ = user;
             }
         }
 
         // connect signals and slots
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
         connect(ui_->action_home, &QAction::triggered, this, &Editor::home_request);
         connect(ui_->action_export_pdf, &QAction::triggered, this, &Editor::export_pdf);
         connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
@@ -79,21 +77,13 @@ namespace cte {
         connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QTextEdit::cut);
         connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QTextEdit::copy);
         connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QTextEdit::paste);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
 
         // show user list
         ui_->users->topLevelItem(0)->setExpanded(true);
         ui_->users->topLevelItem(1)->setExpanded(true);
         refresh_users();
-    }
-
-    QColor Editor::generate_color() {
-        static double golden_ratio_conjugate = 0.618033988749895;
-        color_h_ += golden_ratio_conjugate;
-        color_h_ = color_h_ - static_cast<int>(color_h_);
-
-        QColor color;
-        color.setHsvF(color_h_, 0.5, 0.95);
-        return color;
     }
 
     void Editor::refresh_users() {
@@ -107,7 +97,7 @@ namespace cte {
         // populate
         for (const auto& u : username_users_) {
             Profile profile = u->profile();
-            QTreeWidgetItem *child = new QTreeWidgetItem;
+            auto *child = new QTreeWidgetItem;
             if (u->online()) online_users->addChild(child);
             else offline_users->addChild(child);
 
@@ -130,26 +120,35 @@ namespace cte {
     void Editor::remote_insert(const Symbol& symbol) {
         std::optional<int> index = shared_editor_.remote_insert(symbol);
         if (index) {
-            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this,
+                       &Editor::process_local_content_change);
             QTextCursor cursor = ui_->editor->textCursor();
             cursor.setPosition(*index);
             cursor.insertText(symbol.value());
-            connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+            connect(ui_->editor->document(), &QTextDocument::contentsChange, this,
+                    &Editor::process_local_content_change);
         }
     }
 
     void Editor::remote_erase(const Symbol& symbol) {
         std::optional<int> index = shared_editor_.remote_erase(symbol);
         if (index) {
-            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this,
+                       &Editor::process_local_content_change);
             QTextCursor cursor = ui_->editor->textCursor();
             cursor.setPosition(*index);
             cursor.deleteChar();
-            connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+            connect(ui_->editor->document(), &QTextDocument::contentsChange, this,
+                    &Editor::process_local_content_change);
         }
     }
 
-    void Editor::process_local_change(int position, int chars_removed, int chars_added) {
+    void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
+        int position = shared_editor_.find(symbol);
+        site_id_users_[site_id]->move_remote_cursor(site_id, position);
+    }
+
+    void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
         // TODO: perche'?
         if (position ==  ui_->editor->textCursor().block().position() && chars_added > 1) {
             chars_added  = chars_added - chars_removed;
@@ -169,6 +168,12 @@ namespace cte {
             Symbol symbol = shared_editor_.local_insert(position+i, value);
             emit local_insert(symbol);
         }
+    }
+
+    void Editor::process_local_cursor_move() {
+        QTextCursor cursor = ui_->editor->textCursor();
+        Symbol symbol = shared_editor_.at(cursor.position());
+        emit local_cursor_move(symbol);
     }
 
     void Editor::export_pdf() {
@@ -201,12 +206,12 @@ namespace cte {
         QSharedPointer<User> user;
         auto it = username_users_.find(username);
         if (it == username_users_.end()) {
-            user = QSharedPointer<User>::create(profile, QSet<int>{site_id}, color_h_);
+            user = QSharedPointer<User>::create(profile, QSet<int>{site_id});
             username_users_.insert(username, user);
         } else {
             user = *it;
         }
-        user->add_remote_cursor(ui_->editor, site_id, SharedEditor::bof);
+        user->add_remote_cursor(ui_->editor, site_id, 0);
         site_id_users_[site_id] = user;
 
         // refresh UI
@@ -237,7 +242,7 @@ namespace cte {
         }
 
         // update color text
-        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QList<Symbol> text = shared_editor_.text();
         QTextCursor cursor(ui_->editor->textCursor());
         QTextCharFormat format;
@@ -252,7 +257,7 @@ namespace cte {
             }
         }
         cursor.mergeCharFormat(format);   // necessary to color also last characters
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {
@@ -264,6 +269,10 @@ namespace cte {
     void Editor::closeEvent(QCloseEvent *event) {
         emit closed();
         event->accept();
+    }
+
+    int Editor::local_site_id() const {
+        return local_site_id_;
     }
 
     QUrl Editor::sharing_link() const {

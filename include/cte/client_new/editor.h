@@ -25,22 +25,23 @@ namespace cte {
         QUrl sharing_link_;
         SharedEditor shared_editor_;
 
+        int local_site_id_;
         QSharedPointer<User> local_user_;
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
-        double color_h_;
 
-        QColor generate_color();
         void refresh_users();
 
     signals:
         void local_insert(const Symbol& symbol);
         void local_erase(const Symbol& symbol);
+        void local_cursor_move(const Symbol& symbol);
         void home_request();
         void closed();
 
     private slots:
-        void process_local_change(int position, int chars_removed, int chars_added);
+        void process_local_content_change(int position, int chars_removed, int chars_added);
+        void process_local_cursor_move();
         void export_pdf();
         void show_sharing_link();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);
@@ -51,10 +52,15 @@ namespace cte {
 
     public:
         Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent=nullptr);
+
         void remote_insert(const Symbol& symbol);
         void remote_erase(const Symbol& symbol);
+        void remote_cursor_move(int site_id, const Symbol& symbol);
+
         void add_online_user(int site_id, const Profile& profile);
         void remove_online_user(int site_id);
+
+        int local_site_id() const;
         QUrl sharing_link() const;
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtCore/QPointer>
+#include <QtCore/QSharedPointer>
 #include <QtCore/QSet>
 #include <QtCore/QHash>
 #include <QtGui/QColor>
@@ -13,15 +13,21 @@ namespace cte {
     class User {
         Profile profile_;
         QSet<int> site_ids_;
-        QHash<int,QSharedPointer<RemoteCursor>> remote_cursors_;
+        QHash<int,QSharedPointer<RemoteCursor>> remote_cursors_;    // pointers for assignability
         QColor color_;
         bool selected_, online_, local_;
         QPointer<ProfileDialog> profile_dialog_;
 
-    public:
-        User(const Profile& profile, const QSet<int>& site_ids, const QColor& color);
+        static const QList<QColor> colors;
 
-        void add_remote_cursor(QTextEdit *editor, int site_id, const Symbol& symbol);
+        void generate_color();
+
+    public:
+        User(const Profile& profile, const QSet<int>& site_ids);
+
+        void add_remote_cursor(QTextEdit *editor, int site_id);
+        void add_remote_cursor(QTextEdit *editor, int site_id, int position);
+        void move_remote_cursor(int site_id, int position);
         void remove_remote_cursor(int site_id);
         void show_profile();
 

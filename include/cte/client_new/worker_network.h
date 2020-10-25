@@ -10,7 +10,7 @@ namespace cte {
     class NetworkWorker : public QObject {
         Q_OBJECT
 
-        Socket *socket_;
+        QPointer<Socket> socket_;
 
         void error_occurred(QAbstractSocket::SocketError socket_error);
 

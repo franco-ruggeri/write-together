@@ -52,7 +52,7 @@ namespace cte {
         if (!valid_index(index)) throw std::logic_error("trying to insert at an invalid index");
 
         // allocate position
-        index += 1;     // for BOF
+        index++;    // for BOF
         QVector<int> prev_pos = text_.at(index-1).position();
         QVector<int> next_pos = text_.at(index).position();
         QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
@@ -95,7 +95,7 @@ namespace cte {
 
     Symbol SharedEditor::local_erase(int index) {
         if (!valid_index(index)) throw std::logic_error("trying to erase at an invalid index");
-        index += 1;     // for BOF
+        index++;    // for BOF
         Symbol symbol = text_.at(index);
         text_.erase(text_.begin() + index);
         return symbol;
@@ -113,7 +113,7 @@ namespace cte {
         // process deletion buffer
         bool erased = process_deletion_buffer().has_value();
         if (erased) return std::nullopt;    // inserted symbol was erased
-        else return index;                  // return position, -1 for BOF
+        else return index;                  // return position
     }
 
     std::optional<int> SharedEditor::remote_erase(const Symbol& symbol) {
@@ -122,11 +122,12 @@ namespace cte {
     }
 
     int SharedEditor::find(const Symbol& symbol) const {
-        auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
-        return std::distance(text_.begin(), it);
+        auto it = std::upper_bound(text_.begin(), text_.end(), symbol);
+        return std::distance(text_.begin(), it) - 1;    // -1 for BOF
     }
 
     Symbol SharedEditor::at(int index) const {
+        index++;    // for BOF
         return text_.at(index);
     }
 

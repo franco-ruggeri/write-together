@@ -130,7 +130,7 @@ namespace cte {
                 remote_erase(message);
                 break;
             case MessageType::cursor:
-//                peer_move_cursor();
+                peer_move_cursor(message);
                 break;
             default:    // should never happen, since the message is generated through Message::deserialize
                 throw std::logic_error("invalid message: invalid type");
@@ -216,6 +216,11 @@ namespace cte {
         emit new_message(message);
     }
 
+    void UiWorker::local_cursor_move(const Document& document, int site_id, const Symbol& symbol) {
+        QSharedPointer<Message> message = QSharedPointer<CursorMessage>::create(document, symbol, site_id);
+        emit new_message(message);
+    }
+
     void UiWorker::close_document(const Document& document) {
         // delete editor
         auto it = editors_.find(document);
@@ -269,10 +274,13 @@ namespace cte {
         // connect signals and slots
         // TODO: problema... le connessioni poi devo toglierle, non posso usare lambda
         Editor *e = editor.data();
-        connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
-        connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
         connect(e, &Editor::home_request, this, &UiWorker::activate_home);
         connect(e, &Editor::closed, [this, document]() { close_document(document); });
+        connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
+        connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
+        connect(e, &Editor::local_cursor_move, [this, editor, document](const Symbol& symbol) {
+            local_cursor_move(document, editor->local_site_id(), symbol);
+        });
 
         // show editor
         editor->show();
@@ -316,6 +324,14 @@ namespace cte {
         Document document = close_message->document();
         int site_id = *close_message->site_id();
         editors_[document]->remove_online_user(site_id);
+    }
+
+    void UiWorker::peer_move_cursor(const QSharedPointer<Message>& message) {
+        QSharedPointer<CursorMessage> cursor_message = message.staticCast<CursorMessage>();
+        Document document = cursor_message->document();
+        int site_id = *cursor_message->site_id();
+        Symbol symbol = cursor_message->symbol();
+        editors_[document]->remote_cursor_move(site_id, symbol);
     }
 
     bool UiWorker::eventFilter(QObject *watched, QEvent *event) {

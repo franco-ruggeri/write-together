@@ -20,6 +20,11 @@
   <property name="styleSheet">
    <string notr="true">QMenuBar,QDockWidget {
 	font-family: &quot;Roboto Light&quot;;
+}
+
+QTextEdit#editor {
+	padding: 10px;
+	background-color: white;
 }</string>
   </property>
   <property name="toolButtonStyle">
