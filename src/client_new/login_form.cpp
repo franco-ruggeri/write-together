@@ -4,6 +4,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QMessageBox>
 
+#include <QDebug>
+
 namespace cte {
     LoginForm::LoginForm(QWidget *parent) : QWidget(parent) {
         ui_ = QSharedPointer<Ui::LoginForm>::create();

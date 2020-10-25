@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
-    <height>562</height>
+    <width>1515</width>
+    <height>1202</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -104,23 +104,23 @@ QLabel#instructions {
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <property name="leftMargin">
-       <number>30</number>
+       <number>50</number>
       </property>
       <property name="topMargin">
-       <number>30</number>
+       <number>50</number>
       </property>
       <property name="rightMargin">
-       <number>30</number>
+       <number>50</number>
       </property>
       <property name="bottomMargin">
-       <number>30</number>
+       <number>50</number>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="maximumSize">
          <size>
-          <width>400</width>
-          <height>500</height>
+          <width>16777215</width>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
