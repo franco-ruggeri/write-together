@@ -25,7 +25,8 @@ namespace cte {
         connect(network_worker, qOverload<const QString&>(&NetworkWorker::error_occurred),
                 ui_worker, qOverload<const QString&>(&UiWorker::show_error));
 
-        // set server
+        // start connection
+        ui_worker_->show_connection_loading(hostname, port);
         network_worker_->set_server(hostname, port);
     }
 

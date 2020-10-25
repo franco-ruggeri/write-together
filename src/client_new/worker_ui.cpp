@@ -13,8 +13,6 @@
 #include <cte/protocol/insert_message.h>
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
-#include <QtCore/QEvent>
-#include <QtWidgets/QMessageBox>
 
 namespace cte {
     UiWorker::UiWorker(QObject *parent) : QObject(parent) {
@@ -36,6 +34,7 @@ namespace cte {
 
         // connect signals and slots
         connect(connection_form_, &ConnectionForm::connection_request, this, &UiWorker::connection_request);
+        connect(connection_form_, &ConnectionForm::connection_request, this, &UiWorker::show_connection_loading);
         connect(login_form_, &LoginForm::login_request, this, &UiWorker::login);
         connect(login_form_, &LoginForm::signup_request, this, &UiWorker::show_signup_form);
         connect(signup_form_, &SignupForm::signup_request, this, &UiWorker::signup);
@@ -52,21 +51,34 @@ namespace cte {
         connect(home, &Home::logout_request, this, &UiWorker::logout);
     }
 
-    void UiWorker::show_connection_form() {
+    void UiWorker::show_connection_loading(const QString& hostname, int port) {
+        connection_loading_ = QSharedPointer<QMessageBox>::create();
+        connection_loading_->setWindowTitle(tr("Connecting"));
+        connection_loading_->setText(tr("Trying to connect to ") + hostname + ":" + QString::number(port));
+        connection_loading_->setStandardButtons(0);
+        connection_loading_->show();
+    }
+
+    void UiWorker::show_initial_form() {
+        if (!connection_loading_.isNull()) {
+            connection_loading_->close();
+            connection_loading_.clear();
+        }
         close_editors();
         home_->clear();
         home_->hide();
-        forms_->setCurrentWidget(connection_form_);
         forms_->show();
     }
 
+    void UiWorker::show_connection_form() {
+        forms_->setCurrentWidget(connection_form_);
+        show_initial_form();
+    }
+
     void UiWorker::show_login_form() {
-        close_editors();
-        home_->clear();
-        home_->hide();
         login_form_->clear();
         forms_->setCurrentWidget(login_form_);
-        forms_->show();
+        show_initial_form();
     }
 
     void UiWorker::show_signup_form() {
@@ -250,7 +262,6 @@ namespace cte {
         // create editor
         DocumentInfo document_info = document_message->document_info();
         QPointer<Editor> editor = new Editor(document, document_info);
-        editor->setWindowTitle(document.full_name());
         editor->installEventFilter(this);
         editors_.insert(document_message->document(), editor);
 

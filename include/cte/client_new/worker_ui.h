@@ -6,6 +6,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QUrl>
 #include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QMessageBox>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
 #include <cte/crdt/symbol.h>
@@ -20,12 +21,14 @@ namespace cte {
         Q_OBJECT
 
         QSharedPointer<QStackedWidget> forms_;
+        QSharedPointer<QMessageBox> connection_loading_;
         QPointer<ConnectionForm> connection_form_;
         QPointer<LoginForm> login_form_;
         QPointer<SignupForm> signup_form_;
         QSharedPointer<Home> home_;
         QHash<Document,QPointer<Editor>> editors_;
 
+        void show_initial_form();
         void show_error(const QSharedPointer<Message>& message);
         void logged_in(const QSharedPointer<Message>& message);
         void show_document_list(const QSharedPointer<Message>& message);
@@ -57,6 +60,7 @@ namespace cte {
         void show_signup_form();
 
     public slots:
+        void show_connection_loading(const QString& hostname, int port);
         void show_connection_form();
         void show_login_form();
         void show_error(const QString& error);

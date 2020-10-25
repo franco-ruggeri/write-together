@@ -2,6 +2,7 @@
 
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <QtCore/QEvent>
 #include <QtWidgets/QWidget>
 
 namespace Ui {
@@ -26,5 +27,6 @@ namespace cte {
 
     public:
         explicit LoginForm(QWidget *parent=nullptr);
+        bool eventFilter(QObject *watched, QEvent *event) override;
     };
 }

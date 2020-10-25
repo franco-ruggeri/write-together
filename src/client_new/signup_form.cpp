@@ -3,6 +3,7 @@
 #include <cte/protocol/profile_message.h>
 #include <ui_signup_form.h>
 #include <QtGui/QImage>
+#include <QtGui/QKeyEvent>
 #include <QtWidgets/QMessageBox>
 
 namespace cte {
@@ -15,6 +16,12 @@ namespace cte {
         ui_->surname->addAction(QIcon(":images/forms/surname.png"), QLineEdit::LeadingPosition);
         ui_->password->addAction(QIcon(":images/forms/password.png"), QLineEdit::LeadingPosition);
         ui_->repeat_password->addAction(QIcon(":images/forms/repeat_password.png"), QLineEdit::LeadingPosition);
+        ui_->username->installEventFilter(this);
+        ui_->email->installEventFilter(this);
+        ui_->name->installEventFilter(this);
+        ui_->surname->installEventFilter(this);
+        ui_->password->installEventFilter(this);
+        ui_->repeat_password->installEventFilter(this);
         connect(ui_->go_to_login, &QPushButton::clicked, this, &SignupForm::login_request);
     }
 
@@ -41,6 +48,15 @@ namespace cte {
             emit signup_request(profile, ui_->password->text());
     }
 
+    bool SignupForm::eventFilter(QObject *watched, QEvent *event) {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *key_event = static_cast<QKeyEvent *>(event);
+            if (key_event->key() == Qt::Key_Return)
+                ui_->signup->click();
+        }
+        return false;
+    }
+
     void SignupForm::clear() {
         ui_->username->clear();
         ui_->email->clear();
@@ -48,5 +64,6 @@ namespace cte {
         ui_->surname->clear();
         ui_->password->clear();
         ui_->repeat_password->clear();
+        ui_->username->setFocus();
     }
 }

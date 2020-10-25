@@ -2,6 +2,7 @@
 
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <QtCore/QEvent>
 #include <QtWidgets/QWidget>
 #include <cte/protocol/profile.h>
 
@@ -27,5 +28,6 @@ namespace cte {
 
     public:
         explicit SignupForm(QWidget *parent=nullptr);
+        bool eventFilter(QObject *watched, QEvent *event) override;
     };
 }

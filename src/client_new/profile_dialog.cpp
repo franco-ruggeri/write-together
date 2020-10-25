@@ -3,6 +3,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtWidgets/QFileDialog>
 #include <QtGui/QPixmap>
+#include <QtGui/QKeyEvent>
 #include <QtWidgets/QMessageBox>
 
 namespace cte {
@@ -38,6 +39,12 @@ namespace cte {
             ui_->cancel->hide();
             ui_->save->hide();
             adjustSize();
+        } else {
+            ui_->email->installEventFilter(this);
+            ui_->name->installEventFilter(this);
+            ui_->surname->installEventFilter(this);
+            ui_->password->installEventFilter(this);
+            ui_->repeat_password->installEventFilter(this);
         }
     }
 
@@ -70,6 +77,15 @@ namespace cte {
         QString filter = tr("Images (*.png *.jpg *.jpeg)");
         QString filename = QFileDialog::getOpenFileName(this, tr("Select icon"), directory, filter);
         if (!filename.isNull()) ui_->icon->setPixmap(QPixmap(filename));
+    }
+
+    bool ProfileDialog::eventFilter(QObject *watched, QEvent *event) {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *key_event = static_cast<QKeyEvent *>(event);
+            if (key_event->key() == Qt::Key_Return)
+                ui_->save->click();
+        }
+        return false;
     }
 
     Profile ProfileDialog::profile() const {

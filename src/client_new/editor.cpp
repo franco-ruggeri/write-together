@@ -19,15 +19,8 @@
 // TODO: find function
 // TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
 // TODO: document_id per efficienza
-// TODO: titolo finestre
-// TODO: home come finestra a parte, form in stackedwidgets (?)
-// TODO: per rimettere icona di default?
 // TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
-// TODO: home chiusa -> non funziona pulsante in editor
 // TODO: appication icon, https://doc.qt.io/qt-5/appicon.html
-// TODO: animazione per hover in document list (home)
-// TODO: logout -> chiudi tutti gli editor
-// TODO: update profile -> edit icon non si vede bene, sistema UI
 // TODO: login/signup/connection se messi a schermo intero fanno caga... dimensione fissa?
 // TODO: mostra pagina di caricamento mentre si connette al server
 #include <QDebug>
@@ -41,6 +34,7 @@ namespace cte {
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
         ui_->editor->setText(shared_editor_.to_string());
+        setWindowTitle(document.full_name());
 
         // set cursor to begin
         QTextCursor cursor = ui_->editor->textCursor();

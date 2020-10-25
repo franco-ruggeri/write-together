@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
+#include <QtCore/QEvent>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDialog>
 #include <cte/protocol/profile.h>
@@ -27,5 +28,6 @@ namespace cte {
     public:
         explicit ProfileDialog(const Profile& profile, bool editable, QWidget *parent=nullptr);
         Profile profile() const;
+        bool eventFilter(QObject *watched, QEvent *event) override;
     };
 }
