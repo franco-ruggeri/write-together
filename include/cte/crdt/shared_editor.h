@@ -19,6 +19,7 @@
 #include <cte/protocol/message.h>
 #include <cte/crdt/symbol.h>
 #include <cte/crdt/lseq.h>
+#include <optional>
 
 namespace cte {
     class SharedEditor {
@@ -33,7 +34,7 @@ namespace cte {
 
         bool valid_index(int index) const;
         void update_version_vector(const Symbol& symbol);
-        bool process_deletion_buffer();             // returns true if an erase is executed
+        std::optional<int> process_deletion_buffer();               // returns index if erase is executed
 
     public:
         explicit SharedEditor(int site_id, QObject *parent=nullptr);
@@ -42,8 +43,8 @@ namespace cte {
         Symbol insert(int site_id, int site_counter, int index, QChar value);   // should be used only by the server
         Symbol local_insert(int index, QChar value);
         Symbol local_erase(int index);
-        bool remote_insert(const Symbol& symbol);   // returns false in case of erase in deletion buffer
-        bool remote_erase(const Symbol& symbol);    // returns false if erase is put in deletion buffer
+        std::optional<int> remote_insert(const Symbol& symbol);     // returns nullopt in case of erase in deletion buffer
+        std::optional<int> remote_erase(const Symbol& symbol);      // returns nullopt if erase is put in deletion buffer
 
         int find(const Symbol& symbol) const;       // returns lower bound index, non-existing symbol is ok
         Symbol at(int index) const;

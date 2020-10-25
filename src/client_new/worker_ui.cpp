@@ -24,7 +24,8 @@ namespace cte {
         connection_form_ = new ConnectionForm(forms);
         login_form_ = new LoginForm(forms);
         signup_form_ = new SignupForm(forms);
-        forms_->setWindowTitle("Real-Time Collaborative Text Editor");
+        forms_->setWindowTitle(login_form_->windowTitle());
+        forms_->setWindowIcon(login_form_->windowIcon());
         forms_->addWidget(connection_form_);
         forms_->addWidget(login_form_);
         forms_->addWidget(signup_form_);
@@ -270,7 +271,7 @@ namespace cte {
         Editor *e = editor.data();
         connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
         connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
-        connect(e, &Editor::home_focus, this, &UiWorker::activate_home);
+        connect(e, &Editor::home_request, this, &UiWorker::activate_home);
         connect(e, &Editor::closed, [this, document]() { close_document(document); });
 
         // show editor

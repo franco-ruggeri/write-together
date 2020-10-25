@@ -24,7 +24,6 @@ namespace cte {
         Document document_;
         QUrl sharing_link_;
         SharedEditor shared_editor_;
-        int remote_changes_;
 
         QSharedPointer<User> local_user_;
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
@@ -37,13 +36,11 @@ namespace cte {
     signals:
         void local_insert(const Symbol& symbol);
         void local_erase(const Symbol& symbol);
-        void home_focus();
+        void home_request();
         void closed();
 
     private slots:
-        void process_change(int position, int chars_removed, int chars_added);
-        void remote_insert(int index, QChar value);
-        void remote_erase(int index);
+        void process_local_change(int position, int chars_removed, int chars_added);
         void export_pdf();
         void show_sharing_link();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);

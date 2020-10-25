@@ -12,6 +12,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
 #include <QtPrintSupport/QPrinter>
+#include <optional>
 #include <cmath>
 
 // TODO: cursore visualizzato dopo il simbolo in cui si trova!!!! cosi' posso settarlo a shared_editor.begin() all'apertura
@@ -20,25 +21,23 @@
 // TODO: disable MIME, HTML, markdown... only plain text (try in Qt designer first)
 // TODO: document_id per efficienza
 // TODO: aggiornamento profilo durante editing -> bisogna aggiornare il profilo in tutti i client, ci vuole un altro messaggio
-// TODO: appication icon, https://doc.qt.io/qt-5/appicon.html
 // TODO: login/signup/connection se messi a schermo intero fanno caga... dimensione fissa?
-// TODO: mostra pagina di caricamento mentre si connette al server
 // TODO: CSS editor
 // TODO: action_user_list
+// TODO: icona quando faccio home_.activate() e' troppo grande
 #include <QDebug>
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
             QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
-            shared_editor_(document_info.site_id(), document_info.text()), color_h_(std::floor(std::rand())),
-            remote_changes_(0) {
+            shared_editor_(document_info.site_id(), document_info.text()), color_h_(std::floor(std::rand())) {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
         ui_->editor->setText(shared_editor_.to_string());
         setWindowTitle(document.full_name());
 
-        // set cursor to begin
+        // set cursor to beginning
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(0);
         ui_->editor->setTextCursor(cursor);
@@ -70,8 +69,8 @@ namespace cte {
         }
 
         // connect signals and slots
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
-        connect(ui_->action_home, &QAction::triggered, this, &Editor::home_focus);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+        connect(ui_->action_home, &QAction::triggered, this, &Editor::home_request);
         connect(ui_->action_export_pdf, &QAction::triggered, this, &Editor::export_pdf);
         connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
         connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
@@ -120,43 +119,39 @@ namespace cte {
         }
 
         // show counts
-        online_users->setText(0, online_users->text(0) + " (" + QString::number(online_users->childCount()) + ")");
-        offline_users->setText(0, offline_users->text(0) + " (" + QString::number(offline_users->childCount()) + ")");
+        online_users->setText(0, "online users (" + QString::number(online_users->childCount()) + ")");
+        offline_users->setText(0, "offline users (" + QString::number(offline_users->childCount()) + ")");
 
         // sort
         online_users->sortChildren(0, Qt::AscendingOrder);
         offline_users->sortChildren(0, Qt::AscendingOrder);
     }
 
-    void Editor::remote_insert(int index, QChar value) {
-        QTextCursor cursor = ui_->editor->textCursor();
-        cursor.setPosition(index);
-        cursor.insertText(value);
-        remote_changes_++;
-    }
-
     void Editor::remote_insert(const Symbol& symbol) {
-        shared_editor_.remote_insert(symbol);
-    }
+        qDebug() << "remote insert" << shared_editor_.find(symbol);
 
-    void Editor::remote_erase(int index) {
-        QTextCursor cursor = ui_->editor->textCursor();
-        cursor.setPosition(index);
-        cursor.deleteChar();
-        remote_changes_++;
+        std::optional<int> index = shared_editor_.remote_insert(symbol);
+        if (index) {
+            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+            QTextCursor cursor = ui_->editor->textCursor();
+            cursor.setPosition(*index);
+            cursor.insertText(symbol.value());
+            connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+        }
     }
 
     void Editor::remote_erase(const Symbol& symbol) {
-        shared_editor_.remote_erase(symbol);
+        std::optional<int> index = shared_editor_.remote_erase(symbol);
+        if (index) {
+            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+            QTextCursor cursor = ui_->editor->textCursor();
+            cursor.setPosition(*index);
+            cursor.deleteChar();
+            connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
+        }
     }
 
-    void Editor::process_change(int position, int chars_removed, int chars_added) {
-        // triggered by a remote change => skip
-        if (remote_changes_ > 0) {
-            remote_changes_--;
-            return;
-        }
-
+    void Editor::process_local_change(int position, int chars_removed, int chars_added) {
         // TODO: perche'?
         if (position ==  ui_->editor->textCursor().block().position() && chars_added > 1) {
             chars_added  = chars_added - chars_removed;
@@ -174,6 +169,7 @@ namespace cte {
         for (int i=0 ; i<chars_added; i++) {
             QChar value = ui_->editor->toPlainText()[position+i];
             Symbol symbol = shared_editor_.local_insert(position+i, value);
+            qDebug() << "new text:" << shared_editor_.to_string();
             emit local_insert(symbol);
         }
     }
@@ -196,6 +192,7 @@ namespace cte {
         message_box.setText(sharing_link_.toString());
         message_box.addButton(tr("Close"), QMessageBox::NoRole);
         QPushButton *copy_button = message_box.addButton(tr("Copy"), QMessageBox::YesRole);
+        message_box.setDefaultButton(copy_button);
         message_box.exec();
         if (message_box.clickedButton() == copy_button)
             QApplication::clipboard()->setText(message_box.text());
@@ -243,7 +240,7 @@ namespace cte {
         }
 
         // update color text
-        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
         QList<Symbol> text = shared_editor_.text();
         QTextCursor cursor(ui_->editor->textCursor());
         QTextCharFormat format;
@@ -253,12 +250,12 @@ namespace cte {
             if (user->contains(text[i].site_id())) {    // author
                 cursor.setPosition(i, QTextCursor::KeepAnchor);
             } else {
-                cursor.setCharFormat(format);
+                cursor.mergeCharFormat(format);
                 cursor.setPosition(i, QTextCursor::MoveAnchor);
             }
         }
-        cursor.setCharFormat(format);
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_change);
+        cursor.mergeCharFormat(format);   // necessary to color also last characters
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_change);
     }
 
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {

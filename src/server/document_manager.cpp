@@ -30,9 +30,8 @@ namespace cte {
         execute_query(query);
 
         // create document
-        std::optional<DocumentInfo> document_info;
+        QString owner = document.owner();
         if (query.size() == 0) {
-            QString owner = document.owner();
             QUrl sharing_link = Document::generate_sharing_link(document);
 
             // insert new document
@@ -40,20 +39,12 @@ namespace cte {
             execute_query(query);
             query = query_insert_sharing(database, document, owner);
             execute_query(query);
-
-            // open document
-            OpenDocument od;
-            int site_id = od.open(owner);
-            QMutexLocker ml(&mutex_);
-            open_documents_.insert(document, od);
-            site_ids_[session_id].insert(document, document_info->site_id());
-            document_info = DocumentInfo(site_id, sharing_link);
         }
 
         // commit transaction
         database.commit();
 
-        return document_info;
+        return open_document(session_id, document, owner);
     }
 
     std::optional<DocumentInfo> DocumentManager::open_document(int session_id, const Document& document,
