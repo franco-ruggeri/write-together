@@ -137,8 +137,6 @@ namespace cte {
         execute_query(query);
         if (query.next()) {
             Document document(query.value("owner").toString(), query.value("name").toString());
-            DocumentInfo document_info = *open_document(session_id, document, username);
-            result = {document, document_info};
 
             // add sharing if not present
             query = query_select_document(database, document, username);
@@ -147,12 +145,15 @@ namespace cte {
                 query = query_insert_sharing(database, document, username);
                 execute_query(query);
             }
+
+            // open document
+            DocumentInfo document_info = *open_document(session_id, document, username);
+            result = std::make_pair(document, document_info);
         }
 
         // commit transaction
         database.commit();
 
-        // open document
         return result;
     }
 
