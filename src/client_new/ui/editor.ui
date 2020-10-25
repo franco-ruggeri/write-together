@@ -13,10 +13,17 @@
   <property name="windowTitle">
    <string>Editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/images/app/logo_black.png</normaloff>:/images/app/logo_black.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QMenuBar,QDockWidget {
 	font-family: &quot;Roboto Light&quot;;
 }</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonFollowStyle</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -93,7 +100,7 @@
    <addaction name="action_copy"/>
    <addaction name="action_paste"/>
   </widget>
-  <widget class="QDockWidget" name="dock_users">
+  <widget class="QDockWidget" name="dock">
    <property name="styleSheet">
     <string notr="true"/>
    </property>
@@ -159,6 +166,7 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <action name="action_undo">
    <property name="checkable">
     <bool>false</bool>

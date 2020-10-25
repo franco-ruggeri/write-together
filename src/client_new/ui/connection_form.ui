@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Real-Time Collaborative Text Editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/images/app/logo_black.png</normaloff>:/images/app/logo_black.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">* {
 	font-family: &quot;Roboto Light&quot;;
