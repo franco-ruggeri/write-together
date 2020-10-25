@@ -34,6 +34,7 @@ namespace cte {
         // document management
         void create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void open_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void close_document(int session_id, Socket *socket, const Document& document);
         void close_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
