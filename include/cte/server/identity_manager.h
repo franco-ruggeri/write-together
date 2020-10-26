@@ -3,8 +3,6 @@
  *
  * A session is authenticated and bound to a user after signing up or logging in, and not authenticated after logging
  * out. Note that it is not thread-safe to use the same session from different threads.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/saver.h>
 #include <cte/server/document_manager.h>
 #include <QtCore/QCoreApplication>

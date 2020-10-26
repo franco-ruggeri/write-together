@@ -1,7 +1,5 @@
 /*
  * Utilities for QtSql with secrete information (credentials, DB structure, etc.), not to be distributed as library.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

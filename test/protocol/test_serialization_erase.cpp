@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/document.h>
 #include <cte/crdt/symbol.h>

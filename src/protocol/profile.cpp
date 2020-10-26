@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri, Antonino Musmeci
- */
-
 #include <cte/protocol/profile.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>

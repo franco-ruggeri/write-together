@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/open_document.h>
 #include <cte/crdt/lseq.h>
 

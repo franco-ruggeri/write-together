@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/logout_message.h>
 
 namespace cte {

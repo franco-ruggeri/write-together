@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/crdt/lseq.h>
 #include <limits>
 #include <stdexcept>

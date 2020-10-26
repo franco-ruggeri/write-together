@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/document_manager.h>
 #include <cte/crdt/shared_editor.h>
 #include <cte/database/database_guard.h>

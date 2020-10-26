@@ -1,7 +1,5 @@
 /*
  * Utilities for QtSql.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

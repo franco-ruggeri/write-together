@@ -1,7 +1,5 @@
 /*
  * Identifier of a document.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

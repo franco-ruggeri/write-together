@@ -6,8 +6,6 @@
  * - Commutativity of insert and erase operations.
  * - Idempotency of operations.
  * - Protection against out-of-order messages (can happen in peer-to-peer architecture or in multi-threaded server).
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

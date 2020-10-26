@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QThread>

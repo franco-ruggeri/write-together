@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/crdt/symbol.h>
 #include <cte/crdt/shared_editor.h>
 #include <QtCore/QJsonArray>
@@ -29,10 +25,8 @@ namespace cte {
         site_id_ = site_id_iterator->toInt(SharedEditor::invalid_site_id);
         site_counter_ = site_counter_iterator->toInt(SharedEditor::invalid_site_counter);
 
-        //TODO: uncomment after doing close()
-        if (v.isNull() || v.size() != 1)
-//            || site_id_ == SharedEditor::invalid_site_id ||
-//            site_counter_ == SharedEditor::invalid_site_counter)
+        if (v.isNull() || v.size() != 1 || site_id_ == SharedEditor::invalid_site_id ||
+            site_counter_ == SharedEditor::invalid_site_counter)
             throw std::logic_error("invalid message: invalid fields");
 
         value_ = v.at(0);

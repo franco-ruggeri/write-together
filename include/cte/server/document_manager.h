@@ -3,8 +3,6 @@
  *
  * A document can be opened only once in a session. Note that it is not thread-safe to use the same session from
  * different threads.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

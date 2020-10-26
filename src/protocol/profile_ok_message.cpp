@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/profile_ok_message.h>
 
 namespace cte {

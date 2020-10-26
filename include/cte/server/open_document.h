@@ -1,7 +1,5 @@
 /*
  * Document that is open and is being currently edited by at least one client.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

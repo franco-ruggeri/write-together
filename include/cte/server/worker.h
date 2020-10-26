@@ -1,8 +1,6 @@
 /*
  * Server worker. It can manage many sessions at the same time. A session represents a network connection (a possible
  * identifier is the socket file descriptor).
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

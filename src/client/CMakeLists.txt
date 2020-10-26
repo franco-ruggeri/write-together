@@ -1,37 +1,41 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/client)
+set(UI_DIR ui)
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${UI_DIR})
 
-find_package(Qt5 COMPONENTS Core Widgets Gui Concurrent PrintSupport REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets PrintSupport REQUIRED)
 
 list(APPEND SRC
+        main.cpp
         client.cpp
-        loginTextEditor.cpp
-        newFileDialog.cpp
-        OpenFileUrl.cpp
-        ProfileUpdateDialog.cpp
-        texteditor.cpp
-        myClient.cpp
-        fileInfo.cpp
-        UserInfo.cpp
-        QTStylesheet.cpp
-        editProfileDialog.cpp)
+        worker_ui.cpp
+        worker_network.cpp
+        user.cpp
+        connection_form.cpp
+        login_form.cpp
+        signup_form.cpp
+        profile_dialog.cpp
+        home.cpp
+        editor.cpp
+        remote_cursor.cpp)
 
 list(APPEND QOBJ_HEADERS
-        ${QOBJ_DIR}/ProfileUpdateDialog.h
-        ${QOBJ_DIR}/OpenFileUrl.h
-        ${QOBJ_DIR}/loginTextEditor.h
-        ${QOBJ_DIR}/myClient.h
-        ${QOBJ_DIR}/newFileDialog.h
-        ${QOBJ_DIR}/texteditor.h
-        ${QOBJ_DIR}/UserInfo.h)
+        ${QOBJ_DIR}/client.h
+        ${QOBJ_DIR}/worker_ui.h
+        ${QOBJ_DIR}/worker_network.h
+        ${QOBJ_DIR}/connection_form.h
+        ${QOBJ_DIR}/login_form.h
+        ${QOBJ_DIR}/signup_form.h
+        ${QOBJ_DIR}/profile_dialog.h
+        ${QOBJ_DIR}/home.h
+        ${QOBJ_DIR}/editor.h)
 
-list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Concurrent Qt5::PrintSupport protocol crdt network)
-list(APPEND INCLUDE ${QOBJ_DIR})
+list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::PrintSupport network protocol crdt)
+list(APPEND INCLUDE ${QOBJ_DIR} ${UI_DIR})
 
-add_executable(client ${SRC} ${QOBJ_HEADERS} resource.qrc)
+add_executable(client ${SRC} ${QOBJ_HEADERS} ${UI_DIR}/resource.qrc)
 target_link_libraries(client ${LIB})
 target_include_directories(client PUBLIC ${INCLUDE})
 install(TARGETS client DESTINATION ${PROJECT_SOURCE_DIR}/bin)

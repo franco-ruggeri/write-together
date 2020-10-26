@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/document_message.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/document_info.h>

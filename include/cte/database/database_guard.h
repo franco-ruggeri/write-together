@@ -1,7 +1,5 @@
 /*
  * Wrapper of QSqlDatabase using the RAII paradigm.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

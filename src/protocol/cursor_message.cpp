@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/cursor_message.h>
 #include <cte/crdt/shared_editor.h>
 

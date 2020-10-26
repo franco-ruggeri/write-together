@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/crdt/shared_editor.h>
 #include <cte/crdt/symbol.h>
 #include <QtCore/QChar>

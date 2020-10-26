@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/error_message.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>

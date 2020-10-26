@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <QtCore/QThread>
 #include <QtNetwork/QHostAddress>
 #include <cte/server/worker.h>

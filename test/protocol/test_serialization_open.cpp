@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/open_message.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/profile.h>

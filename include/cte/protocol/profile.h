@@ -4,8 +4,6 @@
  * Notice that neither the password nor its hash is stored here. This is intentional, because the profile is thought
  * to be sent to users other than the owner. The password hash must stored only in the server host (file or DB),
  * protected with access control, and used just for authentication.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

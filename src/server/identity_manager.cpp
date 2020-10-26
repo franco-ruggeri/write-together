@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/identity_manager.h>
 #include <cte/database/database_guard.h>
 #include <cte/database/database_utility.h>
