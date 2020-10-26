@@ -6,18 +6,17 @@
 #include <QtGui/QTextCursor>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QPlainTextEdit>
 
 namespace cte {
-    class RemoteCursor : public QWidget {
-        Q_OBJECT
-
-        QPointer<QTextEdit> editor_;
+    class RemoteCursor {
+        QPointer<QPlainTextEdit> editor_;
         QSharedPointer<QLabel> vertical_label_, horizontal_label_;
         QTextCursor cursor_;
 
     public:
-        RemoteCursor(QTextEdit *editor, const QString& username, const QColor& color);
+        RemoteCursor(QPlainTextEdit *editor, const QString& username, const QColor& color);
         void move(int position);
+        void refresh();
     };
 }

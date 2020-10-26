@@ -405,9 +405,10 @@ namespace cte {
         Symbol symbol = erase_message->symbol();
 
         // erase symbol
-        document_manager.erase_symbol(session_id, document, symbol);
+        int site_id = document_manager.erase_symbol(session_id, document, symbol);
 
         // dispatch message
+        erase_message = QSharedPointer<EraseMessage>::create(document, symbol, site_id);
         emit new_message(socket->socketDescriptor(), erase_message);
 
         qDebug() << "erase: { document:" << document.full_name()

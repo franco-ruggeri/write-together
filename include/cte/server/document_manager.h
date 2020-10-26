@@ -46,7 +46,7 @@ namespace cte {
 
         // document editing
         void insert_symbol(int session_id, const Document& document, const Symbol& symbol);
-        void erase_symbol(int session_id, const Document& document, const Symbol& symbol);
+        int erase_symbol(int session_id, const Document& document, const Symbol& symbol);
         int move_cursor(int session_id, const Document& document, const Symbol& symbol);
         void save();
     };

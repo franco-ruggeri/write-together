@@ -36,9 +36,9 @@ namespace cte {
         void profile_updated(const QSharedPointer<Message>& message);
         void remote_insert(const QSharedPointer<Message>& message);
         void remote_erase(const QSharedPointer<Message>& message);
-        void peer_open_document(const QSharedPointer<Message>& message);
-        void peer_close_document(const QSharedPointer<Message>& message);
-        void peer_move_cursor(const QSharedPointer<Message>& message);
+        void remote_open_document(const QSharedPointer<Message>& message);
+        void remote_close_document(const QSharedPointer<Message>& message);
+        void remote_move_cursor(const QSharedPointer<Message>& message);
         void close_editors();
 
     signals:

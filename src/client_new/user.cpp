@@ -3,24 +3,25 @@
 #include <cmath>
 
 namespace cte {
-    User::User(const Profile &profile, const QSet<int>& site_ids) :
-            profile_(profile), site_ids_(site_ids), selected_(false), online_(false), local_(false) {
+    User::User(const Profile &profile, const QList<int>& site_ids) :
+            profile_(profile), selected_(false), online_(false), local_(false) {
+        site_ids_ = QSet<int>::fromList(site_ids);
         generate_color();
     }
 
     void User::generate_color() {
-        int site_id = *site_ids_.begin();
+        int site_id = *std::min_element(site_ids_.begin(), site_ids_.end());
         int hash = static_cast<int>(std::floor(site_id * 13)) % colors.size();
         color_ = colors[hash];
     }
 
-    void User::add_remote_cursor(QTextEdit *editor, int site_id) {
+    void User::add_remote_cursor(QPlainTextEdit *editor, int site_id) {
         QSharedPointer<RemoteCursor> cursor = QSharedPointer<RemoteCursor>::create(editor, profile_.username(), color_);
         remote_cursors_.insert(site_id, cursor);
         online_ = true;
     }
 
-    void User::add_remote_cursor(QTextEdit *editor, int site_id, int position) {
+    void User::add_remote_cursor(QPlainTextEdit *editor, int site_id, int position) {
         add_remote_cursor(editor, site_id);
         move_remote_cursor(site_id, position);
     }
@@ -32,6 +33,11 @@ namespace cte {
     void User::remove_remote_cursor(int site_id) {
         remote_cursors_.remove(site_id);
         online_ = local_ || !remote_cursors_.isEmpty();
+    }
+
+    void User::refresh_remote_cursors() {
+        for (auto& c : remote_cursors_)
+            c->refresh();
     }
 
     void User::show_profile() {

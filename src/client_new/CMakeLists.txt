@@ -30,8 +30,7 @@ list(APPEND QOBJ_HEADERS
         ${QOBJ_DIR}/signup_form.h
         ${QOBJ_DIR}/profile_dialog.h
         ${QOBJ_DIR}/home.h
-        ${QOBJ_DIR}/editor.h
-        ${QOBJ_DIR}/remote_cursor.h)
+        ${QOBJ_DIR}/editor.h)
 
 list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::PrintSupport network protocol crdt)
 list(APPEND INCLUDE ${QOBJ_DIR} ${UI_DIR})

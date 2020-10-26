@@ -118,10 +118,10 @@ namespace cte {
                 open_editor(message);
                 break;
             case MessageType::open:
-                peer_open_document(message);
+                remote_open_document(message);
                 break;
             case MessageType::close:
-                peer_close_document(message);
+                remote_close_document(message);
                 break;
             case MessageType::insert:
                 remote_insert(message);
@@ -130,7 +130,7 @@ namespace cte {
                 remote_erase(message);
                 break;
             case MessageType::cursor:
-                peer_move_cursor(message);
+                remote_move_cursor(message);
                 break;
             default:    // should never happen, since the message is generated through Message::deserialize
                 throw std::logic_error("invalid message: invalid type");
@@ -264,6 +264,7 @@ namespace cte {
         // update home
         Document document = document_message->document();
         home_->add_document(document);
+        home_->showMinimized();
 
         // create editor
         DocumentInfo document_info = document_message->document_info();
@@ -281,10 +282,6 @@ namespace cte {
         connect(e, &Editor::local_cursor_move, [this, editor, document](const Symbol& symbol) {
             local_cursor_move(document, editor->local_site_id(), symbol);
         });
-
-        // show editor
-        editor->show();
-        home_->showMinimized();
     }
 
     void UiWorker::close_editors() {
@@ -307,26 +304,27 @@ namespace cte {
     void UiWorker::remote_erase(const QSharedPointer<Message>& message) {
         QSharedPointer<EraseMessage> erase_message = message.staticCast<EraseMessage>();
         Document document = erase_message->document();
+        int site_id = *erase_message->site_id();
         Symbol symbol = erase_message->symbol();
-        editors_[document]->remote_erase(symbol);
+        editors_[document]->remote_erase(site_id, symbol);
     }
 
-    void UiWorker::peer_open_document(const QSharedPointer<Message>& message) {
+    void UiWorker::remote_open_document(const QSharedPointer<Message>& message) {
         QSharedPointer<OpenMessage> open_message = message.staticCast<OpenMessage>();
         Document document = *open_message->document();
         int site_id = *open_message->site_id();
         Profile profile = *open_message->profile();
-        editors_[document]->add_online_user(site_id, profile);
+        editors_[document]->remote_open(site_id, profile);
     }
 
-    void UiWorker::peer_close_document(const QSharedPointer<Message>& message) {
+    void UiWorker::remote_close_document(const QSharedPointer<Message>& message) {
         QSharedPointer<CloseMessage> close_message = message.staticCast<CloseMessage>();
         Document document = close_message->document();
         int site_id = *close_message->site_id();
-        editors_[document]->remove_online_user(site_id);
+        editors_[document]->remote_close(site_id);
     }
 
-    void UiWorker::peer_move_cursor(const QSharedPointer<Message>& message) {
+    void UiWorker::remote_move_cursor(const QSharedPointer<Message>& message) {
         QSharedPointer<CursorMessage> cursor_message = message.staticCast<CursorMessage>();
         Document document = cursor_message->document();
         int site_id = *cursor_message->site_id();

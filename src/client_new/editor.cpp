@@ -11,18 +11,9 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollBar>
 #include <QtPrintSupport/QPrinter>
 #include <optional>
-
-// TODO: verifica colorazione, non colora l'ultimo carattere
-// TODO: cursore visualizzato dopo il simbolo in cui si trova!!!! cosi' posso settarlo a shared_editor.begin() all'apertura
-// TODO: occhio alle connect con le lambda, devo eliminare le connessioni senno' c'e' leakage
-// TODO: CSS editor
-// TODO: action_user_list
-// TODO: find function
-// TODO: document_id per efficienza
-// TODO: puo' assegnare colore nero a utente, in tal caso rimpiazzalo (caso speciale), senno' non si vede niente
-#include <QDebug>
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
@@ -31,7 +22,8 @@ namespace cte {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
-        ui_->editor->setText(shared_editor_.to_string());
+        ui_->editor->setPlainText(shared_editor_.to_string());
+        ui_->action_user_list->setChecked(true);
         setWindowTitle(document.full_name());
 
         // set cursor to beginning
@@ -44,13 +36,14 @@ namespace cte {
             Profile& profile = u.first;
             QList<int>& site_ids = u.second;
 
-            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids.toSet());
+            QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids);
             username_users_.insert(profile.username(), user);
             for (const auto& si : site_ids)
                 site_id_users_.insert(si, user);
         }
 
         // add remote cursors
+        show();     // important: before adding remote cursors, to be initialized well!
         int my_site_id = document_info.site_id();
         QHash<int,Symbol> cursors = document_info.cursors();
         for (auto it=cursors.begin(); it != cursors.end(); it++) {
@@ -67,23 +60,46 @@ namespace cte {
             }
         }
 
-        // connect signals and slots
-        connect(ui_->action_home, &QAction::triggered, this, &Editor::home_request);
-        connect(ui_->action_export_pdf, &QAction::triggered, this, &Editor::export_pdf);
-        connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
-        connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
-        connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QTextEdit::undo);
-        connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
-        connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QTextEdit::cut);
-        connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QTextEdit::copy);
-        connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QTextEdit::paste);
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
-
         // show user list
         ui_->users->topLevelItem(0)->setExpanded(true);
         ui_->users->topLevelItem(1)->setExpanded(true);
         refresh_users();
+
+        // show word and char count in status bar
+        word_char_count_ = new QLabel;
+        statusBar()->addWidget(word_char_count_);
+        refresh_status_bar();
+
+        // connect signals and slots
+        QTextDocument *editor_document = ui_->editor->document();
+        connect(ui_->action_home, &QAction::triggered, this, &Editor::home_request);
+        connect(ui_->action_export_pdf, &QAction::triggered, this, &Editor::export_pdf);
+        connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
+        connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
+        connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QPlainTextEdit::undo);
+        connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QPlainTextEdit::redo);
+        connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QPlainTextEdit::cut);
+        connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QPlainTextEdit::copy);
+        connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QPlainTextEdit::paste);
+        connect(ui_->dock, &QDockWidget::visibilityChanged, ui_->action_user_list, &QAction::setChecked);
+        connect(ui_->action_user_list, &QAction::triggered, ui_->dock, &QDockWidget::setVisible);
+        connect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        connect(ui_->editor, &QPlainTextEdit::textChanged, this, &Editor::refresh_status_bar);
+        connect(ui_->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &Editor::refresh_cursors);
+        connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
+                this, &Editor::refresh_cursors);
+    }
+
+    void Editor::refresh_cursors() {
+        for (auto& u : username_users_)
+            u->refresh_remote_cursors();
+    }
+
+    void Editor::refresh_status_bar() {
+        int n_words = ui_->editor->toPlainText().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).count();
+        int n_chars = ui_->editor->toPlainText().count();
+        word_char_count_->setText("Words: " + QString::number(n_words) + "; Characters: " + QString::number(n_chars));
     }
 
     void Editor::refresh_users() {
@@ -109,8 +125,8 @@ namespace cte {
         }
 
         // show counts
-        online_users->setText(0, "online users (" + QString::number(online_users->childCount()) + ")");
-        offline_users->setText(0, "offline users (" + QString::number(offline_users->childCount()) + ")");
+        online_users->setText(0, "Online users (" + QString::number(online_users->childCount()) + ")");
+        offline_users->setText(0, "Offline users (" + QString::number(offline_users->childCount()) + ")");
 
         // sort
         online_users->sortChildren(0, Qt::AscendingOrder);
@@ -118,46 +134,47 @@ namespace cte {
     }
 
     void Editor::remote_insert(const Symbol& symbol) {
+        // refresh remote cursor (it is for sure on the inserted symbol!)
+        remote_cursor_move(symbol.site_id(), symbol);
+
+        // insert in shared editor
         std::optional<int> index = shared_editor_.remote_insert(symbol);
-        if (index) {
-            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this,
-                       &Editor::process_local_content_change);
-            QTextCursor cursor = ui_->editor->textCursor();
-            cursor.setPosition(*index);
-            cursor.insertText(symbol.value());
-            connect(ui_->editor->document(), &QTextDocument::contentsChange, this,
-                    &Editor::process_local_content_change);
-        }
+        if (!index) return;     // immediately erased using deletion buffer
+
+        // insert in UI editor
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        QTextCursor cursor = ui_->editor->textCursor();
+        cursor.setPosition(*index);
+        cursor.insertText(symbol.value());
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
-    void Editor::remote_erase(const Symbol& symbol) {
+    void Editor::remote_erase(int site_id, const Symbol& symbol) {
+        // refresh remote cursor (it is for sure on the erased symbol!)
+        remote_cursor_move(site_id, symbol);
+
+        // erase from shared editor
         std::optional<int> index = shared_editor_.remote_erase(symbol);
-        if (index) {
-            disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this,
-                       &Editor::process_local_content_change);
-            QTextCursor cursor = ui_->editor->textCursor();
-            cursor.setPosition(*index);
-            cursor.deleteChar();
-            connect(ui_->editor->document(), &QTextDocument::contentsChange, this,
-                    &Editor::process_local_content_change);
-        }
+        if (!index) return;     // put in deletion buffer
+
+        // erase from UI editor
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        QTextCursor cursor = ui_->editor->textCursor();
+        cursor.setPosition(*index);
+        cursor.deleteChar();
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
-        int position = shared_editor_.find(symbol);
-        site_id_users_[site_id]->move_remote_cursor(site_id, position);
+        disconnect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        int index = shared_editor_.find(symbol);
+        site_id_users_[site_id]->move_remote_cursor(site_id, index);
+        connect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
     }
 
     void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
-        // TODO: perche'?
-        if (position ==  ui_->editor->textCursor().block().position() && chars_added > 1) {
-            chars_added  = chars_added - chars_removed;
-            chars_removed = 0;
-        }
-
         // erase
-        // TODO: perche' il controllo empty()? e' costoso shared_editor_.text()! O(N)
-        for (int i=0; i<chars_removed && !shared_editor_.text().isEmpty(); i++) {
+        for (int i=0; i<chars_removed; i++) {
             Symbol symbol = shared_editor_.local_erase(position);
             emit local_erase(symbol);
         }
@@ -200,13 +217,13 @@ namespace cte {
             QApplication::clipboard()->setText(message_box.text());
     }
 
-    void Editor::add_online_user(int site_id, const Profile& profile) {
+    void Editor::remote_open(int site_id, const Profile& profile) {
         // add cursor
         QString username = profile.username();
         QSharedPointer<User> user;
         auto it = username_users_.find(username);
         if (it == username_users_.end()) {
-            user = QSharedPointer<User>::create(profile, QSet<int>{site_id});
+            user = QSharedPointer<User>::create(profile, QList<int>{site_id});
             username_users_.insert(username, user);
         } else {
             user = *it;
@@ -214,16 +231,16 @@ namespace cte {
         user->add_remote_cursor(ui_->editor, site_id, 0);
         site_id_users_[site_id] = user;
 
-        // refresh UI
+        // refresh user list
         refresh_users();
     }
 
-    void Editor::remove_online_user(int site_id) {
+    void Editor::remote_close(int site_id) {
         // remove cursor
         QSharedPointer<User> user = site_id_users_.value(site_id);
         user->remove_remote_cursor(site_id);
 
-        // refresh UI
+        // refresh user list
         refresh_users();
     }
 
@@ -241,7 +258,7 @@ namespace cte {
             else item->setBackground(0, QBrush());
         }
 
-        // update color text
+        // update text color
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QList<Symbol> text = shared_editor_.text();
         QTextCursor cursor(ui_->editor->textCursor());
@@ -250,10 +267,10 @@ namespace cte {
         cursor.setPosition(0);
         for (int i = 0; i < text.size(); i++) {
             if (user->contains(text[i].site_id())) {    // author
-                cursor.setPosition(i, QTextCursor::KeepAnchor);
+                cursor.setPosition(i+1, QTextCursor::KeepAnchor);
             } else {
                 cursor.mergeCharFormat(format);
-                cursor.setPosition(i, QTextCursor::MoveAnchor);
+                cursor.setPosition(i+1, QTextCursor::MoveAnchor);
             }
         }
         cursor.mergeCharFormat(format);   // necessary to color also last characters

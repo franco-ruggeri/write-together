@@ -23,12 +23,13 @@ namespace cte {
         void generate_color();
 
     public:
-        User(const Profile& profile, const QSet<int>& site_ids);
+        User(const Profile& profile, const QList<int>& site_ids);
 
-        void add_remote_cursor(QTextEdit *editor, int site_id);
-        void add_remote_cursor(QTextEdit *editor, int site_id, int position);
+        void add_remote_cursor(QPlainTextEdit *editor, int site_id);
+        void add_remote_cursor(QPlainTextEdit *editor, int site_id, int position);
         void move_remote_cursor(int site_id, int position);
         void remove_remote_cursor(int site_id);
+        void refresh_remote_cursors();
         void show_profile();
 
         bool local() const;

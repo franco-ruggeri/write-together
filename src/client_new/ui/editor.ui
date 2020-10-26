@@ -18,13 +18,16 @@
     <normaloff>:/images/app/logo_black.png</normaloff>:/images/app/logo_black.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMenuBar,QDockWidget {
+   <string notr="true">* {
 	font-family: &quot;Roboto Light&quot;;
 }
 
-QTextEdit#editor {
-	padding: 10px;
-	background-color: white;
+QWidget#centralwidget * {
+	font-size: 14pt;
+}
+
+QDockWidget#dock * {
+	font-size: 14pt;
 }</string>
   </property>
   <property name="toolButtonStyle">
@@ -32,10 +35,10 @@ QTextEdit#editor {
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <widget class="QTextEdit" name="editor">
-      <property name="acceptRichText">
-       <bool>false</bool>
+    <item row="1" column="0">
+     <widget class="QPlainTextEdit" name="editor">
+      <property name="plainText">
+       <string/>
       </property>
      </widget>
     </item>
@@ -120,7 +123,7 @@ QTextEdit#editor {
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Users</string>
+    <string/>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -139,7 +142,7 @@ QTextEdit#editor {
         <enum>QAbstractItemView::SelectItems</enum>
        </property>
        <attribute name="headerVisible">
-        <bool>false</bool>
+        <bool>true</bool>
        </attribute>
        <column>
         <property name="text">

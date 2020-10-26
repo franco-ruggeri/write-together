@@ -106,7 +106,7 @@ namespace cte {
 
         // insert
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
-        int index = std::distance(text_.begin(), it) - 1;   // -1 for BOF
+        int index = static_cast<int>(std::distance(text_.begin(), it) - 1);   // -1 for BOF
         text_.insert(it, symbol);
         update_version_vector(symbol);
 
@@ -123,11 +123,10 @@ namespace cte {
 
     int SharedEditor::find(const Symbol& symbol) const {
         auto it = std::upper_bound(text_.begin(), text_.end(), symbol);
-        return std::distance(text_.begin(), it) - 1;    // -1 for BOF
+        return static_cast<int>(std::distance(text_.begin(), it) - 1);    // -1 for BOF
     }
 
     Symbol SharedEditor::at(int index) const {
-        index++;    // for BOF
         return text_.at(index);
     }
 
