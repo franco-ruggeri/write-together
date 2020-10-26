@@ -3,8 +3,6 @@
  *
  * A document can be opened only once in a session. Note that it is not thread-safe to use the same session from
  * different threads.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once
@@ -38,7 +36,7 @@ namespace cte {
         // document management
         std::optional<DocumentInfo> create_document(int session_id, const Document& document);
         std::optional<DocumentInfo> open_document(int session_id, const Document& document, const QString& username);
-        std::pair<Document,std::optional<DocumentInfo>> open_document(int session_id, const QUrl& sharing_link,
+        std::optional<std::pair<Document,DocumentInfo>> open_document(int session_id, const QUrl& sharing_link,
                                                                       const QString& username);
         int close_document(int session_id, const Document& document);
         QList<Document> get_document_list(const QString& username) const;
@@ -46,7 +44,7 @@ namespace cte {
 
         // document editing
         void insert_symbol(int session_id, const Document& document, const Symbol& symbol);
-        void erase_symbol(int session_id, const Document& document, const Symbol& symbol);
+        int erase_symbol(int session_id, const Document& document, const Symbol& symbol);
         int move_cursor(int session_id, const Document& document, const Symbol& symbol);
         void save();
     };

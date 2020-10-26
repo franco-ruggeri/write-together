@@ -1,7 +1,5 @@
 /*
  * Information about a document needed when opening.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

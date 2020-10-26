@@ -1,7 +1,5 @@
 /*
  * Encapsulation of a single character in the text cte with all the information needed for CRDT.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

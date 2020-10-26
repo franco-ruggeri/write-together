@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/database/database_utility.h>
 #include <QtCore/QThread>
 #include <QtCore/QDebug>

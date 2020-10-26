@@ -1,7 +1,5 @@
 /*
  * Message types for the collaborative text cte application protocol (see docs/protocol.md).
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

@@ -7,8 +7,6 @@
  * the methods serialize() and deserialize(), guaranteeing an easy future change (e.g. binary serialization).
  * Moreover, this class guarantees not to use new lines ('\n') in the serialization, so server and client can easily
  * exchange messages by lines.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

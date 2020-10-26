@@ -1,7 +1,5 @@
 /*
  * Test the commutativity property required by a collaborative text editor.
- *
- * Author: Franco Ruggeri
  */
 
 #include <cte/crdt/shared_editor.h>

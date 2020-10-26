@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/open_document.h>
 #include <cte/crdt/lseq.h>
 
@@ -10,16 +6,18 @@ namespace cte {
             shared_editor_(QSharedPointer<SharedEditor>::create(SharedEditor::invalid_site_id)),
             next_site_id_(SharedEditor::starting_site_counter), reference_count_(0) {}
 
-    OpenDocument::OpenDocument(const QVector<character_t>& text) : OpenDocument() {
-        QHash<QString,std::pair<int,int>> authors;
-        int index = 0;
+    OpenDocument::OpenDocument(const QVector<character_t>& text, const QList<QString>& usernames) : OpenDocument() {
+        // assign site_ids
+        QHash<QString,std::pair<int,int>> authors;  // username -> {site_id, site_counter}
+        for (const auto& u : usernames) {
+            authors.insert(u, {next_site_id_, SharedEditor::starting_site_counter});
+            usernames_.insert(next_site_id_, u);
+            next_site_id_++;
+        }
 
+        // fill shared editor
+        int index = 0;
         for (const auto& c : text) {
-            if (!authors.contains(c.author)) {
-                authors.insert(c.author, {next_site_id_, SharedEditor::starting_site_counter});
-                usernames_.insert(next_site_id_, c.author);
-                next_site_id_++;
-            }
             std::pair<int,int> author = authors[c.author];
             shared_editor_->insert(author.first, author.second++, index++, c.value);
         }

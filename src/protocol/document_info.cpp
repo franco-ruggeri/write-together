@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/document_info.h>
 #include <cte/crdt/shared_editor.h>
 #include <QtCore/QJsonArray>

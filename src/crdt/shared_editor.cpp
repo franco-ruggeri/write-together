@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/crdt/shared_editor.h>
 #include <algorithm>
 
@@ -52,7 +48,7 @@ namespace cte {
         if (!valid_index(index)) throw std::logic_error("trying to insert at an invalid index");
 
         // allocate position
-        index += 1;     // for BOF
+        index++;    // for BOF
         QVector<int> prev_pos = text_.at(index-1).position();
         QVector<int> next_pos = text_.at(index).position();
         QVector<int> between_pos = pos_allocator_.between(prev_pos, next_pos);
@@ -64,11 +60,11 @@ namespace cte {
         return symbol;
     }
 
-    bool SharedEditor::process_deletion_buffer() {
+    std::optional<int> SharedEditor::process_deletion_buffer() {
         QList<Symbol> deletion_buffer_copy(deletion_buffer_);
         deletion_buffer_.clear();
 
-        bool erased = false;
+        std::optional<int> index;
         for (const auto& symbol : deletion_buffer_copy) {
             int site_id = symbol.site_id();
             int site_counter = symbol.site_counter();
@@ -82,11 +78,11 @@ namespace cte {
 
             // erase
             auto it_symbol = std::lower_bound(text_.begin(), text_.end(), symbol);
-            if (it_symbol == text_.end() || !(*it_symbol == symbol)) continue;  // already erased
+            if (it_symbol == text_.end() || !(*it_symbol == symbol)) continue;      // already erased
+            index = std::distance(text_.begin(), it_symbol)-1;                      // -1 for BOF
             text_.erase(it_symbol);
-            erased = true;
         }
-        return erased;
+        return index;
     }
 
     Symbol SharedEditor::local_insert(int index, QChar value) {
@@ -95,28 +91,36 @@ namespace cte {
 
     Symbol SharedEditor::local_erase(int index) {
         if (!valid_index(index)) throw std::logic_error("trying to erase at an invalid index");
-        index += 1;     // for BOF
+        index++;    // for BOF
         Symbol symbol = text_.at(index);
         text_.erase(text_.begin() + index);
         return symbol;
     }
 
-    bool SharedEditor::remote_insert(const Symbol& symbol) {
+    std::optional<int> SharedEditor::remote_insert(const Symbol& symbol) {
         if (symbol.value().isNull()) throw std::logic_error("trying to insert null character");
+
+        // insert
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
+        int index = static_cast<int>(std::distance(text_.begin(), it) - 1);   // -1 for BOF
         text_.insert(it, symbol);
         update_version_vector(symbol);
-        return !process_deletion_buffer();
+
+        // process deletion buffer
+        bool erased = process_deletion_buffer().has_value();
+        if (erased) return std::nullopt;    // inserted symbol was erased
+        else return index;                  // return position
     }
 
-    bool SharedEditor::remote_erase(const Symbol& symbol) {
+    std::optional<int> SharedEditor::remote_erase(const Symbol& symbol) {
+        if (symbol == bof || symbol == eof) throw std::logic_error("trying to erase BOF or EOF");
         deletion_buffer_.append(symbol);
         return process_deletion_buffer();
     }
 
     int SharedEditor::find(const Symbol& symbol) const {
-        auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
-        return std::distance(text_.begin(), it);
+        auto it = std::upper_bound(text_.begin(), text_.end(), symbol);
+        return static_cast<int>(std::distance(text_.begin(), it) - 1);    // -1 for BOF
     }
 
     Symbol SharedEditor::at(int index) const {

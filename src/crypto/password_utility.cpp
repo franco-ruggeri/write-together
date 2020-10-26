@@ -1,7 +1,3 @@
-//
-// Author: Stefano Di Blasio
-//
-
 #include <cte/crypto/password_utility.h>
 #include <scrypt.h>
 #include <osrng.h>

@@ -1,8 +1,5 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <QtCore/QThread>
+#include <QtCore/QPointer>
 #include <QtNetwork/QHostAddress>
 #include <cte/server/worker.h>
 #include <cte/server/identity_manager.h>
@@ -231,11 +228,9 @@ namespace cte {
         // save username (just for final print)
         std::optional<QString> username = identity_manager.username(session_id);
 
-        // close open documents and unregister for dispatching
-        for (const auto& document : document_manager.get_open_documents(session_id)) {
-            document_manager.close_document(session_id, document);
-            editing_clients[document].remove(socket);
-        }
+        // close open documents
+        for (const auto& document : document_manager.get_open_documents(session_id))
+            close_document(session_id, socket, document);
 
         // logout
         identity_manager.logout(session_id);
@@ -302,16 +297,20 @@ namespace cte {
         std::optional<DocumentInfo> document_info;
         if (document) {
             document_info = document_manager.open_document(session_id, *document, username);
+            if (!document_info) {
+                send_error(socket, "document open failed: document not existing or not accessible");
+                return;
+            }
         } else if (sharing_link) {
             auto result = document_manager.open_document(session_id, *sharing_link, username);
-            document = result.first;
-            document_info = result.second;
+            if (!result) {
+                send_error(socket, "document open failed: invalid sharing link");
+                return;
+            }
+            document = result->first;
+            document_info = result->second;
         } else {
             throw std::logic_error("invalid message: open with neither document nor sharing link");
-        }
-        if (!document_info) {
-            send_error(socket, "document open failed: document not existing or not accessible");
-            return;
         }
 
         // register for dispatching
@@ -330,6 +329,18 @@ namespace cte {
         qDebug() << "document opened: { document:" << document->full_name() << ", user:" << username << "}";
     }
 
+    void Worker::close_document(int session_id, Socket *socket, const Document& document) {
+        // close document
+        int site_id = document_manager.close_document(session_id, document);
+
+        // unregister for dispatching
+        editing_clients[document].remove(socket);
+
+        // dispatch message
+        QSharedPointer<Message> close_message = QSharedPointer<CloseMessage>::create(document, site_id);
+        emit new_message(socket->socketDescriptor(), close_message);
+    }
+
     void Worker::close_document(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
         // check authentication
         if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
@@ -339,17 +350,10 @@ namespace cte {
         Document document = close_message->document();
 
         // close document
-        int site_id = document_manager.close_document(session_id, document);
-
-        // unregister for dispatching
-        editing_clients[document].remove(socket);
-
-        // dispatch message
-        close_message = QSharedPointer<CloseMessage>::create(document, site_id);
-        emit new_message(socket->socketDescriptor(), close_message);
+        close_document(session_id, socket, document);
 
         qDebug() << "document closed: { document:" << document.full_name()
-                << ", user:" << *identity_manager.username(session_id) << "}";
+                 << ", user:" << *identity_manager.username(session_id) << "}";
     }
 
     void Worker::get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
@@ -398,9 +402,10 @@ namespace cte {
         Symbol symbol = erase_message->symbol();
 
         // erase symbol
-        document_manager.erase_symbol(session_id, document, symbol);
+        int site_id = document_manager.erase_symbol(session_id, document, symbol);
 
         // dispatch message
+        erase_message = QSharedPointer<EraseMessage>::create(document, symbol, site_id);
         emit new_message(socket->socketDescriptor(), erase_message);
 
         qDebug() << "erase: { document:" << document.full_name()

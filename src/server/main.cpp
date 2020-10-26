@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QThread>
@@ -31,12 +27,12 @@ int main(int argc, char **argv) {
     } catch (const std::invalid_argument& e) {
         qDebug() << e.what();
         std::cout << "invalid argument\n\n" << usage << std::endl;
-        std::exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } catch (const std::exception& e) {
         qDebug() << e.what();
-        std::exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } catch (...) {
         qDebug() << "unknown exception";
-        std::exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 }

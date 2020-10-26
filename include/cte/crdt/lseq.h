@@ -11,8 +11,6 @@
  * to get the advantages, it requires to work at bit-level. Since we represent for simplicity a node with an integer,
  * each node takes always 32 bits independently of the depth, so it would be a waste to use just a part of the
  * available bits.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

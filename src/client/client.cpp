@@ -1,27 +1,36 @@
-/*
- * Author: Antonino Musmeci
- */
+#include <cte/client/client.h>
+#include <QtCore/QPointer>
+#include <QtCore/QThread>
 
-#include <cte/client/loginTextEditor.h>
-#include <QApplication>
-#include <QtCore/QSettings>
+namespace cte {
+    Client::Client(const QString& hostname, int port) {
+        // launch thread for network worker
+        thread_ = new QThread(this);
+        thread_->start();
+        network_worker_ = new NetworkWorker();
+        network_worker_->moveToThread(thread_);
 
-int main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
-    QCoreApplication::setOrganizationName("DivideEtImpera");
-    QCoreApplication::setOrganizationDomain("divideetimpera.ga"); // choose the domain name from the ones available
-    QCoreApplication::setApplicationName("Collaborative Text Editor");
-    // setting client values (it should be done with installer)
-/*
-    QSettings client_default = QSettings(QSettings::SystemScope);
-    client_default.beginGroup("client");
-    client_default.setValue("hostname", QString("divideetimpera.ga")); // domain name to be chosen
-    client_default.setValue("secondhostname", QString("localhost"));
-    quint16 port = 8080;
-    client_default.setValue("port", port);
-    client_default.endGroup();
-    client_default.sync();
-*/
-    loginTextEditor l;
-    return a.exec();
+        // use this thread for UI worker
+        ui_worker_ = QSharedPointer<UiWorker>::create();
+
+        // connect workers
+        NetworkWorker *network_worker = network_worker_.data();
+        UiWorker *ui_worker = ui_worker_.data();
+        connect(ui_worker, &UiWorker::connection_request, network_worker, &NetworkWorker::set_server);
+        connect(ui_worker, &UiWorker::new_message, network_worker, &NetworkWorker::send_message);
+        connect(network_worker, &NetworkWorker::connected, ui_worker, &UiWorker::show_login_form);
+        connect(network_worker, &NetworkWorker::new_message, ui_worker, &UiWorker::process_message);
+        connect(network_worker, qOverload<const QString&>(&NetworkWorker::error_occurred),
+                ui_worker, &UiWorker::show_connection_form);
+        connect(network_worker, qOverload<const QString&>(&NetworkWorker::error_occurred),
+                ui_worker, qOverload<const QString&>(&UiWorker::show_error));
+
+        // start connection
+        ui_worker_->show_connection_loading(hostname, port);
+        network_worker_->set_server(hostname, port);
+    }
+
+    Client::~Client() {
+        thread_->exit();
+    }
 }

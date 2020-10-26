@@ -1,7 +1,5 @@
 /*
  * SQL injection protection: all the queries are done as prepared statements.
- *
- * Author: Franco Ruggeri
  */
 
 #include "database_utility_secret.h"

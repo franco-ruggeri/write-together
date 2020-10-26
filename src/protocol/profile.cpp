@@ -1,20 +1,18 @@
-/*
- * Author: Franco Ruggeri, Antonino Musmeci
- */
-
 #include <cte/protocol/profile.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
 #include <QtCore/QRegExp>
 
-// TODO: aggiungi check in costruttori e aggiungi check per massima dimensione icona
-
 namespace cte {
+    const char *Profile::icon_format_ = "PNG";
+
     Profile::Profile() {}
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
                      const QImage& icon) :
-            username_(username), name_(name), surname_(surname), email_(email), icon_(icon) {}
+            username_(username), name_(name), surname_(surname), email_(email) {
+        set_icon(icon);
+    }
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
                      const QByteArray& icon) : Profile(username, name, surname, email, QImage{}) {
@@ -75,12 +73,20 @@ namespace cte {
         QByteArray bytes;
         QBuffer buffer(&bytes);
         buffer.open(QIODevice::WriteOnly);
-        icon_.save(&buffer, "PNG");
+        icon_.save(&buffer, icon_format_);
         return bytes;
     }
 
+    void Profile::set_icon(const QImage& icon) {
+        static const int width = 96;
+        static const int height = 96;
+        icon_ = icon.scaled(width, height);
+    }
+
     void Profile::set_icon(const QByteArray& data) {
-        icon_.loadFromData(data, "PNG");
+        QImage icon;
+        icon.loadFromData(data, icon_format_);
+        set_icon(icon);
     }
 
     QJsonObject Profile::json() const {
@@ -93,18 +99,30 @@ namespace cte {
         return json_object;
     }
 
-    bool Profile::check_username(const QString& username) {
+    bool Profile::valid_username() const {
+        return valid_username(username_);
+    }
+
+    bool Profile::valid_username(const QString& username) {
         static QRegExp username_regexp("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
         return username_regexp.exactMatch(username);
     }
 
-    bool Profile::check_email(const QString& email) {
-        static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-        return email_regexp.exactMatch(email);
-    }
-
-    bool Profile::check_password(const QString& password) {
+    bool Profile::valid_password(const QString& password) {
         static QRegExp password_regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
         return password_regexp.exactMatch(password);
+    }
+
+    bool Profile::valid_email() const {
+        static QRegExp email_regexp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
+        return email_regexp.exactMatch(email_);
+    }
+
+    bool Profile::valid_name() const {
+        return !name_.isEmpty();
+    }
+
+    bool Profile::valid_surname() const {
+        return !surname_.isEmpty();
     }
 }

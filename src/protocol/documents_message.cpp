@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/documents_message.h>
 #include <QtCore/QJsonArray>
 

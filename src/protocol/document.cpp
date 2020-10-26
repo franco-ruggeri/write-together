@@ -1,15 +1,16 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/document.h>
 #include <random>
 
 namespace cte {
     Document::Document() {}
 
-    Document::Document(const QString& owner, const QString& name) :
-        owner_(owner), name_(name) {}
+    Document::Document(const QString& owner, const QString& name) : owner_(owner), name_(name) {}
+
+    Document::Document(const QString& full_name) {
+        QStringList parts = full_name.split("/");
+        owner_ = parts[0];
+        name_ = parts[1];
+    }
 
     Document::Document(const QJsonObject& json_object) {
         auto end_iterator = json_object.end();

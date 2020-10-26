@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/profile_message.h>
 #include <cte/protocol/profile.h>
 #include <QtCore/QSharedPointer>

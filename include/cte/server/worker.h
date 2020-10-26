@@ -1,8 +1,6 @@
 /*
  * Server worker. It can manage many sessions at the same time. A session represents a network connection (a possible
  * identifier is the socket file descriptor).
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once
@@ -34,6 +32,7 @@ namespace cte {
         // document management
         void create_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void open_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void close_document(int session_id, Socket *socket, const Document& document);
         void close_document(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void get_document_list(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 

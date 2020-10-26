@@ -1,7 +1,3 @@
-//
-// Author: Stefano Di Blasio
-//
-
 #pragma once
 
 #include <cryptlib.h>

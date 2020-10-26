@@ -1,8 +1,6 @@
 /*
  * TCP server. It launches serving threads, listens on a port, accepts connections and distributes them among its
  * threads.
- *
- * Author: Franco Ruggeri
  */
 
 #pragma once

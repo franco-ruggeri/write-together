@@ -18,8 +18,8 @@ Here are the fields and the explanation of each message type appearing in the st
 - *close \<document> [\<site_id>]* : client requests to close an opened document (without optional argument) or server notifies a close to the other editing users (with optional argument).
 - *document \<document> \<document_info>* : server sends all the info about the requested (open/create) document.
 - *insert \<document> \<symbol>* : insert symbol in an opened document.
-- *erase \<document> \<symbol>* : erase symbol from an opened document.
-- *cursor \<document> \<symbol> [\<site_id>]* : move cursor of a client in an opened document (client to server without optional argument, server to client with optional argument).
+- *erase \<document> \<symbol> [\<site_id>]* : erase symbol from an opened document (client to server without optional argument, server to client with optional argument).
+- *cursor \<document> \<symbol> [\<site_id>]* : cursor move of a client in an opened document (client to server without optional argument, server to client with optional argument).
 
 Further details:
 - *\<document>* contains: *owner* (username) and *document_name*.

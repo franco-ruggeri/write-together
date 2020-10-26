@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #pragma once
 
 #include <cte/protocol/message.h>

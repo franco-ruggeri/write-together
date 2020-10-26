@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/close_message.h>
 #include <cte/protocol/document.h>
 #include <QtCore/QSharedPointer>

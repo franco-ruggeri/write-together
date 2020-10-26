@@ -1,7 +1,5 @@
 /*
  * Test the out-of-order messages problem that can happen in peer-to-peer architecture or in multi-threaded server.
- *
- * Author: Franco Ruggeri
  */
 
 #include <cte/crdt/shared_editor.h>

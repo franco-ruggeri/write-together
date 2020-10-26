@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/server.h>
 #include <cte/server/identity_manager.h>
 #include <cte/server/document_manager.h>

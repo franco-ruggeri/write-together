@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/protocol/message.h>
 #include <cte/protocol/error_message.h>
 #include <cte/protocol/signup_message.h>

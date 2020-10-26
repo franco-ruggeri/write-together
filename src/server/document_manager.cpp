@@ -1,7 +1,3 @@
-/*
- * Author: Franco Ruggeri
- */
-
 #include <cte/server/document_manager.h>
 #include <cte/crdt/shared_editor.h>
 #include <cte/database/database_guard.h>
@@ -30,9 +26,8 @@ namespace cte {
         execute_query(query);
 
         // create document
-        std::optional<DocumentInfo> document_info;
+        QString owner = document.owner();
         if (query.size() == 0) {
-            QString owner = document.owner();
             QUrl sharing_link = Document::generate_sharing_link(document);
 
             // insert new document
@@ -40,20 +35,12 @@ namespace cte {
             execute_query(query);
             query = query_insert_sharing(database, document, owner);
             execute_query(query);
-
-            // open document
-            OpenDocument od;
-            int site_id = od.open(owner);
-            QMutexLocker ml(&mutex_);
-            open_documents_.insert(document, od);
-            site_ids_[session_id].insert(document, document_info->site_id());
-            document_info = DocumentInfo(site_id, sharing_link);
         }
 
         // commit transaction
         database.commit();
 
-        return document_info;
+        return open_document(session_id, document, owner);
     }
 
     std::optional<DocumentInfo> DocumentManager::open_document(int session_id, const Document& document,
@@ -101,7 +88,7 @@ namespace cte {
                     text.push_back({ query.value("index").value<qint32>(), query.value("value").toString().at(0),
                                      query.value("author").toString() });
                 }
-                open_documents_.insert(document, OpenDocument(text));
+                open_documents_.insert(document, OpenDocument(text, profiles.keys()));
             }
             OpenDocument& od = open_documents_[document];
             int site_id = od.open(username);
@@ -123,7 +110,7 @@ namespace cte {
         return document_info;
     }
 
-    std::pair<Document,std::optional<DocumentInfo>>
+    std::optional<std::pair<Document,DocumentInfo>>
     DocumentManager::open_document(int session_id, const QUrl& sharing_link, const QString& username) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
@@ -132,24 +119,29 @@ namespace cte {
         QSqlQuery query(database);
 
         // load document
+        std::optional<std::pair<Document,DocumentInfo>> result;
         query = query_select_document(database, sharing_link);
         execute_query(query);
-        if (!query.next()) throw std::logic_error("invalid sharing link");
-        Document document(query.value("owner").toString(), query.value("name").toString());
+        if (query.next()) {
+            Document document(query.value("owner").toString(), query.value("name").toString());
 
-        // add sharing if not present
-        query = query_select_document(database, document, username);
-        execute_query(query);
-        if (query.size() == 0) {
-            query = query_insert_sharing(database, document, username);
+            // add sharing if not present
+            query = query_select_document(database, document, username);
             execute_query(query);
+            if (query.size() == 0) {
+                query = query_insert_sharing(database, document, username);
+                execute_query(query);
+            }
+
+            // open document
+            DocumentInfo document_info = *open_document(session_id, document, username);
+            result = std::make_pair(document, document_info);
         }
 
         // commit transaction
         database.commit();
 
-        // open document
-        return {document, open_document(session_id, document, username)};
+        return result;
     }
 
     int DocumentManager::close_document(int session_id, const Document& document) {
@@ -184,10 +176,11 @@ namespace cte {
         get_open_document(document).insert_symbol(symbol);
     }
 
-    void DocumentManager::erase_symbol(int session_id, const Document& document, const Symbol& symbol) {
+    int DocumentManager::erase_symbol(int session_id, const Document& document, const Symbol& symbol) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         get_open_document(document).erase_symbol(symbol);
+        return site_ids_[session_id][document];
     }
 
     int DocumentManager::move_cursor(int session_id, const Document& document, const Symbol& symbol) {
