@@ -6,7 +6,7 @@ if [ $# -lt 1 ]; then
 fi
 
 # compile and test
-cd ..
+cd ../..
 mkdir -p build
 cd build
 cmake ..
