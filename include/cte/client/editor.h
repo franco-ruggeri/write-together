@@ -21,17 +21,16 @@ namespace cte {
         Q_OBJECT
 
         QSharedPointer<Ui::Editor> ui_;
+        QPointer<QLabel> word_char_count_;
 
         Document document_;
         QUrl sharing_link_;
         SharedEditor shared_editor_;
 
         int local_site_id_;
-        QSharedPointer<User> local_user_;
+        QTextCursor local_cursor_;
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
-
-        QPointer<QLabel> word_char_count_;
 
         void refresh_users();
 

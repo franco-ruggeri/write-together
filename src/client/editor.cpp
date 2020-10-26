@@ -56,7 +56,7 @@ namespace cte {
             } else {
                 user->set_local(true);
                 local_site_id_ = site_id;
-                local_user_ = user;
+                local_cursor_ = ui_->editor->textCursor();
             }
         }
 
@@ -185,10 +185,14 @@ namespace cte {
             Symbol symbol = shared_editor_.local_insert(position+i, value);
             emit local_insert(symbol);
         }
+
+        // update cursor (so that cursor move are not sent for local insert/erase)
+        local_cursor_ = ui_->editor->textCursor();
     }
 
     void Editor::process_local_cursor_move() {
         QTextCursor cursor = ui_->editor->textCursor();
+        if (local_cursor_.position() == cursor.position()) return;  // just triggered by local insert/erase
         Symbol symbol = shared_editor_.at(cursor.position());
         emit local_cursor_move(symbol);
     }
