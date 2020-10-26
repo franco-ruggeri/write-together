@@ -31,3 +31,4 @@ Be sure that the following CMAKE variables contain the reported paths.
     make test
     sudo make install
     ```
+Or simply run *scripts/install_dependencies.sh*.
