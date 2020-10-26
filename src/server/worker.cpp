@@ -1,4 +1,5 @@
 #include <QtCore/QThread>
+#include <QtCore/QPointer>
 #include <QtNetwork/QHostAddress>
 #include <cte/server/worker.h>
 #include <cte/server/identity_manager.h>

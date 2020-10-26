@@ -35,6 +35,6 @@ namespace cte {
         vertical_label_->setFixedSize(rect.width(), rect.height());
         vertical_label_->move(rect.topLeft());
         horizontal_label_->move(rect.center().x(), rect.bottom()-font_metrics.height() -
-            horizontal_label_->height()/2);
+            horizontal_label_->height()/3);
     }
 }

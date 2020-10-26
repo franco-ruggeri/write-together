@@ -175,6 +175,7 @@ namespace cte {
         auto it = editors_.find(document);
         if (it != editors_.end()) {
             it.value()->activateWindow();
+            home_->showMinimized();
             return;
         }
 
@@ -188,6 +189,7 @@ namespace cte {
         for (const auto& e : editors_)
             if (sharing_link == e->sharing_link()) {
                 e->activateWindow();
+                home_->showMinimized();
                 return;
             }
 

@@ -113,6 +113,7 @@ namespace cte {
     }
 
     std::optional<int> SharedEditor::remote_erase(const Symbol& symbol) {
+        if (symbol == bof || symbol == eof) throw std::logic_error("trying to erase BOF or EOF");
         deletion_buffer_.append(symbol);
         return process_deletion_buffer();
     }

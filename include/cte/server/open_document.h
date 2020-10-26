@@ -27,7 +27,7 @@ namespace cte {
         } character_t;
 
         OpenDocument();
-        explicit OpenDocument(const QVector<character_t>& text);
+        OpenDocument(const QVector<character_t>& text, const QList<QString>& usernames);
 
         int open(const QString& username);      // returns the assigned site_id
         void close(int site_id);

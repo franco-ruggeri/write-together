@@ -88,7 +88,7 @@ namespace cte {
                     text.push_back({ query.value("index").value<qint32>(), query.value("value").toString().at(0),
                                      query.value("author").toString() });
                 }
-                open_documents_.insert(document, OpenDocument(text));
+                open_documents_.insert(document, OpenDocument(text, profiles.keys()));
             }
             OpenDocument& od = open_documents_[document];
             int site_id = od.open(username);

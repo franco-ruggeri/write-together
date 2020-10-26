@@ -32,6 +32,8 @@ namespace cte {
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
 
+        bool copy_paste_;
+
         void refresh_users();
 
     signals:
@@ -63,5 +65,6 @@ namespace cte {
         void remote_close(int site_id);
         int local_site_id() const;
         QUrl sharing_link() const;
+        bool eventFilter(QObject *watched, QEvent *event) override;
     };
 }

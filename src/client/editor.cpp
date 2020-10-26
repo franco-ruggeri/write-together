@@ -18,7 +18,7 @@
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
             QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
-            shared_editor_(document_info.site_id(), document_info.text()) {
+            shared_editor_(document_info.site_id(), document_info.text()), copy_paste_(false) {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
@@ -69,6 +69,9 @@ namespace cte {
         word_char_count_ = new QLabel;
         statusBar()->addWidget(word_char_count_);
         refresh_status_bar();
+
+        // to handle bug (see comment in process_local_content_change())
+        ui_->editor->installEventFilter(this);
 
         // connect signals and slots
         QTextDocument *editor_document = ui_->editor->document();
@@ -134,34 +137,37 @@ namespace cte {
     }
 
     void Editor::remote_insert(const Symbol& symbol) {
-        // refresh remote cursor (it is for sure on the inserted symbol!)
-        remote_cursor_move(symbol.site_id(), symbol);
-
         // insert in shared editor
         std::optional<int> index = shared_editor_.remote_insert(symbol);
-        if (!index) return;     // immediately erased using deletion buffer
+        if (!index) {       // erased using deletion buffer, no need to update UI editor
+            remote_cursor_move(symbol.site_id(), symbol);
+            return;
+        }
 
-        // insert in UI editor
+        // insert in UI editor and move cursor
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.insertText(symbol.value());
+        int site_id = symbol.site_id();
+        site_id_users_[site_id]->move_remote_cursor(site_id, *index);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
     void Editor::remote_erase(int site_id, const Symbol& symbol) {
-        // refresh remote cursor (it is for sure on the erased symbol!)
-        remote_cursor_move(site_id, symbol);
-
         // erase from shared editor
         std::optional<int> index = shared_editor_.remote_erase(symbol);
-        if (!index) return;     // put in deletion buffer
+        if (!index) {       // put in deletion buffer, do not update UI editor
+            remote_cursor_move(site_id, symbol);
+            return;
+        }
 
         // erase from UI editor
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.deleteChar();
+        site_id_users_[site_id]->move_remote_cursor(site_id, *index);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
@@ -173,17 +179,35 @@ namespace cte {
     }
 
     void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
+        // offset between symbols in shared_editor_ and characters in ui_->editor, see comment below about bug
+        int offset = copy_paste_ ? 1 : 0;
+
         // erase
         for (int i=0; i<chars_removed; i++) {
-            Symbol symbol = shared_editor_.local_erase(position);
+            Symbol symbol = shared_editor_.local_erase(position - offset);
             emit local_erase(symbol);
         }
 
         // insert
         for (int i=0 ; i<chars_added; i++) {
             QChar value = ui_->editor->toPlainText()[position+i];
-            Symbol symbol = shared_editor_.local_insert(position+i, value);
+            Symbol symbol = shared_editor_.local_insert(position + i - offset, value);
             emit local_insert(symbol);
+        }
+
+        /*
+         * There is a bug when copy-pasting at position 0, the arguments are completely wrong in such case.
+         * As a workaround, we insert an empty character at position 0 in the event filter, so that the copy-paste
+         * operation will never be at position 0. Here we remove this empty character.
+         */
+        if (copy_paste_) {
+            disconnect(ui_->editor->document(), &QTextDocument::contentsChange,
+                       this, &Editor::process_local_content_change);
+            local_cursor_.setPosition(0);
+            local_cursor_.deleteChar();
+            copy_paste_ = false;
+            connect(ui_->editor->document(), &QTextDocument::contentsChange,
+                    this, &Editor::process_local_content_change);
         }
 
         // update cursor (so that cursor move are not sent for local insert/erase)
@@ -193,6 +217,7 @@ namespace cte {
     void Editor::process_local_cursor_move() {
         QTextCursor cursor = ui_->editor->textCursor();
         if (local_cursor_.position() == cursor.position()) return;  // just triggered by local insert/erase
+        local_cursor_ = cursor;
         Symbol symbol = shared_editor_.at(cursor.position());
         emit local_cursor_move(symbol);
     }
@@ -290,6 +315,23 @@ namespace cte {
     void Editor::closeEvent(QCloseEvent *event) {
         emit closed();
         event->accept();
+    }
+
+    bool Editor::eventFilter(QObject *watched, QEvent *event) {
+        // to handle bug (see comment in process_local_content_change())
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *key_event = static_cast<QKeyEvent *>(event);
+            if (key_event->matches(QKeySequence::Paste)) {
+                disconnect(ui_->editor->document(), &QTextDocument::contentsChange,
+                           this, &Editor::process_local_content_change);
+                local_cursor_.setPosition(0);
+                local_cursor_.insertText(" ");
+                copy_paste_ = true;
+                connect(ui_->editor->document(), &QTextDocument::contentsChange,
+                        this, &Editor::process_local_content_change);
+            }
+        }
+        return false;
     }
 
     int Editor::local_site_id() const {
