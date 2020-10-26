@@ -33,7 +33,7 @@ int main() {
 
     assert(s.value() == text[index]);
     assert(index_result.has_value());
-    assert(*index_result == 0);
+    assert(*index_result == index);
     text.remove(index, 1);
     assert(editor1.to_string() == text);
     assert(editor2.to_string() == text);

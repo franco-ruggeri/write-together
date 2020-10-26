@@ -4,6 +4,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QDebug>
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
 #include <QtGui/QClipboard>
@@ -150,8 +151,9 @@ namespace cte {
         cursor.setPosition(*index);
         cursor.insertText(symbol.value());
         int site_id = symbol.site_id();
-        site_id_users_[site_id]->move_remote_cursor(site_id, *index);
+        site_id_users_[site_id]->move_remote_cursor(site_id, index.value()+1);  // set cursor after inserted char
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        qDebug() << "remote insert: { character:" << symbol.value() << ", position:" << *index << "}";
     }
 
     void Editor::remote_erase(int site_id, const Symbol& symbol) {
@@ -169,6 +171,7 @@ namespace cte {
         cursor.deleteChar();
         site_id_users_[site_id]->move_remote_cursor(site_id, *index);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        qDebug() << "remote erase: { character:" << symbol.value() << ", position:" << *index << "}";
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
@@ -176,9 +179,14 @@ namespace cte {
         int index = shared_editor_.find(symbol);
         site_id_users_[site_id]->move_remote_cursor(site_id, index);
         connect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        qDebug() << "remote cursor move: { site_id:" << site_id << ", position:" << index << "}";
     }
 
     void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
+        qDebug() << "local change: { position:" << position
+                 << ", chars_removed:" << chars_removed
+                 << ", chars_added:" << chars_added << "}";
+
         // offset between symbols in shared_editor_ and characters in ui_->editor, see comment below about bug
         int offset = copy_paste_ ? 1 : 0;
 
@@ -186,6 +194,7 @@ namespace cte {
         for (int i=0; i<chars_removed; i++) {
             Symbol symbol = shared_editor_.local_erase(position - offset);
             emit local_erase(symbol);
+            qDebug() << "local erase: { character:" << symbol.value() << ", position:" << position-offset << "}";
         }
 
         // insert
@@ -193,6 +202,7 @@ namespace cte {
             QChar value = ui_->editor->toPlainText()[position+i];
             Symbol symbol = shared_editor_.local_insert(position + i - offset, value);
             emit local_insert(symbol);
+            qDebug() << "local insert: { character:" << value << ", position:" << position+i-offset << "}";
         }
 
         /*
@@ -216,10 +226,12 @@ namespace cte {
 
     void Editor::process_local_cursor_move() {
         QTextCursor cursor = ui_->editor->textCursor();
-        if (local_cursor_.position() == cursor.position()) return;  // just triggered by local insert/erase
-        local_cursor_ = cursor;
-        Symbol symbol = shared_editor_.at(cursor.position());
+        int position = cursor.position();
+        if (local_cursor_.position() == position) return;  // just triggered by local insert/erase
+        local_cursor_.setPosition(position);
+        Symbol symbol = shared_editor_.at(position);
         emit local_cursor_move(symbol);
+        qDebug() << "local cursor move: { character:" << symbol.value() << ", position:" << position << "}";
     }
 
     void Editor::export_pdf() {
