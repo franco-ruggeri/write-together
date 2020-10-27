@@ -29,6 +29,7 @@ namespace cte {
 
         int local_site_id_;
         QTextCursor local_cursor_;
+        QSharedPointer<User> local_user_;
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
 

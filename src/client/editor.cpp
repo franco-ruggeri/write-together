@@ -28,9 +28,9 @@ namespace cte {
         setWindowTitle(document.full_name());
 
         // set cursor to beginning
-        QTextCursor cursor = ui_->editor->textCursor();
-        cursor.setPosition(0);
-        ui_->editor->setTextCursor(cursor);
+        local_cursor_ = ui_->editor->textCursor();
+        local_cursor_.setPosition(0);
+        ui_->editor->setTextCursor(local_cursor_);
 
         // create users
         for (auto& u : document_info.users()) {
@@ -56,8 +56,8 @@ namespace cte {
                 user->add_remote_cursor(ui_->editor, site_id, position);
             } else {
                 user->set_local(true);
+                local_user_ = user;
                 local_site_id_ = site_id;
-                local_cursor_ = ui_->editor->textCursor();
             }
         }
 
@@ -145,15 +145,25 @@ namespace cte {
             return;
         }
 
-        // insert in UI editor and move cursor
+        // insert in UI editor
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.insertText(symbol.value());
+        qDebug() << "remote insert: { character:" << symbol.value() << ", position:" << *index << "}";
+
+        // update remote cursor
         int site_id = symbol.site_id();
         site_id_users_[site_id]->move_remote_cursor(site_id, index.value()+1);  // set cursor after inserted char
+
+        // update background color
+        QSharedPointer<User> user = site_id_users_[site_id];
+        QTextCharFormat format;
+        format.setBackground(user->selected() ? user->color() : Qt::transparent);
+        cursor.setPosition(index.value());
+        cursor.setPosition(index.value()+1, QTextCursor::KeepAnchor);
+        cursor.mergeCharFormat(format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        qDebug() << "remote insert: { character:" << symbol.value() << ", position:" << *index << "}";
     }
 
     void Editor::remote_erase(int site_id, const Symbol& symbol) {
@@ -169,9 +179,11 @@ namespace cte {
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.deleteChar();
+        qDebug() << "remote erase: { character:" << symbol.value() << ", position:" << *index << "}";
+
+        // update remote cursor
         site_id_users_[site_id]->move_remote_cursor(site_id, *index);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        qDebug() << "remote erase: { character:" << symbol.value() << ", position:" << *index << "}";
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
@@ -190,20 +202,30 @@ namespace cte {
         // offset between symbols in shared_editor_ and characters in ui_->editor, see comment below about bug
         int offset = copy_paste_ ? 1 : 0;
 
-        // erase
+        // signal erase
         for (int i=0; i<chars_removed; i++) {
             Symbol symbol = shared_editor_.local_erase(position - offset);
             emit local_erase(symbol);
             qDebug() << "local erase: { character:" << symbol.value() << ", position:" << position-offset << "}";
         }
 
-        // insert
+        // signal insert
         for (int i=0 ; i<chars_added; i++) {
+            // signal
             QChar value = ui_->editor->toPlainText()[position+i];
             Symbol symbol = shared_editor_.local_insert(position + i - offset, value);
             emit local_insert(symbol);
             qDebug() << "local insert: { character:" << value << ", position:" << position+i-offset << "}";
         }
+
+        // update background color of inserted text
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        QTextCharFormat format;
+        format.setBackground(local_user_->selected() ? local_user_->color() : Qt::transparent);
+        local_cursor_.setPosition(position);
+        local_cursor_.setPosition(position + chars_added, QTextCursor::KeepAnchor);
+        local_cursor_.setCharFormat(format);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
 
         /*
          * There is a bug when copy-pasting at position 0, the arguments are completely wrong in such case.
@@ -220,14 +242,14 @@ namespace cte {
                     this, &Editor::process_local_content_change);
         }
 
-        // update cursor (so that cursor move are not sent for local insert/erase)
+        // update cursor (so that cursor move are not signalled for local insert/erase)
         local_cursor_ = ui_->editor->textCursor();
     }
 
     void Editor::process_local_cursor_move() {
         QTextCursor cursor = ui_->editor->textCursor();
         int position = cursor.position();
-        if (local_cursor_.position() == position) return;  // just triggered by local insert/erase
+        if (local_cursor_.position() == position) return;  // triggered by local insert/erase, do not signal anything
         local_cursor_.setPosition(position);
         Symbol symbol = shared_editor_.at(position);
         emit local_cursor_move(symbol);
@@ -299,22 +321,25 @@ namespace cte {
             else item->setBackground(0, QBrush());
         }
 
-        // update text color
-        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        QList<Symbol> text = shared_editor_.text();
+        // prepare cursor with background color
         QTextCursor cursor(ui_->editor->textCursor());
         QTextCharFormat format;
         format.setBackground(user->selected() ? user->color() : Qt::transparent);
         cursor.setPosition(0);
+
+        // update background color
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        QList<Symbol> text = shared_editor_.text();
         for (int i = 0; i < text.size(); i++) {
-            if (user->contains(text[i].site_id())) {    // author
-                cursor.setPosition(i+1, QTextCursor::KeepAnchor);
-            } else {
+            int site_id = text[i].site_id();
+            if (!user->contains(site_id)) {                         // not author
+                cursor.setPosition(i, QTextCursor::KeepAnchor);     // color from until here
                 cursor.mergeCharFormat(format);
                 cursor.setPosition(i+1, QTextCursor::MoveAnchor);
             }
         }
-        cursor.mergeCharFormat(format);   // necessary to color also last characters
+        cursor.setPosition(text.size(), QTextCursor::KeepAnchor);   // necessary to color also last characters
+        cursor.mergeCharFormat(format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
