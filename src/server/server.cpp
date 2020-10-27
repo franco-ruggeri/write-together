@@ -3,6 +3,7 @@
 #include <cte/server/document_manager.h>
 #include <QtCore/QPointer>
 #include <QtCore/QThread>
+#include <QtCore/QFile>
 #include <algorithm>
 
 namespace cte {
@@ -11,6 +12,16 @@ namespace cte {
 
     Server::Server(int port, int n_workers, int saving_period) {
         QPointer<QThread> thread;
+
+        // load certificate and private key
+        QFile key_file(":/server.key");
+        key_file.open(QIODevice::ReadOnly);
+        key_ = QSslKey(key_file.readAll(), QSsl::Rsa);
+        key_file.close();
+        QFile cert_file(":/server_cert.pem");
+        cert_file.open(QIODevice::ReadOnly);
+        certificate_ = QSslCertificate(cert_file.readAll());
+        cert_file.close();
 
         // try to save (better to crash at startup if there are problems)
         qDebug() << "trying to save";
@@ -26,7 +37,7 @@ namespace cte {
         for (int i=0; i < n_workers; i++) {
             thread = new QThread(this);
             thread->start();
-            workers_.push_back(QSharedPointer<Worker>::create());
+            workers_.push_back(QSharedPointer<Worker>::create(this));
             workers_[i]->moveToThread(thread);
             for (int j=0; j<i; j++)
                 Worker::connect(*workers_[i], *workers_[j]);
@@ -37,6 +48,14 @@ namespace cte {
             qDebug() << "listening on port" << this->serverPort();
         else
             throw std::runtime_error("listen() failed");
+    }
+
+    QSslKey Server::key() const {
+        return key_;
+    }
+
+    QSslCertificate Server::certificate() const {
+        return certificate_;
     }
 
     void Server::incomingConnection(qintptr socket_fd) {

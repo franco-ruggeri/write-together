@@ -1,4 +1,5 @@
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/server)
 set(DB_SRC_DIR ${PROJECT_SOURCE_DIR}/src/database)
 
@@ -22,7 +23,7 @@ list(APPEND QOBJ_HEADERS
 list(APPEND LIB Qt5::Core Qt5::Network Qt5::Sql crdt protocol network database crypto)
 list(APPEND INCLUDE ${QOBJ_DIR} ${DB_SRC_DIR})
 
-add_executable(server ${SRC} ${QOBJ_HEADERS})
+add_executable(server ${SRC} ${QOBJ_HEADERS} resource.qrc)
 target_link_libraries(server ${LIB})
 target_include_directories(server PUBLIC ${INCLUDE})
 install(TARGETS server DESTINATION ${PROJECT_SOURCE_DIR}/bin)

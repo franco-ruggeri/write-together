@@ -20,7 +20,9 @@ namespace cte {
                 this, qOverload<QAbstractSocket::SocketError>(&NetworkWorker::error_occurred));
 #endif
 
-        socket_->connectToHost(hostname, port);
+        socket_->addCaCertificates(":/server_ca.pem");
+        socket_->setPeerVerifyMode(QSslSocket::QueryPeer);
+        socket_->connectToHostEncrypted(hostname, port);
     }
 
     void NetworkWorker::read_message() {

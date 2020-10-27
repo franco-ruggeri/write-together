@@ -35,7 +35,7 @@ list(APPEND QOBJ_HEADERS
 list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::PrintSupport network protocol crdt)
 list(APPEND INCLUDE ${QOBJ_DIR} ${UI_DIR})
 
-add_executable(client ${SRC} ${QOBJ_HEADERS} ${UI_DIR}/resource.qrc)
+add_executable(client ${SRC} ${QOBJ_HEADERS} ${UI_DIR}/resource.qrc resource.qrc)
 target_link_libraries(client ${LIB})
 target_include_directories(client PUBLIC ${INCLUDE})
 install(TARGETS client DESTINATION ${PROJECT_SOURCE_DIR}/bin)
