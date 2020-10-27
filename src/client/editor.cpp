@@ -242,8 +242,9 @@ namespace cte {
                     this, &Editor::process_local_content_change);
         }
 
-        // update cursor (so that cursor move are not signalled for local insert/erase)
-        local_cursor_ = ui_->editor->textCursor();
+        // update cursors
+        refresh_cursors();
+        local_cursor_ = ui_->editor->textCursor();  // so that cursor move are not signalled for local insert/erase
     }
 
     void Editor::process_local_cursor_move() {
