@@ -29,9 +29,13 @@ namespace cte {
     }
 
     void RemoteCursor::refresh() {
+        // trim position (useful in case of local erase)
+        int max_pos = editor_->toPlainText().size();
+        cursor_.setPosition(qMin(cursor_.position(), max_pos));
+
+        // refresh label positions
         QRect rect = editor_->cursorRect(cursor_);
         QFontMetrics font_metrics(editor_->font());
-
         vertical_label_->setFixedSize(rect.width(), rect.height());
         vertical_label_->move(rect.topLeft());
         horizontal_label_->move(rect.center().x(), rect.bottom()-font_metrics.height() -

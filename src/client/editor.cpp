@@ -101,7 +101,7 @@ namespace cte {
     }
 
     void Editor::refresh_status_bar() {
-        int n_words = ui_->editor->toPlainText().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).count();
+        int n_words = ui_->editor->toPlainText().split("(\\s|\\n|\\r)+", QString::SkipEmptyParts).count();
         int n_chars = ui_->editor->toPlainText().count();
         word_char_count_->setText("Words: " + QString::number(n_words) + "; Characters: " + QString::number(n_chars));
     }
@@ -333,7 +333,7 @@ namespace cte {
         for (int i = 0; i < text.size(); i++) {
             int site_id = text[i].site_id();
             if (!user->contains(site_id)) {                         // not author
-                cursor.setPosition(i, QTextCursor::KeepAnchor);     // color from until here
+                cursor.setPosition(i, QTextCursor::KeepAnchor);     // color until here
                 cursor.mergeCharFormat(format);
                 cursor.setPosition(i+1, QTextCursor::MoveAnchor);
             }
