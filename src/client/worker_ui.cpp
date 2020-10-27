@@ -275,7 +275,6 @@ namespace cte {
         editors_.insert(document_message->document(), editor);
 
         // connect signals and slots
-        // TODO: problema... le connessioni poi devo toglierle, non posso usare lambda
         Editor *e = editor.data();
         connect(e, &Editor::home_request, this, &UiWorker::activate_home);
         connect(e, &Editor::closed, [this, document]() { close_document(document); });

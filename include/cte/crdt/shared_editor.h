@@ -32,24 +32,26 @@ namespace cte {
 
         bool valid_index(int index) const;
         void update_version_vector(const Symbol& symbol);
-        std::optional<int> process_deletion_buffer();               // returns index if erase is executed
+        std::optional<int> process_deletion_buffer();           // returns index if erase is done
 
     public:
         explicit SharedEditor(int site_id, QObject *parent=nullptr);
         SharedEditor(int site_id, const QList<Symbol>& text);
 
+        // indices do not consider BOF
         Symbol insert(int site_id, int site_counter, int index, QChar value);   // should be used only by the server
-        Symbol local_insert(int index, QChar value);            // index does not consider BOF and EOF
-        Symbol local_erase(int index);                          // index does not consider BOF and EOF
-        std::optional<int> remote_insert(const Symbol& symbol); // returns nullopt in case of erase in deletion buffer
-        std::optional<int> remote_erase(const Symbol& symbol);  // returns nullopt if erase is put in deletion buffer
+        Symbol local_insert(int index, QChar value);            // index not considering BOF
+        Symbol local_erase(int index);                          // index not considering BOF
+        std::optional<int> remote_insert(const Symbol& symbol); // returns nullopt if erased with deletion buffer
+        std::optional<int> remote_erase(const Symbol& symbol);  // returns nullopt if put in deletion buffer
 
-        int find(const Symbol& symbol) const;   // returns position <= symbol.position(), so non-existing symbol is ok
-        Symbol at(int index) const;             // index considers BOF and EOF (e.g. you can retrieve BOF with index=0)
+        // indices consider BOF (for cursors)
+        int find(const Symbol& symbol) const;   // symbol does not need to exist
+        Symbol at(int index) const;
 
         int site_id() const;
-        QList<Symbol> text() const;     // without BOF and EOF
-        QString to_string() const;      // without BOF and EOF
+        QList<Symbol> text() const;             // without BOF and EOF
+        QString to_string() const;
 
         static const int invalid_site_id, invalid_site_counter;
         static const int starting_site_id, starting_site_counter;

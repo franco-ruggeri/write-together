@@ -18,6 +18,7 @@ namespace cte {
     void User::add_remote_cursor(QPlainTextEdit *editor, int site_id) {
         QSharedPointer<RemoteCursor> cursor = QSharedPointer<RemoteCursor>::create(editor, profile_.username(), color_);
         remote_cursors_.insert(site_id, cursor);
+        site_ids_.insert(site_id);
         online_ = true;
     }
 

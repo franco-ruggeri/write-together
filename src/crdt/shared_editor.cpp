@@ -79,7 +79,7 @@ namespace cte {
             // erase
             auto it_symbol = std::lower_bound(text_.begin(), text_.end(), symbol);
             if (it_symbol == text_.end() || !(*it_symbol == symbol)) continue;      // already erased
-            index = std::distance(text_.begin(), it_symbol)-1;                      // -1 for BOF
+            index = std::distance(text_.begin(), it_symbol) - 1;    // -1 for BOF
             text_.erase(it_symbol);
         }
         return index;
@@ -102,7 +102,7 @@ namespace cte {
 
         // insert
         auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
-        int index = static_cast<int>(std::distance(text_.begin(), it) - 1);   // -1 for BOF
+        int index = static_cast<int>(std::distance(text_.begin(), it) - 1); // -1 for BOF
         text_.insert(it, symbol);
         update_version_vector(symbol);
 

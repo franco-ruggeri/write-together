@@ -1,11 +1,7 @@
 #!/bin/bash
 
 # Qt
-apt install qt5-default libqt5sql5-mysql
-if [ $? -ne 0 ]; then
-	echo "You need root privileges"
-	exit 1
-fi
+sudo apt install qt5-default libqt5sql5-mysql
 
 # cryptopp
 wget https://www.cryptopp.com/cryptopp820.zip
@@ -15,4 +11,4 @@ cd cryptopp
 unzip cryptopp*.zip
 make libcryptopp.a libcryptopp.so cryptest.exe
 make test
-make install
+sudo make install

@@ -12,7 +12,7 @@
 namespace cte {
     class User {
         Profile profile_;
-        QSet<int> site_ids_;
+        QSet<int> site_ids_;    // all, some may not be mapped to remote cursors
         QHash<int,QSharedPointer<RemoteCursor>> remote_cursors_;    // pointers for assignability
         QColor color_;
         bool selected_, online_, local_;
