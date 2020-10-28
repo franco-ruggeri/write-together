@@ -2,4 +2,3 @@ cmake-build-debug/
 .idea/
 bin/
 build/
-src/certificate/
