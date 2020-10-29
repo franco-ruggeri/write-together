@@ -1,9 +1,10 @@
 #include <cte/client/client.h>
 #include <QtCore/QPointer>
 #include <QtCore/QThread>
+#include <QtCore/QDebug>
 
 namespace cte {
-    Client::Client(const QString& hostname, int port) {
+    Client::Client() {
         // launch thread for network worker
         thread_ = new QThread(this);
         thread_->start();
@@ -24,13 +25,16 @@ namespace cte {
                 ui_worker, &UiWorker::show_connection_form);
         connect(network_worker, qOverload<const QString&>(&NetworkWorker::error_occurred),
                 ui_worker, qOverload<const QString&>(&UiWorker::show_error));
-
-        // start connection
-        ui_worker_->show_connection_loading(hostname, port);
-        network_worker_->set_server(hostname, port);
     }
 
     Client::~Client() {
         thread_->exit();
+        thread_->wait();
+        qDebug() << "thread terminated";
+    }
+
+    void Client::start(const QString &hostname, int port) {
+        ui_worker_->show_connection_loading(hostname, port);
+        network_worker_->set_server(hostname, port);
     }
 }
