@@ -5,9 +5,19 @@ namespace cte {
         connect(this, &Socket::readyRead, this, &Socket::read_lines);
     }
 
-    void Socket::set_socket_descriptor(int socket_fd) {
+    void Socket::setup_server(int socket_fd, const QSslCertificate& local_certificate, const QSslKey& private_key) {
         if (!QSslSocket::setSocketDescriptor(socket_fd))
             throw std::runtime_error("setSocketDescriptor() failed");
+        setLocalCertificate(local_certificate);
+        setPrivateKey(private_key);
+        setPeerVerifyMode(QSslSocket::VerifyNone);
+        startServerEncryption();
+    }
+
+    void Socket::connect_to_server(const QString& hostname, int port, const QString& ca_certificate) {
+        addCaCertificates(ca_certificate);
+        setPeerVerifyMode(QSslSocket::QueryPeer);  // because we use self-signed certificate
+        connectToHostEncrypted(hostname, port);
     }
 
     void Socket::read_lines() {

@@ -2,6 +2,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(QOBJ_DIR ${PROJECT_SOURCE_DIR}/include/cte/client)
+set(CERT_DIR certificate)
 set(UI_DIR ui)
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${UI_DIR})
 
@@ -35,7 +36,7 @@ list(APPEND QOBJ_HEADERS
 list(APPEND LIB Qt5::Core Qt5::Widgets Qt5::PrintSupport network protocol crdt)
 list(APPEND INCLUDE ${QOBJ_DIR} ${UI_DIR})
 
-add_executable(client ${SRC} ${QOBJ_HEADERS} ${UI_DIR}/resource.qrc resource.qrc)
+add_executable(client ${SRC} ${QOBJ_HEADERS} ${UI_DIR}/resource.qrc ${CERT_DIR}/resource.qrc)
 target_link_libraries(client ${LIB})
 target_include_directories(client PUBLIC ${INCLUDE})
 install(TARGETS client DESTINATION ${PROJECT_SOURCE_DIR}/bin)

@@ -11,7 +11,6 @@
 #include <QtCore/QHash>
 #include <QtCore/QSet>
 #include <QtCore/QMutex>
-#include <QtNetwork/QSslKey>
 #include <cte/network/socket.h>
 #include <cte/protocol/message.h>
 #include <cte/protocol/document.h>
@@ -19,11 +18,12 @@
 
 namespace cte {
     class Server;
+
     class Worker : public QObject {
         Q_OBJECT
 
         QHash<Document,QSet<Socket*>> editing_clients;     // for dispatching
-        QPointer<Server> server_instance_;
+        QPointer<Server> server_;
         int number_of_connections_;
         mutable QMutex m_number_of_connections_;
 

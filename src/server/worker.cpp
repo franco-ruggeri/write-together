@@ -33,7 +33,7 @@ namespace cte {
         }
     }
 
-    Worker::Worker(Server *instance, QObject *parent) : server_instance_(instance), QObject(parent), number_of_connections_(0) {
+    Worker::Worker(Server *instance, QObject *parent) : server_(instance), QObject(parent), number_of_connections_(0) {
         qRegisterMetaType<QSharedPointer<Message>>("QSharedPointer<Message>");
         QObject::connect(this, &Worker::new_connection, this, &Worker::start_session);
         QObject::connect(this, &Worker::new_message, this, &Worker::dispatch_message);
@@ -62,11 +62,7 @@ namespace cte {
         QPointer<Socket> socket;
         try {
             socket = new Socket(this);
-            socket->set_socket_descriptor(socket_fd);
-            socket->setPrivateKey(server_instance_->key());
-            socket->setLocalCertificate(server_instance_->certificate());
-            socket->setPeerVerifyMode(QSslSocket::VerifyNone);
-            socket->startServerEncryption();
+            socket->setup_server(socket_fd, server_->local_certificate(), server_->private_key());
         } catch (const std::exception& e) {
             qDebug() << e.what();
             if (!socket.isNull()) socket.clear();

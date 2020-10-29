@@ -11,8 +11,7 @@ namespace cte {
         Q_OBJECT
 
         QPointer<Socket> socket_;
-
-        void error_occurred(QAbstractSocket::SocketError socket_error);
+        static const QString ca_certificate_;
 
     signals:
         void new_server(const QString& hostname, int port);
@@ -21,6 +20,7 @@ namespace cte {
         void new_message(const QSharedPointer<Message>& message);
 
     private slots:
+        void error_occurred(QAbstractSocket::SocketError socket_error);
         void connect_to_server(const QString& hostname, int port);
         void read_message();
 

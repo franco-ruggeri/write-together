@@ -22,9 +22,9 @@ CREATE TABLE IF NOT EXISTS `user`
 
 CREATE TABLE IF NOT EXISTS `document`
 (
-	`owner` VARCHAR(100) NOT NULL,
-	`name` VARCHAR(100) NOT NULL,
-	`sharing_link` VARCHAR(200) UNIQUE NOT NULL,
+	`owner` VARCHAR(50) NOT NULL,
+	`name` VARCHAR(50) NOT NULL,
+	`sharing_link` VARCHAR(150) UNIQUE NOT NULL,
 	PRIMARY KEY (`owner`, `name`),
 	FOREIGN KEY (`owner`) REFERENCES user(`username`) ON UPDATE CASCADE
 );

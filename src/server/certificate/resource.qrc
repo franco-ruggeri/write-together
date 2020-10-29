@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
-        <file alias="server_ca.pem">../certificate/server_ca.pem</file>
+        <file>private.key</file>
+        <file>local_certificate.pem</file>
     </qresource>
 </RCC>

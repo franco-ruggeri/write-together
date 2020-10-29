@@ -14,13 +14,13 @@ namespace cte {
         QPointer<QThread> thread;
 
         // load certificate and private key
-        QFile key_file(":/server.key");
+        QFile key_file(":/private.key");
         key_file.open(QIODevice::ReadOnly);
-        key_ = QSslKey(key_file.readAll(), QSsl::Rsa);
+        private_key_ = QSslKey(key_file.readAll(), QSsl::Rsa);
         key_file.close();
-        QFile cert_file(":/server_cert.pem");
+        QFile cert_file(":/local_certificate.pem");
         cert_file.open(QIODevice::ReadOnly);
-        certificate_ = QSslCertificate(cert_file.readAll());
+        local_certificate_ = QSslCertificate(cert_file.readAll());
         cert_file.close();
 
         // try to save (better to crash at startup if there are problems)
@@ -50,12 +50,12 @@ namespace cte {
             throw std::runtime_error("listen() failed");
     }
 
-    QSslKey Server::key() const {
-        return key_;
+    QSslKey Server::private_key() const {
+        return private_key_;
     }
 
-    QSslCertificate Server::certificate() const {
-        return certificate_;
+    QSslCertificate Server::local_certificate() const {
+        return local_certificate_;
     }
 
     void Server::incomingConnection(qintptr socket_fd) {
