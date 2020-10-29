@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
         int port = std::stoi(argv[1]);
         int saving_period = std::stoi(argv[2]);
         QCoreApplication app(argc, argv);
-        cte::Server server(port, QThread::idealThreadCount(), saving_period);
+        cte::Server server(QThread::idealThreadCount(), saving_period);
+        server.listen(port);
         return app.exec();
     } catch (const std::invalid_argument& e) {
         qDebug() << e.what();

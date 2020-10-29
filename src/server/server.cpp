@@ -2,7 +2,6 @@
 #include <cte/server/identity_manager.h>
 #include <cte/server/document_manager.h>
 #include <QtCore/QPointer>
-#include <QtCore/QThread>
 #include <QtCore/QFile>
 #include <algorithm>
 
@@ -10,7 +9,7 @@ namespace cte {
     IdentityManager identity_manager;
     DocumentManager document_manager;
 
-    Server::Server(int port, int n_workers, int saving_period) {
+    Server::Server(int n_workers, int saving_period) {
         QPointer<QThread> thread;
 
         // load certificate and private key
@@ -23,13 +22,10 @@ namespace cte {
         local_certificate_ = QSslCertificate(cert_file.readAll());
         cert_file.close();
 
-        // try to save (better to crash at startup if there are problems)
-        qDebug() << "trying to save";
-        document_manager.save();
-
         // launch thread for saver
         thread = new QThread(this);
         thread->start();
+        threads_.push_back(thread);
         saver_ = QSharedPointer<Saver>::create(saving_period);
         saver_->moveToThread(thread);
 
@@ -37,14 +33,29 @@ namespace cte {
         for (int i=0; i < n_workers; i++) {
             thread = new QThread(this);
             thread->start();
+            threads_.push_back(thread);
             workers_.push_back(QSharedPointer<Worker>::create(this));
             workers_[i]->moveToThread(thread);
             for (int j=0; j<i; j++)
                 Worker::connect(*workers_[i], *workers_[j]);
         }
+    }
+
+    Server::~Server() {
+        for (auto& thread : threads_) {
+            thread->exit();
+            thread->wait();
+            qDebug() << "thread terminated";
+        }
+    }
+
+    void Server::listen(int port) {
+        // try to save (better not to start if there are problems)
+        qDebug() << "trying to save";
+        document_manager.save();
 
         // listen
-        if (listen(QHostAddress::Any, port))
+        if (QTcpServer::listen(QHostAddress::Any, port))
             qDebug() << "listening on port" << this->serverPort();
         else
             throw std::runtime_error("listen() failed");

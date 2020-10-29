@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
     try {
         int port = std::stoi(argv[2]);
         QApplication app(argc, argv);
-        cte::Client client(argv[1], port);
+        cte::Client client;
+        client.start(argv[1], port);
         return app.exec();
     } catch (const std::invalid_argument& e) {
         qDebug() << e.what();

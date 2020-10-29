@@ -5,7 +5,10 @@
 
 #pragma once
 
+#include <QtCore/QPointer>
+#include <QtCore/QSharedPointer>
 #include <QtCore/QVector>
+#include <QtCore/QThread>
 #include <QtNetwork/QTcpServer>
 #include <cte/server/worker.h>
 #include <cte/server/saver.h>
@@ -18,6 +21,7 @@ namespace cte {
 
         QVector<QSharedPointer<Worker>> workers_;
         QSharedPointer<Saver> saver_;
+        QList<QPointer<QThread>> threads_;
 
         QSslKey private_key_;
         QSslCertificate local_certificate_;
@@ -25,7 +29,9 @@ namespace cte {
         void incomingConnection(qintptr socket_fd) override;
 
     public:
-        Server(int port, int n_workers, int saving_period);
+        Server(int n_workers, int saving_period);
+        ~Server() override;
+        void listen(int port);
         QSslKey private_key() const;
         QSslCertificate local_certificate() const;
     };
