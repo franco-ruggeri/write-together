@@ -35,7 +35,7 @@ namespace cte {
         std::optional<int> process_deletion_buffer();           // returns index if erase is done
 
     public:
-        explicit SharedEditor(int site_id, QObject *parent=nullptr);
+        explicit SharedEditor(int site_id);
         SharedEditor(int site_id, const QList<Symbol>& text);
 
         // indices do not consider BOF

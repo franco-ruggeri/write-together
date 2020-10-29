@@ -10,7 +10,7 @@ namespace cte {
     const Symbol SharedEditor::bof(QChar(), reserved_site_id, starting_site_counter, {Lseq::begin});
     const Symbol SharedEditor::eof(QChar(), reserved_site_id, starting_site_counter, {Lseq::end});
 
-    SharedEditor::SharedEditor(int site_id, QObject *parent) :
+    SharedEditor::SharedEditor(int site_id) :
             site_id_(site_id), site_counter_(starting_site_counter) {
         text_.append(bof);
         text_.append(eof);
