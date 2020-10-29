@@ -179,8 +179,9 @@ namespace cte {
     int DocumentManager::erase_symbol(int session_id, const Document& document, const Symbol& symbol) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
-        get_open_document(document).erase_symbol(symbol);
-        return site_ids_[session_id][document];
+        int site_id = site_ids_[session_id][document];
+        get_open_document(document).erase_symbol(site_id, symbol);
+        return site_id;
     }
 
     int DocumentManager::move_cursor(int session_id, const Document& document, const Symbol& symbol) {

@@ -32,7 +32,7 @@ namespace cte {
         int open(const QString& username);      // returns the assigned site_id
         void close(int site_id);
         void insert_symbol(const Symbol& symbol);
-        void erase_symbol(const Symbol& symbol);
+        void erase_symbol(int site_id, const Symbol& symbol);
         void move_cursor(int site_id, const Symbol& symbol);
 
         QList<Symbol> text() const;

@@ -39,10 +39,12 @@ namespace cte {
 
     void OpenDocument::insert_symbol(const Symbol& symbol) {
         shared_editor_->remote_insert(symbol);
+        cursors_[symbol.site_id()] = symbol;
     }
 
-    void OpenDocument::erase_symbol(const Symbol& symbol) {
+    void OpenDocument::erase_symbol(int site_id, const Symbol& symbol) {
         shared_editor_->remote_erase(symbol);
+        cursors_[site_id] = symbol;
     }
 
     void OpenDocument::move_cursor(int site_id, const Symbol& symbol) {
