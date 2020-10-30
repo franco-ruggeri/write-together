@@ -123,12 +123,25 @@ namespace cte {
         return process_deletion_buffer();
     }
 
-    int SharedEditor::find(const Symbol& symbol) const {
-        auto it = std::upper_bound(text_.begin(), text_.end(), symbol);
+    std::optional<int> SharedEditor::find_symbol(const Symbol& symbol) const {
+        if (symbol == bof_ || symbol == eof_) throw std::logic_error("trying to find BOF or EOF");
+        auto it = std::lower_bound(text_.begin(), text_.end(), symbol);
+        if (it == text_.end() || !(*it == symbol)) return std::nullopt;
         return static_cast<int>(std::distance(text_.begin(), it) - 1);    // -1 for BOF
     }
 
-    Symbol SharedEditor::at(int index) const {
+    Symbol SharedEditor::symbol_at(int index) const {
+        if (!valid_index(index)) throw std::logic_error("trying to retrieve at an invalid index");
+        index++;    // do not consider BOF
+        return text_[index];
+    }
+
+    int SharedEditor::find_cursor(const Symbol& symbol) const {
+        auto it = std::upper_bound(text_.begin(), text_.end(), symbol);
+        return static_cast<int>(std::distance(text_.begin(), it) - 1);    // -1 to have <= (upper bound gives >)
+    }
+
+    Symbol SharedEditor::cursor_at(int index) const {
         return text_.at(index);
     }
 

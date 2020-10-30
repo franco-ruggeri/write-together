@@ -34,9 +34,10 @@ namespace cte {
 
         int open(const QString& username);      // returns the assigned site_id
         void close(int site_id);
-        void insert_symbol(const Symbol& symbol);
+        void insert_symbol(const Symbol& symbol, const Format& format);
         void erase_symbol(int site_id, const Symbol& symbol);
         void move_cursor(int site_id, const Symbol& symbol);
+        void format_symbol(const Symbol& symbol, const Format& format);
 
         QList<std::pair<Symbol,Format>> text() const;
         QString username(int site_id) const;

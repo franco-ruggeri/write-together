@@ -13,6 +13,7 @@
 #include <cte/protocol/insert_message.h>
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
+#include <cte/protocol/format_message.h>
 
 namespace cte {
     UiWorker::UiWorker(QObject *parent) : QObject(parent) {
@@ -132,6 +133,9 @@ namespace cte {
             case MessageType::cursor:
                 remote_move_cursor(message);
                 break;
+            case MessageType::format:
+                remote_format_symbol(message);
+                break;
             default:    // should never happen, since the message is generated through Message::deserialize
                 throw std::logic_error("invalid message: invalid type");
         }
@@ -208,8 +212,8 @@ namespace cte {
         emit new_message(message);
     }
 
-    void UiWorker::local_insert(const Document& document, const Symbol& symbol) {
-        QSharedPointer<Message> message = QSharedPointer<InsertMessage>::create(document, symbol);
+    void UiWorker::local_insert(const Document& document, const Symbol& symbol, const Format& format) {
+        QSharedPointer<Message> message = QSharedPointer<InsertMessage>::create(document, symbol, format);
         emit new_message(message);
     }
 
@@ -220,6 +224,11 @@ namespace cte {
 
     void UiWorker::local_cursor_move(const Document& document, int site_id, const Symbol& symbol) {
         QSharedPointer<Message> message = QSharedPointer<CursorMessage>::create(document, symbol, site_id);
+        emit new_message(message);
+    }
+
+    void UiWorker::local_format_change(const Document& document, const Symbol& symbol, const Format& format) {
+        QSharedPointer<Message> message = QSharedPointer<FormatMessage>::create(document, symbol, format);
         emit new_message(message);
     }
 
@@ -278,10 +287,15 @@ namespace cte {
         Editor *e = editor.data();
         connect(e, &Editor::home_request, this, &UiWorker::activate_home);
         connect(e, &Editor::closed, [this, document]() { close_document(document); });
-        connect(e, &Editor::local_insert, [this, document](const Symbol& symbol) { local_insert(document, symbol); });
+        connect(e, &Editor::local_insert, [this, document](const Symbol& symbol, const Format& format) {
+            local_insert(document, symbol, format);
+        });
         connect(e, &Editor::local_erase, [this, document](const Symbol& symbol) { local_erase(document, symbol); });
         connect(e, &Editor::local_cursor_move, [this, editor, document](const Symbol& symbol) {
             local_cursor_move(document, editor->local_site_id(), symbol);
+        });
+        connect(e, &Editor::local_format_change, [this, document](const Symbol& symbol, const Format& format) {
+            local_format_change(document, symbol, format);
         });
     }
 
@@ -299,7 +313,8 @@ namespace cte {
         QSharedPointer<InsertMessage> insert_message = message.staticCast<InsertMessage>();
         Document document = insert_message->document();
         Symbol symbol = insert_message->symbol();
-        editors_[document]->remote_insert(symbol);
+        Format format = insert_message->format();
+        editors_[document]->remote_insert(symbol, format);
     }
 
     void UiWorker::remote_erase(const QSharedPointer<Message>& message) {
@@ -331,6 +346,14 @@ namespace cte {
         int site_id = *cursor_message->site_id();
         Symbol symbol = cursor_message->symbol();
         editors_[document]->remote_cursor_move(site_id, symbol);
+    }
+
+    void UiWorker::remote_format_symbol(const QSharedPointer<Message>& message) {
+        QSharedPointer<FormatMessage> format_message = message.staticCast<FormatMessage>();
+        Document document = format_message->document();
+        Symbol symbol = format_message->symbol();
+        Format format = format_message->format();
+        editors_[document]->remote_format_change(symbol, format);
     }
 
     bool UiWorker::eventFilter(QObject *watched, QEvent *event) {

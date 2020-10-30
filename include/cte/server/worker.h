@@ -44,6 +44,7 @@ namespace cte {
         void insert_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void erase_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message);
         void move_cursor(int session_id, Socket *socket, const QSharedPointer<Message>& message);
+        void format_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message);
 
     signals:
         void new_connection(int socket_fd);

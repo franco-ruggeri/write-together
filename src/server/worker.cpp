@@ -18,6 +18,7 @@
 #include <cte/protocol/insert_message.h>
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
+#include <cte/protocol/format_message.h>
 
 namespace cte {
     extern IdentityManager identity_manager;
@@ -137,6 +138,9 @@ namespace cte {
                 case MessageType::cursor:
                     move_cursor(session_id, socket, message);
                     break;
+                case MessageType::format:
+                    format_symbol(session_id, socket, message);
+                    break;
                 default:    // should never happen, since the message is generated through Message::deserialize
                     throw std::logic_error("invalid message: invalid type");
             }
@@ -165,6 +169,9 @@ namespace cte {
                 break;
             case MessageType::cursor:
                 document = message.staticCast<CursorMessage>()->document();
+                break;
+            case MessageType::format:
+                document = message.staticCast<FormatMessage>()->document();
                 break;
             default:
                 throw std::logic_error("invalid message: invalid type to dispatch");
@@ -379,9 +386,10 @@ namespace cte {
         QSharedPointer<InsertMessage> insert_message = message.staticCast<InsertMessage>();
         Document document = insert_message->document();
         Symbol symbol = insert_message->symbol();
+        Format format = insert_message->format();
 
         // insert symbol
-        document_manager.insert_symbol(session_id, document, symbol);
+        document_manager.insert_symbol(session_id, document, symbol, format);
 
         // dispatch message
         emit new_message(socket->socketDescriptor(), insert_message);
@@ -429,6 +437,27 @@ namespace cte {
         emit new_message(socket->socketDescriptor(), cursor_message);
 
         qDebug() << "move cursor: { document:" << document.full_name()
+                 << ", user:" << *identity_manager.username(session_id)
+                 << ", character:" << symbol.value() << "}";
+    }
+
+    void Worker::format_symbol(int session_id, Socket *socket, const QSharedPointer<Message>& message) {
+        // check authentication
+        if (!identity_manager.authenticated(session_id)) throw std::logic_error("session not authenticated");
+
+        // unpack message
+        QSharedPointer<FormatMessage> format_message = message.staticCast<FormatMessage>();
+        Document document = format_message->document();
+        Symbol symbol = format_message->symbol();
+        Format format = format_message->format();
+
+        // move cursor
+        document_manager.format_symbol(session_id, document, symbol, format);
+
+        // dispatch message
+        emit new_message(socket->socketDescriptor(), format_message);
+
+        qDebug() << "format change: { document:" << document.full_name()
                  << ", user:" << *identity_manager.username(session_id)
                  << ", character:" << symbol.value() << "}";
     }

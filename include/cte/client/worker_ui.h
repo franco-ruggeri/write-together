@@ -39,6 +39,7 @@ namespace cte {
         void remote_open_document(const QSharedPointer<Message>& message);
         void remote_close_document(const QSharedPointer<Message>& message);
         void remote_move_cursor(const QSharedPointer<Message>& message);
+        void remote_format_symbol(const QSharedPointer<Message>& message);
         void close_editors();
 
     signals:
@@ -54,9 +55,10 @@ namespace cte {
         void open_document(const QUrl& sharing_link);
         void update_profile(const Profile& profile);
         void update_profile(const Profile& profile, const QString& password);
-        void local_insert(const Document& document, const Symbol& symbol);
+        void local_insert(const Document& document, const Symbol& symbol, const Format& format);
         void local_erase(const Document& document, const Symbol& symbol);
         void local_cursor_move(const Document& document, int site_id, const Symbol& symbol);
+        void local_format_change(const Document& document, const Symbol& symbol, const Format& format);
         void close_document(const Document& document);
         void activate_home();
         void show_signup_form();

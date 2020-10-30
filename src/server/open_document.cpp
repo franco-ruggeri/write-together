@@ -38,18 +38,25 @@ namespace cte {
         reference_count_--;
     }
 
-    void OpenDocument::insert_symbol(const Symbol& symbol) {
-        shared_editor_->remote_insert(symbol);
+    void OpenDocument::insert_symbol(const Symbol& symbol, const Format& format) {
+        std::optional<int> index = *shared_editor_->remote_insert(symbol);
+        if (index) formats_.insert(*index, format);
         cursors_[symbol.site_id()] = symbol;
     }
 
     void OpenDocument::erase_symbol(int site_id, const Symbol& symbol) {
-        shared_editor_->remote_erase(symbol);
+        std::optional<int> index = *shared_editor_->remote_erase(symbol);
+        if (index) formats_.removeAt(*index);
         cursors_[site_id] = symbol;
     }
 
     void OpenDocument::move_cursor(int site_id, const Symbol& symbol) {
         cursors_[site_id] = symbol;
+    }
+
+    void OpenDocument::format_symbol(const Symbol& symbol, const Format& format) {
+        std::optional<int> index = shared_editor_->find_symbol(symbol);
+        if (index) formats_[*index] = format;
     }
 
     QList<std::pair<Symbol,Format>> OpenDocument::text() const {

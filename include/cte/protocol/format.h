@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QJsonObject>
+#include <QtGui/QTextCharFormat>
 
 namespace cte {
     class Format {
@@ -12,6 +13,7 @@ namespace cte {
         explicit Format(const QJsonObject& json_object);
 
         bool operator==(const Format& other) const;
+        operator QTextCharFormat() const;
 
         QJsonObject json() const;
 

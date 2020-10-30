@@ -40,7 +40,7 @@ namespace cte {
         return digest;
     }
 
-    bool verify_password(QString &&password, const std::string &hash) {
+    bool verify_password(QString &&password, const QString &hash) {
         secure_string password_sec = static_cast<secure_string>(password.toStdString());
         password.fill(0);
         password.clear();
@@ -49,21 +49,22 @@ namespace cte {
         CryptoPP::SecByteBlock salt;
 
         // parse the hash in its components
+        std::string h = hash.toStdString();
         std::size_t current, previous = 0;
-        current = hash.find('$');
-        CryptoPP::word64 interactions = std::stoull(hash.substr(previous, current - previous));
+        current = h.find('$');
+        CryptoPP::word64 interactions = std::stoull(h.substr(previous, current - previous));
         previous = current + 1;
-        current = hash.find('$', previous);
-        CryptoPP::word64 block_size = std::stoull(hash.substr(previous, current - previous));
+        current = h.find('$', previous);
+        CryptoPP::word64 block_size = std::stoull(h.substr(previous, current - previous));
         previous = current + 1;
-        current = hash.find('$', previous);
-        CryptoPP::word64 parallelism = std::stoull(hash.substr(previous, current - previous));
+        current = h.find('$', previous);
+        CryptoPP::word64 parallelism = std::stoull(h.substr(previous, current - previous));
         previous = current + 1;
-        current = hash.find('$', previous);
-        std::string enc_salt = hash.substr(previous, current - previous);
+        current = h.find('$', previous);
+        std::string enc_salt = h.substr(previous, current - previous);
         previous = current + 1;
-        CryptoPP::SecByteBlock db_digest(reinterpret_cast<const CryptoPP::byte *>(&hash[previous]),
-                                         hash.size() - previous);
+        CryptoPP::SecByteBlock db_digest(reinterpret_cast<const CryptoPP::byte *>(&h[previous]),
+                                         h.size() - previous);
         // end parsing; decode the salt, to be used to calculate the derived key
         std::string dec_salt;
         CryptoPP::Base64Decoder decoder;

@@ -38,17 +38,20 @@ namespace cte {
         void refresh_users();
 
     signals:
-        void local_insert(const Symbol& symbol);
+        void local_insert(const Symbol& symbol, const Format& format);
         void local_erase(const Symbol& symbol);
         void local_cursor_move(const Symbol& symbol);
+        void local_format_change(const Symbol& symbol, const Format& format);
         void home_request();
         void closed();
 
     private slots:
         void refresh_cursors();
         void refresh_status_bar();
+        void refresh_format_actions(const QTextCharFormat& format);
         void process_local_content_change(int position, int chars_removed, int chars_added);
         void process_local_cursor_move();
+        void process_local_format_change();
         void export_pdf();
         void show_sharing_link();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);
@@ -59,9 +62,10 @@ namespace cte {
 
     public:
         Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent=nullptr);
-        void remote_insert(const Symbol& symbol);
+        void remote_insert(const Symbol& symbol, const Format& format);
         void remote_erase(int site_id, const Symbol& symbol);
         void remote_cursor_move(int site_id, const Symbol& symbol);
+        void remote_format_change(const Symbol& symbol, const Format& format);
         void remote_open(int site_id, const Profile& profile);
         void remote_close(int site_id);
         int local_site_id() const;

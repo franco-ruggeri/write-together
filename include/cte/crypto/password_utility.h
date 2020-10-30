@@ -12,5 +12,5 @@ namespace cte{
     std::string generate_password(QString&& password, bool random_salt=true, CryptoPP::word64 interactions=N,
                                   CryptoPP::word64 block_size=r, CryptoPP::word64 parallelism=p);
 
-    bool verify_password(QString&& password, const std::string& hash);
+    bool verify_password(QString&& password, const QString& hash);
 }

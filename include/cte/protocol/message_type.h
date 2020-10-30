@@ -26,6 +26,7 @@ namespace cte {
         // document editing
         insert=12,
         erase=13,
-        cursor=14
+        cursor=14,
+        format=15
     };
 }

@@ -20,7 +20,8 @@ list(APPEND SRC
         document_message.cpp
         insert_message.cpp
         erase_message.cpp
-        cursor_message.cpp)
+        cursor_message.cpp
+        format_message.cpp)
 
 list(APPEND LIB Qt5::Core Qt5::Gui crdt)
 list(APPEND INCLUDE)

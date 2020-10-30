@@ -33,18 +33,14 @@ namespace cte {
         local_cursor_ = ui_->editor->textCursor();
         for (int i=0; i<text_with_format.size(); i++) {
             auto& symbol_with_format = text_with_format[i];
-            Symbol& s = symbol_with_format.first;
-            Format& f = symbol_with_format.second;
+            Symbol& symbol = symbol_with_format.first;
+            Format& format = symbol_with_format.second;
+            QTextCharFormat char_format = format;
 
-            QTextCharFormat format;
-            if (f.bold()) format.setFontWeight(1000);
-            format.setFontItalic(f.italic());
-            format.setFontUnderline(f.underlined());
-
-            text.push_back(s);
+            text.push_back(symbol);
             local_cursor_.setPosition(i);
-            local_cursor_.mergeCharFormat(format);
-            local_cursor_.insertText(s.value());
+            local_cursor_.mergeCharFormat(char_format);
+            local_cursor_.insertText(symbol.value());
         }
         shared_editor_ = SharedEditor(document_info.site_id(), text);
         local_cursor_.setPosition(0);
@@ -62,7 +58,7 @@ namespace cte {
         }
 
         // add remote cursors
-        show();     // important: before adding remote cursors, to be initialized well!
+        show();                 // important: before adding remote cursors, to be initialized well!
         int my_site_id = document_info.site_id();
         QHash<int,Symbol> cursors = document_info.cursors();
         for (auto it=cursors.begin(); it != cursors.end(); it++) {
@@ -70,7 +66,7 @@ namespace cte {
             Symbol& symbol = it.value();
             QSharedPointer<User> user = site_id_users_[site_id];
             if (site_id != my_site_id) {
-                int position = shared_editor_.find(symbol);
+                int position = shared_editor_.find_cursor(symbol);
                 user->add_remote_cursor(ui_->editor, site_id, position);
             } else {
                 user->set_local(true);
@@ -92,7 +88,7 @@ namespace cte {
         // to handle bug (see comment in process_local_content_change())
         ui_->editor->installEventFilter(this);
 
-        // connect signals and slots
+        // connect signals and slots for actions
         QTextDocument *editor_document = ui_->editor->document();
         connect(ui_->action_home, &QAction::triggered, this, &Editor::home_request);
         connect(ui_->action_export_pdf, &QAction::triggered, this, &Editor::export_pdf);
@@ -103,11 +99,15 @@ namespace cte {
         connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QTextEdit::cut);
         connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QTextEdit::copy);
         connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QTextEdit::paste);
-        connect(ui_->dock, &QDockWidget::visibilityChanged, ui_->action_user_list, &QAction::setChecked);
         connect(ui_->action_user_list, &QAction::triggered, ui_->dock, &QDockWidget::setVisible);
+        connect(ui_->action_bold, &QAction::triggered, this, &Editor::process_local_format_change);
+        connect(ui_->action_italic, &QAction::triggered, this, &Editor::process_local_format_change);
+        connect(ui_->action_underline, &QAction::triggered, this, &Editor::process_local_format_change);
+        connect(ui_->dock, &QDockWidget::visibilityChanged, ui_->action_user_list, &QAction::setChecked);
         connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_status_bar);
         connect(ui_->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &Editor::refresh_cursors);
+        connect(ui_->editor, &QTextEdit::currentCharFormatChanged, this, &Editor::refresh_format_actions);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
                 this, &Editor::refresh_cursors);
@@ -122,6 +122,12 @@ namespace cte {
         int n_words = ui_->editor->toPlainText().split(R"((\s|\n|\r)+)", QString::SkipEmptyParts).count();
         int n_chars = ui_->editor->toPlainText().count();
         word_char_count_->setText("Words: " + QString::number(n_words) + "; Characters: " + QString::number(n_chars));
+    }
+
+    void Editor::refresh_format_actions(const QTextCharFormat& format) {
+        ui_->action_bold->setChecked(format.fontWeight() == QFont::Bold);
+        ui_->action_italic->setChecked(format.fontItalic());
+        ui_->action_underline->setChecked(format.fontUnderline());
     }
 
     void Editor::refresh_users() {
@@ -155,7 +161,7 @@ namespace cte {
         offline_users->sortChildren(0, Qt::AscendingOrder);
     }
 
-    void Editor::remote_insert(const Symbol& symbol) {
+    void Editor::remote_insert(const Symbol& symbol, const Format& format) {
         // insert in shared editor
         std::optional<int> index = shared_editor_.remote_insert(symbol);
         if (!index) {       // erased using deletion buffer, no need to update UI editor
@@ -174,13 +180,13 @@ namespace cte {
         int site_id = symbol.site_id();
         site_id_users_[site_id]->move_remote_cursor(site_id, index.value()+1);  // set cursor after inserted char
 
-        // update background color
+        // update background color and format
         QSharedPointer<User> user = site_id_users_[site_id];
-        QTextCharFormat format;
-        format.setBackground(user->selected() ? user->color() : Qt::transparent);
+        QTextCharFormat char_format = format;
+        char_format.setBackground(user->selected() ? user->color() : Qt::transparent);
         cursor.setPosition(index.value());
         cursor.setPosition(index.value()+1, QTextCursor::KeepAnchor);
-        cursor.mergeCharFormat(format);
+        cursor.mergeCharFormat(char_format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
@@ -206,10 +212,26 @@ namespace cte {
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
         disconnect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
-        int index = shared_editor_.find(symbol);
+        int index = shared_editor_.find_cursor(symbol);
         site_id_users_[site_id]->move_remote_cursor(site_id, index);
         connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         qDebug() << "remote cursor move: { site_id:" << site_id << ", position:" << index << "}";
+    }
+
+    void Editor::remote_format_change(const Symbol& symbol, const Format& format) {
+        // insert in shared editor
+        std::optional<int> index = shared_editor_.find_symbol(symbol);
+        if (!index) return;       // symbol not present (previously erased)
+
+        // update format in UI
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        QTextCharFormat char_format = format;
+        QTextCursor cursor = ui_->editor->textCursor();
+        cursor.setPosition(*index);
+        cursor.setPosition(index.value()+1, QTextCursor::KeepAnchor);
+        cursor.mergeCharFormat(char_format);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        qDebug() << "remote format change: { character:" << symbol.value() << ", position:" << *index << "}";
     }
 
     void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
@@ -228,21 +250,21 @@ namespace cte {
         }
 
         // signal insert
+        Format format(ui_->action_bold->isChecked(), ui_->action_italic->isChecked(), ui_->action_underline->isChecked());
         for (int i=0 ; i<chars_added; i++) {
-            // signal
             QChar value = ui_->editor->toPlainText()[position+i];
             Symbol symbol = shared_editor_.local_insert(position + i - offset, value);
-            emit local_insert(symbol);
+            emit local_insert(symbol, format);
             qDebug() << "local insert: { character:" << value << ", position:" << position+i-offset << "}";
         }
 
-        // update background color of inserted text
+        // update background color and format of inserted text
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        QTextCharFormat format;
-        format.setBackground(local_user_->selected() ? local_user_->color() : Qt::transparent);
+        QTextCharFormat char_format = format;
+        char_format.setBackground(local_user_->selected() ? local_user_->color() : Qt::transparent);
         local_cursor_.setPosition(position);
         local_cursor_.setPosition(position + chars_added, QTextCursor::KeepAnchor);
-        local_cursor_.setCharFormat(format);
+        local_cursor_.mergeCharFormat(char_format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
 
         /*
@@ -269,9 +291,30 @@ namespace cte {
         int position = ui_->editor->textCursor().position();
         if (local_cursor_.position() == position) return;  // triggered by local insert/erase, do not signal anything
         local_cursor_.setPosition(position);
-        Symbol symbol = shared_editor_.at(position);
+        Symbol symbol = shared_editor_.cursor_at(position);
         emit local_cursor_move(symbol);
         qDebug() << "local cursor move: { character:" << symbol.value() << ", position:" << position << "}";
+    }
+
+    void Editor::process_local_format_change() {
+        QTextCursor cursor = ui_->editor->textCursor();
+        if (!cursor.hasSelection()) return;
+
+        // signal format change
+        int start = cursor.anchor();
+        int end = cursor.position();
+        if (start > end) std::swap(start, end);
+        Format format(ui_->action_bold->isChecked(), ui_->action_italic->isChecked(), ui_->action_underline->isChecked());
+        for (int i=start; i<end; i++) {
+            Symbol symbol = shared_editor_.symbol_at(i);
+            emit local_format_change(symbol, format);
+            qDebug() << "local format change: { character:" << symbol.value() << ", position:" << i << "}";
+        }
+
+        // update format in UI
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        cursor.mergeCharFormat(format);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
     void Editor::export_pdf() {
