@@ -102,7 +102,8 @@ namespace cte {
     }
 
     void UiWorker::activate_home() {
-        home_->activateWindow();
+        if (home_->isMinimized()) home_->setWindowState((home_->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+        else home_->activateWindow();
     }
 
     void UiWorker::process_message(const QSharedPointer<Message>& message) {
@@ -286,6 +287,7 @@ namespace cte {
         DocumentInfo document_info = document_message->document_info();
         QPointer<Editor> editor = new Editor(document, document_info);
         editor->installEventFilter(this);
+        editor->activateWindow();
         editors_.insert(document_message->document(), editor);
 
         // connect signals and slots

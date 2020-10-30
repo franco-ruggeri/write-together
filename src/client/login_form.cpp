@@ -23,7 +23,6 @@ namespace cte {
         if (username.isEmpty() || password.isEmpty())
             QMessageBox::warning(this, "Empty fields", "Please insert username and password.");
         else {
-            qDebug() << "Click. Login: " << login_already_clicked_;
             if (!login_already_clicked_) {
                 login_already_clicked_ = true;
                 ui_->form->setEnabled(false);
@@ -51,5 +50,6 @@ namespace cte {
     void LoginForm::enable_form(bool enabled) {
         login_already_clicked_ = !enabled;
         ui_->form->setEnabled(enabled);
+        if (enabled) ui_->username->setFocus();
     }
 }

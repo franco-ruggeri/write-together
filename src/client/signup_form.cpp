@@ -48,7 +48,6 @@ namespace cte {
             QMessageBox::warning(this, "Invalid fields", "The password must be at least 8 characters long and include "
                                                          "at least one number and both lower and upper characters.");
         else {
-            qDebug() << "Click. Signup: " << signup_already_clicked_;
             if (!signup_already_clicked_) {
                 signup_already_clicked_ = true;
                 ui_->form->setEnabled(false);
@@ -80,5 +79,6 @@ namespace cte {
     void SignupForm::enable_form(bool enabled) {
         signup_already_clicked_ = !enabled;
         ui_->form->setEnabled(enabled);
+        if (enabled) ui_->username->setFocus();
     }
 }
