@@ -119,7 +119,7 @@ namespace cte {
     }
 
     void Editor::refresh_status_bar() {
-        int n_words = ui_->editor->toPlainText().split(R"((\s|\n|\r)+)", QString::SkipEmptyParts).count();
+        int n_words = ui_->editor->toPlainText().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).count();
         int n_chars = ui_->editor->toPlainText().count();
         word_char_count_->setText("Words: " + QString::number(n_words) + "; Characters: " + QString::number(n_chars));
     }
