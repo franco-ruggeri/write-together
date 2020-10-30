@@ -7,21 +7,26 @@ namespace cte {
     const int SharedEditor::starting_site_id = 0;
     const int SharedEditor::starting_site_counter = 0;
     const int SharedEditor::reserved_site_id = -2;
-    const Symbol SharedEditor::bof(QChar(), reserved_site_id, starting_site_counter, {Lseq::begin});
-    const Symbol SharedEditor::eof(QChar(), reserved_site_id, starting_site_counter, {Lseq::end});
 
-    SharedEditor::SharedEditor(int site_id, QObject *parent) :
+    SharedEditor::SharedEditor() : SharedEditor(invalid_site_id) {}
+
+    SharedEditor::SharedEditor(int site_id) :
             site_id_(site_id), site_counter_(starting_site_counter) {
-        text_.append(bof);
-        text_.append(eof);
+        // important: not in initialization list, because we have to be sure that an Lseq object is created
+        // see https://www.tutorialspoint.com/cplusplus/cpp_static_members.htm
+        bof_ = Symbol(QChar(), reserved_site_id, starting_site_counter, {Lseq::begin});
+        eof_ = Symbol(QChar(), reserved_site_id, starting_site_counter, {Lseq::end});
+        text_.append(bof_);
+        text_.append(eof_);
     }
 
     SharedEditor::SharedEditor(int site_id, const QList<Symbol>& text) :
-            site_id_(site_id), site_counter_(starting_site_counter) {
-        // fill text
-        std::copy(text.begin(), text.end(), std::back_inserter(text_));
-        text_.insert(0, bof);
-        text_.append(eof);
+            site_id_(site_id), site_counter_(starting_site_counter), text_(text) {
+        // insert bof and eof (see note in the other constructor)
+        bof_ = Symbol(QChar(), reserved_site_id, starting_site_counter, {Lseq::begin});
+        eof_ = Symbol(QChar(), reserved_site_id, starting_site_counter, {Lseq::end});
+        text_.insert(0, bof_);
+        text_.append(eof_);
 
         // populate version vector
         for (const auto& s : text_)
@@ -113,7 +118,7 @@ namespace cte {
     }
 
     std::optional<int> SharedEditor::remote_erase(const Symbol& symbol) {
-        if (symbol == bof || symbol == eof) throw std::logic_error("trying to erase BOF or EOF");
+        if (symbol == bof_ || symbol == eof_) throw std::logic_error("trying to erase BOF or EOF");
         deletion_buffer_.append(symbol);
         return process_deletion_buffer();
     }
@@ -143,5 +148,9 @@ namespace cte {
         for (auto it = text_.begin()+1; it != text_.end()-1; it++)  // skip BOF and EOF
             result.append(it->value());
         return result;
+    }
+
+    Symbol SharedEditor::bof() const {
+        return bof_;
     }
 }

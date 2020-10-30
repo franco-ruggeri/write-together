@@ -15,14 +15,14 @@ namespace cte {
         color_ = colors[hash];
     }
 
-    void User::add_remote_cursor(QPlainTextEdit *editor, int site_id) {
+    void User::add_remote_cursor(QTextEdit *editor, int site_id) {
         QSharedPointer<RemoteCursor> cursor = QSharedPointer<RemoteCursor>::create(editor, profile_.username(), color_);
         remote_cursors_.insert(site_id, cursor);
         site_ids_.insert(site_id);
         online_ = true;
     }
 
-    void User::add_remote_cursor(QPlainTextEdit *editor, int site_id, int position) {
+    void User::add_remote_cursor(QTextEdit *editor, int site_id, int position) {
         add_remote_cursor(editor, site_id);
         move_remote_cursor(site_id, position);
     }

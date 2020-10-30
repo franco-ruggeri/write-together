@@ -3,7 +3,7 @@
 
 namespace cte {
     OpenDocument::OpenDocument() :
-            shared_editor_(QSharedPointer<SharedEditor>::create(SharedEditor::invalid_site_id)),
+            shared_editor_(QSharedPointer<SharedEditor>::create()),
             next_site_id_(SharedEditor::starting_site_counter), reference_count_(0) {}
 
     OpenDocument::OpenDocument(const QVector<character_t>& text, const QList<QString>& usernames) : OpenDocument() {
@@ -20,12 +20,13 @@ namespace cte {
         for (const auto& c : text) {
             std::pair<int,int> author = authors[c.author];
             shared_editor_->insert(author.first, author.second++, index++, c.value);
+            formats_.push_back(c.format);
         }
     }
 
     int OpenDocument::open(const QString& username) {
         int site_id = next_site_id_;
-        cursors_.insert(site_id, SharedEditor::bof);
+        cursors_.insert(site_id, shared_editor_->bof());
         usernames_.insert(site_id, username);
         next_site_id_++;
         reference_count_++;
@@ -51,8 +52,12 @@ namespace cte {
         cursors_[site_id] = symbol;
     }
 
-    QList<Symbol> OpenDocument::text() const {
-        return shared_editor_->text();
+    QList<std::pair<Symbol,Format>> OpenDocument::text() const {
+        QList<Symbol> text = shared_editor_->text();
+        QList<std::pair<Symbol,Format>> text_with_format;
+        for (int i=0; i<text.size(); i++)
+            text_with_format.push_back({text[i], formats_[i]});
+        return text_with_format;
     }
 
     QString OpenDocument::username(int site_id) const {

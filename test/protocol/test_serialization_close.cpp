@@ -1,8 +1,7 @@
 #include <cte/protocol/close_message.h>
 #include <cte/protocol/document.h>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QString>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     const cte::Document document("test owner", "test name");

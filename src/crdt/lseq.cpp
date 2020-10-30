@@ -31,7 +31,8 @@ namespace cte {
                     consecutive = true;
             } else {
                 // consecutive nodes at a previous level => the interval is made of two parts
-                // example: prev=1.5, next=2.2, begin_=0, end_=9 => interval = 9-5-1 + 2-0-1 = 4 (i.e. positions 1.6, 1.7, 1.8, 2.1)
+                // example: prev=1.5, next=2.2, begin_=0, end_=9 => interval = 9-5-1 + 2-0-1 = 4
+                // (i.e. positions 1.6, 1.7, 1.8, 2.1)
                 interval = 0;
                 if (next[depth] != begin) interval += next[depth] - begin - 1;
                 if (prev[depth] != end) interval += end - prev[depth] - 1;
@@ -59,7 +60,7 @@ namespace cte {
                 // example: prev=1.5, next=2.5, begin_=0, end=9, step=5 => leaf = 5-(9-5-1) = 2 (i.e. position 2.2)
                 if (prev[depth] + step >= end) {
                     std::copy(next.begin(), next.begin()+depth, std::back_inserter(between));
-                    between.push_back(begin + step - (next[depth] == end ? 0 : end-prev[depth]-1));
+                    between.push_back(begin + step - (prev[depth] == end ? 0 : end-prev[depth]-1));
                 } else {
                     std::copy(prev.begin(), prev.begin()+depth, std::back_inserter(between));
                     between.push_back(prev[depth] + step);

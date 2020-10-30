@@ -5,6 +5,7 @@ list(APPEND SRC
         profile.cpp
         document.cpp
         document_info.cpp
+        format.cpp
         error_message.cpp
         signup_message.cpp
         signup_ok_message.cpp

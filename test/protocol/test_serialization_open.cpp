@@ -3,7 +3,7 @@
 #include <cte/protocol/profile.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QUrl>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     const cte::Document document("test owner", "test name");

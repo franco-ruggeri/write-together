@@ -9,7 +9,8 @@ namespace cte {
     DocumentInfo::DocumentInfo(int site_id_user, const QUrl& sharing_link) :
         site_id_(site_id_user), sharing_link_(sharing_link) {}
 
-    DocumentInfo::DocumentInfo(const QList<Symbol>& text, int site_id, const QHash<int,Symbol>& cursors,
+    DocumentInfo::DocumentInfo(const QList<std::pair<Symbol,Format>>& text, int site_id,
+                               const QHash<int,Symbol>& cursors,
                                const QHash<QString,std::pair<Profile,QList<int>>>& users, const QUrl& sharing_link) :
         text_(text), site_id_(site_id), cursors_(cursors), users_(users), sharing_link_(sharing_link) {}
 
@@ -37,8 +38,19 @@ namespace cte {
        QJsonArray json_array = text_iterator->toArray();
        for (const auto &s_json : json_array) {
            if (!s_json.isObject()) throw std::logic_error("invalid message: invalid fields");
-           Symbol s(s_json.toObject());
-           text_.push_back(s);
+           QJsonObject s_json_object = s_json.toObject();
+
+           auto end_iterator = s_json_object.end();
+           auto symbol_iterator = s_json_object.find("symbol");
+           auto format_iterator = s_json_object.find("format");
+
+           if (symbol_iterator == end_iterator || format_iterator == end_iterator ||
+                !symbol_iterator->isObject() || !format_iterator->isObject())
+               throw std::logic_error("invalid message: invalid fields");
+
+           Symbol s(symbol_iterator->toObject());
+           Format f(format_iterator->toObject());
+           text_.push_back({s, f});
        }
 
        // cursors
@@ -96,7 +108,7 @@ namespace cte {
               this->sharing_link_ == other.sharing_link_;
     }
 
-   QList<Symbol> DocumentInfo::text() const {
+   QList<std::pair<Symbol,Format>> DocumentInfo::text() const {
         return text_;
     }
 
@@ -124,8 +136,12 @@ namespace cte {
 
         // text
         QJsonArray json_array;
-        for (const auto& s : text_)
-            json_array.push_back(s.json());
+        for (auto it=text_.begin(); it!=text_.end(); it++) {
+            QJsonObject s_json;
+            s_json["symbol"] = it->first.json();
+            s_json["format"] = it->second.json();
+            json_array.push_back(s_json);
+        }
         json_object["text"] = json_array;
 
         // cursors

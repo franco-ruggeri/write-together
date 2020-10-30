@@ -35,12 +35,8 @@ QDockWidget#dock * {
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
-     <widget class="QPlainTextEdit" name="editor">
-      <property name="plainText">
-       <string/>
-      </property>
-     </widget>
+    <item row="0" column="0">
+     <widget class="QTextEdit" name="editor"/>
     </item>
    </layout>
   </widget>
@@ -57,14 +53,8 @@ QDockWidget#dock * {
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menu_export_as">
-     <property name="title">
-      <string>Export as</string>
-     </property>
-     <addaction name="action_export_pdf"/>
-    </widget>
     <addaction name="action_invite"/>
-    <addaction name="menu_export_as"/>
+    <addaction name="action_export_pdf"/>
     <addaction name="separator"/>
     <addaction name="action_home"/>
     <addaction name="action_close"/>
@@ -86,9 +76,18 @@ QDockWidget#dock * {
     </property>
     <addaction name="action_user_list"/>
    </widget>
+   <widget class="QMenu" name="menuFormat">
+    <property name="title">
+     <string>Format</string>
+    </property>
+    <addaction name="action_bold"/>
+    <addaction name="action_italic"/>
+    <addaction name="action_underline"/>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_edit"/>
    <addaction name="menuView"/>
+   <addaction name="menuFormat"/>
   </widget>
   <widget class="QToolBar" name="toolbar">
    <property name="windowTitle">
@@ -111,6 +110,10 @@ QDockWidget#dock * {
    <addaction name="action_cut"/>
    <addaction name="action_copy"/>
    <addaction name="action_paste"/>
+   <addaction name="separator"/>
+   <addaction name="action_bold"/>
+   <addaction name="action_italic"/>
+   <addaction name="action_underline"/>
   </widget>
   <widget class="QDockWidget" name="dock">
    <property name="styleSheet">
@@ -333,6 +336,48 @@ QDockWidget#dock * {
    </property>
    <property name="text">
     <string>user_list</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="action_bold">
+   <property name="icon">
+    <iconset theme="format-text-bold">
+     <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
+   </property>
+   <property name="text">
+    <string>Bold</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="action_italic">
+   <property name="icon">
+    <iconset theme="format-text-italic">
+     <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
+   </property>
+   <property name="text">
+    <string>Italic</string>
+   </property>
+   <property name="toolTip">
+    <string>Italic</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="action_underline">
+   <property name="icon">
+    <iconset theme="format-text-underline">
+     <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
+   </property>
+   <property name="text">
+    <string>Underline</string>
+   </property>
+   <property name="toolTip">
+    <string>Underline</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+U</string>

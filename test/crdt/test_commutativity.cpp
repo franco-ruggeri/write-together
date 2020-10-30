@@ -6,7 +6,7 @@
 #include <cte/crdt/symbol.h>
 #include <QtCore/QString>
 #include <QtCore/QChar>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     QString text = "CAT";

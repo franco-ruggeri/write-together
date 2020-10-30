@@ -1,7 +1,7 @@
 #include <cte/protocol/login_message.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     const QString username("test username");

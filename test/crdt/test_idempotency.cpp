@@ -5,7 +5,7 @@
 #include <cte/crdt/shared_editor.h>
 #include <cte/crdt/symbol.h>
 #include <QtCore/QString>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     QString text = "HAT";

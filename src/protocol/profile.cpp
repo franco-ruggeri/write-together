@@ -15,7 +15,8 @@ namespace cte {
     }
 
     Profile::Profile(const QString &username, const QString &name, const QString &surname, const QString& email,
-                     const QByteArray& icon) : Profile(username, name, surname, email, QImage{}) {
+                     const QByteArray& icon) :
+            username_(username), name_(name), surname_(surname), email_(email) {
         set_icon(icon);
     }
 

@@ -4,9 +4,7 @@
 
 #include <cte/crdt/shared_editor.h>
 #include <cte/crdt/symbol.h>
-#include <QtCore/QString>
-#include <QtCore/QChar>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     cte::SharedEditor editor1(cte::SharedEditor::starting_site_id);

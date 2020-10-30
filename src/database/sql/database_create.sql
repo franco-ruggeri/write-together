@@ -36,6 +36,9 @@ CREATE TABLE IF NOT EXISTS `character`
 	`index` INT NOT NULL,
 	`value` VARCHAR(1) NOT NULL,    -- not CHAR because CHAR removes trailing spaces
     `author` VARCHAR(100) NOT NULL,
+    `bold` BOOL NOT NULL,
+    `italic` BOOL NOT NULL,
+    `underlined` BOOL NOT NULL,
 	PRIMARY KEY (`document_owner`, `document_name`, `index`),
 	FOREIGN KEY (`document_owner`, `document_name`) REFERENCES `document`(`owner`, `name`) ON UPDATE CASCADE,
 	FOREIGN KEY (`author`) REFERENCES user(`username`) ON UPDATE CASCADE

@@ -1,7 +1,7 @@
 #include <cte/client/remote_cursor.h>
 
 namespace cte {
-    RemoteCursor::RemoteCursor(QPlainTextEdit *editor, const QString& username, const QColor& color) : editor_(editor) {
+    RemoteCursor::RemoteCursor(QTextEdit *editor, const QString& username, const QColor& color) : editor_(editor) {
         // init cursor
         cursor_ = editor->textCursor();
 

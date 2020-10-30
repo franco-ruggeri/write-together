@@ -1,6 +1,6 @@
 #include <cte/protocol/profile_ok_message.h>
 #include <QtCore/QSharedPointer>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::ProfileOkMessage>::create();
