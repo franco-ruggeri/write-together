@@ -25,5 +25,8 @@
         <file>images/editor/paste.png</file>
         <file>images/editor/online.png</file>
         <file>images/editor/offline.png</file>
+        <file>images/editor/bold.png</file>
+        <file>images/editor/italic.png</file>
+        <file>images/editor/underline.png</file>
     </qresource>
 </RCC>

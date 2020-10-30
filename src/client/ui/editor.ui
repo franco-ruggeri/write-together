@@ -349,7 +349,7 @@ QDockWidget#dock * {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-bold">
+    <iconset theme="format-text-bold" resource="resource.qrc">
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
    </property>
    <property name="text">
@@ -364,8 +364,8 @@ QDockWidget#dock * {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-italic">
-     <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
+    <iconset theme="format-text-italic" resource="resource.qrc">
+     <normaloff>:/images/editor/italic.png</normaloff>:/images/editor/italic.png</iconset>
    </property>
    <property name="text">
     <string>Italic</string>
@@ -382,8 +382,8 @@ QDockWidget#dock * {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-underline">
-     <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
+    <iconset theme="format-text-underline" resource="resource.qrc">
+     <normaloff>:/images/editor/underline.png</normaloff>:/images/editor/underline.png</iconset>
    </property>
    <property name="text">
     <string>Underline</string>
