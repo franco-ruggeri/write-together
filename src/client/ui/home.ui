@@ -253,6 +253,9 @@ QListWidget#documents::item:hover {
           <height>38</height>
          </size>
         </property>
+        <property name="shortcut">
+         <string>Ctrl+N</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -293,6 +296,9 @@ QListWidget#documents::item:hover {
           <width>38</width>
           <height>38</height>
          </size>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+O</string>
         </property>
        </widget>
       </item>
@@ -533,6 +539,9 @@ QListWidget#documents::item:hover {
           <property name="text">
            <string>PROFILE</string>
           </property>
+          <property name="shortcut">
+           <string>Ctrl+P</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -560,6 +569,9 @@ QListWidget#documents::item:hover {
           </property>
           <property name="text">
            <string>LOGOUT</string>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+S</string>
           </property>
          </widget>
         </item>
