@@ -24,6 +24,14 @@ namespace cte {
         return this->bold_ == other.bold_ && this->italic_ == other.italic_ && this->underlined_ == other.underlined_;
     }
 
+    Format::operator QTextCharFormat() const {
+        QTextCharFormat format;
+        format.setFontWeight(bold_ ? QFont::Bold : QFont::Normal);
+        format.setFontItalic(italic_);
+        format.setFontUnderline(underlined_);
+        return format;
+    }
+
     QJsonObject Format::json() const {
         QJsonObject json_object;
         json_object["bold"] = bold_;

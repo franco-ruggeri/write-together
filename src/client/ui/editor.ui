@@ -281,7 +281,7 @@ QDockWidget#dock * {
     <string>Invite to collaborate</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+I</string>
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="action_close">
@@ -338,10 +338,13 @@ QDockWidget#dock * {
     <string>user_list</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+U</string>
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="action_bold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset theme="format-text-bold">
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
@@ -354,6 +357,9 @@ QDockWidget#dock * {
    </property>
   </action>
   <action name="action_italic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset theme="format-text-italic">
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
@@ -369,6 +375,9 @@ QDockWidget#dock * {
    </property>
   </action>
   <action name="action_underline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset theme="format-text-underline">
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>

@@ -17,13 +17,15 @@ Here are the fields and the explanation of each message type appearing in the st
 - *open \<document|sharing_link> [\<site_id> \<profile>]* : client requests to open an existing document (without optional arguments) or server notifies an open to the other editing users (with *\<document>* and optional arguments).
 - *close \<document> [\<site_id>]* : client requests to close an opened document (without optional argument) or server notifies a close to the other editing users (with optional argument).
 - *document \<document> \<document_info>* : server sends all the info about the requested (open/create) document.
-- *insert \<document> \<symbol>* : insert symbol in an opened document.
+- *insert \<document> \<symbol> \<format>* : insert symbol in an opened document.
 - *erase \<document> \<symbol> [\<site_id>]* : erase symbol from an opened document (client to server without optional argument, server to client with optional argument).
 - *cursor \<document> \<symbol> [\<site_id>]* : cursor move of a client in an opened document (client to server without optional argument, server to client with optional argument).
+- *format \<document> \<symbol> \<format>* : change format of a symbol in an opened document.
 
 Further details:
 - *\<document>* contains: *owner* (username) and *document_name*.
 - *\<symbol>* contains: *site_id*, *site_counter*, *value*, and *position* (array of integers).
+- *\<format>* contains: *bold*, *italic*, *underlined* (booleans).
 - *\<profile>* contains: *username*, *name*, *surname*, email and *icon*.
 - *\<document_info>* contains:
 	+ *text* (array of symbols)

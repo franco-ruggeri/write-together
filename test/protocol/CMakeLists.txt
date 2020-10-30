@@ -57,3 +57,7 @@ add_test(NAME serialization_erase COMMAND test_serialization_erase)
 add_executable(test_serialization_cursor test_serialization_cursor.cpp)
 target_link_libraries(test_serialization_cursor protocol crdt)
 add_test(NAME serialization_cursor COMMAND test_serialization_cursor)
+
+add_executable(test_serialization_format test_serialization_format.cpp)
+target_link_libraries(test_serialization_format protocol crdt)
+add_test(NAME serialization_format COMMAND test_serialization_format)

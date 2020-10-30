@@ -43,9 +43,10 @@ namespace cte {
         QList<Document> get_open_documents(int session_id) const;
 
         // document editing
-        void insert_symbol(int session_id, const Document& document, const Symbol& symbol);
+        void insert_symbol(int session_id, const Document& document, const Symbol& symbol, const Format& format);
         int erase_symbol(int session_id, const Document& document, const Symbol& symbol);
         int move_cursor(int session_id, const Document& document, const Symbol& symbol);
+        void format_symbol(int session_id, const Document& document, const Symbol& symbol, const Format& format);
         void save();
     };
 }

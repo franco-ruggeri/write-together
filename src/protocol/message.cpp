@@ -14,6 +14,7 @@
 #include <cte/protocol/insert_message.h>
 #include <cte/protocol/erase_message.h>
 #include <cte/protocol/cursor_message.h>
+#include <cte/protocol/format_message.h>
 #include <QtCore/QJsonDocument>
 
 namespace cte {
@@ -93,6 +94,9 @@ namespace cte {
                 break;
             case MessageType::cursor:
                 message = QSharedPointer<CursorMessage>(new CursorMessage(json_object));
+                break;
+            case MessageType::format:
+                message = QSharedPointer<FormatMessage>(new FormatMessage(json_object));
                 break;
             default:
                 throw std::logic_error("invalid message: invalid type");

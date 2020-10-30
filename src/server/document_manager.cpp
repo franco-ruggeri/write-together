@@ -174,11 +174,12 @@ namespace cte {
         return opened(session_id, document) && site_ids_[session_id][document] != symbol.site_id();
     }
 
-    void DocumentManager::insert_symbol(int session_id, const Document& document, const Symbol& symbol) {
+    void DocumentManager::insert_symbol(int session_id, const Document& document, const Symbol& symbol,
+                                        const Format& format) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         if (site_id_spoofing(session_id, document, symbol)) throw std::logic_error("site_id spoofing");
-        get_open_document(document).insert_symbol(symbol);
+        get_open_document(document).insert_symbol(symbol, format);
     }
 
     int DocumentManager::erase_symbol(int session_id, const Document& document, const Symbol& symbol) {
@@ -195,6 +196,13 @@ namespace cte {
         int site_id = site_ids_[session_id][document];
         get_open_document(document).move_cursor(site_id, symbol);
         return site_id;
+    }
+
+    void DocumentManager::format_symbol(int session_id, const Document& document, const Symbol& symbol,
+                                        const Format& format) {
+        QMutexLocker ml(&mutex_);
+        if (!opened(session_id, document)) throw std::logic_error("document not opened");
+        get_open_document(document).format_symbol(symbol, format);
     }
 
     QList<Document> DocumentManager::get_document_list(const QString& username) const {

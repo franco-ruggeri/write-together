@@ -1,5 +1,5 @@
 /*
- * Root of the message hierarchy for the collaborative text editor application protocol (see docs/protocol.md).
+ * Root of the message hierarchy for the application protocol (see docs/protocol.md).
  * Some message types in the hierarchy are very similar or even identical, but they are kept separate for extensibility.
  *
  * Serialization is exposed by means of methods serialize() and deserialize(), hiding the internal choice of JSON.

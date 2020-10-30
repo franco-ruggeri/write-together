@@ -1,3 +1,7 @@
+/*
+ * Periodically asks the document manager to save all the opened documents.
+ */
+
 #pragma once
 
 #include <QtCore/QObject>

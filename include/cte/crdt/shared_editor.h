@@ -47,12 +47,16 @@ namespace cte {
         std::optional<int> remote_insert(const Symbol& symbol); // returns nullopt if erased with deletion buffer
         std::optional<int> remote_erase(const Symbol& symbol);  // returns nullopt if put in deletion buffer
 
-        // indices consider BOF (for cursors)
-        int find(const Symbol& symbol) const;   // symbol does not need to exist
-        Symbol at(int index) const;
+        // indices do not consider BOF
+        std::optional<int> find_symbol(const Symbol& symbol) const;
+        Symbol symbol_at(int index) const;
+
+        // indices consider BOF (for cursors, cursor refers to previous char, so it can be on BOF)
+        int find_cursor(const Symbol& symbol) const;            // symbol not found => returns the closest one (<=)
+        Symbol cursor_at(int index) const;
 
         int site_id() const;
-        QList<Symbol> text() const;             // without BOF and EOF
+        QList<Symbol> text() const;                             // without BOF and EOF
         QString to_string() const;
         Symbol bof() const;
 

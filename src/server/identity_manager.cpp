@@ -68,7 +68,7 @@ namespace cte {
 
         // check password
         QString hash = query.value("password").toString();
-        if (!verify_password(static_cast<QString &&>(password), hash.toStdString()))
+        if (!verify_password(std::move(password), hash))
             return std::nullopt;    // wrong password
 
         // authenticate session
