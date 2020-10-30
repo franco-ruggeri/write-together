@@ -27,6 +27,7 @@ namespace cte {
 
         // create document
         QString owner = document.owner();
+        std::optional<DocumentInfo> document_info;
         if (query.size() == 0) {
             QUrl sharing_link = Document::generate_sharing_link(document);
 
@@ -35,12 +36,15 @@ namespace cte {
             execute_query(query);
             query = query_insert_sharing(database, document, owner);
             execute_query(query);
+
+            // open document
+            document_info = open_document(session_id, document, owner);
         }
 
         // commit transaction
         database.commit();
 
-        return open_document(session_id, document, owner);
+        return document_info;
     }
 
     std::optional<DocumentInfo> DocumentManager::open_document(int session_id, const Document& document,
