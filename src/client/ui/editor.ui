@@ -46,12 +46,12 @@ QDockWidget#dock * {
      <x>0</x>
      <y>0</y>
      <width>1018</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="action_invite"/>
     <addaction name="action_export_pdf"/>
@@ -61,7 +61,7 @@ QDockWidget#dock * {
    </widget>
    <widget class="QMenu" name="menu_edit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="action_undo"/>
     <addaction name="action_redo"/>
@@ -72,13 +72,13 @@ QDockWidget#dock * {
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="action_user_list"/>
    </widget>
    <widget class="QMenu" name="menuFormat">
     <property name="title">
-     <string>Format</string>
+     <string>For&amp;mat</string>
     </property>
     <addaction name="action_bold"/>
     <addaction name="action_italic"/>
@@ -191,7 +191,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/undo.png</normaloff>:/images/editor/undo.png</iconset>
    </property>
    <property name="text">
-    <string>Undo</string>
+    <string>&amp;Undo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -206,7 +206,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/redo.png</normaloff>:/images/editor/redo.png</iconset>
    </property>
    <property name="text">
-    <string>Redo</string>
+    <string>Re&amp;do</string>
    </property>
    <property name="toolTip">
     <string>Redo</string>
@@ -278,7 +278,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/invite.png</normaloff>:/images/editor/invite.png</iconset>
    </property>
    <property name="text">
-    <string>Invite to collaborate</string>
+    <string>&amp;Invite to collaborate</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -293,7 +293,7 @@ QDockWidget#dock * {
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Close</string>
+    <string>&amp;Close</string>
    </property>
    <property name="toolTip">
     <string>Close</string>
@@ -311,7 +311,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/export_pdf.png</normaloff>:/images/editor/export_pdf.png</iconset>
    </property>
    <property name="text">
-    <string>Export as PDF</string>
+    <string>Export as &amp;PDF</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -326,7 +326,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/home.png</normaloff>:/images/editor/home.png</iconset>
    </property>
    <property name="text">
-    <string>Home</string>
+    <string>&amp;Home</string>
    </property>
   </action>
   <action name="action_user_list">
@@ -338,7 +338,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/online.png</normaloff>:/images/editor/online.png</iconset>
    </property>
    <property name="text">
-    <string>user_list</string>
+    <string>&amp;user_list</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -353,7 +353,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
    </property>
    <property name="text">
-    <string>Bold</string>
+    <string>&amp;Bold</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
@@ -368,7 +368,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/italic.png</normaloff>:/images/editor/italic.png</iconset>
    </property>
    <property name="text">
-    <string>Italic</string>
+    <string>&amp;Italic</string>
    </property>
    <property name="toolTip">
     <string>Italic</string>
@@ -386,7 +386,7 @@ QDockWidget#dock * {
      <normaloff>:/images/editor/underline.png</normaloff>:/images/editor/underline.png</iconset>
    </property>
    <property name="text">
-    <string>Underline</string>
+    <string>&amp;Underline</string>
    </property>
    <property name="toolTip">
     <string>Underline</string>
