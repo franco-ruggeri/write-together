@@ -1,5 +1,5 @@
 /*
- * Encapsulation of a single character in the text cte with all the information needed for CRDT.
+ * Encapsulation of a single character in the text editor with all the information needed for CRDT.
  */
 
 #pragma once

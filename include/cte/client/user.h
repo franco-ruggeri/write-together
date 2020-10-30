@@ -1,3 +1,7 @@
+/*
+ * User with access to a particular document.
+ */
+
 #pragma once
 
 #include <QtCore/QSharedPointer>

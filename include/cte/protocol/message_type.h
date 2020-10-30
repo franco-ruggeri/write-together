@@ -1,5 +1,5 @@
 /*
- * Message types for the collaborative text cte application protocol (see docs/protocol.md).
+ * Message types for the application protocol (see docs/protocol.md).
  */
 
 #pragma once

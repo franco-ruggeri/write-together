@@ -1,3 +1,8 @@
+/*
+ * Client worker responsible for the network. It manages connection with the server as well as serialization and
+ * deserialization of messages.
+ */
+
 #pragma once
 
 #include <QtCore/QObject>

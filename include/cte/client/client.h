@@ -1,3 +1,7 @@
+/*
+ * Client controller. It launches and connects network and UI workers.
+ */
+
 #pragma once
 
 #include <QtCore/QPointer>

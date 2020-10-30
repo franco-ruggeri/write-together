@@ -1,3 +1,7 @@
+/*
+ * Utilities for storing hashes instead of plain-text passwords.
+ */
+
 #pragma once
 
 #include <cryptlib.h>

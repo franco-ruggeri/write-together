@@ -1,5 +1,6 @@
 /*
- * Identifier of a document.
+ * Identifier of a document. The document naming reflects a two-level directory structure, where each user has their
+ * own directory (UFD).
  */
 
 #pragma once

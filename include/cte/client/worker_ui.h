@@ -1,3 +1,8 @@
+/*
+ * Client worker responsible for the UI. It manages all the windows, processes incoming messages and generates outgoing
+ * ones.
+ */
+
 #pragma once
 
 #include <QtCore/QObject>

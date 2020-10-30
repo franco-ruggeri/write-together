@@ -1,3 +1,7 @@
+/*
+ * Format of a character in a document.
+ */
+
 #pragma once
 
 #include <QtCore/QJsonObject>

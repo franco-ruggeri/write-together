@@ -1,3 +1,8 @@
+/*
+ * SSL socket. It provides a simple interface to receive and send messages of the application protocol over an
+ * encrypted connection.
+ */
+
 #pragma once
 
 #include <QtCore/QObject>
