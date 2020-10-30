@@ -15,6 +15,7 @@ namespace cte {
         Q_OBJECT
 
         QSharedPointer<Ui::SignupForm> ui_;
+        bool signup_already_clicked_;
 
     signals:
         void signup_request(const Profile& profile, const QString& password);
@@ -29,5 +30,6 @@ namespace cte {
     public:
         explicit SignupForm(QWidget *parent=nullptr);
         bool eventFilter(QObject *watched, QEvent *event) override;
+        void enable_form(bool enabled);
     };
 }

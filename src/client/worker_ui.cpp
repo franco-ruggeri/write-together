@@ -94,6 +94,11 @@ namespace cte {
         if (!forms_->isHidden()) parent = forms_.data();
         else if (!home_->isHidden()) parent = home_.data();
         QMessageBox::critical(parent, tr("Error"), error);
+        if (parent == forms_.data()) {
+            QWidget *form = forms_->currentWidget();
+            if (form == login_form_) login_form_->enable_form(true);
+            else if (form == signup_form_) signup_form_->enable_form(true);
+        }
     }
 
     void UiWorker::activate_home() {

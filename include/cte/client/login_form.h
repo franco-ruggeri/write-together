@@ -14,6 +14,7 @@ namespace cte {
         Q_OBJECT
 
         QSharedPointer<Ui::LoginForm> ui_;
+        bool login_already_clicked_;
 
     signals:
         void login_request(const QString& username, const QString& password);
@@ -28,5 +29,6 @@ namespace cte {
     public:
         explicit LoginForm(QWidget *parent=nullptr);
         bool eventFilter(QObject *watched, QEvent *event) override;
+        void enable_form(bool enabled);
     };
 }
