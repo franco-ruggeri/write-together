@@ -1,7 +1,7 @@
 #include <cte/client/signup_form.h>
 #include <cte/protocol/profile.h>
-#include <cte/protocol/profile_message.h>
 #include <ui_signup_form.h>
+#include <QtCore/QDebug>
 #include <QtGui/QImage>
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QMessageBox>

@@ -298,6 +298,9 @@ QDockWidget#dock * {
    <property name="toolTip">
     <string>Close</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="action_export_pdf">
    <property name="checkable">

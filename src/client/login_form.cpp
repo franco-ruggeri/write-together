@@ -1,10 +1,8 @@
 #include <cte/client/login_form.h>
-#include <cte/protocol/login_message.h>
 #include <ui_login_form.h>
+#include <QtCore/QDebug>
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QMessageBox>
-
-#include <QDebug>
 
 namespace cte {
     LoginForm::LoginForm(QWidget *parent) : QWidget(parent), login_already_clicked_(false) {

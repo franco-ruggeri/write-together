@@ -91,19 +91,26 @@ namespace cte {
 
     void UiWorker::show_error(const QString& error) {
         QWidget *parent = nullptr;
-        if (!forms_->isHidden()) parent = forms_.data();
-        else if (!home_->isHidden()) parent = home_.data();
-        QMessageBox::critical(parent, tr("Error"), error);
-        if (parent == forms_.data()) {
+        if (!forms_->isHidden()) {
+            parent = forms_.data();
             QWidget *form = forms_->currentWidget();
-            if (form == login_form_) login_form_->enable_form(true);
-            else if (form == signup_form_) signup_form_->enable_form(true);
+            if (form == login_form_)
+                login_form_->enable_form(true);
+            else if (form == signup_form_)
+                signup_form_->enable_form(true);
+        } else if (!home_->isHidden()) {
+            parent = home_.data();
         }
+        QMessageBox::critical(parent, tr("Error"), error);
     }
 
     void UiWorker::activate_home() {
-        if (home_->isMinimized()) home_->setWindowState((home_->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
-        else home_->activateWindow();
+        if (home_->isMinimized()) {
+            home_->setWindowState((home_->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+            home_->show();
+        } else {
+            home_->activateWindow();
+        }
     }
 
     void UiWorker::process_message(const QSharedPointer<Message>& message) {
