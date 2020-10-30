@@ -26,6 +26,5 @@ namespace cte {
 
     public:
         explicit ConnectionForm(QWidget *parent=nullptr);
-        bool eventFilter(QObject *watched, QEvent *event) override;
     };
 }

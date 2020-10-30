@@ -29,7 +29,6 @@ namespace cte {
 
     public:
         explicit SignupForm(QWidget *parent=nullptr);
-        bool eventFilter(QObject *watched, QEvent *event) override;
         void enable_form(bool enabled);
     };
 }

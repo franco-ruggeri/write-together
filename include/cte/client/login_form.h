@@ -28,7 +28,6 @@ namespace cte {
 
     public:
         explicit LoginForm(QWidget *parent=nullptr);
-        bool eventFilter(QObject *watched, QEvent *event) override;
         void enable_form(bool enabled);
     };
 }

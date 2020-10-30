@@ -571,7 +571,7 @@ QListWidget#documents::item:hover {
            <string>LOGOUT</string>
           </property>
           <property name="shortcut">
-           <string>Ctrl+S</string>
+           <string>Ctrl+L</string>
           </property>
          </widget>
         </item>
