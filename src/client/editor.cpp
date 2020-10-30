@@ -9,6 +9,7 @@
 #include <QtGui/QTextBlock>
 #include <QtGui/QClipboard>
 #include <QtGui/QTextCharFormat>
+#include <QtGui/QAbstractTextDocumentLayout>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
@@ -18,17 +19,34 @@
 
 namespace cte {
     Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
-            QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()),
-            shared_editor_(document_info.site_id(), document_info.text()), copy_paste_(false) {
+            QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()), copy_paste_(false) {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
-        ui_->editor->setPlainText(shared_editor_.to_string());
+        ui_->editor->setAcceptRichText(false);
         ui_->action_user_list->setChecked(true);
         setWindowTitle(document.full_name());
 
-        // set cursor to beginning
+        // set text with format
+        QList<std::pair<Symbol,Format>> text_with_format = document_info.text();
+        QList<Symbol> text;
         local_cursor_ = ui_->editor->textCursor();
+        for (int i=0; i<text_with_format.size(); i++) {
+            auto& symbol_with_format = text_with_format[i];
+            Symbol& s = symbol_with_format.first;
+            Format& f = symbol_with_format.second;
+
+            QTextCharFormat format;
+            if (f.bold()) format.setFontWeight(1000);
+            format.setFontItalic(f.italic());
+            format.setFontUnderline(f.underlined());
+
+            text.push_back(s);
+            local_cursor_.setPosition(i);
+            local_cursor_.mergeCharFormat(format);
+            local_cursor_.insertText(s.value());
+        }
+        shared_editor_ = SharedEditor(document_info.site_id(), text);
         local_cursor_.setPosition(0);
         ui_->editor->setTextCursor(local_cursor_);
 
@@ -39,7 +57,7 @@ namespace cte {
 
             QSharedPointer<User> user = QSharedPointer<User>::create(profile, site_ids);
             username_users_.insert(profile.username(), user);
-            for (const auto& si : site_ids)
+            for (int si : site_ids)
                 site_id_users_.insert(si, user);
         }
 
@@ -80,15 +98,15 @@ namespace cte {
         connect(ui_->action_export_pdf, &QAction::triggered, this, &Editor::export_pdf);
         connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
         connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
-        connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QPlainTextEdit::undo);
-        connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QPlainTextEdit::redo);
-        connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QPlainTextEdit::cut);
-        connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QPlainTextEdit::copy);
-        connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QPlainTextEdit::paste);
+        connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QTextEdit::undo);
+        connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
+        connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QTextEdit::cut);
+        connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QTextEdit::copy);
+        connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QTextEdit::paste);
         connect(ui_->dock, &QDockWidget::visibilityChanged, ui_->action_user_list, &QAction::setChecked);
         connect(ui_->action_user_list, &QAction::triggered, ui_->dock, &QDockWidget::setVisible);
-        connect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
-        connect(ui_->editor, &QPlainTextEdit::textChanged, this, &Editor::refresh_status_bar);
+        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_status_bar);
         connect(ui_->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &Editor::refresh_cursors);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
@@ -101,7 +119,7 @@ namespace cte {
     }
 
     void Editor::refresh_status_bar() {
-        int n_words = ui_->editor->toPlainText().split("(\\s|\\n|\\r)+", QString::SkipEmptyParts).count();
+        int n_words = ui_->editor->toPlainText().split(R"((\s|\n|\r)+)", QString::SkipEmptyParts).count();
         int n_chars = ui_->editor->toPlainText().count();
         word_char_count_->setText("Words: " + QString::number(n_words) + "; Characters: " + QString::number(n_chars));
     }
@@ -187,10 +205,10 @@ namespace cte {
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
-        disconnect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        disconnect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         int index = shared_editor_.find(symbol);
         site_id_users_[site_id]->move_remote_cursor(site_id, index);
-        connect(ui_->editor, &QPlainTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         qDebug() << "remote cursor move: { site_id:" << site_id << ", position:" << index << "}";
     }
 
@@ -248,8 +266,7 @@ namespace cte {
     }
 
     void Editor::process_local_cursor_move() {
-        QTextCursor cursor = ui_->editor->textCursor();
-        int position = cursor.position();
+        int position = ui_->editor->textCursor().position();
         if (local_cursor_.position() == position) return;  // triggered by local insert/erase, do not signal anything
         local_cursor_.setPosition(position);
         Symbol symbol = shared_editor_.at(position);

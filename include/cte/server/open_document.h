@@ -10,12 +10,14 @@
 #include <cte/crdt/symbol.h>
 #include <cte/protocol/document.h>
 #include <cte/protocol/document_info.h>
+#include <cte/protocol/format.h>
 
 namespace cte {
     class OpenDocument {
         QSharedPointer<SharedEditor> shared_editor_;    // pointer to have assignability, SharedEditor is not assignable
         QHash<int,Symbol> cursors_;                     // site_id -> symbol, for online users
         QHash<int,QString> usernames_;                  // site_id -> username, for all users
+        QList<Format> formats_;                         // format for each symbol, aligned with shared_editor_->text()
         int next_site_id_;
         int reference_count_;
 
@@ -24,6 +26,7 @@ namespace cte {
             int index;
             QChar value;
             QString author;
+            Format format;
         } character_t;
 
         OpenDocument();
@@ -35,7 +38,7 @@ namespace cte {
         void erase_symbol(int site_id, const Symbol& symbol);
         void move_cursor(int site_id, const Symbol& symbol);
 
-        QList<Symbol> text() const;
+        QList<std::pair<Symbol,Format>> text() const;
         QString username(int site_id) const;
         QHash<int,Symbol> cursors() const;
         QHash<int,QString> usernames() const;

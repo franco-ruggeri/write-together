@@ -110,7 +110,7 @@ namespace cte {
     }
 
     QSqlQuery query_select_document_text(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "SELECT c.index, c.value, c.author "
+        QString query_string = "SELECT c.index, c.value, c.author, c.bold, c.italic, c.underlined "
                                "FROM `character` c "
                                "WHERE c.document_owner=:document_owner AND c.document_name=:document_name "
                                "ORDER BY c.index";
@@ -165,8 +165,10 @@ namespace cte {
     }
 
     QSqlQuery prepare_query_insert_character(const QSqlDatabase& database, const Document& document) {
-        QString query_string = "INSERT INTO `character` (`document_owner`, `document_name`, `index`, `author`, `value`) "
-                               "VALUES (:document_owner, :document_name, :index, :author, :value)";
+        QString query_string = "INSERT INTO `character` (`document_owner`, `document_name`, `index`, `author`, "
+                               "                         `value`, `bold`, `italic`, `underlined`) "
+                               "VALUES (:document_owner, :document_name, :index, :author, :value, :bold, :italic, "
+                               "        :underlined)";
         QSqlQuery query(database);
         query.prepare(query_string);
         query.bindValue(":document_owner", document.owner());
@@ -174,9 +176,13 @@ namespace cte {
         return query;
     }
 
-    void bind_query_insert_character(QSqlQuery& query, unsigned int index, const QString& author, QChar value) {
+    void bind_query_insert_character(QSqlQuery& query, unsigned int index, const QString& author, QChar value,
+                                     const Format& format) {
         query.bindValue(":index", index);
         query.bindValue(":author", author);
         query.bindValue(":value", value);
+        query.bindValue(":bold", format.bold());
+        query.bindValue(":italic", format.italic());
+        query.bindValue(":underlined", format.underlined());
     }
 }

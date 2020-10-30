@@ -27,6 +27,7 @@ namespace cte {
         Lseq pos_allocator_;
         QHash<int,int> version_vector_;
         QList<Symbol> deletion_buffer_;
+        Symbol bof_, eof_;
 
         static const int reserved_site_id;
 
@@ -35,6 +36,7 @@ namespace cte {
         std::optional<int> process_deletion_buffer();           // returns index if erase is done
 
     public:
+        SharedEditor();
         explicit SharedEditor(int site_id);
         SharedEditor(int site_id, const QList<Symbol>& text);
 
@@ -52,9 +54,9 @@ namespace cte {
         int site_id() const;
         QList<Symbol> text() const;             // without BOF and EOF
         QString to_string() const;
+        Symbol bof() const;
 
         static const int invalid_site_id, invalid_site_counter;
         static const int starting_site_id, starting_site_counter;
-        static const Symbol bof, eof;
     };
 }

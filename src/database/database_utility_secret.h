@@ -11,6 +11,7 @@
 #include <QtGui/QImage>
 #include <cte/protocol/profile.h>
 #include <cte/protocol/document.h>
+#include <cte/protocol/format.h>
 
 namespace cte {
     QSqlDatabase connect_to_database();
@@ -35,6 +36,7 @@ namespace cte {
     // document editing queries
     QSqlQuery query_delete_document_text(const QSqlDatabase& database, const Document& document);
     QSqlQuery prepare_query_insert_character(const QSqlDatabase& database, const Document& document);
-    void bind_query_insert_character(QSqlQuery& query, unsigned int index, const QString& author, QChar value);
+    void bind_query_insert_character(QSqlQuery& query, unsigned int index, const QString& author, QChar value,
+                                     const Format& format);
 
 }

@@ -85,8 +85,13 @@ namespace cte {
                 execute_query(query);
                 QVector<OpenDocument::character_t> text;
                 while (query.next()) {
-                    text.push_back({ query.value("index").value<qint32>(), query.value("value").toString().at(0),
-                                     query.value("author").toString() });
+                    text.push_back({
+                        query.value("index").value<qint32>(),
+                        query.value("value").toString().at(0),
+                        query.value("author").toString(),
+                        Format(query.value("bold").toBool(), query.value("italic").toBool(),
+                               query.value("underlined").toBool())
+                    });
                 }
                 open_documents_.insert(document, OpenDocument(text, profiles.keys()));
             }
@@ -235,10 +240,7 @@ namespace cte {
         for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++) {
             const Document& document = it.key();
             OpenDocument& open_document = it.value();
-
-            QList<Symbol> text = open_document.text();
-            QString document_owner = document.owner();
-            QString document_name = document.name();
+            QList<std::pair<Symbol,Format>> text = open_document.text();
 
             // delete old document text
             query = query_delete_document_text(database, document);
@@ -247,9 +249,10 @@ namespace cte {
             // insert updated document text
             query = prepare_query_insert_character(database, document);
             for (int i=0; i<text.size(); i++) {
-                QString username = open_document.username(text[i].site_id());
-                QChar value = text[i].value();
-                bind_query_insert_character(query, i, username, value);
+                QString username = open_document.username(text[i].first.site_id());
+                QChar value = text[i].first.value();
+                Format format = text[i].second;
+                bind_query_insert_character(query, i, username, value, format);
                 execute_query(query);
             }
 

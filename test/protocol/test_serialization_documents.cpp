@@ -2,7 +2,7 @@
 #include <cte/protocol/document.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QList>
-#include <assert.h>
+#include <cassert>
 
 int main() {
     const QList<cte::Document> documents = {
