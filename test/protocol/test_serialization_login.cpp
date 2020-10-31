@@ -1,10 +1,7 @@
-/*
- * Author: Franco Ruggeri
- */
-
-#include <cte/protocol/LoginMessage.h>
+#include <cte/protocol/login_message.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <cassert>
 
 int main() {
     const QString username("test username");

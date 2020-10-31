@@ -1,10 +1,7 @@
-/*
- * Author: Franco Ruggeri
- */
-
-#include <cte/protocol/ErrorMessage.h>
+#include <cte/protocol/error_message.h>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
+#include <cassert>
 
 int main() {
     const QString reason("test reason");

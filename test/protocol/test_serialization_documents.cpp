@@ -1,14 +1,11 @@
-/*
- * Author: Franco Ruggeri
- */
-
-#include <cte/protocol/DocumentsMessage.h>
-#include <cte/protocol/Document.h>
+#include <cte/protocol/documents_message.h>
+#include <cte/protocol/document.h>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QSet>
+#include <QtCore/QList>
+#include <cassert>
 
 int main() {
-    const QSet<cte::Document> documents = {
+    const QList<cte::Document> documents = {
             cte::Document("test owner 1", "test name 1"),
             cte::Document("test owner 2", "test name 2")
     };

@@ -1,18 +1,15 @@
-/*
- * Author: Franco Ruggeri
- */
-
-#include <cte/protocol/OpenMessage.h>
-#include <cte/protocol/Document.h>
-#include <cte/protocol/Profile.h>
+#include <cte/protocol/open_message.h>
+#include <cte/protocol/document.h>
+#include <cte/protocol/profile.h>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QString>
+#include <QtCore/QUrl>
+#include <cassert>
 
 int main() {
     const cte::Document document("test owner", "test name");
-    const QString sharing_link("fnsc:test_uri");
+    const QUrl sharing_link("fnsc:test_uri");
     const int site_id = 1;
-    const cte::Profile profile("test username", "test name", "test surname", QImage{});
+    const cte::Profile profile("test username", "test name", "test surname", "test email", QImage{});
 
     QSharedPointer<cte::Message> message1, message2;
 

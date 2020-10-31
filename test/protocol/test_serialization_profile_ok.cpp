@@ -1,9 +1,6 @@
-/*
- * Author: Franco Ruggeri
- */
-
-#include <cte/protocol/ProfileOkMessage.h>
+#include <cte/protocol/profile_ok_message.h>
 #include <QtCore/QSharedPointer>
+#include <cassert>
 
 int main() {
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::ProfileOkMessage>::create();

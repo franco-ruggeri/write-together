@@ -1,0 +1,32 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
+        <file>images/app/background.png</file>
+        <file>images/app/logo_black.png</file>
+        <file>images/app/logo_white.png</file>
+        <file>images/forms/username.png</file>
+        <file>images/forms/email.png</file>
+        <file>images/forms/name.png</file>
+        <file>images/forms/surname.png</file>
+        <file>images/forms/password.png</file>
+        <file>images/forms/repeat_password.png</file>
+        <file>images/home/new_document.png</file>
+        <file>images/home/collaborate.png</file>
+        <file>images/home/all_documents.png</file>
+        <file>images/home/your_documents.png</file>
+        <file>images/home/shared_with_you.png</file>
+        <file>images/profile/default.png</file>
+        <file>images/editor/home.png</file>
+        <file>images/editor/invite.png</file>
+        <file>images/editor/export_pdf.png</file>
+        <file>images/editor/undo.png</file>
+        <file>images/editor/redo.png</file>
+        <file>images/editor/cut.png</file>
+        <file>images/editor/copy.png</file>
+        <file>images/editor/paste.png</file>
+        <file>images/editor/online.png</file>
+        <file>images/editor/offline.png</file>
+        <file>images/editor/bold.png</file>
+        <file>images/editor/italic.png</file>
+        <file>images/editor/underline.png</file>
+    </qresource>
+</RCC>

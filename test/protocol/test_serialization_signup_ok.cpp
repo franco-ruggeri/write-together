@@ -1,9 +1,6 @@
-/*
- * Author: Franco Ruggeri
- */
-
-#include <cte/protocol/SignupOkMessage.h>
+#include <cte/protocol/signup_ok_message.h>
 #include <QtCore/QSharedPointer>
+#include <cassert>
 
 int main() {
     QSharedPointer<cte::Message> message1 = QSharedPointer<cte::SignupOkMessage>::create();
