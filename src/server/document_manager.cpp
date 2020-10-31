@@ -22,33 +22,29 @@ namespace cte {
         QSqlQuery query(database);
 
         // check if the document already exists
+        QString owner = document.owner();
+        bool created = false;
         query = query_select_document(database, document, true);
         execute_query(query);
-
-        // create document
-        QString owner = document.owner();
-        std::optional<DocumentInfo> document_info;
         if (query.size() == 0) {
+            // create document
             QUrl sharing_link = Document::generate_sharing_link(document);
-
-            // insert new document
             query = query_insert_document(database, document, sharing_link);
             execute_query(query);
             query = query_insert_sharing(database, document, owner);
             execute_query(query);
-
-            // open document
-            document_info = open_document(session_id, document, owner);
+            created = true;
         }
 
         // commit transaction
         database.commit();
 
-        return document_info;
+        // open document
+        return created ? open_document(session_id, document, owner) : std::nullopt;
     }
 
-    std::optional<DocumentInfo> DocumentManager::open_document(int session_id, const Document& document,
-                                                               const QString& username) {
+    std::optional<DocumentInfo>
+    DocumentManager::open_document(int session_id, const Document& document, const QString& username) {
         // check inputs
         if (opened(session_id, document)) throw std::logic_error("document already opened");
 
@@ -58,20 +54,19 @@ namespace cte {
         database.transaction();
         QSqlQuery query(database);
 
-        // check if the document is accessible by the user (selecting also sharing link)
+        // check if the document is accessible by the user
+        QHash<QString,Profile> profiles;
+        QString sharing_link;
+        bool accessible = false;
         query = query_select_document(database, document, username);
         execute_query(query);
-
-        // open document
-        std::optional<DocumentInfo> document_info;
-        if (query.next()) {
-            // load sharing link
-            QString sharing_link = query.value("sharing_link").toString();
+        if (query.next()) {     // accessible
+            sharing_link = query.value("sharing_link").toString();
+            accessible = true;
 
             // load profiles
             query = query_select_document_profiles(database, document);
             execute_query(query);
-            QHash<QString,Profile> profiles;
             while (query.next()) {
                 Profile profile(query.value("username").toString(),
                                 query.value("name").toString(),
@@ -80,43 +75,29 @@ namespace cte {
                                 query.value("icon").toByteArray());
                 profiles.insert(profile.username(), profile);
             }
-
-            // open document
-            QMutexLocker ml(&mutex_);
-            if (!open_documents_.contains(document)) {
-                // not in main memory... load text
-                query = query_select_document_text(database, document);
-                execute_query(query);
-                QVector<OpenDocument::character_t> text;
-                while (query.next()) {
-                    text.push_back({
-                        query.value("index").value<qint32>(),
-                        query.value("value").toString().at(0),
-                        query.value("author").toString(),
-                        Format(query.value("bold").toBool(), query.value("italic").toBool(),
-                               query.value("underlined").toBool())
-                    });
-                }
-                open_documents_.insert(document, OpenDocument(text, profiles.keys()));
-            }
-            OpenDocument& od = open_documents_[document];
-            int site_id = od.open(username);
-            site_ids_[session_id].insert(document, site_id);
-
-            // get document info
-            QHash<QString,std::pair<Profile,QList<int>>> users;
-            QHash<int,QString> usernames = od.usernames();
-            for (const auto& p : profiles)
-                users.insert(p.username(), {p, QList<int>()} );
-            for (auto it=usernames.begin(); it != usernames.end(); it++)
-                users[it.value()].second.append(it.key());
-            document_info = DocumentInfo(od.text(), site_id, od.cursors(), users, sharing_link);
         }
 
-        // commit transaction
+        // commit transaction (important: before opening the document because OpenDocument uses the DB)
         database.commit();
+        if (!accessible) return std::nullopt;
 
-        return document_info;
+        // open document (if not already opened)
+        QMutexLocker ml(&mutex_);
+        if (!open_documents_.contains(document))
+            open_documents_.insert(document, OpenDocument(document));
+        OpenDocument& od = *open_documents_.find(document);
+        int site_id = od.open(username);
+        site_ids_[session_id].insert(document, site_id);
+        ml.unlock();
+
+        // prepare document info
+        QHash<QString,std::pair<Profile,QList<int>>> users;
+        QHash<int,QString> usernames = od.usernames();
+        for (const auto& p : profiles)
+            users.insert(p.username(), {p, QList<int>()} );
+        for (auto it=usernames.begin(); it != usernames.end(); it++)
+            users[it.value()].second.append(it.key());
+        return DocumentInfo(od.text(), site_id, od.cursors(), users, sharing_link);
     }
 
     std::optional<std::pair<Document,DocumentInfo>>
@@ -127,41 +108,44 @@ namespace cte {
         database.transaction();
         QSqlQuery query(database);
 
-        // load document
-        std::optional<std::pair<Document,DocumentInfo>> result;
+        // check if the document exists
+        std::optional<Document> document;
         query = query_select_document(database, sharing_link);
         execute_query(query);
         if (query.next()) {
-            Document document(query.value("owner").toString(), query.value("name").toString());
+            document = Document(query.value("owner").toString(), query.value("name").toString());
 
             // add sharing if not present
-            query = query_select_document(database, document, username);
+            query = query_select_document(database, *document, username);
             execute_query(query);
             if (query.size() == 0) {
-                query = query_insert_sharing(database, document, username);
+                query = query_insert_sharing(database, *document, username);
                 execute_query(query);
             }
-
-            // open document
-            DocumentInfo document_info = *open_document(session_id, document, username);
-            result = std::make_pair(document, document_info);
         }
 
         // commit transaction
         database.commit();
 
-        return result;
+        // open document
+        if (document)
+            return std::make_pair(*document, *open_document(session_id, *document, username));
+        else
+            return std::nullopt;
     }
 
     int DocumentManager::close_document(int session_id, const Document& document) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         int site_id = site_ids_[session_id].take(document);
-        get_open_document(document).close(site_id);
+        OpenDocument& od = get_open_document(document);
+        ml.unlock();    // release here, other threads can work on other documents!
+        od.close(site_id);
         return site_id;
     }
 
     OpenDocument& DocumentManager::get_open_document(const Document& document) {
+        QMutexLocker ml(&mutex_);
         auto it = open_documents_.find(document);
         if (it == open_documents_.end()) throw std::logic_error("document not opened");
         return *it;
@@ -183,14 +167,18 @@ namespace cte {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         if (site_id_spoofing(session_id, document, symbol)) throw std::logic_error("site_id spoofing");
-        get_open_document(document).insert_symbol(symbol, format);
+        OpenDocument& od = get_open_document(document);
+        ml.unlock();    // release here, other threads can work on other documents!
+        od.insert_symbol(symbol, format);
     }
 
     int DocumentManager::erase_symbol(int session_id, const Document& document, const Symbol& symbol) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         int site_id = site_ids_[session_id][document];
-        get_open_document(document).erase_symbol(site_id, symbol);
+        OpenDocument& od = get_open_document(document);
+        ml.unlock();    // release here, other threads can work on other documents!
+        od.erase_symbol(site_id, symbol);
         return site_id;
     }
 
@@ -198,7 +186,9 @@ namespace cte {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
         int site_id = site_ids_[session_id][document];
-        get_open_document(document).move_cursor(site_id, symbol);
+        OpenDocument& od = get_open_document(document);
+        ml.unlock();    // release here, other threads can work on other documents!
+        od.move_cursor(site_id, symbol);
         return site_id;
     }
 
@@ -206,7 +196,9 @@ namespace cte {
                                         const Format& format) {
         QMutexLocker ml(&mutex_);
         if (!opened(session_id, document)) throw std::logic_error("document not opened");
-        get_open_document(document).format_symbol(symbol, format);
+        OpenDocument& od = get_open_document(document);
+        ml.unlock();    // release here, other threads can work on other documents!
+        od.format_symbol(symbol, format);
     }
 
     QList<Document> DocumentManager::get_document_list(const QString& username) const {
@@ -234,44 +226,16 @@ namespace cte {
     }
 
     void DocumentManager::save() {
-        // copy (so that we do not lock for the entire (slow) saving on the DB) and remove closed documents
+        // copy (so that we do not lock for the entire, slow, saving on the DB)
         QMutexLocker ml(&mutex_);
         QHash<Document,OpenDocument> open_documents_copy = open_documents_;
         for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++)
-            if (it->reference_count() == 0)
+            if (it->reference_count() == 0)     // closed, can be removed from the open documents
                 open_documents_.remove(it.key());
         ml.unlock();
 
-        // open connection and start transaction
-        QSqlDatabase database = connect_to_database();
-        DatabaseGuard dg(database);
-        database.transaction();
-        QSqlQuery query(database);
-
-        // save documents
-        for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++) {
-            const Document& document = it.key();
-            OpenDocument& open_document = it.value();
-            QList<std::pair<Symbol,Format>> text = open_document.text();
-
-            // delete old document text
-            query = query_delete_document_text(database, document);
-            execute_query(query);
-
-            // insert updated document text
-            query = prepare_query_insert_character(database, document);
-            for (int i=0; i<text.size(); i++) {
-                QString username = open_document.username(text[i].first.site_id());
-                QChar value = text[i].first.value();
-                Format format = text[i].second;
-                bind_query_insert_character(query, i, username, value, format);
-                execute_query(query);
-            }
-
-            qDebug() << "document saved:" << document.full_name();
-        }
-
-        // commit transaction
-        database.commit();
+        // save
+        for (auto& od : open_documents_copy)
+            od.save();
     }
 }

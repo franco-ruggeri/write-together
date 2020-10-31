@@ -3,7 +3,6 @@
 #include <cte/database/database_utility.h>
 #include <cte/crypto/password_utility.h>
 #include <database_utility_secret.h>
-#include <QtCore/QVariant>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
@@ -31,10 +30,9 @@ namespace cte {
         // check if the username is already used
         query = query_select_profile(database, username, true);
         execute_query(query);
-
-        // signup
         bool signed_up = false;
-        if (query.size() == 0) {
+        if (query.size() == 0) {    // not used
+
             // insert profile
             QString hash = QString::fromStdString(generate_password(static_cast<QString &&>(password)));
             query = query_insert_profile(database, profile, hash);
@@ -65,6 +63,8 @@ namespace cte {
         query = query_select_profile(database, username);
         execute_query(query);
         if (!query.next()) return std::nullopt;    // non-existing user
+        Profile profile(username, query.value("name").toString(), query.value("surname").toString(),
+                        query.value("email").toString(), query.value("icon").toByteArray());
 
         // check password
         QString hash = query.value("password").toString();
@@ -75,8 +75,7 @@ namespace cte {
         QMutexLocker ml(&m_sessions_);
         sessions_.insert(session_id, username);
 
-        return Profile(username, query.value("name").toString(), query.value("surname").toString(),
-                       query.value("email").toString(), query.value("icon").toByteArray());
+        return profile;
     }
 
     void IdentityManager::logout(int session_id) {

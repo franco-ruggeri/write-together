@@ -2,7 +2,11 @@
  * Identity manager. It provides an interface for signing up, logging in, logging out, and updating profile.
  *
  * A session is authenticated and bound to a user after signing up or logging in, and not authenticated after logging
- * out. Note that it is not thread-safe to use the same session from different threads.
+ * out.
+ *
+ * Multi-threading:
+ * - It is thread-safe to use different sessions in different threads.
+ * - It is not thread-safe to use the same session in different threads.
  */
 
 #pragma once

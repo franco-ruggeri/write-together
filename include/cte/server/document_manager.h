@@ -1,8 +1,11 @@
 /*
  * Document manager. It provides an interface for creating, opening, closing, and editing documents.
  *
- * A document can be opened only once in a session. Note that it is not thread-safe to use the same session from
- * different threads.
+ * A document can be opened only once in a session.
+ *
+ * Multi-threading:
+ * - It is thread-safe to use different sessions in different threads.
+ * - It is not thread-safe to use the same session in different threads.
  */
 
 #pragma once
