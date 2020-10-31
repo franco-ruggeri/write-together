@@ -110,7 +110,7 @@ namespace cte {
         connect(ui_->editor, &QTextEdit::currentCharFormatChanged, this, &Editor::refresh_format_actions);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
-                this, &Editor::process_document_size_change);
+                this, &Editor::refresh_cursors);
     }
 
     void Editor::refresh_cursors() {
@@ -213,9 +213,11 @@ namespace cte {
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        disconnect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         int index = shared_editor_.find_cursor(symbol);
         site_id_users_[site_id]->move_remote_cursor(site_id, index);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         qDebug() << "remote cursor move: { site_id:" << site_id << ", position:" << index << "}";
     }
 
@@ -314,15 +316,9 @@ namespace cte {
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
-    void Editor::process_document_size_change() {
-        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        refresh_cursors();
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-    }
-
     void Editor::export_pdf() {
         QString directory = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).takeFirst() +
-                QDir::separator() + document_.name() + ".pdf";
+                            QDir::separator() + document_.name() + ".pdf";
         QString filter = "PDF (*.pdf)";
         QString filename = QFileDialog::getSaveFileName(this, tr("Export as PDF"), directory, filter);
         if (filename.isNull()) return;
