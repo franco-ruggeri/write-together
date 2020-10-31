@@ -288,7 +288,7 @@ QTreeWidget#users::item:hover {
     <string>&amp;Invite to collaborate</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+S</string>
+    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="action_close">
@@ -321,7 +321,7 @@ QTreeWidget#users::item:hover {
     <string>Export as &amp;PDF</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+P</string>
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="action_home">

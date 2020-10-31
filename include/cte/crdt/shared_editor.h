@@ -31,7 +31,7 @@ namespace cte {
 
         static const int reserved_site_id;
 
-        bool valid_index(int index) const;
+        bool existing_index(int index) const;
         void update_version_vector(const Symbol& symbol);
         std::optional<int> process_deletion_buffer();           // returns index if erase is done
 

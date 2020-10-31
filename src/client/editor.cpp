@@ -238,9 +238,14 @@ namespace cte {
     }
 
     void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
+        // Qt sometimes generates signals with chars_removed==chars_added but with no changes, probably a bug
+        if (!copy_paste_ && chars_removed == chars_added)
+            return;
+
         qDebug() << "local change: { position:" << position
                  << ", chars_removed:" << chars_removed
                  << ", chars_added:" << chars_added << "}";
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
 
         // offset between symbols in shared_editor_ and characters in ui_->editor, see comment below about bug
         int offset = copy_paste_ ? 1 : 0;
@@ -262,7 +267,6 @@ namespace cte {
         }
 
         // update background color and format of inserted text
-        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QTextCharFormat char_format = format;
         char_format.setBackground(local_user_->selected() ? local_user_->color() : Qt::transparent);
         local_cursor_.setPosition(position);

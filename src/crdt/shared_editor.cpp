@@ -33,8 +33,8 @@ namespace cte {
             update_version_vector(s);
     }
 
-    bool SharedEditor::valid_index(int index) const {
-        return index >= 0 && index <= text_.size()-2;
+    bool SharedEditor::existing_index(int index) const {
+        return index >= 0 && index < text_.size()-2;
     }
 
     void SharedEditor::update_version_vector(const Symbol& symbol) {
@@ -50,7 +50,7 @@ namespace cte {
 
     Symbol SharedEditor::insert(int site_id, int site_counter, int index, QChar value) {
         if (value.isNull()) throw std::logic_error("trying to insert null character");
-        if (!valid_index(index)) throw std::logic_error("trying to insert at an invalid index");
+        if (index < 0 || index > text_.size()-2) throw std::logic_error("trying to insert at an invalid index");
 
         // allocate position
         index++;    // for BOF
@@ -95,7 +95,7 @@ namespace cte {
     }
 
     Symbol SharedEditor::local_erase(int index) {
-        if (!valid_index(index)) throw std::logic_error("trying to erase at an invalid index");
+        if (!existing_index(index)) throw std::logic_error("trying to erase at an invalid index");
         index++;    // for BOF
         Symbol symbol = text_.at(index);
         text_.erase(text_.begin() + index);
@@ -131,7 +131,7 @@ namespace cte {
     }
 
     Symbol SharedEditor::symbol_at(int index) const {
-        if (!valid_index(index)) throw std::logic_error("trying to retrieve at an invalid index");
+        if (!existing_index(index)) throw std::logic_error("trying to retrieve at an invalid index");
         index++;    // do not consider BOF
         return text_[index];
     }
