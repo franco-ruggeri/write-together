@@ -110,7 +110,7 @@ namespace cte {
         connect(ui_->editor, &QTextEdit::currentCharFormatChanged, this, &Editor::refresh_format_actions);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
-                this, &Editor::refresh_cursors);
+                this, &Editor::process_document_size_change);
     }
 
     void Editor::refresh_cursors() {
@@ -212,10 +212,10 @@ namespace cte {
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
-        disconnect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         int index = shared_editor_.find_cursor(symbol);
         site_id_users_[site_id]->move_remote_cursor(site_id, index);
-        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         qDebug() << "remote cursor move: { site_id:" << site_id << ", position:" << index << "}";
     }
 
@@ -266,7 +266,6 @@ namespace cte {
         local_cursor_.setPosition(position);
         local_cursor_.setPosition(position + chars_added, QTextCursor::KeepAnchor);
         local_cursor_.mergeCharFormat(char_format);
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
 
         /*
          * There is a bug when copy-pasting at position 0, the arguments are completely wrong in such case.
@@ -274,18 +273,15 @@ namespace cte {
          * operation will never be at position 0. Here we remove this empty character.
          */
         if (copy_paste_) {
-            disconnect(ui_->editor->document(), &QTextDocument::contentsChange,
-                       this, &Editor::process_local_content_change);
             local_cursor_.setPosition(0);
             local_cursor_.deleteChar();
             copy_paste_ = false;
-            connect(ui_->editor->document(), &QTextDocument::contentsChange,
-                    this, &Editor::process_local_content_change);
         }
 
         // update cursors
         refresh_cursors();
         local_cursor_ = ui_->editor->textCursor();  // so that cursor move are not signalled for local insert/erase
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
     void Editor::process_local_cursor_move() {
@@ -315,6 +311,12 @@ namespace cte {
         // update format in UI
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         cursor.mergeCharFormat(format);
+        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+    }
+
+    void Editor::process_document_size_change() {
+        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        refresh_cursors();
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
