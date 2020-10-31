@@ -28,6 +28,10 @@ QWidget#centralwidget * {
 
 QDockWidget#dock * {
 	font-size: 14pt;
+}
+
+QTreeWidget#users::item:hover {
+	color: #A4A4A4;
 }</string>
   </property>
   <property name="toolButtonStyle">
@@ -46,7 +50,7 @@ QDockWidget#dock * {
      <x>0</x>
      <y>0</y>
      <width>1018</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -135,6 +139,9 @@ QDockWidget#dock * {
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
       <widget class="QTreeWidget" name="users">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
