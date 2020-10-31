@@ -11,7 +11,7 @@ namespace cte {
 
     void User::generate_color() {
         int site_id = *std::min_element(site_ids_.begin(), site_ids_.end());
-        int hash = static_cast<int>(std::floor(site_id * 13)) % colors.size();
+        int hash = static_cast<int>(std::floor(site_id * 61)) % colors.size();
         color_ = colors[hash];
     }
 
