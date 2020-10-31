@@ -28,7 +28,3 @@ add_executable(server ${SRC} ${QOBJ_HEADERS} ${CERT_DIR}/resource.qrc)
 target_link_libraries(server ${LIB})
 target_include_directories(server PUBLIC ${INCLUDE})
 install(TARGETS server DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-
-if(WIN32)
-    set_property(TARGET server PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-endif()
