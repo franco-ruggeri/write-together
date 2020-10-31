@@ -30,5 +30,7 @@ Be sure that the following CMAKE variables contain the reported paths.
     make libcryptopp.a libcryptopp.so cryptest.exe
     make test
     sudo make install
+    cd ..
+    rm -rf cryptopp
     ```
 Or simply run *scripts/install_dependencies.sh*.

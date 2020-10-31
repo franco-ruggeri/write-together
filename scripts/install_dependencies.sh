@@ -12,3 +12,5 @@ unzip cryptopp*.zip
 make libcryptopp.a libcryptopp.so cryptest.exe
 make test
 sudo make install
+cd ..
+rm -rf cryptopp
