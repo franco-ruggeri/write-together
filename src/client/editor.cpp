@@ -205,8 +205,9 @@ namespace cte {
         cursor.deleteChar();
         qDebug() << "remote erase: { character:" << symbol.value() << ", position:" << *index << "}";
 
-        // update remote cursor
+        // update remote cursors
         site_id_users_[site_id]->move_remote_cursor(site_id, *index);
+        refresh_cursors();
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
