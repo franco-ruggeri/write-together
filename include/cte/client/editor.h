@@ -52,6 +52,7 @@ namespace cte {
         void process_local_content_change(int position, int chars_removed, int chars_added);
         void process_local_cursor_move();
         void process_local_format_change();
+        void simulate_paste();
         void export_pdf();
         void show_sharing_link();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);

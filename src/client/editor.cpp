@@ -98,7 +98,7 @@ namespace cte {
         connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
         connect(ui_->action_cut, &QAction::triggered, ui_->editor, &QTextEdit::cut);
         connect(ui_->action_copy, &QAction::triggered, ui_->editor, &QTextEdit::copy);
-        connect(ui_->action_paste, &QAction::triggered, ui_->editor, &QTextEdit::paste);
+        connect(ui_->action_paste, &QAction::triggered, this, &Editor::simulate_paste);
         connect(ui_->action_user_list, &QAction::triggered, ui_->dock, &QDockWidget::setVisible);
         connect(ui_->action_bold, &QAction::triggered, this, &Editor::process_local_format_change);
         connect(ui_->action_italic, &QAction::triggered, this, &Editor::process_local_format_change);
@@ -418,6 +418,11 @@ namespace cte {
     void Editor::closeEvent(QCloseEvent *event) {
         emit closed();
         event->accept();
+    }
+
+    void Editor::simulate_paste() {
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_V, Qt::ControlModifier);
+        QCoreApplication::sendEvent(ui_->editor, &event);
     }
 
     bool Editor::eventFilter(QObject *watched, QEvent *event) {
