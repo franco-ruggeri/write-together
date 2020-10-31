@@ -277,6 +277,8 @@ namespace cte {
          * There is a bug when copy-pasting at position 0, the arguments are completely wrong in such case.
          * As a workaround, we insert an empty character at position 0 in the event filter, so that the copy-paste
          * operation will never be at position 0. Here we remove this empty character.
+         *
+         * Bug description: https://bugreports.qt.io/browse/QTBUG-3495
          */
         if (copy_paste_) {
             local_cursor_.setPosition(0);
