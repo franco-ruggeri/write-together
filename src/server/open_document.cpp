@@ -115,14 +115,14 @@ namespace cte {
 
     void OpenDocument::insert_symbol(const Symbol& symbol, const Format& format) {
         QMutexLocker ml(&mutex_);
-        std::optional<int> index = *shared_editor_.remote_insert(symbol);
+        std::optional<int> index = shared_editor_.remote_insert(symbol);
         if (index) formats_.insert(*index, format);
         cursors_[symbol.site_id()] = symbol;
     }
 
     void OpenDocument::erase_symbol(int site_id, const Symbol& symbol) {
         QMutexLocker ml(&mutex_);
-        std::optional<int> index = *shared_editor_.remote_erase(symbol);
+        std::optional<int> index = shared_editor_.remote_erase(symbol);
         if (index) formats_.removeAt(*index);
         cursors_[site_id] = symbol;
     }
