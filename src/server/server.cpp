@@ -4,6 +4,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QFile>
 #include <algorithm>
+#include <database_utility_secret.h>
 
 namespace cte {
     IdentityManager identity_manager;
@@ -50,9 +51,9 @@ namespace cte {
     }
 
     void Server::listen(int port) {
-        // try to save (better not to start if there are problems)
-        qDebug() << "trying to save";
-        document_manager.save();
+        // try DB (better not to start if there are problems)
+        qDebug() << "trying connection to DB";
+        connect_to_database();
 
         // listen
         if (QTcpServer::listen(QHostAddress::Any, port))
