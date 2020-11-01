@@ -18,14 +18,15 @@
 #include <optional>
 
 namespace cte {
-    Editor::Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent) :
-            QMainWindow(parent), document_(document), sharing_link_(document_info.sharing_link()), copy_paste_(false) {
+    Editor::Editor(Document document, const DocumentInfo& document_info, QWidget *parent) :
+            QMainWindow(parent), document_(std::move(document)), sharing_link_(document_info.sharing_link()),
+            copy_paste_(false) {
         // create UI
         ui_ = QSharedPointer<Ui::Editor>::create();
         ui_->setupUi(this);
         ui_->editor->setAcceptRichText(false);
         ui_->action_user_list->setChecked(true);
-        setWindowTitle(document.full_name());
+        setWindowTitle(document_.full_name());
 
         // set text with format
         QList<std::pair<Symbol,Format>> text_with_format = document_info.text();
@@ -58,7 +59,6 @@ namespace cte {
         }
 
         // add remote cursors
-        show();                 // important: before adding remote cursors, to be initialized well!
         int my_site_id = document_info.site_id();
         QHash<int,Symbol> cursors = document_info.cursors();
         for (auto it=cursors.begin(); it != cursors.end(); it++) {
@@ -108,16 +108,12 @@ namespace cte {
         connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_status_bar);
         connect(ui_->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &Editor::refresh_cursors);
         connect(ui_->editor, &QTextEdit::currentCharFormatChanged, this, &Editor::refresh_format_actions);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
                 this, &Editor::refresh_cursors);
-        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::textChange);
 
     }
-    void Editor::textChange(){
-        refresh_cursors();
-    }
-
 
     void Editor::refresh_cursors() {
         for (auto& u : username_users_)
@@ -177,6 +173,7 @@ namespace cte {
 
         // insert in UI editor
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.insertText(symbol.value());
@@ -194,6 +191,7 @@ namespace cte {
         cursor.setPosition(index.value()+1, QTextCursor::KeepAnchor);
         cursor.mergeCharFormat(char_format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
     }
 
     void Editor::remote_erase(int site_id, const Symbol& symbol) {
@@ -205,25 +203,22 @@ namespace cte {
         }
 
         // erase from UI editor
+        // important: do not disconnect QTextEdit::textChanged and Editor::refresh_cursors, otherwise there may be
+        // floating remote cursors beyond the end of the document, we want to refresh the cursors
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.deleteChar();
         qDebug() << "remote erase: { character:" << symbol.value() << ", position:" << *index << "}";
 
-        // update remote cursors
+        // update remote cursor
         site_id_users_[site_id]->move_remote_cursor(site_id, *index);
-//        refresh_cursors();
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
-        disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        disconnect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         int index = shared_editor_.find_cursor(symbol);
         site_id_users_[site_id]->move_remote_cursor(site_id, index);
-        connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        connect(ui_->editor, &QTextEdit::cursorPositionChanged, this, &Editor::process_local_cursor_move);
         qDebug() << "remote cursor move: { site_id:" << site_id << ", position:" << index << "}";
     }
 
@@ -234,12 +229,14 @@ namespace cte {
 
         // update format in UI
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         QTextCharFormat char_format = format;
         QTextCursor cursor = ui_->editor->textCursor();
         cursor.setPosition(*index);
         cursor.setPosition(index.value()+1, QTextCursor::KeepAnchor);
         cursor.mergeCharFormat(char_format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         qDebug() << "remote format change: { character:" << symbol.value() << ", position:" << *index << "}";
     }
 
@@ -251,8 +248,8 @@ namespace cte {
         qDebug() << "local change: { position:" << position
                  << ", chars_removed:" << chars_removed
                  << ", chars_added:" << chars_added << "}";
-        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::textChange);
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
 
         // offset between symbols in shared_editor_ and characters in ui_->editor, see comment below about bug
         int offset = copy_paste_ ? 1 : 0;
@@ -293,12 +290,9 @@ namespace cte {
             copy_paste_ = false;
         }
 
-        // update cursors
-//        refresh_cursors();
-
         local_cursor_ = ui_->editor->textCursor();  // so that cursor move are not signalled for local insert/erase
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::textChange);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
     }
 
     void Editor::process_local_cursor_move() {
@@ -327,8 +321,10 @@ namespace cte {
 
         // update format in UI
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         cursor.mergeCharFormat(format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
     }
 
     void Editor::export_pdf() {
@@ -404,6 +400,7 @@ namespace cte {
 
         // update background color
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         QList<Symbol> text = shared_editor_.text();
         for (int i = 0; i < text.size(); i++) {
             int site_id = text[i].site_id();
@@ -416,6 +413,7 @@ namespace cte {
         cursor.setPosition(text.size(), QTextCursor::KeepAnchor);   // necessary to color also last characters
         cursor.mergeCharFormat(format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
     }
 
     void Editor::on_users_itemDoubleClicked(QTreeWidgetItem *item, int column) {

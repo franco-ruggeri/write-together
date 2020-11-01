@@ -57,12 +57,11 @@ namespace cte {
         void show_sharing_link();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);
         void on_users_itemDoubleClicked(QTreeWidgetItem *item, int column);
-        void textChange();
     protected:
         void closeEvent(QCloseEvent *event) override;
 
     public:
-        Editor(const Document& document, const DocumentInfo& document_info, QWidget *parent=nullptr);
+        Editor(Document document, const DocumentInfo& document_info, QWidget *parent=nullptr);
         void remote_insert(const Symbol& symbol, const Format& format);
         void remote_erase(int site_id, const Symbol& symbol);
         void remote_cursor_move(int site_id, const Symbol& symbol);

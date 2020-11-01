@@ -295,6 +295,7 @@ namespace cte {
         QPointer<Editor> editor = new Editor(document, document_info);
         editor->installEventFilter(this);
         editor->activateWindow();
+        editor->show();
         editors_.insert(document_message->document(), editor);
 
         // connect signals and slots

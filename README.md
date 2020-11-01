@@ -2,7 +2,7 @@
 This project is part of the course System Programming (Programmazione di Sistema) at Politecnico di Torino and is inspired by [Conclave](https://conclave-team.github.io/conclave-site/).
 
 ## Install dependencies
-### On Linux
+### On Ubuntu
 ```bash
 cd scripts/
 ./install_dependencies.sh
@@ -11,22 +11,23 @@ cd scripts/
 ## Run the server
 ### On Linux
 #### Server:
-1. Create the database using the [SQL script](https://github.com/franco-ruggeri/collaborative-text-editor/blob/development/src/database/sql/database_create.sql).
-2. [Optional] replace certificate and private key for the server. Read the [instructions](https://github.com/franco-ruggeri/collaborative-text-editor/blob/development/docs/setup_ssl.md).
-2. Start MySQL.
+1. [Optional] If you want to use the server not only on localhost:
+    1. Change the password in the [SQL script](https://github.com/franco-ruggeri/collaborative-text-editor/blob/master/src/database/sql/database_create.sql) and in the [code](https://github.com/franco-ruggeri/collaborative-text-editor/blob/master/src/database/database_utility_secret.cpp).
+    2. Replace certificate and private key for the server. Read the [instructions](https://github.com/franco-ruggeri/collaborative-text-editor/blob/master/docs/setup_ssl.md).
+2. Start MySQL and create the database using the [SQL script](https://github.com/franco-ruggeri/collaborative-text-editor/blob/master/src/database/sql/database_create.sql).
 3. Run the server (on port 5000 and with saving period 5 seconds):
-```bash
-cd scripts/
-./run.sh server 5000 5000
-```
+    ```bash
+    cd scripts/
+    ./run.sh server 5000 5000
+    ```
 
 ## Run the client
 ### On Linux
 1. Run these commands:
-```bash
-cd scripts/
-./install.sh
-```
+    ```bash
+    cd scripts/
+    ./install.sh
+    ```
 2. Launch the application (connect to localhost on port 5000).
 
 ## Functionalities
