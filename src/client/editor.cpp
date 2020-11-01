@@ -111,7 +111,13 @@ namespace cte {
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
                 this, &Editor::refresh_cursors);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::textChange);
+
     }
+    void Editor::textChange(){
+        refresh_cursors();
+    }
+
 
     void Editor::refresh_cursors() {
         for (auto& u : username_users_)
@@ -207,7 +213,7 @@ namespace cte {
 
         // update remote cursors
         site_id_users_[site_id]->move_remote_cursor(site_id, *index);
-        refresh_cursors();
+//        refresh_cursors();
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
     }
 
@@ -245,6 +251,7 @@ namespace cte {
         qDebug() << "local change: { position:" << position
                  << ", chars_removed:" << chars_removed
                  << ", chars_added:" << chars_added << "}";
+        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::textChange);
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
 
         // offset between symbols in shared_editor_ and characters in ui_->editor, see comment below about bug
@@ -287,9 +294,11 @@ namespace cte {
         }
 
         // update cursors
-        refresh_cursors();
+//        refresh_cursors();
+
         local_cursor_ = ui_->editor->textCursor();  // so that cursor move are not signalled for local insert/erase
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::textChange);
     }
 
     void Editor::process_local_cursor_move() {

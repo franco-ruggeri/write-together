@@ -57,7 +57,7 @@ namespace cte {
         void show_sharing_link();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);
         void on_users_itemDoubleClicked(QTreeWidgetItem *item, int column);
-
+        void textChange();
     protected:
         void closeEvent(QCloseEvent *event) override;
 
@@ -72,5 +72,6 @@ namespace cte {
         int local_site_id() const;
         QUrl sharing_link() const;
         bool eventFilter(QObject *watched, QEvent *event) override;
+
     };
 }
