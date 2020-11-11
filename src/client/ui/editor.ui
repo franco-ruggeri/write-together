@@ -194,7 +194,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-undo" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/undo.png</normaloff>:/images/editor/undo.png</iconset>
    </property>
    <property name="text">
@@ -209,7 +209,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-redo" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/redo.png</normaloff>:/images/editor/redo.png</iconset>
    </property>
    <property name="text">
@@ -227,7 +227,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-cut" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/cut.png</normaloff>:/images/editor/cut.png</iconset>
    </property>
    <property name="text">
@@ -245,7 +245,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-copy" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/copy.png</normaloff>:/images/editor/copy.png</iconset>
    </property>
    <property name="text">
@@ -263,7 +263,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-paste" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/paste.png</normaloff>:/images/editor/paste.png</iconset>
    </property>
    <property name="text">
@@ -329,7 +329,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="go-home" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/home.png</normaloff>:/images/editor/home.png</iconset>
    </property>
    <property name="text">
@@ -342,10 +342,13 @@ QTreeWidget#users::item:hover {
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/editor/online.png</normaloff>:/images/editor/online.png</iconset>
+     <normaloff>:/images/editor/user_list.png</normaloff>:/images/editor/user_list.png</iconset>
    </property>
    <property name="text">
     <string>&amp;user_list</string>
+   </property>
+   <property name="toolTip">
+    <string>Users list</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -356,7 +359,7 @@ QTreeWidget#users::item:hover {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-bold" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
    </property>
    <property name="text">
@@ -371,7 +374,7 @@ QTreeWidget#users::item:hover {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-italic" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/italic.png</normaloff>:/images/editor/italic.png</iconset>
    </property>
    <property name="text">
@@ -389,7 +392,7 @@ QTreeWidget#users::item:hover {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-underline" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/underline.png</normaloff>:/images/editor/underline.png</iconset>
    </property>
    <property name="text">

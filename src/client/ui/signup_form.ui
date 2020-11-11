@@ -132,8 +132,8 @@ QLabel#instructions {
        <widget class="QLabel" name="label_2">
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>16777215</height>
+          <width>980</width>
+          <height>600</height>
          </size>
         </property>
         <property name="text">
@@ -611,7 +611,6 @@ QLabel#instructions {
  </tabstops>
  <resources>
   <include location="resource.qrc"/>
-  <include location="../../../../../Desktop/pds/collaborative-text-editor/src/client/resource.qrc"/>
  </resources>
  <connections/>
 </ui>
