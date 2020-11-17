@@ -14,6 +14,7 @@ namespace cte {
     public:
         Format();
         Format(bool bold, bool italic, bool underlined);
+        explicit Format(const QTextCharFormat& format);
         explicit Format(const QJsonObject& json_object);
 
         bool operator==(const Format& other) const;
