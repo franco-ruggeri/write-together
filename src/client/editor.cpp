@@ -390,8 +390,6 @@ namespace cte {
      */
     void Editor::paste() {
         disconnect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        disconnect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
-
         local_cursor_ = ui_->editor->textCursor();
         local_cursor_.beginEditBlock();
         int position = local_cursor_.position();
@@ -431,9 +429,7 @@ namespace cte {
         local_cursor_.setPosition(position + chars_added);
         local_cursor_.endEditBlock();
         ui_->editor->setTextCursor(local_cursor_);
-
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
-        connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
     }
 
     void Editor::copy_formats() {
