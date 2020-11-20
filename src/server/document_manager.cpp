@@ -232,10 +232,15 @@ namespace cte {
         for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++)
             if (it->reference_count() == 0)     // closed, can be removed from the open documents
                 open_documents_.remove(it.key());
+            else
+                open_documents_.find(it.key())->set_changed(false);
         ml.unlock();
 
         // save
-        for (auto& od : open_documents_copy)
-            od.save();
+        for (auto& od : open_documents_copy) {
+            QString document = od.document().full_name();
+            bool saved = od.save();
+            qDebug() << "document" << (saved ? "saved:" : "not changed since last save:") << document;
+        }
     }
 }
