@@ -90,6 +90,8 @@ namespace cte {
 
         // clear stack of undo and redo operations
         ui_->editor->setUndoRedoEnabled(false);
+        ui_->action_undo->setEnabled(false);
+        ui_->action_redo->setEnabled(false);
 
         // connect signals and slots for actions
         QTextDocument *editor_document = ui_->editor->document();
@@ -257,6 +259,7 @@ namespace cte {
 
         // Qt sometimes generates signals with chars_removed==chars_added but with no changes, probably a bug
         if (chars_removed == chars_added) {
+            ui_->editor->undo();
             chars_removed = 0;
             chars_added = 0;
         }
@@ -388,15 +391,12 @@ namespace cte {
     void Editor::copy() {
         disconnect(clipboard_connection_);
         copy_formats();
-        qDebug() << "Before copy() execution";
         ui_->editor->copy();
-        qDebug() << "After copy() execution. Before connect()";
         QTimer::singleShot(0, this, [this](){
             if (!clipboard_connection_)
                 clipboard_connection_ = connect(QApplication::clipboard(), &QClipboard::dataChanged,
                         this, &Editor::clear_clipboard_formats);
         });
-        qDebug() << "After connect()";
     }
 
     /*
@@ -543,6 +543,7 @@ namespace cte {
                 return true;
             }
         }
+        return false;
     }
 
     int Editor::local_site_id() const {
