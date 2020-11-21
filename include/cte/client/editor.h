@@ -35,6 +35,8 @@ namespace cte {
 
         QVector<Format> clipboard_formats_;                     // formats of copied/cut characters
 
+        QMetaObject::Connection clipboard_connection_;
+
         void refresh_users();
         void copy_formats();
 

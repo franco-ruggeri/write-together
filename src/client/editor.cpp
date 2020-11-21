@@ -4,6 +4,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QTimer>
 #include <QtCore/QDebug>
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
@@ -87,6 +88,9 @@ namespace cte {
         // to handle copy-paste with shortcuts while editing
         ui_->editor->installEventFilter(this);
 
+        // clear stack of undo and redo operations
+        ui_->editor->setUndoRedoEnabled(false);
+
         // connect signals and slots for actions
         QTextDocument *editor_document = ui_->editor->document();
         connect(ui_->action_home, &QAction::triggered, this, &Editor::home_request);
@@ -94,7 +98,9 @@ namespace cte {
         connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
         connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
         connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QTextEdit::undo);
+        connect(ui_->editor, &QTextEdit::undoAvailable, ui_->action_undo, &QAction::setEnabled);
         connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
+        connect(ui_->editor, &QTextEdit::redoAvailable, ui_->action_redo, &QAction::setEnabled);
         connect(ui_->action_cut, &QAction::triggered, this, &Editor::cut);
         connect(ui_->action_copy, &QAction::triggered, this, &Editor::copy);
         connect(ui_->action_paste, &QAction::triggered, this, &Editor::paste);
@@ -108,10 +114,12 @@ namespace cte {
         connect(ui_->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &Editor::refresh_cursors);
         connect(ui_->editor, &QTextEdit::currentCharFormatChanged, this, &Editor::refresh_format_actions);
         connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
-        connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
+        clipboard_connection_ = connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
                 this, &Editor::refresh_cursors);
+
+        ui_->editor->setUndoRedoEnabled(true);
     }
 
     void Editor::refresh_cursors() {
@@ -249,7 +257,6 @@ namespace cte {
 
         // Qt sometimes generates signals with chars_removed==chars_added but with no changes, probably a bug
         if (chars_removed == chars_added) {
-            ui_->editor->undo();
             chars_removed = 0;
             chars_added = 0;
         }
@@ -368,17 +375,28 @@ namespace cte {
     }
 
     void Editor::cut() {
-        disconnect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
+        disconnect(clipboard_connection_);
         copy_formats();
         ui_->editor->cut();
-        connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
+        QTimer::singleShot(0, this, [this](){
+            if (!clipboard_connection_)
+                clipboard_connection_ = connect(QApplication::clipboard(), &QClipboard::dataChanged,
+                        this, &Editor::clear_clipboard_formats);
+        });
     }
 
     void Editor::copy() {
-        disconnect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
+        disconnect(clipboard_connection_);
         copy_formats();
+        qDebug() << "Before copy() execution";
         ui_->editor->copy();
-        connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
+        qDebug() << "After copy() execution. Before connect()";
+        QTimer::singleShot(0, this, [this](){
+            if (!clipboard_connection_)
+                clipboard_connection_ = connect(QApplication::clipboard(), &QClipboard::dataChanged,
+                        this, &Editor::clear_clipboard_formats);
+        });
+        qDebug() << "After connect()";
     }
 
     /*
