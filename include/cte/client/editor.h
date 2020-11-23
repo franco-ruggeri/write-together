@@ -34,7 +34,6 @@ namespace cte {
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
 
         QVector<Format> clipboard_formats_;                     // formats of copied/cut characters
-
         QMetaObject::Connection clipboard_connection_;
 
         void refresh_users();

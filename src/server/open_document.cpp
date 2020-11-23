@@ -40,7 +40,7 @@ namespace cte {
 
         // commit transaction
         database.commit();
-        qDebug() << "document loaded:" << document_.full_name();
+        qDebug() << "document loaded in maim memory:" << document_.full_name();
     }
 
     OpenDocument::OpenDocument(const OpenDocument& other) {
