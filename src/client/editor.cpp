@@ -259,7 +259,6 @@ namespace cte {
 
         // Qt sometimes generates signals with chars_removed==chars_added but with no changes, probably a bug
         if (chars_removed == chars_added) {
-            ui_->editor->undo();
             chars_removed = 0;
             chars_added = 0;
         }
@@ -281,13 +280,15 @@ namespace cte {
         }
 
         // update background color and format of inserted text
-        QTextCharFormat char_format = format;
-        char_format.setBackground(local_user_->selected() ? local_user_->color() : Qt::transparent);
-        local_cursor_.joinPreviousEditBlock();
-        local_cursor_.setPosition(position);
-        local_cursor_.setPosition(position + chars_added, QTextCursor::KeepAnchor);
-        local_cursor_.mergeCharFormat(char_format);
-        local_cursor_.endEditBlock();
+        if (chars_added > 0) {
+            QTextCharFormat char_format = format;
+            char_format.setBackground(local_user_->selected() ? local_user_->color() : Qt::transparent);
+            local_cursor_.joinPreviousEditBlock();
+            local_cursor_.setPosition(position);
+            local_cursor_.setPosition(position + chars_added, QTextCursor::KeepAnchor);
+            local_cursor_.mergeCharFormat(char_format);
+            local_cursor_.endEditBlock();
+        }
 
         local_cursor_ = ui_->editor->textCursor();  // so that cursor move are not signalled for local insert/erase
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
