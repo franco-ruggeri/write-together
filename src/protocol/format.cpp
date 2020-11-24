@@ -5,6 +5,9 @@ namespace cte {
 
     Format::Format(bool bold, bool italic, bool underlined) : bold_(bold), italic_(italic), underlined_(underlined) {}
 
+    Format::Format(const QTextCharFormat& format) : bold_(format.fontWeight() == QFont::Bold),
+            italic_(format.fontItalic()), underlined_(format.fontUnderline()) {}
+
     Format::Format(const QJsonObject &json_object) {
         auto end_iterator = json_object.end();
         auto bold_iterator = json_object.find("bold");

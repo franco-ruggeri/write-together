@@ -8,8 +8,8 @@
 #include <QtSql/QSqlQuery>
 
 namespace cte {
-    OpenDocument::OpenDocument(Document document) :
-            document_(std::move(document)), next_site_id_(SharedEditor::starting_site_counter), reference_count_(0) {
+    OpenDocument::OpenDocument(Document document) : document_(std::move(document)),
+            next_site_id_(SharedEditor::starting_site_counter), reference_count_(0), changed_(false) {
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
         DatabaseGuard dg(database);
@@ -40,7 +40,7 @@ namespace cte {
 
         // commit transaction
         database.commit();
-        qDebug() << "document loaded:" << document_.full_name();
+        qDebug() << "document loaded in maim memory:" << document_.full_name();
     }
 
     OpenDocument::OpenDocument(const OpenDocument& other) {
@@ -52,6 +52,7 @@ namespace cte {
         this->formats_ = other.formats_;
         this->next_site_id_ = other.next_site_id_;
         this->reference_count_ = other.reference_count_;
+        this->changed_ = other.changed_;
     }
 
     OpenDocument& OpenDocument::operator=(const OpenDocument& other) {
@@ -64,12 +65,14 @@ namespace cte {
             this->formats_ = other.formats_;
             this->next_site_id_ = other.next_site_id_;
             this->reference_count_ = other.reference_count_;
+            this->changed_ = other.changed_;
         }
         return *this;
     }
 
-    void OpenDocument::save() {
+    bool OpenDocument::save() {
         QMutexLocker ml(&mutex_);
+        if (!changed_) return false;
 
         // open connection and start transaction
         QSqlDatabase database = connect_to_database();
@@ -94,7 +97,8 @@ namespace cte {
 
         // commit transaction
         database.commit();
-        qDebug() << "document saved:" << document_.full_name();
+        changed_ = false;
+        return true;
     }
 
     int OpenDocument::open(const QString& username) {
@@ -118,6 +122,7 @@ namespace cte {
         std::optional<int> index = shared_editor_.remote_insert(symbol);
         if (index) formats_.insert(*index, format);
         cursors_[symbol.site_id()] = symbol;
+        changed_ = true;
     }
 
     void OpenDocument::erase_symbol(int site_id, const Symbol& symbol) {
@@ -125,6 +130,7 @@ namespace cte {
         std::optional<int> index = shared_editor_.remote_erase(symbol);
         if (index) formats_.removeAt(*index);
         cursors_[site_id] = symbol;
+        changed_ = true;
     }
 
     void OpenDocument::move_cursor(int site_id, const Symbol& symbol) {
@@ -136,6 +142,11 @@ namespace cte {
         QMutexLocker ml(&mutex_);
         std::optional<int> index = shared_editor_.find_symbol(symbol);
         if (index) formats_[*index] = format;
+        changed_ = true;
+    }
+
+    Document OpenDocument::document() const {
+        return document_;
     }
 
     QList<std::pair<Symbol,Format>> OpenDocument::text() const {
@@ -160,5 +171,15 @@ namespace cte {
     int OpenDocument::reference_count() const {
         QMutexLocker ml(&mutex_);
         return reference_count_;
+    }
+
+    bool OpenDocument::changed() const {
+        QMutexLocker ml(&mutex_);
+        return changed_;
+    }
+
+    void OpenDocument::set_changed(bool changed) {
+        QMutexLocker ml(&mutex_);
+        changed_ = changed;
     }
 }

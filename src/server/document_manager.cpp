@@ -226,16 +226,23 @@ namespace cte {
     }
 
     void DocumentManager::save() {
-        // copy (so that we do not lock for the entire, slow, saving on the DB)
-        QMutexLocker ml(&mutex_);
-        QHash<Document,OpenDocument> open_documents_copy = open_documents_;
-        for (auto it=open_documents_copy.begin(); it!=open_documents_copy.end(); it++)
-            if (it->reference_count() == 0)     // closed, can be removed from the open documents
-                open_documents_.remove(it.key());
-        ml.unlock();
-
         // save
-        for (auto& od : open_documents_copy)
-            od.save();
+        QMutexLocker ml(&mutex_);
+        for (auto& od : open_documents_) {
+            ml.unlock();    // other threads can work on other documents
+            bool saved = od.save();
+            qDebug() << "document" << (saved ? "saved:" : "not changed since last save:") << od.document().full_name();
+            ml.relock();
+        }
+
+        // remove closed documents
+        QMutableHashIterator it(open_documents_);
+        while (it.hasNext()) {
+            const auto& od = it.next();
+            if (od->reference_count() == 0) {
+                qDebug() << "document removed from main memory:" << od->document().full_name();
+                it.remove();
+            }
+        }
     }
 }

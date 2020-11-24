@@ -1,7 +1,6 @@
 #include <cte/client/client.h>
 #include <QtCore/QPointer>
 #include <QtCore/QThread>
-#include <QtCore/QDebug>
 
 namespace cte {
     Client::Client() {

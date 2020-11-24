@@ -33,9 +33,11 @@ namespace cte {
         QHash<int,QSharedPointer<User>> site_id_users_;         // fast lookup by site_id
         QHash<QString,QSharedPointer<User>> username_users_;    // fast lookup by username
 
-        bool copy_paste_;
+        QVector<Format> clipboard_formats_;                     // formats of copied/cut characters
+        QMetaObject::Connection clipboard_connection_;
 
         void refresh_users();
+        void copy_formats();
 
     signals:
         void local_insert(const Symbol& symbol, const Format& format);
@@ -52,9 +54,12 @@ namespace cte {
         void process_local_content_change(int position, int chars_removed, int chars_added);
         void process_local_cursor_move();
         void process_local_format_change();
-        void simulate_paste();
         void export_pdf();
         void show_sharing_link();
+        void cut();
+        void copy();
+        void paste();
+        void clear_clipboard_formats();
         void on_users_itemClicked(QTreeWidgetItem *item, int column);
         void on_users_itemDoubleClicked(QTreeWidgetItem *item, int column);
     protected:
@@ -71,6 +76,5 @@ namespace cte {
         int local_site_id() const;
         QUrl sharing_link() const;
         bool eventFilter(QObject *watched, QEvent *event) override;
-
     };
 }

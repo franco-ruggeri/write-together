@@ -56,6 +56,7 @@ cd scripts/
 - [x] List of both online and offline users with access to the document (possibility of text coloring also for offline users)
 - [x] View full profile of other users
 - [x] Filters for document list
+- [x] Word and char count
 
 ## Design choices:
 - Both client and server are portable and multi-platform, being written with the powerful [Qt framework](https://www.qt.io/). They have been tested on Ubuntu 18.04, Ubuntu 20.04 and Windows 10.
