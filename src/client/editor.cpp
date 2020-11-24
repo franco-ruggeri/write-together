@@ -88,10 +88,11 @@ namespace cte {
         // to handle copy-paste with shortcuts while editing
         ui_->editor->installEventFilter(this);
 
-        // clear stack of undo and redo operations
-        ui_->editor->setUndoRedoEnabled(false);
-        ui_->action_undo->setEnabled(false);
+        // disable undo/redo actions and clear undo/redo stack
         ui_->action_redo->setEnabled(false);
+        ui_->action_undo->setEnabled(false);
+        ui_->editor->setUndoRedoEnabled(false);
+        ui_->editor->setUndoRedoEnabled(true);
 
         // connect signals and slots for actions
         QTextDocument *editor_document = ui_->editor->document();
@@ -116,12 +117,11 @@ namespace cte {
         connect(ui_->editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &Editor::refresh_cursors);
         connect(ui_->editor, &QTextEdit::currentCharFormatChanged, this, &Editor::refresh_format_actions);
         connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
-        clipboard_connection_ = connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &Editor::clear_clipboard_formats);
         connect(editor_document, &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(editor_document->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
                 this, &Editor::refresh_cursors);
-
-        ui_->editor->setUndoRedoEnabled(true);
+        clipboard_connection_ = connect(QApplication::clipboard(), &QClipboard::dataChanged,
+                                        this, &Editor::clear_clipboard_formats);
     }
 
     void Editor::refresh_cursors() {
