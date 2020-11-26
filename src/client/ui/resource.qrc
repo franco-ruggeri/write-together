@@ -29,5 +29,10 @@
         <file>images/editor/italic.png</file>
         <file>images/editor/underline.png</file>
         <file>images/editor/user_list.png</file>
+        <file>images/editor/undo_disabled.png</file>
+        <file>images/editor/redo_disabled.png</file>
+        <file>images/editor/cut_disabled.png</file>
+        <file>images/editor/copy_disabled.png</file>
+        <file>images/editor/paste_disabled.png</file>
     </qresource>
 </RCC>
