@@ -101,8 +101,9 @@ namespace cte {
         connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
         connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
         connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QTextEdit::undo);
+        connect(ui_->action_undo, &QAction::triggered, ui_->editor->document(), qOverload<>(&QTextDocument::undo));
         connect(ui_->editor, &QTextEdit::undoAvailable, ui_->action_undo, &QAction::setEnabled);
-        connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
+        connect(ui_->action_redo, &QAction::triggered, ui_->editor->document(), qOverload<>(&QTextDocument::redo));
         connect(ui_->editor, &QTextEdit::redoAvailable, ui_->action_redo, &QAction::setEnabled);
         connect(ui_->action_cut, &QAction::triggered, this, &Editor::cut);
         connect(ui_->editor, &QTextEdit::copyAvailable, ui_->action_cut, &QAction::setEnabled);
@@ -426,7 +427,13 @@ namespace cte {
                 qDebug() << "local erase: { character:" << symbol.value() << ", position:" << start << "}";
             }
             local_cursor_.removeSelectedText();
+        } else {
+            local_cursor_.insertText("f"); // fictitious character
+            local_cursor_.deletePreviousChar();
         }
+        // try to break into two separate undo operations
+        local_cursor_.endEditBlock();
+        local_cursor_.beginEditBlock();
 
         // insert copied text
         QString text = QApplication::clipboard()->text();
@@ -543,6 +550,10 @@ namespace cte {
             }
             if (key_event->matches(QKeySequence::Paste)) {
                 paste();
+                return true;
+            }
+            if (key_event->matches(QKeySequence::Undo)) {
+                ui_->action_undo->activate(QAction::Trigger);
                 return true;
             }
         }
