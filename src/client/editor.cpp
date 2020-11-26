@@ -105,7 +105,9 @@ namespace cte {
         connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
         connect(ui_->editor, &QTextEdit::redoAvailable, ui_->action_redo, &QAction::setEnabled);
         connect(ui_->action_cut, &QAction::triggered, this, &Editor::cut);
+        connect(ui_->editor, &QTextEdit::copyAvailable, ui_->action_cut, &QAction::setEnabled);
         connect(ui_->action_copy, &QAction::triggered, this, &Editor::copy);
+        connect(ui_->editor, &QTextEdit::copyAvailable, ui_->action_copy, &QAction::setEnabled);
         connect(ui_->action_paste, &QAction::triggered, this, &Editor::paste);
         connect(ui_->action_user_list, &QAction::triggered, ui_->dock, &QDockWidget::setVisible);
         connect(ui_->action_bold, &QAction::triggered, this, &Editor::process_local_format_change);
