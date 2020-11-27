@@ -56,6 +56,10 @@ QDockWidget::close-button{
 
 QMainWindow {
 	background-color: #2c3645;
+}
+
+QStatusBar#statusbar * {
+	color: white;
 }</string>
   </property>
   <property name="toolButtonStyle">
@@ -223,6 +227,9 @@ QMainWindow {
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/images/editor/undo.png</normaloff>
@@ -238,6 +245,9 @@ QMainWindow {
   </action>
   <action name="action_redo">
    <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
@@ -260,6 +270,9 @@ QMainWindow {
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/images/editor/cut.png</normaloff>
@@ -278,6 +291,9 @@ QMainWindow {
   </action>
   <action name="action_copy">
    <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
@@ -444,5 +460,70 @@ QMainWindow {
  <resources>
   <include location="resource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>editor</sender>
+   <signal>copyAvailable(bool)</signal>
+   <receiver>action_copy</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editor</sender>
+   <signal>copyAvailable(bool)</signal>
+   <receiver>action_cut</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editor</sender>
+   <signal>redoAvailable(bool)</signal>
+   <receiver>action_redo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editor</sender>
+   <signal>undoAvailable(bool)</signal>
+   <receiver>action_undo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
