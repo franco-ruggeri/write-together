@@ -2,8 +2,8 @@
 SET default_storage_engine = InnoDB;
 
 -- create DB
-CREATE DATABASE IF NOT EXISTS collaborative_text_editor CHARACTER SET utf16;
-use collaborative_text_editor;
+CREATE DATABASE IF NOT EXISTS write_together CHARACTER SET utf16;
+use write_together;
 
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS sharing
 
 
 -- create application user
-CREATE USER IF NOT EXISTS 'collaborative_text_editor'@'%' IDENTIFIED BY '?PdSPr0j3ct!';
-CREATE USER IF NOT EXISTS 'collaborative_text_editor'@'localhost' IDENTIFIED BY '?PdSPr0j3ct!';
-GRANT SELECT, INSERT, UPDATE, DELETE ON collaborative_text_editor.* TO 'collaborative_text_editor'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON collaborative_text_editor.* TO 'collaborative_text_editor'@'localhost';
+CREATE USER IF NOT EXISTS 'write_together'@'%' IDENTIFIED BY '?PdSPr0j3ct!';
+CREATE USER IF NOT EXISTS 'write_together'@'localhost' IDENTIFIED BY '?PdSPr0j3ct!';
+GRANT SELECT, INSERT, UPDATE, DELETE ON write_together.* TO 'write_together'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON write_together.* TO 'write_together'@'localhost';
 
 COMMIT;

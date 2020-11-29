@@ -9,9 +9,9 @@
 namespace cte {
     QSqlDatabase connect_to_database() {
         static const QString driver_type("QMYSQL");
-        static const QString database_name("collaborative_text_editor");
+        static const QString database_name("write_together");
         static const QString hostname("127.0.0.1");
-        static const QString username("collaborative_text_editor");
+        static const QString username("write_together");
         static const QString password("?PdSPr0j3ct!");
 
         return connect_to_database(driver_type, database_name, hostname, username, password);
