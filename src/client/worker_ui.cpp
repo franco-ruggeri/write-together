@@ -27,6 +27,7 @@ namespace cte {
         signup_form_ = new SignupForm(forms);
         forms_->setWindowTitle(login_form_->windowTitle());
         forms_->setWindowIcon(login_form_->windowIcon());
+        forms_->move(200,100);
         forms_->addWidget(connection_form_);
         forms_->addWidget(login_form_);
         forms_->addWidget(signup_form_);

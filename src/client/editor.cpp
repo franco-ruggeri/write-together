@@ -88,9 +88,7 @@ namespace cte {
         // to handle copy-paste with shortcuts while editing
         ui_->editor->installEventFilter(this);
 
-        // disable undo/redo actions and clear undo/redo stack
-        ui_->action_redo->setEnabled(false);
-        ui_->action_undo->setEnabled(false);
+        // clear undo/redo stack (otherwise it would contain the initialization of the text)
         ui_->editor->setUndoRedoEnabled(false);
         ui_->editor->setUndoRedoEnabled(true);
 
@@ -101,9 +99,7 @@ namespace cte {
         connect(ui_->action_invite, &QAction::triggered, this, &Editor::show_sharing_link);
         connect(ui_->action_close, &QAction::triggered, this, &Editor::closed);
         connect(ui_->action_undo, &QAction::triggered, ui_->editor, &QTextEdit::undo);
-        connect(ui_->editor, &QTextEdit::undoAvailable, ui_->action_undo, &QAction::setEnabled);
         connect(ui_->action_redo, &QAction::triggered, ui_->editor, &QTextEdit::redo);
-        connect(ui_->editor, &QTextEdit::redoAvailable, ui_->action_redo, &QAction::setEnabled);
         connect(ui_->action_cut, &QAction::triggered, this, &Editor::cut);
         connect(ui_->action_copy, &QAction::triggered, this, &Editor::copy);
         connect(ui_->action_paste, &QAction::triggered, this, &Editor::paste);

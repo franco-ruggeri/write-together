@@ -14,7 +14,7 @@
    <enum>Qt::TabFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>Real-Time Collaborative Text Editor</string>
+   <string>Write TOgether</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">

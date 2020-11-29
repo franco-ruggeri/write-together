@@ -26,18 +26,49 @@ QWidget#centralwidget * {
 	font-size: 14pt;
 }
 
+QMenuBar, QMenu {
+	color:white;
+	background-color:  #1e2530;
+}
+
 QDockWidget#dock * {
 	font-size: 14pt;
+	background-color: #2c3645;
+	color: white;
 }
 
 QTreeWidget#users::item:hover {
 	color: #A4A4A4;
+}
+QToolBar#toolbar {
+	border: 0; 
+	padding: 3;
+	background-color:  #2c3645;
+}
+
+QToolButton:hover, QToolButton:checked {
+	background-color: #000;
+}
+
+QDockWidget::close-button{
+	background-color: white;
+}
+
+QMainWindow {
+	background-color: #2c3645;
+}
+
+QStatusBar#statusbar * {
+	color: white;
 }</string>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonFollowStyle</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <widget class="QTextEdit" name="editor"/>
@@ -136,6 +167,9 @@ QTreeWidget#users::item:hover {
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dock_users_content">
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
       <widget class="QTreeWidget" name="users">
@@ -193,9 +227,14 @@ QTreeWidget#users::item:hover {
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
-    <iconset theme="edit-undo" resource="resource.qrc">
-     <normaloff>:/images/editor/undo.png</normaloff>:/images/editor/undo.png</iconset>
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/undo.png</normaloff>
+     <disabledoff>:/images/editor/undo_disabled.png</disabledoff>
+     <disabledon>:/images/editor/undo.png</disabledon>:/images/editor/undo.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Undo</string>
@@ -208,9 +247,14 @@ QTreeWidget#users::item:hover {
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
-    <iconset theme="edit-redo" resource="resource.qrc">
-     <normaloff>:/images/editor/redo.png</normaloff>:/images/editor/redo.png</iconset>
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/redo.png</normaloff>
+     <disabledoff>:/images/editor/redo_disabled.png</disabledoff>
+     <disabledon>:/images/editor/redo_disabled.png</disabledon>:/images/editor/redo.png</iconset>
    </property>
    <property name="text">
     <string>Re&amp;do</string>
@@ -226,9 +270,14 @@ QTreeWidget#users::item:hover {
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
-    <iconset theme="edit-cut" resource="resource.qrc">
-     <normaloff>:/images/editor/cut.png</normaloff>:/images/editor/cut.png</iconset>
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/cut.png</normaloff>
+     <disabledoff>:/images/editor/cut_disabled.png</disabledoff>
+     <disabledon>:/images/editor/cut_disabled.png</disabledon>:/images/editor/cut.png</iconset>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -244,9 +293,13 @@ QTreeWidget#users::item:hover {
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
-    <iconset theme="edit-copy" resource="resource.qrc">
-     <normaloff>:/images/editor/copy.png</normaloff>:/images/editor/copy.png</iconset>
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/copy.png</normaloff>
+     <disabledoff>:/images/editor/copy_disabled.png</disabledoff>:/images/editor/copy.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -263,8 +316,9 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-paste" resource="resource.qrc">
-     <normaloff>:/images/editor/paste.png</normaloff>:/images/editor/paste.png</iconset>
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/editor/paste.png</normaloff>
+     <disabledoff>:/images/editor/paste_disabled.png</disabledoff>:/images/editor/paste.png</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -329,7 +383,7 @@ QTreeWidget#users::item:hover {
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="go-home" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/home.png</normaloff>:/images/editor/home.png</iconset>
    </property>
    <property name="text">
@@ -342,7 +396,7 @@ QTreeWidget#users::item:hover {
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/editor/online.png</normaloff>:/images/editor/online.png</iconset>
+     <normaloff>:/images/editor/user_list.png</normaloff>:/images/editor/user_list.png</iconset>
    </property>
    <property name="text">
     <string>&amp;user_list</string>
@@ -356,7 +410,7 @@ QTreeWidget#users::item:hover {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-bold" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/bold.png</normaloff>:/images/editor/bold.png</iconset>
    </property>
    <property name="text">
@@ -371,7 +425,7 @@ QTreeWidget#users::item:hover {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-italic" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/italic.png</normaloff>:/images/editor/italic.png</iconset>
    </property>
    <property name="text">
@@ -389,7 +443,7 @@ QTreeWidget#users::item:hover {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="format-text-underline" resource="resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/images/editor/underline.png</normaloff>:/images/editor/underline.png</iconset>
    </property>
    <property name="text">
@@ -406,5 +460,70 @@ QTreeWidget#users::item:hover {
  <resources>
   <include location="resource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>editor</sender>
+   <signal>copyAvailable(bool)</signal>
+   <receiver>action_copy</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editor</sender>
+   <signal>copyAvailable(bool)</signal>
+   <receiver>action_cut</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editor</sender>
+   <signal>redoAvailable(bool)</signal>
+   <receiver>action_redo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editor</sender>
+   <signal>undoAvailable(bool)</signal>
+   <receiver>action_undo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

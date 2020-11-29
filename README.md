@@ -1,5 +1,5 @@
-# Real-Time Collaborative Text Editor
-This project is part of the course System Programming (Programmazione di Sistema) at Politecnico di Torino and is inspired by [Conclave](https://conclave-team.github.io/conclave-site/).
+# Write TOgether
+Write TOgether is a real-time collaborative text editor made in PoliTO (Politecnico di Torino) as project of the course System Programming (Programmazione di Sistema). It is inspired by [Conclave](https://conclave-team.github.io/conclave-site/) and [Overleaf](https://www.overleaf.com/).
 
 ## Install dependencies
 ### On Ubuntu
