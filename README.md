@@ -66,3 +66,4 @@ cd scripts/
 - The server uses MySQL to save periodically the open documents. All the queries are prepared as prepared statements to guarantee protection against SQL injection. 
 - The server does not store password as plain-text, it stores hashes computed using [Crypto++](https://www.cryptopp.com/).
 - Both client and server use UTF-16 encoding.
+- Document naming with author and document name (two-level directory)
