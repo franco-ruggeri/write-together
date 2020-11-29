@@ -4,14 +4,9 @@
 
 namespace cte {
     Client::Client() {
-        // launch thread for network worker
-        thread_ = new QThread(this);
-        thread_->start();
-        network_worker_ = new NetworkWorker();
-        network_worker_->moveToThread(thread_);
-
-        // use this thread for UI worker
+        // create workers
         ui_worker_ = QSharedPointer<UiWorker>::create();
+        network_worker_ = QSharedPointer<NetworkWorker>::create();
 
         // connect workers
         NetworkWorker *network_worker = network_worker_.data();
@@ -24,12 +19,6 @@ namespace cte {
                 ui_worker, &UiWorker::show_connection_form);
         connect(network_worker, qOverload<const QString&>(&NetworkWorker::error_occurred),
                 ui_worker, qOverload<const QString&>(&UiWorker::show_error));
-    }
-
-    Client::~Client() {
-        thread_->exit();
-        thread_->wait();
-        qDebug() << "thread terminated";
     }
 
     void Client::start(const QString &hostname, int port) {

@@ -61,8 +61,9 @@ cd scripts/
 ## Design choices:
 - Both client and server are portable and multi-platform, being written with the powerful [Qt framework](https://www.qt.io/). They have been tested on Ubuntu 18.04, Ubuntu 20.04 and Windows 10.
 - The application protocol is designed ad hoc and is built on top of TCP. Currently it is textual and uses JSON. Have a look at the documentation [here](https://github.com/franco-ruggeri/collaborative-text-editor/blob/master/docs/protocol.md).
-- The client uses 2 threads, one for the UI and one for the network.
+- The client uses 1 thread.
 - The server uses an ideal number of threads based on the number of cores. The sockets are distributed uniformly among the threads. 
 - The server uses MySQL to save periodically the open documents. All the queries are prepared as prepared statements to guarantee protection against SQL injection. 
 - The server does not store password as plain-text, it stores hashes computed using [Crypto++](https://www.cryptopp.com/).
 - Both client and server use UTF-16 encoding.
+- Document naming with author and document name (two-level directory)

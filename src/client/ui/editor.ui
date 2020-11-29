@@ -50,12 +50,20 @@ QToolButton:hover, QToolButton:checked {
 	background-color: #000;
 }
 
+QDockWidget{
+  background-color: #2c3645;
+}
+
 QDockWidget::close-button{
 	background-color: white;
 }
 
 QMainWindow {
 	background-color: #2c3645;
+}
+
+QTreeWidget QHeaderView::section{
+  background-color: #2c3645;
 }
 
 QStatusBar#statusbar * {

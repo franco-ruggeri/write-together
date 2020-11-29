@@ -15,7 +15,7 @@ make install
 cd ..
 project_dir=$(pwd)
 cd ~/.local/share/applications
-filename="collaborative-text-editor.desktop"
+filename="write-together.desktop"
 echo "[Desktop Entry]" > $filename
 echo "Version=1.0" >> $filename
 echo "Type=Application" >> $filename
