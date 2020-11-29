@@ -198,6 +198,9 @@ namespace cte {
         cursor.mergeCharFormat(char_format);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
+
+        // keep GUI responsive (there can be a lot of consecutive remote operations)
+        QApplication::processEvents();
     }
 
     void Editor::remote_erase(int site_id, const Symbol& symbol) {
@@ -220,6 +223,9 @@ namespace cte {
         // update remote cursor
         site_id_users_[site_id]->move_remote_cursor(site_id, *index);
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
+
+        // keep GUI responsive (there can be a lot of consecutive remote operations)
+        QApplication::processEvents();
     }
 
     void Editor::remote_cursor_move(int site_id, const Symbol& symbol) {
@@ -244,6 +250,9 @@ namespace cte {
         connect(ui_->editor->document(), &QTextDocument::contentsChange, this, &Editor::process_local_content_change);
         connect(ui_->editor, &QTextEdit::textChanged, this, &Editor::refresh_cursors);
         qDebug() << "remote format change: { character:" << symbol.value() << ", position:" << *index << "}";
+
+        // keep GUI responsive (there can be a lot of consecutive remote operations)
+        QApplication::processEvents();
     }
 
     void Editor::process_local_content_change(int position, int chars_removed, int chars_added) {
