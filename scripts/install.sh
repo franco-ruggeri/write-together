@@ -20,6 +20,6 @@ echo "[Desktop Entry]" > $filename
 echo "Version=1.0" >> $filename
 echo "Type=Application" >> $filename
 echo "Terminal=false" >> $filename
-echo "Exec=$project_dir/bin/client localhost 5000" >> $filename
+echo "Exec=\"$project_dir/bin/client\" localhost 5000" >> $filename
 echo "Name=Write TOgether" >> $filename
 echo "Icon=$project_dir/src/client/ui/images/app/logo_black.png" >> $filename

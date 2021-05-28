@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# CMake
+sudo apt install cmake -y
+
 # Qt
-sudo apt install qt5-default libqt5sql5-mysql
+sudo apt install qt5-default libqt5sql5-mysql -y
 
 # cryptopp
 wget https://www.cryptopp.com/cryptopp820.zip
